@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Printer } from 'lucide-react';
+import { Printer, Bluetooth, BluetoothOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
@@ -17,6 +17,13 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { buildLabelEscPos } from '@/lib/escpos';
+import {
+  isBluetoothSupported,
+  pairPrinter,
+  getConnectedName,
+  printBytes,
+} from '@/lib/bluetoothPrinter';
 
 interface LabelPrintInsert {
   id: string;
@@ -84,6 +91,15 @@ export function PrintLabelPage() {
     null,
   );
   const [savingPrint, setSavingPrint] = useState(false);
+
+  const [outputMode, setOutputMode] = useState<'system' | 'bluetooth'>(
+    'system',
+  );
+  const [printerName, setPrinterName] = useState<string | null>(() =>
+    getConnectedName(),
+  );
+  const [pairing, setPairing] = useState(false);
+  const btSupported = isBluetoothSupported();
 
   // Regera o id sempre que algum campo da etiqueta muda, garantindo que o
   // QR impresso aponte para o registro que sera criado.
@@ -167,14 +183,12 @@ export function PrintLabelPage() {
     responsible.trim().length > 0 &&
     quantity >= 1;
 
-  function handlePrint() {
+  async function handlePrint() {
     if (!canPrint || !selectedProduct || !rule || !expiry || !manipDate) {
       toast.error('Preencha produto, condição, data e responsável.');
       return;
     }
-    applyPageStyle(size.w, size.h);
-    window.print();
-    setConfirmPrint({
+    const insertPayload: LabelPrintInsert = {
       id: labelId,
       company_id: companyId,
       product_id: selectedProduct.id,
@@ -185,7 +199,51 @@ export function PrintLabelPage() {
       responsible_name: responsible.trim(),
       quantity,
       printed_by: profile?.id ?? null,
-    });
+    };
+
+    if (outputMode === 'bluetooth') {
+      if (!printerName) {
+        toast.error('Pareie uma impressora Bluetooth primeiro.');
+        return;
+      }
+      try {
+        const bytes = buildLabelEscPos({
+          companyName,
+          productName: selectedProduct.name,
+          storageConditionLabel: STORAGE_CONDITION_LABELS[condition],
+          manipulationText: formatDateTime(manipDate),
+          expiryText: formatDateTime(expiry),
+          responsibleName: responsible.trim(),
+          qrUrl: labelData.qrUrl,
+        });
+        for (let i = 0; i < quantity; i++) {
+          await printBytes(bytes);
+        }
+      } catch (e) {
+        toast.error('Falha ao imprimir: ' + (e as Error).message);
+        return;
+      }
+    } else {
+      applyPageStyle(size.w, size.h);
+      window.print();
+    }
+
+    setConfirmPrint(insertPayload);
+  }
+
+  async function handlePair() {
+    setPairing(true);
+    try {
+      const name = await pairPrinter();
+      setPrinterName(name);
+      toast.success(`Impressora pareada: ${name}`);
+    } catch (e) {
+      const msg = (e as Error).message;
+      // Cancelar o seletor do navegador nao e um erro real.
+      if (!/cancell?ed|user/i.test(msg)) toast.error('Erro: ' + msg);
+    } finally {
+      setPairing(false);
+    }
   }
 
   async function confirmPrinted() {
@@ -319,6 +377,77 @@ export function PrintLabelPage() {
                     </option>
                   ))}
                 </Select>
+              </div>
+
+              <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-3">
+                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
+                  Saída
+                </p>
+                <div className="flex flex-col gap-2">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="radio"
+                      name="output"
+                      checked={outputMode === 'system'}
+                      onChange={() => setOutputMode('system')}
+                      className="accent-emerald-600"
+                    />
+                    Impressora do sistema (diálogo)
+                  </label>
+                  <label
+                    className={`flex items-center gap-2 text-sm ${
+                      btSupported ? '' : 'opacity-60'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="output"
+                      checked={outputMode === 'bluetooth'}
+                      onChange={() => setOutputMode('bluetooth')}
+                      disabled={!btSupported}
+                      className="accent-emerald-600"
+                    />
+                    Bluetooth térmica
+                  </label>
+                </div>
+
+                {outputMode === 'bluetooth' && btSupported ? (
+                  <div className="mt-3 flex items-center justify-between gap-2 text-xs">
+                    <span className="flex items-center gap-1 text-neutral-600">
+                      {printerName ? (
+                        <>
+                          <Bluetooth size={14} className="text-emerald-600" />
+                          {printerName}
+                        </>
+                      ) : (
+                        <>
+                          <BluetoothOff size={14} />
+                          Nenhuma impressora pareada
+                        </>
+                      )}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handlePair}
+                      disabled={pairing}
+                      className="rounded bg-neutral-200 px-2 py-1 text-xs font-medium hover:bg-neutral-300 disabled:opacity-60"
+                    >
+                      {pairing
+                        ? 'Pareando...'
+                        : printerName
+                          ? 'Trocar'
+                          : 'Parear'}
+                    </button>
+                  </div>
+                ) : null}
+
+                {!btSupported ? (
+                  <p className="mt-2 text-xs text-neutral-400">
+                    Bluetooth disponível apenas em Chrome/Edge (Android e
+                    desktop). Suporta impressoras BLE genéricas (58/80mm); para
+                    Elgin/Bematech use o modo do sistema.
+                  </p>
+                ) : null}
               </div>
 
               <Button onClick={handlePrint} disabled={!canPrint}>
