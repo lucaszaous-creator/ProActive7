@@ -195,7 +195,9 @@ export function PhotosPage() {
         </div>
       ) : photos.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-600">Nenhuma foto enviada ainda.</p>
+          <p className="text-sm text-neutral-600">
+            Nenhuma foto enviada ainda.
+          </p>
         </Card>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -218,7 +220,8 @@ export function PhotosPage() {
                     {p.original_name ?? 'foto'}
                   </p>
                   <p className="text-xs text-neutral-400">
-                    {formatDate(p.uploaded_at)} · expira em {daysLeft(p.uploaded_at)}d
+                    {formatDate(p.uploaded_at)} · expira em{' '}
+                    {daysLeft(p.uploaded_at)}d
                   </p>
                 </div>
                 <button

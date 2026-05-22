@@ -25,7 +25,10 @@ export function LoginPage() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
     setSubmitting(false);
     if (error) {
       toast.error('Não foi possível entrar. Verifique e-mail e senha.');

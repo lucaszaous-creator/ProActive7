@@ -54,7 +54,9 @@ export function UsersPage() {
     const [usersRes, companiesRes] = await Promise.all([
       supabase
         .from('profiles')
-        .select('id, full_name, email, role, active, company_id, companies(name)')
+        .select(
+          'id, full_name, email, role, active, company_id, companies(name)',
+        )
         .order('full_name'),
       supabase.from('companies').select('*').eq('active', true).order('name'),
     ]);
@@ -232,7 +234,8 @@ export function UsersPage() {
                       {ROLE_LABELS[u.role]}
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
-                      {u.companies?.name ?? (u.role === 'master' ? 'Todas' : '—')}
+                      {u.companies?.name ??
+                        (u.role === 'master' ? 'Todas' : '—')}
                     </td>
                     <td className="px-4 py-3">
                       <span

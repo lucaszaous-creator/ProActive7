@@ -54,14 +54,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLoading(false);
       });
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
-      if (newSession?.user) {
-        void loadProfile(newSession.user.id);
-      } else {
-        setProfile(null);
-      }
-    });
+    const { data: sub } = supabase.auth.onAuthStateChange(
+      (_event, newSession) => {
+        setSession(newSession);
+        if (newSession?.user) {
+          void loadProfile(newSession.user.id);
+        } else {
+          setProfile(null);
+        }
+      },
+    );
 
     return () => sub.subscription.unsubscribe();
   }, []);

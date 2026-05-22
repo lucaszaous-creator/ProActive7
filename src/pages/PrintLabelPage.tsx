@@ -45,7 +45,9 @@ const LABEL_SIZES: LabelSize[] = [
 ];
 
 function applyPageStyle(w: number, h: number) {
-  let el = document.getElementById('print-page-style') as HTMLStyleElement | null;
+  let el = document.getElementById(
+    'print-page-style',
+  ) as HTMLStyleElement | null;
   if (!el) {
     el = document.createElement('style');
     el.id = 'print-page-style';
@@ -70,7 +72,9 @@ export function PrintLabelPage() {
   const [responsible, setResponsible] = useState(profile?.full_name ?? '');
   const [quantity, setQuantity] = useState(1);
   const [sizeId, setSizeId] = useState(LABEL_SIZES[0].id);
-  const [confirmPrint, setConfirmPrint] = useState<LabelPrintInsert | null>(null);
+  const [confirmPrint, setConfirmPrint] = useState<LabelPrintInsert | null>(
+    null,
+  );
   const [savingPrint, setSavingPrint] = useState(false);
 
   useEffect(() => {

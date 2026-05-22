@@ -5,7 +5,13 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-export function Input({ label, error, className = '', id, ...rest }: InputProps) {
+export function Input({
+  label,
+  error,
+  className = '',
+  id,
+  ...rest
+}: InputProps) {
   return (
     <div className="flex flex-col gap-1.5">
       {label && (

@@ -48,23 +48,32 @@ export function DashboardPage() {
     };
   }, [isMaster]);
 
-  const cards: { label: string; value: number; icon: LucideIcon; show: boolean }[] =
-    [
-      { label: 'Produtos', value: stats?.products ?? 0, icon: Package, show: true },
-      {
-        label: 'Etiquetas impressas',
-        value: stats?.prints ?? 0,
-        icon: Printer,
-        show: true,
-      },
-      { label: 'Fotos', value: stats?.photos ?? 0, icon: Images, show: true },
-      {
-        label: 'Empresas',
-        value: stats?.companies ?? 0,
-        icon: Building2,
-        show: isMaster,
-      },
-    ];
+  const cards: {
+    label: string;
+    value: number;
+    icon: LucideIcon;
+    show: boolean;
+  }[] = [
+    {
+      label: 'Produtos',
+      value: stats?.products ?? 0,
+      icon: Package,
+      show: true,
+    },
+    {
+      label: 'Etiquetas impressas',
+      value: stats?.prints ?? 0,
+      icon: Printer,
+      show: true,
+    },
+    { label: 'Fotos', value: stats?.photos ?? 0, icon: Images, show: true },
+    {
+      label: 'Empresas',
+      value: stats?.companies ?? 0,
+      icon: Building2,
+      show: isMaster,
+    },
+  ];
 
   return (
     <div className="mx-auto max-w-5xl">

@@ -26,7 +26,12 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/produtos', label: 'Produtos', icon: Package },
   { to: '/imprimir', label: 'Imprimir Etiqueta', icon: Printer },
   { to: '/fotos', label: 'Fotos', icon: Images },
-  { to: '/admin/empresas', label: 'Empresas', icon: Building2, masterOnly: true },
+  {
+    to: '/admin/empresas',
+    label: 'Empresas',
+    icon: Building2,
+    masterOnly: true,
+  },
   { to: '/admin/usuarios', label: 'Usuários', icon: Users, masterOnly: true },
 ];
 
@@ -54,7 +59,9 @@ export function Layout() {
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white">
             <Tag size={18} />
           </span>
-          <span className="text-base font-semibold text-neutral-800">Etiqueta</span>
+          <span className="text-base font-semibold text-neutral-800">
+            Etiqueta
+          </span>
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
@@ -106,7 +113,9 @@ export function Layout() {
           >
             <Menu size={22} />
           </button>
-          <span className="text-base font-semibold text-neutral-800">Etiqueta</span>
+          <span className="text-base font-semibold text-neutral-800">
+            Etiqueta
+          </span>
         </header>
 
         <main className="flex-1 overflow-x-clip p-4 sm:p-6">
