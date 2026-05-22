@@ -16,6 +16,19 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+
+interface LabelPrintInsert {
+  company_id: string;
+  product_id: string;
+  product_name_snapshot: string;
+  storage_condition: StorageCondition;
+  manipulation_at: string;
+  expiry_at: string;
+  responsible_name: string;
+  quantity: number;
+  printed_by: string | null;
+}
 
 interface LabelSize {
   id: string;
@@ -57,7 +70,8 @@ export function PrintLabelPage() {
   const [responsible, setResponsible] = useState(profile?.full_name ?? '');
   const [quantity, setQuantity] = useState(1);
   const [sizeId, setSizeId] = useState(LABEL_SIZES[0].id);
-  const [printing, setPrinting] = useState(false);
+  const [confirmPrint, setConfirmPrint] = useState<LabelPrintInsert | null>(null);
+  const [savingPrint, setSavingPrint] = useState(false);
 
   useEffect(() => {
     if (!companyId) {
@@ -123,16 +137,14 @@ export function PrintLabelPage() {
     responsible.trim().length > 0 &&
     quantity >= 1;
 
-  async function handlePrint() {
+  function handlePrint() {
     if (!canPrint || !selectedProduct || !rule || !expiry || !manipDate) {
-      toast.error('Preencha produto, condicao, data e responsavel.');
+      toast.error('Preencha produto, condição, data e responsável.');
       return;
     }
-    setPrinting(true);
     applyPageStyle(size.w, size.h);
     window.print();
-
-    const { error } = await supabase.from('label_prints').insert({
+    setConfirmPrint({
       company_id: companyId,
       product_id: selectedProduct.id,
       product_name_snapshot: selectedProduct.name,
@@ -143,12 +155,19 @@ export function PrintLabelPage() {
       quantity,
       printed_by: profile?.id ?? null,
     });
-    setPrinting(false);
+  }
+
+  async function confirmPrinted() {
+    if (!confirmPrint) return;
+    setSavingPrint(true);
+    const { error } = await supabase.from('label_prints').insert(confirmPrint);
+    setSavingPrint(false);
+    setConfirmPrint(null);
     if (error) {
-      toast.error('Etiqueta enviada, mas o registro falhou: ' + error.message);
+      toast.error('Falha ao registrar a etiqueta: ' + error.message);
       return;
     }
-    toast.success('Etiqueta enviada para impressao.');
+    toast.success('Etiqueta registrada no histórico.');
   }
 
   const noCompany = isMaster && companies.length === 0;
@@ -160,14 +179,14 @@ export function PrintLabelPage() {
           Imprimir Etiqueta
         </h1>
         <p className="text-sm text-neutral-500">
-          A etiqueta sai no tamanho exato pela impressora termica.
+          A etiqueta sai no tamanho exato pela impressora térmica.
         </p>
       </div>
 
       {noCompany ? (
         <Card>
           <p className="text-sm text-neutral-600">
-            Nenhuma empresa cadastrada. Crie uma empresa para comecar.
+            Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
       ) : loading ? (
@@ -210,12 +229,12 @@ export function PrintLabelPage() {
 
               {selectedProduct && rules.length === 0 && (
                 <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
-                  Este produto nao tem regras de validade. Cadastre em Produtos.
+                  Este produto não tem regras de validade. Cadastre em Produtos.
                 </p>
               )}
 
               <Select
-                label="Condicao de armazenamento"
+                label="Condição de armazenamento"
                 value={condition}
                 onChange={(e) =>
                   setCondition(e.target.value as StorageCondition)
@@ -233,7 +252,7 @@ export function PrintLabelPage() {
 
               <Input
                 id="manip"
-                label="Data e hora da manipulacao / abertura"
+                label="Data e hora da manipulação / abertura"
                 type="datetime-local"
                 value={manipulationLocal}
                 onChange={(e) => setManipulationLocal(e.target.value)}
@@ -241,7 +260,7 @@ export function PrintLabelPage() {
 
               <Input
                 id="resp"
-                label="Responsavel"
+                label="Responsável"
                 value={responsible}
                 onChange={(e) => setResponsible(e.target.value)}
                 placeholder="Nome de quem manipulou"
@@ -271,7 +290,7 @@ export function PrintLabelPage() {
                 </Select>
               </div>
 
-              <Button onClick={handlePrint} disabled={!canPrint} loading={printing}>
+              <Button onClick={handlePrint} disabled={!canPrint}>
                 <Printer size={18} />
                 Imprimir {quantity > 1 ? `${quantity} etiquetas` : 'etiqueta'}
               </Button>
@@ -283,7 +302,7 @@ export function PrintLabelPage() {
           </Card>
 
           <Card className="flex flex-col items-center gap-3">
-            <p className="text-sm font-medium text-neutral-700">Previa</p>
+            <p className="text-sm font-medium text-neutral-700">Prévia</p>
             <LabelPreview data={labelData} widthMm={size.w} heightMm={size.h} />
             {expiry && (
               <p className="text-xs text-neutral-500">
@@ -294,7 +313,7 @@ export function PrintLabelPage() {
         </div>
       )}
 
-      {/* Area exclusiva de impressao: fora da tela, revelada pelo @media print */}
+      {/* Área exclusiva de impressão: fora da tela, revelada pelo @media print */}
       <div id="print-label-area" className="absolute -left-[9999px] top-0">
         {Array.from({ length: quantity }).map((_, i) => (
           <div
@@ -305,6 +324,16 @@ export function PrintLabelPage() {
           </div>
         ))}
       </div>
+
+      <ConfirmDialog
+        open={confirmPrint !== null}
+        title="Confirmar impressão"
+        message="A etiqueta foi impressa corretamente? Confirme para registrar no histórico."
+        confirmLabel="Sim, registrar"
+        loading={savingPrint}
+        onConfirm={confirmPrinted}
+        onCancel={() => setConfirmPrint(null)}
+      />
     </div>
   );
 }

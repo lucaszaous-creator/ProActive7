@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil } from 'lucide-react';
+import { Plus, Pencil, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Company } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Spinner } from '@/components/ui/Spinner';
 
 export function CompaniesPage() {
@@ -22,6 +23,9 @@ export function CompaniesPage() {
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [active, setActive] = useState(true);
+
+  const [deleting, setDeleting] = useState<Company | null>(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -87,6 +91,29 @@ export function CompaniesPage() {
     void load();
   }
 
+  async function handleDelete() {
+    if (!deleting) return;
+    setDeleteBusy(true);
+    const { error } = await supabase
+      .from('companies')
+      .delete()
+      .eq('id', deleting.id);
+    setDeleteBusy(false);
+    if (error) {
+      if (error.code === '23503') {
+        toast.error(
+          'Esta empresa tem usuários vinculados. Desvincule-os antes de excluir.',
+        );
+      } else {
+        toast.error('Erro ao excluir: ' + error.message);
+      }
+      return;
+    }
+    toast.success('Empresa excluída.');
+    setDeleting(null);
+    void load();
+  }
+
   return (
     <div className="mx-auto max-w-5xl">
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -124,7 +151,7 @@ export function CompaniesPage() {
                   <th className="px-4 py-3">CNPJ</th>
                   <th className="px-4 py-3">Telefone</th>
                   <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Acoes</th>
+                  <th className="px-4 py-3 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -154,13 +181,20 @@ export function CompaniesPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex justify-end">
+                      <div className="flex justify-end gap-1">
                         <button
                           onClick={() => openEdit(c)}
                           aria-label="Editar"
                           className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100"
                         >
                           <Pencil size={16} />
+                        </button>
+                        <button
+                          onClick={() => setDeleting(c)}
+                          aria-label="Excluir"
+                          className="rounded-lg p-1.5 text-red-500 hover:bg-red-50"
+                        >
+                          <Trash2 size={16} />
                         </button>
                       </div>
                     </td>
@@ -206,7 +240,7 @@ export function CompaniesPage() {
           />
           <Input
             id="co-address"
-            label="Endereco (opcional)"
+            label="Endereço (opcional)"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
           />
@@ -227,6 +261,16 @@ export function CompaniesPage() {
           </label>
         </div>
       </Modal>
+
+      <ConfirmDialog
+        open={deleting !== null}
+        title="Excluir empresa"
+        message={`Tem certeza que deseja excluir "${deleting?.name}"? Esta ação remove também todos os produtos, etiquetas e fotos vinculados.`}
+        confirmLabel="Excluir"
+        loading={deleteBusy}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleting(null)}
+      />
     </div>
   );
 }

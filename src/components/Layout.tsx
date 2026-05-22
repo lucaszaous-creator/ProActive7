@@ -27,7 +27,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/imprimir', label: 'Imprimir Etiqueta', icon: Printer },
   { to: '/fotos', label: 'Fotos', icon: Images },
   { to: '/admin/empresas', label: 'Empresas', icon: Building2, masterOnly: true },
-  { to: '/admin/usuarios', label: 'Usuarios', icon: Users, masterOnly: true },
+  { to: '/admin/usuarios', label: 'Usuários', icon: Users, masterOnly: true },
 ];
 
 export function Layout() {
@@ -84,7 +84,7 @@ export function Layout() {
               {profile?.full_name ?? profile?.email}
             </p>
             <p className="text-xs text-neutral-500">
-              {isMaster ? 'Usuario master' : 'Usuario da empresa'}
+              {isMaster ? 'Usuário master' : 'Usuário da empresa'}
             </p>
           </div>
           <button

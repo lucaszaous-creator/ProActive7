@@ -131,6 +131,18 @@ export function ProductsPage() {
       toast.error('Selecione uma empresa.');
       return;
     }
+    const invalidConds = CONDITIONS.filter((c) => {
+      const raw = shelf[c].value.trim();
+      if (!raw) return false;
+      const num = Number(raw);
+      return !Number.isFinite(num) || num <= 0;
+    });
+    if (invalidConds.length > 0) {
+      toast.error(
+        'Informe um valor de validade maior que zero ou deixe em branco a condição que não se aplica.',
+      );
+      return;
+    }
     setSaving(true);
     try {
       let productId = editing?.id;
@@ -208,7 +220,7 @@ export function ProductsPage() {
       toast.error('Erro ao excluir: ' + error.message);
       return;
     }
-    toast.success('Produto excluido.');
+    toast.success('Produto excluído.');
     setDeleting(null);
     void load();
   }
@@ -252,7 +264,7 @@ export function ProductsPage() {
         <Card>
           <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada. Crie uma empresa em Empresas para
-            comecar.
+            começar.
           </p>
         </Card>
       ) : loading ? (
@@ -275,7 +287,7 @@ export function ProductsPage() {
                   <th className="px-4 py-3">Categoria</th>
                   <th className="px-4 py-3">Regras de validade</th>
                   <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Acoes</th>
+                  <th className="px-4 py-3 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody>
@@ -366,7 +378,7 @@ export function ProductsPage() {
           />
           <Select
             id="prod-cond"
-            label="Condicao padrao de armazenamento"
+            label="Condição padrão de armazenamento"
             value={defaultCondition}
             onChange={(e) =>
               setDefaultCondition(e.target.value as StorageCondition)
@@ -381,7 +393,7 @@ export function ProductsPage() {
 
           <div>
             <p className="mb-2 text-sm font-medium text-neutral-700">
-              Validade apos manipulacao / abertura
+              Validade após manipulação / abertura
             </p>
             <div className="flex flex-col gap-2">
               {CONDITIONS.map((c) => (
@@ -426,7 +438,7 @@ export function ProductsPage() {
               ))}
             </div>
             <p className="mt-2 text-xs text-neutral-400">
-              Deixe em branco a condicao que nao se aplica ao produto.
+              Deixe em branco a condição que não se aplica ao produto.
             </p>
           </div>
 
@@ -445,7 +457,7 @@ export function ProductsPage() {
       <ConfirmDialog
         open={deleting !== null}
         title="Excluir produto"
-        message={`Tem certeza que deseja excluir "${deleting?.name}"? As regras de validade tambem serao removidas.`}
+        message={`Tem certeza que deseja excluir "${deleting?.name}"? As regras de validade também serão removidas.`}
         confirmLabel="Excluir"
         loading={deleteBusy}
         onConfirm={handleDelete}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { supabase } from './supabase';
 import { useAuth } from '@/context/AuthContext';
 import type { Company } from './types';
@@ -20,7 +21,11 @@ export function useCompanyScope() {
         .select('*')
         .eq('active', true)
         .order('name')
-        .then(({ data }) => {
+        .then(({ data, error }) => {
+          if (error) {
+            toast.error('Erro ao carregar empresas: ' + error.message);
+            return;
+          }
           const list = (data as Company[] | null) ?? [];
           setCompanies(list);
           setCompanyId((prev) => prev || list[0]?.id || '');
@@ -30,7 +35,13 @@ export function useCompanyScope() {
         .from('companies')
         .select('*')
         .eq('id', profile.company_id)
-        .then(({ data }) => setCompanies((data as Company[] | null) ?? []));
+        .then(({ data, error }) => {
+          if (error) {
+            toast.error('Erro ao carregar empresa: ' + error.message);
+            return;
+          }
+          setCompanies((data as Company[] | null) ?? []);
+        });
     }
   }, [isMaster, profile?.company_id]);
 

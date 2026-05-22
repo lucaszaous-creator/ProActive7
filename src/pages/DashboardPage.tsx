@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { Package, Printer, Images, Building2 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -7,9 +8,10 @@ import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/Spinner';
 
 async function countRows(table: string): Promise<number> {
-  const { count } = await supabase
+  const { count, error } = await supabase
     .from(table)
     .select('*', { count: 'exact', head: true });
+  if (error) throw error;
   return count ?? 0;
 }
 
@@ -31,9 +33,16 @@ export function DashboardPage() {
       countRows('label_prints'),
       countRows('photos'),
       isMaster ? countRows('companies') : Promise.resolve(0),
-    ]).then(([products, prints, photos, companies]) => {
-      if (!cancelled) setStats({ products, prints, photos, companies });
-    });
+    ])
+      .then(([products, prints, photos, companies]) => {
+        if (!cancelled) setStats({ products, prints, photos, companies });
+      })
+      .catch((e: Error) => {
+        if (!cancelled) {
+          toast.error('Erro ao carregar painel: ' + e.message);
+          setStats({ products: 0, prints: 0, photos: 0, companies: 0 });
+        }
+      });
     return () => {
       cancelled = true;
     };
@@ -64,9 +73,9 @@ export function DashboardPage() {
           Painel
         </h1>
         <p className="text-sm text-neutral-500">
-          Ola, {profile?.full_name ?? profile?.email}.
+          Olá, {profile?.full_name ?? profile?.email}.
           {isMaster
-            ? ' Voce ve os dados de todas as empresas.'
+            ? ' Você vê os dados de todas as empresas.'
             : ' Resumo da sua empresa.'}
         </p>
       </div>

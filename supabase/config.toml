@@ -1,8 +1,14 @@
 project_id = "glvdiicipblsohdgmqaz"
 
-# admin-create-user: exige JWT valido (a function ainda re-verifica se o
-# chamador e o usuario master).
+# admin-create-user / admin-update-user / admin-delete-user: exigem JWT
+# valido (cada function ainda re-verifica se o chamador e o usuario master).
 [functions.admin-create-user]
+verify_jwt = true
+
+[functions.admin-update-user]
+verify_jwt = true
+
+[functions.admin-delete-user]
 verify_jwt = true
 
 # cleanup-photos: chamada pelo pg_cron, sem JWT. Protegida pelo header
