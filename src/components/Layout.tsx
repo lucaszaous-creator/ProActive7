@@ -12,6 +12,7 @@ import {
   Tag,
   Thermometer,
   ClipboardCheck,
+  BarChart3,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -31,6 +32,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/fotos', label: 'Fotos', icon: Images },
   { to: '/temperatura', label: 'Temperatura', icon: Thermometer },
   { to: '/checklists', label: 'Checklists', icon: ClipboardCheck },
+  { to: '/relatorios', label: 'Relatórios', icon: BarChart3 },
   {
     to: '/admin/empresas',
     label: 'Empresas',
