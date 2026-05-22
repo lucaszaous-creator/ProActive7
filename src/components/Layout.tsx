@@ -17,6 +17,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { PwaInstallButton } from './PwaInstallButton';
+import { PushToggle } from './PushToggle';
 
 interface NavItem {
   to: string;
@@ -102,6 +103,7 @@ export function Layout() {
             </p>
           </div>
           <div className="space-y-1">
+            <PushToggle />
             <PwaInstallButton />
             <button
               onClick={signOut}

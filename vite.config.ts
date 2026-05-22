@@ -9,7 +9,11 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       registerType: 'autoUpdate',
+      injectRegister: 'auto',
       includeAssets: [
         'favicon.svg',
         'apple-touch-icon.png',
@@ -40,25 +44,10 @@ export default defineConfig({
           },
         ],
       },
-      workbox: {
-        // Supabase nunca deve ser servido do cache: sempre rede.
-        navigateFallbackDenylist: [/^\/etiqueta\//],
-        runtimeCaching: [
-          {
-            urlPattern: ({ url }) => url.hostname.endsWith('supabase.co'),
-            handler: 'NetworkOnly',
-          },
-          {
-            urlPattern: ({ request }) =>
-              request.destination === 'image' &&
-              !request.url.includes('supabase.co'),
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'images',
-              expiration: { maxEntries: 60, maxAgeSeconds: 60 * 60 * 24 * 30 },
-            },
-          },
-        ],
+      injectManifest: {
+        // Padroes ja cobrem html/js/css/imagens em assets/, mas reforcamos
+        // os icones na raiz.
+        globPatterns: ['**/*.{js,css,html,svg,png,webp,ico}'],
       },
     }),
   ],

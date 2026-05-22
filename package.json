@@ -44,6 +44,8 @@
     "typescript-eslint": "^8.59.4",
     "vite": "^6.2.0",
     "vite-plugin-pwa": "^1.3.0",
-    "vitest": "^4.1.7"
+    "vitest": "^4.1.7",
+    "web-push": "^3.6.7",
+    "workbox-precaching": "^7.4.1"
   }
 }
