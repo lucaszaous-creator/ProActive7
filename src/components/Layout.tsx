@@ -10,6 +10,8 @@ import {
   LogOut,
   Menu,
   Tag,
+  Thermometer,
+  ClipboardCheck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
@@ -27,6 +29,8 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/produtos', label: 'Produtos', icon: Package },
   { to: '/imprimir', label: 'Imprimir Etiqueta', icon: Printer },
   { to: '/fotos', label: 'Fotos', icon: Images },
+  { to: '/temperatura', label: 'Temperatura', icon: Thermometer },
+  { to: '/checklists', label: 'Checklists', icon: ClipboardCheck },
   {
     to: '/admin/empresas',
     label: 'Empresas',

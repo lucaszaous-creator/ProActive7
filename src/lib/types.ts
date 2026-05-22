@@ -50,6 +50,7 @@ export interface Product {
   category: string | null;
   default_storage_condition: StorageCondition;
   active: boolean;
+  allergens: string[];
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -79,8 +80,83 @@ export interface LabelPrint {
   expiry_at: string;
   responsible_name: string;
   quantity: number;
+  batch: string | null;
+  supplier: string | null;
+  fabricated_at: string | null;
+  allergens: string[];
   printed_by: string | null;
   printed_at: string;
+  created_at: string;
+}
+
+export type EquipmentType = 'freezer' | 'geladeira' | 'estufa';
+
+export const EQUIPMENT_TYPE_LABELS: Record<EquipmentType, string> = {
+  freezer: 'Freezer',
+  geladeira: 'Geladeira',
+  estufa: 'Estufa',
+};
+
+export interface Equipment {
+  id: string;
+  company_id: string;
+  name: string;
+  type: EquipmentType;
+  temp_min: number;
+  temp_max: number;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TemperatureLog {
+  id: string;
+  equipment_id: string;
+  recorded_at: string;
+  temperature: number;
+  notes: string | null;
+  recorded_by: string | null;
+  created_at: string;
+}
+
+export type ChecklistFrequency = 'daily' | 'weekly' | 'monthly';
+
+export const CHECKLIST_FREQUENCY_LABELS: Record<ChecklistFrequency, string> = {
+  daily: 'Diária',
+  weekly: 'Semanal',
+  monthly: 'Mensal',
+};
+
+export interface ChecklistItem {
+  id: string;
+  text: string;
+}
+
+export interface ChecklistTemplate {
+  id: string;
+  company_id: string;
+  name: string;
+  items: ChecklistItem[];
+  frequency: ChecklistFrequency;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChecklistRunItem {
+  id: string;
+  checked: boolean;
+  note?: string;
+}
+
+export interface ChecklistRun {
+  id: string;
+  template_id: string;
+  ran_by: string | null;
+  ran_at: string;
+  items: ChecklistRunItem[];
+  notes: string | null;
+  photo_id: string | null;
   created_at: string;
 }
 

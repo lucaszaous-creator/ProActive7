@@ -12,6 +12,7 @@ import {
   type StorageCondition,
   type ValidityUnit,
 } from '@/lib/types';
+import { ALLERGENS } from '@/lib/allergens';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -74,6 +75,7 @@ export function ProductsPage() {
   const [defaultCondition, setDefaultCondition] =
     useState<StorageCondition>('refrigerado');
   const [active, setActive] = useState(true);
+  const [allergens, setAllergens] = useState<string[]>([]);
   const [shelf, setShelf] = useState<ShelfFormMap>(emptyShelfMap());
 
   const [deleting, setDeleting] = useState<ProductWithShelfLives | null>(null);
@@ -113,6 +115,7 @@ export function ProductsPage() {
     setCategory('');
     setDefaultCondition('refrigerado');
     setActive(true);
+    setAllergens([]);
     setShelf(emptyShelfMap());
     setModalOpen(true);
   }
@@ -123,6 +126,7 @@ export function ProductsPage() {
     setCategory(p.category ?? '');
     setDefaultCondition(p.default_storage_condition);
     setActive(p.active);
+    setAllergens(p.allergens ?? []);
     setShelf(shelfMapFrom(p.product_shelf_lives ?? []));
     setModalOpen(true);
   }
@@ -159,6 +163,7 @@ export function ProductsPage() {
             category: category.trim() || null,
             default_storage_condition: defaultCondition,
             active,
+            allergens,
           })
           .eq('id', editing.id);
         if (error) throw error;
@@ -171,6 +176,7 @@ export function ProductsPage() {
             category: category.trim() || null,
             default_storage_condition: defaultCondition,
             active,
+            allergens,
             created_by: profile?.id ?? null,
           })
           .select('id')
@@ -502,6 +508,41 @@ export function ProductsPage() {
             </div>
             <p className="mt-2 text-xs text-neutral-400">
               Deixe em branco a condição que não se aplica ao produto.
+            </p>
+          </div>
+
+          <div>
+            <p className="mb-2 text-sm font-medium text-neutral-700">
+              Alergênicos (RDC 26/2015)
+            </p>
+            <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+              {ALLERGENS.map((a) => {
+                const checked = allergens.includes(a.key);
+                return (
+                  <label
+                    key={a.key}
+                    className="flex items-start gap-1.5 text-xs text-neutral-700"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      onChange={(e) =>
+                        setAllergens((prev) =>
+                          e.target.checked
+                            ? [...prev, a.key]
+                            : prev.filter((k) => k !== a.key),
+                        )
+                      }
+                      className="mt-0.5 h-3.5 w-3.5 accent-emerald-600"
+                    />
+                    {a.label}
+                  </label>
+                );
+              })}
+            </div>
+            <p className="mt-2 text-xs text-neutral-400">
+              Selecione tudo que o produto contém. Os marcados aparecem na
+              etiqueta como "Contém: ...".
             </p>
           </div>
 

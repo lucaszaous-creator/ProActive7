@@ -1,4 +1,5 @@
 import { QRCodeSVG } from 'qrcode.react';
+import { formatAllergenList } from '@/lib/allergens';
 
 export interface LabelData {
   companyName: string;
@@ -8,6 +9,8 @@ export interface LabelData {
   manipulationText: string;
   expiryText: string;
   responsibleName: string;
+  /** Chaves de alergenicos para imprimir "Contem: X, Y" quando presente. */
+  allergens?: string[];
   /** URL codificada no QR (rastreabilidade). Quando ausente, oculta o QR. */
   qrUrl?: string;
 }
@@ -82,6 +85,15 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
             <span>Resp.:</span>
             <span className="truncate">{data.responsibleName || '—'}</span>
           </div>
+          {data.allergens && data.allergens.length > 0 ? (
+            <div
+              className="truncate"
+              style={{ fontSize: '1.8mm', lineHeight: 1.1 }}
+            >
+              <span className="font-bold">Contém: </span>
+              {formatAllergenList(data.allergens)}
+            </div>
+          ) : null}
         </div>
         {showQr && data.qrUrl ? (
           <div style={{ width: `${qrSizeMm}mm`, height: `${qrSizeMm}mm` }}>

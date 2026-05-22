@@ -18,6 +18,7 @@ import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { buildLabelEscPos } from '@/lib/escpos';
+import { formatAllergenList } from '@/lib/allergens';
 import {
   isBluetoothSupported,
   pairPrinter,
@@ -35,6 +36,10 @@ interface LabelPrintInsert {
   expiry_at: string;
   responsible_name: string;
   quantity: number;
+  batch: string | null;
+  supplier: string | null;
+  fabricated_at: string | null;
+  allergens: string[];
   printed_by: string | null;
 }
 
@@ -85,6 +90,9 @@ export function PrintLabelPage() {
   );
   const [responsible, setResponsible] = useState(profile?.full_name ?? '');
   const [quantity, setQuantity] = useState(1);
+  const [batch, setBatch] = useState('');
+  const [supplier, setSupplier] = useState('');
+  const [fabricatedLocal, setFabricatedLocal] = useState('');
   const [sizeId, setSizeId] = useState(LABEL_SIZES[0].id);
   const [labelId, setLabelId] = useState(() => crypto.randomUUID());
   const [confirmPrint, setConfirmPrint] = useState<LabelPrintInsert | null>(
@@ -169,6 +177,7 @@ export function PrintLabelPage() {
     storageConditionLabel: STORAGE_CONDITION_LABELS[condition],
     manipulationText: manipValid ? formatDateTime(manipDate) : '',
     expiryText: expiry ? formatDateTime(expiry) : '',
+    allergens: selectedProduct?.allergens ?? [],
     qrUrl:
       typeof window !== 'undefined'
         ? `${window.location.origin}/etiqueta/${labelId}`
@@ -188,6 +197,9 @@ export function PrintLabelPage() {
       toast.error('Preencha produto, condição, data e responsável.');
       return;
     }
+    const fabricatedDate = fabricatedLocal ? new Date(fabricatedLocal) : null;
+    const fabricatedValid =
+      fabricatedDate !== null && !Number.isNaN(fabricatedDate.getTime());
     const insertPayload: LabelPrintInsert = {
       id: labelId,
       company_id: companyId,
@@ -198,6 +210,10 @@ export function PrintLabelPage() {
       expiry_at: expiry.toISOString(),
       responsible_name: responsible.trim(),
       quantity,
+      batch: batch.trim() || null,
+      supplier: supplier.trim() || null,
+      fabricated_at: fabricatedValid ? fabricatedDate.toISOString() : null,
+      allergens: selectedProduct.allergens ?? [],
       printed_by: profile?.id ?? null,
     };
 
@@ -214,6 +230,7 @@ export function PrintLabelPage() {
           manipulationText: formatDateTime(manipDate),
           expiryText: formatDateTime(expiry),
           responsibleName: responsible.trim(),
+          allergensText: formatAllergenList(selectedProduct.allergens ?? []),
           qrUrl: labelData.qrUrl,
         });
         for (let i = 0; i < quantity; i++) {
@@ -378,6 +395,38 @@ export function PrintLabelPage() {
                   ))}
                 </Select>
               </div>
+
+              <details className="rounded-lg border border-neutral-200 bg-neutral-50 p-3">
+                <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-neutral-500">
+                  Mais detalhes (lote, fornecedor, fabricação)
+                </summary>
+                <div className="mt-3 flex flex-col gap-3">
+                  <Input
+                    id="batch"
+                    label="Lote (opcional)"
+                    value={batch}
+                    onChange={(e) => setBatch(e.target.value)}
+                    placeholder="Ex.: L-2026-05"
+                  />
+                  <Input
+                    id="supplier"
+                    label="Fornecedor (opcional)"
+                    value={supplier}
+                    onChange={(e) => setSupplier(e.target.value)}
+                  />
+                  <Input
+                    id="fabricated"
+                    label="Data de fabricação (opcional)"
+                    type="datetime-local"
+                    value={fabricatedLocal}
+                    onChange={(e) => setFabricatedLocal(e.target.value)}
+                  />
+                  <p className="text-xs text-neutral-400">
+                    Esses dados ficam no histórico e aparecem na página pública
+                    do QR.
+                  </p>
+                </div>
+              </details>
 
               <div className="rounded-lg border border-neutral-200 bg-neutral-50 p-3">
                 <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">

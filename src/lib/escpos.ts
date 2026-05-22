@@ -67,6 +67,8 @@ export interface EscPosLabelInput {
   manipulationText: string;
   expiryText: string;
   responsibleName: string;
+  /** "Contem: X, Y" — ja formatado pelo chamador (usa allergens.ts). */
+  allergensText?: string;
   qrUrl?: string;
 }
 
@@ -96,6 +98,10 @@ export function buildLabelEscPos(label: EscPosLabelInput): Uint8Array {
     escpos.bold(false),
     escpos.line(`Resp.: ${label.responsibleName || '-'}`),
   ];
+
+  if (label.allergensText && label.allergensText.length > 0) {
+    parts.push(escpos.line(`Contem: ${label.allergensText}`));
+  }
 
   if (label.qrUrl) {
     parts.push(escpos.feed(1), escpos.align(1), escpos.qr(label.qrUrl, 5));

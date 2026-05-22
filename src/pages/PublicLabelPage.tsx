@@ -4,6 +4,7 @@ import { Tag } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatDateTime } from '@/lib/dates';
 import { STORAGE_CONDITION_LABELS, type StorageCondition } from '@/lib/types';
+import { allergenLabel } from '@/lib/allergens';
 import { FullPageSpinner } from '@/components/ui/Spinner';
 
 interface PublicLabel {
@@ -12,6 +13,10 @@ interface PublicLabel {
   manipulation_at: string;
   expiry_at: string;
   responsible_name: string;
+  batch: string | null;
+  supplier: string | null;
+  fabricated_at: string | null;
+  allergens: string[];
   company_name: string;
   company_logo_path: string | null;
 }
@@ -106,7 +111,27 @@ export function PublicLabelPage() {
               {formatDateTime(label.manipulation_at)}
             </Row>
             <Row label="Responsável">{label.responsible_name}</Row>
+            {label.batch ? <Row label="Lote">{label.batch}</Row> : null}
+            {label.supplier ? (
+              <Row label="Fornecedor">{label.supplier}</Row>
+            ) : null}
+            {label.fabricated_at ? (
+              <Row label="Fabricação">
+                {formatDateTime(label.fabricated_at)}
+              </Row>
+            ) : null}
           </dl>
+
+          {label.allergens && label.allergens.length > 0 ? (
+            <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm">
+              <p className="mb-1 font-medium text-amber-800">
+                Contém alergênicos
+              </p>
+              <p className="text-xs text-amber-700">
+                {label.allergens.map(allergenLabel).join(' · ')}
+              </p>
+            </div>
+          ) : null}
         </div>
 
         <p className="mt-4 text-center text-xs text-neutral-400">
