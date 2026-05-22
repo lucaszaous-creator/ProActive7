@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, FileUp } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
@@ -19,6 +19,7 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Spinner } from '@/components/ui/Spinner';
+import { ProductCsvImport } from '@/components/ProductCsvImport';
 
 const CONDITIONS: StorageCondition[] = ['ambiente', 'refrigerado', 'congelado'];
 
@@ -77,6 +78,10 @@ export function ProductsPage() {
 
   const [deleting, setDeleting] = useState<ProductWithShelfLives | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
+
+  const [search, setSearch] = useState('');
+  const [showInactive, setShowInactive] = useState(false);
+  const [csvOpen, setCsvOpen] = useState(false);
 
   const load = useCallback(async () => {
     if (!companyId) {
@@ -227,6 +232,16 @@ export function ProductsPage() {
 
   const noCompany = isMaster && companies.length === 0;
 
+  const searchTerm = search.trim().toLowerCase();
+  const filtered = products.filter((p) => {
+    if (!showInactive && !p.active) return false;
+    if (!searchTerm) return true;
+    return (
+      p.name.toLowerCase().includes(searchTerm) ||
+      (p.category ?? '').toLowerCase().includes(searchTerm)
+    );
+  });
+
   return (
     <div className="mx-auto max-w-5xl">
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -238,10 +253,20 @@ export function ProductsPage() {
             Cadastro de produtos e regras de validade.
           </p>
         </div>
-        <Button onClick={openCreate} disabled={!companyId}>
-          <Plus size={18} />
-          Novo produto
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => setCsvOpen(true)}
+            disabled={!companyId}
+          >
+            <FileUp size={18} />
+            Importar CSV
+          </Button>
+          <Button onClick={openCreate} disabled={!companyId}>
+            <Plus size={18} />
+            Novo produto
+          </Button>
+        </div>
       </div>
 
       {isMaster && companies.length > 0 && (
@@ -278,6 +303,34 @@ export function ProductsPage() {
           </p>
         </Card>
       ) : (
+        <>
+          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative max-w-xs flex-1">
+              <Search
+                size={16}
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+              />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por nome ou categoria"
+                className="w-full rounded-lg border border-neutral-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+              />
+            </div>
+            <label className="flex items-center gap-2 text-sm text-neutral-700">
+              <input
+                type="checkbox"
+                checked={showInactive}
+                onChange={(e) => setShowInactive(e.target.checked)}
+                className="h-4 w-4 accent-emerald-600"
+              />
+              Mostrar inativos
+            </label>
+          </div>
+        </>
+      )}
+      {!noCompany && !loading && products.length > 0 && (
         <Card className="!p-0">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-sm">
@@ -291,7 +344,17 @@ export function ProductsPage() {
                 </tr>
               </thead>
               <tbody>
-                {products.map((p) => (
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="px-4 py-8 text-center text-sm text-neutral-500"
+                    >
+                      Nenhum produto corresponde ao filtro.
+                    </td>
+                  </tr>
+                ) : null}
+                {filtered.map((p) => (
                   <tr
                     key={p.id}
                     className="border-b border-neutral-100 last:border-0"
@@ -463,6 +526,16 @@ export function ProductsPage() {
         onConfirm={handleDelete}
         onCancel={() => setDeleting(null)}
       />
+
+      {companyId ? (
+        <ProductCsvImport
+          open={csvOpen}
+          onClose={() => setCsvOpen(false)}
+          companyId={companyId}
+          createdBy={profile?.id ?? null}
+          onImported={() => void load()}
+        />
+      ) : null}
     </div>
   );
 }

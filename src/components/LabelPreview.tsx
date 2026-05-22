@@ -1,10 +1,15 @@
+import { QRCodeSVG } from 'qrcode.react';
+
 export interface LabelData {
   companyName: string;
+  companyLogoUrl?: string | null;
   productName: string;
   storageConditionLabel: string;
   manipulationText: string;
   expiryText: string;
   responsibleName: string;
+  /** URL codificada no QR (rastreabilidade). Quando ausente, oculta o QR. */
+  qrUrl?: string;
 }
 
 interface LabelPreviewProps {
@@ -18,6 +23,10 @@ interface LabelPreviewProps {
  * no tamanho exato pela impressora termica (via @page / window.print).
  */
 export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
+  // QR ocupa cerca de 10mm; so cabe em etiquetas grandes o suficiente.
+  const showQr = Boolean(data.qrUrl) && widthMm >= 50 && heightMm >= 30;
+  const qrSizeMm = Math.min(12, Math.floor(widthMm * 0.22));
+
   return (
     <div
       style={{
@@ -28,12 +37,21 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
       }}
       className="flex flex-col justify-between overflow-hidden border border-neutral-400 bg-white text-black"
     >
-      <p
-        style={{ fontSize: '2mm' }}
-        className="truncate text-center uppercase tracking-wide"
-      >
-        {data.companyName || ' '}
-      </p>
+      <div className="flex items-center justify-center gap-1">
+        {data.companyLogoUrl ? (
+          <img
+            src={data.companyLogoUrl}
+            alt=""
+            style={{ height: '4mm', objectFit: 'contain' }}
+          />
+        ) : null}
+        <p
+          style={{ fontSize: '2mm' }}
+          className="truncate uppercase tracking-wide"
+        >
+          {data.companyName || ' '}
+        </p>
+      </div>
 
       <div className="text-center">
         <p
@@ -47,19 +65,33 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
         </p>
       </div>
 
-      <div style={{ fontSize: '2.4mm', lineHeight: 1.25 }}>
-        <div className="flex justify-between gap-1">
-          <span>Manip.:</span>
-          <span>{data.manipulationText}</span>
+      <div className="flex items-end justify-between gap-2">
+        <div
+          style={{ fontSize: '2.4mm', lineHeight: 1.25 }}
+          className="min-w-0 flex-1"
+        >
+          <div className="flex justify-between gap-1">
+            <span>Manip.:</span>
+            <span>{data.manipulationText}</span>
+          </div>
+          <div className="flex justify-between gap-1 font-bold">
+            <span>VALIDADE:</span>
+            <span>{data.expiryText}</span>
+          </div>
+          <div className="flex justify-between gap-1">
+            <span>Resp.:</span>
+            <span className="truncate">{data.responsibleName || '—'}</span>
+          </div>
         </div>
-        <div className="flex justify-between gap-1 font-bold">
-          <span>VALIDADE:</span>
-          <span>{data.expiryText}</span>
-        </div>
-        <div className="flex justify-between gap-1">
-          <span>Resp.:</span>
-          <span className="truncate">{data.responsibleName || '—'}</span>
-        </div>
+        {showQr && data.qrUrl ? (
+          <div style={{ width: `${qrSizeMm}mm`, height: `${qrSizeMm}mm` }}>
+            <QRCodeSVG
+              value={data.qrUrl}
+              level="M"
+              style={{ width: '100%', height: '100%' }}
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

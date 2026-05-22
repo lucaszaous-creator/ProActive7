@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
+import { PwaInstallButton } from './PwaInstallButton';
 
 interface NavItem {
   to: string;
@@ -94,13 +95,16 @@ export function Layout() {
               {isMaster ? 'Usuário master' : 'Usuário da empresa'}
             </p>
           </div>
-          <button
-            onClick={signOut}
-            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100"
-          >
-            <LogOut size={18} />
-            Sair
-          </button>
+          <div className="space-y-1">
+            <PwaInstallButton />
+            <button
+              onClick={signOut}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100"
+            >
+              <LogOut size={18} />
+              Sair
+            </button>
+          </div>
         </div>
       </aside>
 

@@ -13,6 +13,12 @@ export const VALIDITY_UNIT_LABELS: Record<ValidityUnit, string> = {
   days: 'dias',
 };
 
+export interface LabelSettings {
+  show_phone?: boolean;
+  show_address?: boolean;
+  show_responsible?: boolean;
+}
+
 export interface Company {
   id: string;
   name: string;
@@ -20,6 +26,8 @@ export interface Company {
   address: string | null;
   phone: string | null;
   active: boolean;
+  logo_path: string | null;
+  label_settings: LabelSettings;
   created_at: string;
   updated_at: string;
 }

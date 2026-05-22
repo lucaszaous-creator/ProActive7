@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Upload, ImageOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Company } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
@@ -23,6 +23,8 @@ export function CompaniesPage() {
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [active, setActive] = useState(true);
+  const [logoPath, setLogoPath] = useState<string | null>(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
 
   const [deleting, setDeleting] = useState<Company | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -52,6 +54,7 @@ export function CompaniesPage() {
     setAddress('');
     setPhone('');
     setActive(true);
+    setLogoPath(null);
     setModalOpen(true);
   }
 
@@ -62,7 +65,61 @@ export function CompaniesPage() {
     setAddress(c.address ?? '');
     setPhone(c.phone ?? '');
     setActive(c.active);
+    setLogoPath(c.logo_path ?? null);
     setModalOpen(true);
+  }
+
+  async function handleLogoUpload(file: File | undefined) {
+    if (!file || !editing) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Selecione um arquivo de imagem.');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('O logo deve ter no máximo 2 MB.');
+      return;
+    }
+    setUploadingLogo(true);
+    const ext = file.name.split('.').pop()?.toLowerCase() || 'png';
+    const path = `${editing.id}/logo.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from('branding')
+      .upload(path, file, { contentType: file.type, upsert: true });
+    if (upErr) {
+      setUploadingLogo(false);
+      toast.error('Erro no upload: ' + upErr.message);
+      return;
+    }
+    const { error: dbErr } = await supabase
+      .from('companies')
+      .update({ logo_path: path })
+      .eq('id', editing.id);
+    setUploadingLogo(false);
+    if (dbErr) {
+      toast.error('Erro ao salvar logo: ' + dbErr.message);
+      return;
+    }
+    setLogoPath(path);
+    toast.success('Logo atualizado.');
+    void load();
+  }
+
+  async function handleLogoRemove() {
+    if (!editing || !logoPath) return;
+    setUploadingLogo(true);
+    await supabase.storage.from('branding').remove([logoPath]);
+    const { error } = await supabase
+      .from('companies')
+      .update({ logo_path: null })
+      .eq('id', editing.id);
+    setUploadingLogo(false);
+    if (error) {
+      toast.error('Erro ao remover logo: ' + error.message);
+      return;
+    }
+    setLogoPath(null);
+    toast.success('Logo removido.');
+    void load();
   }
 
   async function handleSave() {
@@ -259,6 +316,67 @@ export function CompaniesPage() {
             />
             Empresa ativa
           </label>
+
+          {editing ? (
+            <div className="border-t border-neutral-200 pt-4">
+              <p className="mb-2 text-sm font-medium text-neutral-700">
+                Logo da empresa
+              </p>
+              <div className="flex items-center gap-3">
+                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50">
+                  {logoPath ? (
+                    <img
+                      src={
+                        supabase.storage.from('branding').getPublicUrl(logoPath)
+                          .data.publicUrl
+                      }
+                      alt=""
+                      className="h-full w-full object-contain"
+                    />
+                  ) : (
+                    <ImageOff className="text-neutral-300" size={24} />
+                  )}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label
+                    className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200 ${
+                      uploadingLogo ? 'pointer-events-none opacity-60' : ''
+                    }`}
+                  >
+                    <Upload size={14} />
+                    {logoPath ? 'Trocar logo' : 'Enviar logo'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      disabled={uploadingLogo}
+                      onChange={(e) => {
+                        void handleLogoUpload(e.target.files?.[0]);
+                        e.target.value = '';
+                      }}
+                    />
+                  </label>
+                  {logoPath ? (
+                    <button
+                      type="button"
+                      onClick={handleLogoRemove}
+                      disabled={uploadingLogo}
+                      className="text-xs text-red-600 hover:underline disabled:opacity-50"
+                    >
+                      Remover
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+              <p className="mt-2 text-xs text-neutral-400">
+                Recomendado: PNG ou SVG com fundo transparente, até 2 MB.
+              </p>
+            </div>
+          ) : (
+            <p className="border-t border-neutral-200 pt-3 text-xs text-neutral-400">
+              Salve a empresa para enviar um logo personalizado.
+            </p>
+          )}
         </div>
       </Modal>
 

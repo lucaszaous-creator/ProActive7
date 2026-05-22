@@ -19,6 +19,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 interface LabelPrintInsert {
+  id: string;
   company_id: string;
   product_id: string;
   product_name_snapshot: string;
@@ -58,8 +59,14 @@ function applyPageStyle(w: number, h: number) {
 
 export function PrintLabelPage() {
   const { profile } = useAuth();
-  const { isMaster, companies, companyId, setCompanyId, companyName } =
-    useCompanyScope();
+  const {
+    isMaster,
+    companies,
+    companyId,
+    setCompanyId,
+    companyName,
+    companyLogoUrl,
+  } = useCompanyScope();
 
   const [products, setProducts] = useState<ProductWithShelfLives[]>([]);
   const [loading, setLoading] = useState(true);
@@ -72,10 +79,24 @@ export function PrintLabelPage() {
   const [responsible, setResponsible] = useState(profile?.full_name ?? '');
   const [quantity, setQuantity] = useState(1);
   const [sizeId, setSizeId] = useState(LABEL_SIZES[0].id);
+  const [labelId, setLabelId] = useState(() => crypto.randomUUID());
   const [confirmPrint, setConfirmPrint] = useState<LabelPrintInsert | null>(
     null,
   );
   const [savingPrint, setSavingPrint] = useState(false);
+
+  // Regera o id sempre que algum campo da etiqueta muda, garantindo que o
+  // QR impresso aponte para o registro que sera criado.
+  useEffect(() => {
+    setLabelId(crypto.randomUUID());
+  }, [
+    productId,
+    condition,
+    manipulationLocal,
+    responsible,
+    quantity,
+    companyId,
+  ]);
 
   useEffect(() => {
     if (!companyId) {
@@ -127,10 +148,15 @@ export function PrintLabelPage() {
 
   const labelData: LabelData = {
     companyName,
+    companyLogoUrl,
     productName: selectedProduct?.name ?? '',
     storageConditionLabel: STORAGE_CONDITION_LABELS[condition],
     manipulationText: manipValid ? formatDateTime(manipDate) : '',
     expiryText: expiry ? formatDateTime(expiry) : '',
+    qrUrl:
+      typeof window !== 'undefined'
+        ? `${window.location.origin}/etiqueta/${labelId}`
+        : `/etiqueta/${labelId}`,
     responsibleName: responsible,
   };
 
@@ -149,6 +175,7 @@ export function PrintLabelPage() {
     applyPageStyle(size.w, size.h);
     window.print();
     setConfirmPrint({
+      id: labelId,
       company_id: companyId,
       product_id: selectedProduct.id,
       product_name_snapshot: selectedProduct.name,

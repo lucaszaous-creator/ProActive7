@@ -10,6 +10,11 @@ const ResetPasswordPage = lazy(() =>
     default: m.ResetPasswordPage,
   })),
 );
+const PublicLabelPage = lazy(() =>
+  import('./pages/PublicLabelPage').then((m) => ({
+    default: m.PublicLabelPage,
+  })),
+);
 const DashboardPage = lazy(() =>
   import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage })),
 );
@@ -39,6 +44,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
+        <Route path="/etiqueta/:id" element={<PublicLabelPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
