@@ -13,6 +13,7 @@ export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [sendingReset, setSendingReset] = useState(false);
 
   if (loading) return <FullPageSpinner />;
   if (session) return <Navigate to="/" replace />;
@@ -20,17 +21,37 @@ export function LoginPage() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     if (!isSupabaseConfigured) {
-      toast.error('Supabase nao configurado. Preencha o arquivo .env');
+      toast.error('Supabase não configurado. Preencha o arquivo .env');
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
     setSubmitting(false);
     if (error) {
-      toast.error('Nao foi possivel entrar. Verifique e-mail e senha.');
+      toast.error('Não foi possível entrar. Verifique e-mail e senha.');
       return;
     }
     toast.success('Bem-vindo!');
+  }
+
+  async function handleForgotPassword() {
+    if (!email.trim()) {
+      toast.error('Informe o e-mail para receber o link de recuperação.');
+      return;
+    }
+    setSendingReset(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/redefinir-senha`,
+    });
+    setSendingReset(false);
+    if (error) {
+      toast.error('Não foi possível enviar o e-mail: ' + error.message);
+      return;
+    }
+    toast.success('Enviamos um e-mail com o link para redefinir a senha.');
   }
 
   return (
@@ -73,6 +94,14 @@ export function LoginPage() {
           <Button type="submit" loading={submitting}>
             Entrar
           </Button>
+          <button
+            type="button"
+            onClick={handleForgotPassword}
+            disabled={sendingReset}
+            className="text-center text-xs text-emerald-700 hover:underline disabled:opacity-60"
+          >
+            {sendingReset ? 'Enviando...' : 'Esqueci minha senha'}
+          </button>
         </form>
 
         <p className="mt-4 text-center text-xs text-neutral-400">

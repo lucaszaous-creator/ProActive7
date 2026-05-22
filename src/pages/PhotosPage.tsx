@@ -14,6 +14,7 @@ import { Spinner } from '@/components/ui/Spinner';
 
 const RETENTION_DAYS = 30;
 const BUCKET = 'photos';
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 
 interface PhotoWithUrl extends Photo {
   url: string | null;
@@ -78,6 +79,14 @@ export function PhotosPage() {
       toast.error('Selecione uma empresa.');
       return;
     }
+    if (!file.type.startsWith('image/')) {
+      toast.error('Selecione um arquivo de imagem.');
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error('A imagem deve ter no máximo 10 MB.');
+      return;
+    }
     setUploading(true);
     try {
       const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
@@ -105,17 +114,18 @@ export function PhotosPage() {
   async function handleDelete() {
     if (!deleting) return;
     setDeleteBusy(true);
-    await supabase.storage.from(BUCKET).remove([deleting.storage_path]);
     const { error } = await supabase
       .from('photos')
       .delete()
       .eq('id', deleting.id);
-    setDeleteBusy(false);
     if (error) {
+      setDeleteBusy(false);
       toast.error('Erro ao excluir: ' + error.message);
       return;
     }
-    toast.success('Foto excluida.');
+    await supabase.storage.from(BUCKET).remove([deleting.storage_path]);
+    setDeleteBusy(false);
+    toast.success('Foto excluída.');
     setDeleting(null);
     void load();
   }
@@ -130,7 +140,7 @@ export function PhotosPage() {
             Fotos
           </h1>
           <p className="text-sm text-neutral-500">
-            As fotos sao excluidas automaticamente apos {RETENTION_DAYS} dias.
+            As fotos são excluídas automaticamente após {RETENTION_DAYS} dias.
           </p>
         </div>
         <label
@@ -176,7 +186,7 @@ export function PhotosPage() {
       {noCompany ? (
         <Card>
           <p className="text-sm text-neutral-600">
-            Nenhuma empresa cadastrada. Crie uma empresa para comecar.
+            Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
       ) : loading ? (
@@ -185,7 +195,9 @@ export function PhotosPage() {
         </div>
       ) : photos.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-600">Nenhuma foto enviada ainda.</p>
+          <p className="text-sm text-neutral-600">
+            Nenhuma foto enviada ainda.
+          </p>
         </Card>
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -208,7 +220,8 @@ export function PhotosPage() {
                     {p.original_name ?? 'foto'}
                   </p>
                   <p className="text-xs text-neutral-400">
-                    {formatDate(p.uploaded_at)} · expira em {daysLeft(p.uploaded_at)}d
+                    {formatDate(p.uploaded_at)} · expira em{' '}
+                    {daysLeft(p.uploaded_at)}d
                   </p>
                 </div>
                 <button

@@ -5,7 +5,13 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   children: ReactNode;
 }
 
-export function Select({ label, className = '', id, children, ...rest }: SelectProps) {
+export function Select({
+  label,
+  className = '',
+  id,
+  children,
+  ...rest
+}: SelectProps) {
   return (
     <div className="flex flex-col gap-1.5">
       {label && (

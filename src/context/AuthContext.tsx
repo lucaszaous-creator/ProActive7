@@ -40,22 +40,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data }) => {
-      setSession(data.session);
-      if (data.session?.user) {
-        await loadProfile(data.session.user.id);
-      }
-      setLoading(false);
-    });
+    supabase.auth
+      .getSession()
+      .then(async ({ data }) => {
+        setSession(data.session);
+        if (data.session?.user) {
+          await loadProfile(data.session.user.id);
+        }
+        setLoading(false);
+      })
+      .catch((e) => {
+        console.error('Erro ao obter sessão:', e);
+        setLoading(false);
+      });
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, newSession) => {
-      setSession(newSession);
-      if (newSession?.user) {
-        void loadProfile(newSession.user.id);
-      } else {
-        setProfile(null);
-      }
-    });
+    const { data: sub } = supabase.auth.onAuthStateChange(
+      (_event, newSession) => {
+        setSession(newSession);
+        if (newSession?.user) {
+          void loadProfile(newSession.user.id);
+        } else {
+          setProfile(null);
+        }
+      },
+    );
 
     return () => sub.subscription.unsubscribe();
   }, []);
