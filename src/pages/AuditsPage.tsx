@@ -62,6 +62,7 @@ export function AuditsPage() {
   const [newCompanyId, setNewCompanyId] = useState('');
   const [newTemplateId, setNewTemplateId] = useState('');
   const [newScheduledAt, setNewScheduledAt] = useState('');
+  const [newRecurrence, setNewRecurrence] = useState('0');
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
@@ -106,6 +107,7 @@ export function AuditsPage() {
     setNewCompanyId(isMaster ? (companies[0]?.id ?? '') : (companyId ?? ''));
     setNewTemplateId(templates[0]?.id ?? '');
     setNewScheduledAt(new Date().toISOString().slice(0, 16));
+    setNewRecurrence('0');
     setModalOpen(true);
   }
 
@@ -115,12 +117,14 @@ export function AuditsPage() {
       return;
     }
     setSaving(true);
+    const recurrenceMonths = Number(newRecurrence);
     const { error } = await supabase.from('audits').insert({
       company_id: newCompanyId,
       template_id: newTemplateId,
       scheduled_at: new Date(newScheduledAt).toISOString(),
       auditor_id: profile?.id,
       status: 'scheduled' as AuditStatus,
+      recurrence_months: recurrenceMonths > 0 ? recurrenceMonths : null,
     });
     setSaving(false);
     if (error) {
@@ -286,6 +290,23 @@ export function AuditsPage() {
             value={newScheduledAt}
             onChange={(e) => setNewScheduledAt(e.target.value)}
           />
+          <Select
+            id="new-recurrence"
+            label="Repetir"
+            value={newRecurrence}
+            onChange={(e) => setNewRecurrence(e.target.value)}
+          >
+            <option value="0">Sem repeticao (visita unica)</option>
+            <option value="1">Mensalmente</option>
+            <option value="2">Bimestralmente</option>
+            <option value="3">Trimestralmente</option>
+            <option value="6">Semestralmente</option>
+            <option value="12">Anualmente</option>
+          </Select>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+            Visitas recorrentes geram automaticamente a proxima ao serem
+            finalizadas.
+          </p>
         </div>
       </Modal>
     </div>

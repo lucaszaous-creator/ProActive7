@@ -9,6 +9,7 @@ const ptBR = {
     recipes: 'Fichas técnicas',
     documents: 'Documentos',
     audits: 'Visitas técnicas',
+    agenda: 'Agenda',
     nonConformities: 'Não-conformidades',
     manipulators: 'Manipuladores',
     reports: 'Relatórios',

@@ -318,6 +318,8 @@ export interface Audit {
   responses: AuditResponse[];
   notes: string | null;
   signature_path: string | null;
+  recurrence_months: number | null;
+  parent_audit_id: string | null;
   created_at: string;
   updated_at: string;
 }

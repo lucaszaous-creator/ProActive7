@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   AlertOctagon,
   HardHat,
+  CalendarRange,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -44,6 +45,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/fichas-tecnicas', labelKey: 'nav.recipes', icon: ChefHat },
   { to: '/documentos', labelKey: 'nav.documents', icon: FileText },
   { to: '/visitas', labelKey: 'nav.audits', icon: ShieldCheck },
+  { to: '/agenda', labelKey: 'nav.agenda', icon: CalendarRange },
   {
     to: '/nao-conformidades',
     labelKey: 'nav.nonConformities',

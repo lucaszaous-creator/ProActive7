@@ -58,6 +58,9 @@ const AuditDetailPage = lazy(() =>
     default: m.AuditDetailPage,
   })),
 );
+const AgendaPage = lazy(() =>
+  import('./pages/AgendaPage').then((m) => ({ default: m.AgendaPage })),
+);
 const NonConformitiesPage = lazy(() =>
   import('./pages/NonConformitiesPage').then((m) => ({
     default: m.NonConformitiesPage,
@@ -98,6 +101,7 @@ export default function App() {
             <Route path="/documentos" element={<DocumentsPage />} />
             <Route path="/visitas" element={<AuditsPage />} />
             <Route path="/visitas/:id" element={<AuditDetailPage />} />
+            <Route path="/agenda" element={<AgendaPage />} />
             <Route
               path="/nao-conformidades"
               element={<NonConformitiesPage />}
