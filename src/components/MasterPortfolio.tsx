@@ -144,11 +144,11 @@ export function MasterPortfolio() {
           >
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0 flex-1">
-                <h3 className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
+                <h3 className="truncate text-base font-semibold text-neutral-800 dark:text-neutral-100">
                   {r.company_name}
                 </h3>
-                <div className="mt-2 flex flex-wrap gap-3 text-xs text-neutral-600 dark:text-neutral-400">
-                  <span className="inline-flex items-center gap-1">
+                <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400">
+                  <span className="inline-flex items-center gap-1 whitespace-nowrap">
                     <AlertOctagon size={12} />
                     {r.nc_open_now} NC aberta{r.nc_open_now === 1 ? '' : 's'}
                     {r.nc_overdue_30d > 0 ? (
@@ -159,21 +159,21 @@ export function MasterPortfolio() {
                       </span>
                     ) : null}
                   </span>
-                  <span className="inline-flex items-center gap-1">
+                  <span className="inline-flex items-center gap-1 whitespace-nowrap">
                     <ClipboardCheck size={12} />
                     {r.checklists_ran_30d}/{r.checklists_planned_30d} checklists
                     30d
                   </span>
-                  <span className="inline-flex items-center gap-1">
+                  <span className="inline-flex items-center gap-1 whitespace-nowrap">
                     <Thermometer size={12} />
                     {r.temp_out_of_range_7d}/{r.temp_readings_7d} fora da faixa
                   </span>
-                  <span className="inline-flex items-center gap-1">
+                  <span className="inline-flex items-center gap-1 whitespace-nowrap">
                     <FileText size={12} />
                     {r.docs_published}/6 documentos
                     {r.docs_pending > 0 ? ` (${r.docs_pending} rascunho)` : ''}
                   </span>
-                  <span className="inline-flex items-center gap-1">
+                  <span className="inline-flex items-center gap-1 whitespace-nowrap">
                     <HardHat size={12} />
                     {r.manipulators_aso_ok}/{r.manipulators_active} ASO em dia
                     {r.manipulators_aso_expired + r.manipulators_aso_missing >
@@ -193,7 +193,7 @@ export function MasterPortfolio() {
                       </span>
                     ) : null}
                   </span>
-                  <span className="inline-flex items-center gap-1">
+                  <span className="inline-flex items-center gap-1 whitespace-nowrap">
                     <CalendarDays size={12} />
                     Ultima visita:{' '}
                     {r.last_audit_at ? formatDate(r.last_audit_at) : 'nunca'}
@@ -203,7 +203,7 @@ export function MasterPortfolio() {
                   </span>
                 </div>
               </div>
-              <div className="flex shrink-0 items-center gap-3">
+              <div className="flex shrink-0 items-center justify-end gap-3 self-end sm:self-center">
                 <div className="text-right">
                   <p className={`text-2xl font-bold ${textClass}`}>
                     {r.score != null ? `${r.score.toFixed(0)}%` : '—'}

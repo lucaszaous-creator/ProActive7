@@ -429,17 +429,17 @@ export function AuditDetailPage() {
       </Link>
 
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
             {selectedCompany?.name ??
               companies.find((c) => c.id === audit.company_id)?.name ??
               ''}
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="truncate text-sm text-neutral-500 dark:text-neutral-400">
             {template?.name}
           </p>
         </div>
-        <div className="flex flex-col items-end gap-2">
+        <div className="flex flex-col items-stretch gap-2 sm:items-end">
           {score != null ? (
             <span
               className={`rounded-full px-3 py-1 text-base font-bold ${
@@ -519,7 +519,7 @@ export function AuditDetailPage() {
                     className="rounded-lg border border-neutral-100 p-3 dark:border-neutral-800"
                   >
                     <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                      <p className="text-sm text-neutral-800 dark:text-neutral-200">
+                      <p className="min-w-0 flex-1 text-sm text-neutral-800 dark:text-neutral-200">
                         {it.text}
                         {it.legal_ref ? (
                           <span className="ml-1 text-xs text-neutral-400">
@@ -527,7 +527,7 @@ export function AuditDetailPage() {
                           </span>
                         ) : null}
                       </p>
-                      <div className="flex shrink-0 gap-1">
+                      <div className="flex shrink-0 flex-wrap gap-1">
                         {RESULT_OPTIONS.map((opt) => {
                           const Icon = opt.icon;
                           const active = r?.result === opt.value;
@@ -616,15 +616,15 @@ export function AuditDetailPage() {
             com seus dados profissionais ({profile?.full_name}
             {profile?.crn ? ` - CRN ${profile.crn}` : ''}).
           </p>
-          <div className="rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-slate-800">
+          <div className="overflow-hidden rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-slate-800">
             <SignatureCanvas
               ref={sigRef}
               penColor="black"
               backgroundColor="white"
               canvasProps={{
-                width: 480,
-                height: 180,
-                className: 'rounded-lg w-full',
+                width: 320,
+                height: 160,
+                className: 'block rounded-lg max-w-full',
               }}
             />
           </div>

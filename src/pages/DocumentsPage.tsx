@@ -341,7 +341,7 @@ export function DocumentsPage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 flex-1">
                   <div className="mb-1 flex flex-wrap items-center gap-2">
-                    <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                    <h2 className="min-w-0 max-w-full truncate text-sm font-semibold text-neutral-800 dark:text-neutral-200">
                       {d.title}
                     </h2>
                     <span

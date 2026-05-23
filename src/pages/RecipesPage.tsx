@@ -278,16 +278,18 @@ export function RecipesPage() {
           {recipes.map((r) => (
             <Card key={r.id}>
               <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="flex items-center gap-1.5 text-sm font-semibold text-neutral-800">
-                    <ChefHat size={14} className="text-emerald-600" />
-                    {r.name}
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-1.5 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                    <ChefHat size={14} className="shrink-0 text-emerald-600" />
+                    <span className="min-w-0 max-w-full truncate">
+                      {r.name}
+                    </span>
                     {!r.active ? (
-                      <span className="ml-1 rounded bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-500">
+                      <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs font-normal text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
                         inativo
                       </span>
                     ) : null}
-                  </p>
+                  </div>
                   <p className="mt-1 text-xs text-neutral-500">
                     {r.recipe_items.length} ingrediente
                     {r.recipe_items.length === 1 ? '' : 's'}
