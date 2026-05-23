@@ -253,6 +253,36 @@ export function AuditDetailPage() {
       }
     }
 
+    // Recorrencia: agenda automaticamente a proxima visita.
+    if (audit.recurrence_months && audit.recurrence_months > 0) {
+      const baseDate = audit.scheduled_at
+        ? new Date(audit.scheduled_at)
+        : new Date();
+      const nextDate = new Date(
+        baseDate.getFullYear(),
+        baseDate.getMonth() + audit.recurrence_months,
+        baseDate.getDate(),
+        baseDate.getHours(),
+        baseDate.getMinutes(),
+      );
+      const { error: nextErr } = await supabase.from('audits').insert({
+        company_id: audit.company_id,
+        template_id: audit.template_id,
+        scheduled_at: nextDate.toISOString(),
+        auditor_id: audit.auditor_id,
+        status: 'scheduled' as const,
+        recurrence_months: audit.recurrence_months,
+        parent_audit_id: audit.id,
+      });
+      if (nextErr) {
+        toast.error(
+          'Proxima visita recorrente nao foi criada: ' + nextErr.message,
+        );
+      } else {
+        toast.success('Proxima visita agendada automaticamente.');
+      }
+    }
+
     void load();
   }
 

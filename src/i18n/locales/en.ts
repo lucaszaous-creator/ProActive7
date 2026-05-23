@@ -9,6 +9,7 @@ const en = {
     recipes: 'Recipes',
     documents: 'Documents',
     audits: 'Audits',
+    agenda: 'Calendar',
     nonConformities: 'Non-conformities',
     manipulators: 'Food handlers',
     reports: 'Reports',
