@@ -17,6 +17,7 @@ import {
   FileText,
   ShieldCheck,
   AlertOctagon,
+  HardHat,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -48,6 +49,7 @@ const NAV_ITEMS: NavItem[] = [
     labelKey: 'nav.nonConformities',
     icon: AlertOctagon,
   },
+  { to: '/manipuladores', labelKey: 'nav.manipulators', icon: HardHat },
   { to: '/relatorios', labelKey: 'nav.reports', icon: BarChart3 },
   {
     to: '/admin/empresas',

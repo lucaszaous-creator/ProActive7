@@ -10,6 +10,7 @@ const ptBR = {
     documents: 'Documentos',
     audits: 'Visitas técnicas',
     nonConformities: 'Não-conformidades',
+    manipulators: 'Manipuladores',
     reports: 'Relatórios',
     companies: 'Empresas',
     users: 'Usuários',

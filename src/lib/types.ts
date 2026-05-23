@@ -190,6 +190,44 @@ export interface ChecklistRun {
   created_at: string;
 }
 
+export interface Manipulator {
+  id: string;
+  company_id: string;
+  full_name: string;
+  cpf: string | null;
+  role: string | null;
+  hired_at: string | null;
+  active: boolean;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ManipulatorAso {
+  id: string;
+  manipulator_id: string;
+  issued_at: string;
+  expires_at: string;
+  doctor_name: string | null;
+  doctor_crm: string | null;
+  file_path: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
+export interface ManipulatorTraining {
+  id: string;
+  manipulator_id: string;
+  topic: string;
+  hours: number | null;
+  completed_at: string;
+  expires_at: string | null;
+  instructor: string | null;
+  certificate_path: string | null;
+  notes: string | null;
+  created_at: string;
+}
+
 export type NcSeverity = 'low' | 'medium' | 'high' | 'critical';
 export type NcStatus = 'open' | 'in_progress' | 'closed' | 'cancelled';
 export type NcSource = 'audit' | 'checklist' | 'manual';

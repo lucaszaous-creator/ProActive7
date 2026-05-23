@@ -1,11 +1,12 @@
 /**
  * Score de compliance por empresa (0-100).
  *
- *   35 * (1 - overdue_nc_ratio_30d)         // NCs fechadas/abertas no prazo
- * + 25 * (checklists_executados_30d / planejados_30d)
+ *   30 * (1 - overdue_nc_ratio_30d)
+ * + 20 * (checklists_executados_30d / planejados_30d)
  * + 20 * (1 se houve visita <= 90d, senao 0)
  * + 10 * (1 - temp_out_of_range_ratio_7d)
  * + 10 * (1 se MBP + 5 POPs publicados, senao 0)
+ * + 10 * (manipuladores_aso_ok / manipuladores_ativos)
  *
  * Inputs sao numeros agregados que vem do backend (view
  * `company_compliance_v`). Retorna 0-100 ou null (empresa sem
@@ -20,6 +21,8 @@ export interface ComplianceInputs {
   tempReadings7d: number;
   tempOutOfRange7d: number;
   publishedDocs: number; // 0..6 (mbp + 5 pops)
+  manipulatorsActive?: number;
+  manipulatorsAsoOk?: number;
 }
 
 export interface ComplianceBreakdown {
@@ -28,6 +31,7 @@ export interface ComplianceBreakdown {
   auditPart: number;
   tempPart: number;
   docsPart: number;
+  manipulatorsPart: number;
   total: number;
 }
 
@@ -40,18 +44,19 @@ export function calculateComplianceScore(
     i.checklistsPlanned30d > 0 ||
     i.hasAuditLast90d ||
     i.tempReadings7d > 0 ||
-    i.publishedDocs > 0;
+    i.publishedDocs > 0 ||
+    (i.manipulatorsActive ?? 0) > 0;
   if (!hasAnyData) return null;
 
   const overdueRatio =
     i.ncTotal30d > 0 ? i.ncOverdue30d / i.ncTotal30d : 0;
-  const ncPart = 35 * (1 - overdueRatio);
+  const ncPart = 30 * (1 - overdueRatio);
 
   const checklistRatio =
     i.checklistsPlanned30d > 0
       ? Math.min(1, i.checklistsRan30d / i.checklistsPlanned30d)
       : 1; // sem plano = neutro positivo
-  const checklistPart = 25 * checklistRatio;
+  const checklistPart = 20 * checklistRatio;
 
   const auditPart = i.hasAuditLast90d ? 20 : 0;
 
@@ -61,15 +66,27 @@ export function calculateComplianceScore(
 
   const docsPart = i.publishedDocs >= 6 ? 10 : 0;
 
+  const active = i.manipulatorsActive ?? 0;
+  const okRatio = active > 0 ? (i.manipulatorsAsoOk ?? 0) / active : 1;
+  const manipulatorsPart = 10 * Math.min(1, okRatio);
+
   const total =
-    Math.round((ncPart + checklistPart + auditPart + tempPart + docsPart) *
-      100) / 100;
+    Math.round(
+      (ncPart +
+        checklistPart +
+        auditPart +
+        tempPart +
+        docsPart +
+        manipulatorsPart) *
+        100,
+    ) / 100;
   return {
     ncPart: Math.round(ncPart * 100) / 100,
     checklistPart: Math.round(checklistPart * 100) / 100,
     auditPart,
     tempPart: Math.round(tempPart * 100) / 100,
     docsPart,
+    manipulatorsPart: Math.round(manipulatorsPart * 100) / 100,
     total,
   };
 }

@@ -6,6 +6,7 @@ import {
   CalendarDays,
   ClipboardCheck,
   FileText,
+  HardHat,
   Thermometer,
   TrendingUp,
 } from 'lucide-react';
@@ -36,6 +37,10 @@ interface ComplianceRow {
   temp_out_of_range_7d: number;
   docs_published: number;
   docs_pending: number;
+  manipulators_active: number;
+  manipulators_aso_ok: number;
+  manipulators_aso_expired: number;
+  manipulators_aso_missing: number;
 }
 
 const TIER_BG: Record<ScoreTier, string> = {
@@ -88,6 +93,8 @@ export function MasterPortfolio() {
         tempReadings7d: r.temp_readings_7d,
         tempOutOfRange7d: r.temp_out_of_range_7d,
         publishedDocs: r.docs_published,
+        manipulatorsActive: r.manipulators_active,
+        manipulatorsAsoOk: r.manipulators_aso_ok,
       });
       return {
         ...r,
@@ -162,6 +169,23 @@ export function MasterPortfolio() {
                     {r.docs_pending > 0
                       ? ` (${r.docs_pending} rascunho)`
                       : ''}
+                  </span>
+                  <span className="inline-flex items-center gap-1">
+                    <HardHat size={12} />
+                    {r.manipulators_aso_ok}/{r.manipulators_active} ASO em dia
+                    {r.manipulators_aso_expired + r.manipulators_aso_missing >
+                    0 ? (
+                      <span className="font-semibold text-red-600 dark:text-red-300">
+                        {' '}
+                        ({r.manipulators_aso_expired + r.manipulators_aso_missing}{' '}
+                        pendente
+                        {r.manipulators_aso_expired + r.manipulators_aso_missing ===
+                        1
+                          ? ''
+                          : 's'}
+                        )
+                      </span>
+                    ) : null}
                   </span>
                   <span className="inline-flex items-center gap-1">
                     <CalendarDays size={12} />
