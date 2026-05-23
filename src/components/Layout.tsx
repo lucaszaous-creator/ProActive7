@@ -16,43 +16,52 @@ import {
   ChefHat,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { PwaInstallButton } from './PwaInstallButton';
 import { PushToggle } from './PushToggle';
+import { ThemeToggle } from './ThemeToggle';
+import { LangToggle } from './LangToggle';
 
 interface NavItem {
   to: string;
-  label: string;
+  labelKey: string;
   icon: LucideIcon;
   masterOnly?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', label: 'Painel', icon: LayoutDashboard },
-  { to: '/produtos', label: 'Produtos', icon: Package },
-  { to: '/imprimir', label: 'Imprimir Etiqueta', icon: Printer },
-  { to: '/fotos', label: 'Fotos', icon: Images },
-  { to: '/temperatura', label: 'Temperatura', icon: Thermometer },
-  { to: '/checklists', label: 'Checklists', icon: ClipboardCheck },
-  { to: '/fichas-tecnicas', label: 'Fichas técnicas', icon: ChefHat },
-  { to: '/relatorios', label: 'Relatórios', icon: BarChart3 },
+  { to: '/', labelKey: 'nav.dashboard', icon: LayoutDashboard },
+  { to: '/produtos', labelKey: 'nav.products', icon: Package },
+  { to: '/imprimir', labelKey: 'nav.printLabel', icon: Printer },
+  { to: '/fotos', labelKey: 'nav.photos', icon: Images },
+  { to: '/temperatura', labelKey: 'nav.temperature', icon: Thermometer },
+  { to: '/checklists', labelKey: 'nav.checklists', icon: ClipboardCheck },
+  { to: '/fichas-tecnicas', labelKey: 'nav.recipes', icon: ChefHat },
+  { to: '/relatorios', labelKey: 'nav.reports', icon: BarChart3 },
   {
     to: '/admin/empresas',
-    label: 'Empresas',
+    labelKey: 'nav.companies',
     icon: Building2,
     masterOnly: true,
   },
-  { to: '/admin/usuarios', label: 'Usuários', icon: Users, masterOnly: true },
+  {
+    to: '/admin/usuarios',
+    labelKey: 'nav.users',
+    icon: Users,
+    masterOnly: true,
+  },
 ];
 
 export function Layout() {
   const { profile, isMaster, signOut } = useAuth();
+  const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const items = NAV_ITEMS.filter((i) => !i.masterOnly || isMaster);
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
       {mobileOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/40 lg:hidden"
@@ -61,21 +70,21 @@ export function Layout() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-neutral-200 bg-white transition-transform lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-neutral-200 bg-white transition-transform dark:border-neutral-800 dark:bg-slate-900 lg:static lg:translate-x-0 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex items-center gap-2 border-b border-neutral-200 px-5 py-4">
+        <div className="flex items-center gap-2 border-b border-neutral-200 px-5 py-4 dark:border-neutral-800">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white">
             <Tag size={18} />
           </span>
-          <span className="text-base font-semibold text-neutral-800">
+          <span className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
             Etiqueta
           </span>
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-          {items.map(({ to, label, icon: Icon }) => (
+          {items.map(({ to, labelKey, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}
@@ -84,50 +93,52 @@ export function Layout() {
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'text-neutral-600 hover:bg-neutral-100'
+                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
+                    : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
                 }`
               }
             >
               <Icon size={18} />
-              {label}
+              {t(labelKey)}
             </NavLink>
           ))}
         </nav>
 
-        <div className="border-t border-neutral-200 p-3">
+        <div className="border-t border-neutral-200 p-3 dark:border-neutral-800">
           <div className="mb-2 px-2">
-            <p className="truncate text-sm font-medium text-neutral-800">
+            <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">
               {profile?.full_name ?? profile?.email}
             </p>
-            <p className="text-xs text-neutral-500">
-              {isMaster ? 'Usuário master' : 'Usuário da empresa'}
+            <p className="text-xs text-neutral-500 dark:text-neutral-500">
+              {isMaster ? t('layout.master') : t('layout.property')}
             </p>
           </div>
           <div className="space-y-1">
+            <ThemeToggle />
+            <LangToggle />
             <PushToggle />
             <PwaInstallButton />
             <button
               onClick={signOut}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
             >
               <LogOut size={18} />
-              Sair
+              {t('layout.signOut')}
             </button>
           </div>
         </div>
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center gap-3 border-b border-neutral-200 bg-white px-4 py-3 lg:hidden">
+        <header className="flex items-center gap-3 border-b border-neutral-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-slate-900 lg:hidden">
           <button
             onClick={() => setMobileOpen(true)}
-            aria-label="Abrir menu"
-            className="rounded-lg p-1.5 text-neutral-600 hover:bg-neutral-100"
+            aria-label={t('layout.openMenu')}
+            className="rounded-lg p-1.5 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
           >
             <Menu size={22} />
           </button>
-          <span className="text-base font-semibold text-neutral-800">
+          <span className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
             Etiqueta
           </span>
         </header>

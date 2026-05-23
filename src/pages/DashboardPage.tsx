@@ -225,10 +225,10 @@ export function DashboardPage() {
   return (
     <div className="mx-auto max-w-5xl">
       <div className="mb-5">
-        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
+        <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
           Painel
         </h1>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
           Olá, {profile?.full_name ?? profile?.email}.
           {isMaster
             ? ' Você vê os dados de todas as empresas.'
@@ -252,10 +252,10 @@ export function DashboardPage() {
                       <Icon size={20} />
                     </span>
                     <div className="min-w-0">
-                      <p className="text-2xl font-semibold text-neutral-800">
+                      <p className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100">
                         {value}
                       </p>
-                      <p className="truncate text-xs text-neutral-500">
+                      <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
                         {label}
                       </p>
                     </div>
@@ -277,10 +277,10 @@ export function DashboardPage() {
                       <Icon size={20} />
                     </span>
                     <div className="min-w-0">
-                      <p className="text-2xl font-semibold text-neutral-800">
+                      <p className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100">
                         {value}
                       </p>
-                      <p className="truncate text-xs text-neutral-500">
+                      <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
                         {label}
                       </p>
                     </div>
@@ -292,19 +292,19 @@ export function DashboardPage() {
 
           {stats.expiringTop.length > 0 ? (
             <Card>
-              <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+              <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                 Próximas a vencer
               </h2>
-              <ul className="divide-y divide-neutral-100">
+              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {stats.expiringTop.map((r) => (
                   <li
                     key={r.id}
                     className="flex items-center justify-between gap-3 py-2 text-sm"
                   >
-                    <span className="truncate text-neutral-800">
+                    <span className="truncate text-neutral-800 dark:text-neutral-200">
                       {r.product_name_snapshot}
                     </span>
-                    <span className="shrink-0 text-xs text-neutral-500">
+                    <span className="shrink-0 text-xs text-neutral-500 dark:text-neutral-400">
                       {formatDateTime(r.expiry_at)}
                     </span>
                   </li>
@@ -315,20 +315,20 @@ export function DashboardPage() {
 
           {stats.outOfRangeRows.length > 0 ? (
             <Card>
-              <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+              <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-300">
                 Temperaturas fora da faixa hoje
               </h2>
-              <ul className="divide-y divide-neutral-100">
+              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {stats.outOfRangeRows.slice(0, 5).map((r) => (
                   <li
                     key={r.id}
                     className="flex items-center justify-between gap-3 py-2 text-sm"
                   >
-                    <span className="truncate text-neutral-800">
+                    <span className="truncate text-neutral-800 dark:text-neutral-200">
                       {r.equipment?.name ?? 'Equipamento removido'} —{' '}
                       <span className="text-red-600">{r.temperature}°C</span>
                     </span>
-                    <span className="shrink-0 text-xs text-neutral-500">
+                    <span className="shrink-0 text-xs text-neutral-500 dark:text-neutral-400">
                       {formatDateTime(r.recorded_at)}
                     </span>
                   </li>

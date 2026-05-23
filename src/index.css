@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@variant dark (&:is(.dark *));
+
 html,
 body,
 #root {
@@ -9,6 +11,10 @@ body,
 body {
   margin: 0;
   background-color: #f8fafc;
+}
+
+.dark body {
+  background-color: #0f172a;
 }
 
 /* Quando imprimir, mostra apenas a area da etiqueta.
