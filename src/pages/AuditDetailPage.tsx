@@ -224,6 +224,39 @@ export function AuditDetailPage() {
     }
     toast.success('Visita finalizada.');
     setSignOpen(false);
+
+    // Gera NCs a partir dos itens marcados como NC
+    const rMap = new Map(responses.map((r) => [r.itemId, r]));
+    const ncItems = items.filter((it) => rMap.get(it.id)?.result === 'NC');
+    if (ncItems.length > 0) {
+      const dueDate = new Date();
+      dueDate.setDate(dueDate.getDate() + 30);
+      const inserts = ncItems.map((it) => ({
+        company_id: audit.company_id,
+        audit_id: audit.id,
+        source: 'audit' as const,
+        category: it.category,
+        description: it.text,
+        severity:
+          it.weight >= 3
+            ? ('high' as const)
+            : it.weight >= 2
+              ? ('medium' as const)
+              : ('low' as const),
+        what: it.text,
+        when_due: dueDate.toISOString().slice(0, 10),
+        opened_by: profile?.id,
+      }));
+      const { error: ncError } = await supabase
+        .from('non_conformities')
+        .insert(inserts);
+      if (ncError) {
+        toast.error('Atencao: NCs nao foram criadas: ' + ncError.message);
+      } else {
+        toast.success(`${inserts.length} nao-conformidade(s) abertas.`);
+      }
+    }
+
     void load();
   }
 

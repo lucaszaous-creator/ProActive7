@@ -190,6 +190,51 @@ export interface ChecklistRun {
   created_at: string;
 }
 
+export type NcSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type NcStatus = 'open' | 'in_progress' | 'closed' | 'cancelled';
+export type NcSource = 'audit' | 'checklist' | 'manual';
+
+export const NC_SEVERITY_LABELS: Record<NcSeverity, string> = {
+  low: 'Baixa',
+  medium: 'Media',
+  high: 'Alta',
+  critical: 'Critica',
+};
+
+export const NC_STATUS_LABELS: Record<NcStatus, string> = {
+  open: 'Aberta',
+  in_progress: 'Em andamento',
+  closed: 'Fechada',
+  cancelled: 'Cancelada',
+};
+
+export interface NonConformity {
+  id: string;
+  company_id: string;
+  audit_id: string | null;
+  checklist_run_id: string | null;
+  source: NcSource;
+  category: string | null;
+  description: string;
+  severity: NcSeverity;
+  status: NcStatus;
+  what: string | null;
+  why: string | null;
+  where_loc: string | null;
+  when_due: string | null;
+  who_uuid: string | null;
+  how: string | null;
+  how_much: number | null;
+  evidence_photo_id: string | null;
+  closing_photo_id: string | null;
+  closing_note: string | null;
+  opened_by: string | null;
+  opened_at: string;
+  closed_by: string | null;
+  closed_at: string | null;
+  updated_at: string;
+}
+
 export type AuditStatus =
   | 'scheduled'
   | 'in_progress'
