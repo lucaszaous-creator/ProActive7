@@ -10,6 +10,7 @@ const en = {
     documents: 'Documents',
     audits: 'Audits',
     nonConformities: 'Non-conformities',
+    manipulators: 'Food handlers',
     reports: 'Reports',
     companies: 'Companies',
     users: 'Users',

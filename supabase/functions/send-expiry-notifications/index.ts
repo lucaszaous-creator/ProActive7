@@ -71,12 +71,58 @@ Deno.serve(async (req) => {
     );
   }
 
-  if (countsByCompany.size === 0 && ncCountsByCompany.size === 0) {
+  // ASOs de manipuladores vencendo em <= 30 dias ou ja vencidos.
+  // Apenas o ASO mais recente de cada manipulador ativo deve contar.
+  const in30 = new Date();
+  in30.setDate(in30.getDate() + 30);
+  const in30Date = in30.toISOString().slice(0, 10);
+  const { data: asoRows } = await admin
+    .from('manipulators')
+    .select(
+      'company_id, active, manipulator_asos(expires_at)',
+    )
+    .eq('active', true);
+
+  const asoCountsByCompany = new Map<string, number>();
+  for (const m of (asoRows ?? []) as Array<{
+    company_id: string;
+    manipulator_asos: { expires_at: string }[] | null;
+  }>) {
+    const asos = m.manipulator_asos ?? [];
+    if (asos.length === 0) {
+      // sem ASO sequer: conta como crítico
+      asoCountsByCompany.set(
+        m.company_id,
+        (asoCountsByCompany.get(m.company_id) ?? 0) + 1,
+      );
+      continue;
+    }
+    const latest = asos
+      .map((a) => a.expires_at)
+      .sort()
+      .pop()!;
+    if (latest <= in30Date) {
+      asoCountsByCompany.set(
+        m.company_id,
+        (asoCountsByCompany.get(m.company_id) ?? 0) + 1,
+      );
+    }
+  }
+
+  if (
+    countsByCompany.size === 0 &&
+    ncCountsByCompany.size === 0 &&
+    asoCountsByCompany.size === 0
+  ) {
     return ok({ ok: true, sent: 0, message: 'Nada a notificar hoje.' });
   }
 
   const companyIds = [
-    ...new Set([...countsByCompany.keys(), ...ncCountsByCompany.keys()]),
+    ...new Set([
+      ...countsByCompany.keys(),
+      ...ncCountsByCompany.keys(),
+      ...asoCountsByCompany.keys(),
+    ]),
   ];
 
   // Inscritos de cada empresa: profiles -> push_subscriptions.
@@ -116,7 +162,10 @@ Deno.serve(async (req) => {
       const ncCount = isMaster
         ? [...ncCountsByCompany.values()].reduce((a, b) => a + b, 0)
         : (ncCountsByCompany.get(s.profiles?.company_id ?? '') ?? 0);
-      if (labelCount === 0 && ncCount === 0) return;
+      const asoCount = isMaster
+        ? [...asoCountsByCompany.values()].reduce((a, b) => a + b, 0)
+        : (asoCountsByCompany.get(s.profiles?.company_id ?? '') ?? 0);
+      if (labelCount === 0 && ncCount === 0 && asoCount === 0) return;
 
       const parts: string[] = [];
       if (labelCount > 0) {
@@ -133,12 +182,28 @@ Deno.serve(async (req) => {
             : `${ncCount} nao-conformidades com prazo vencendo`,
         );
       }
+      if (asoCount > 0) {
+        parts.push(
+          asoCount === 1
+            ? '1 manipulador com ASO vencendo/vencido'
+            : `${asoCount} manipuladores com ASO vencendo/vencido`,
+        );
+      }
+
+      const url =
+        asoCount > 0
+          ? '/manipuladores'
+          : ncCount > 0
+            ? '/nao-conformidades'
+            : '/';
 
       const payload = JSON.stringify({
         title:
-          ncCount > 0 ? 'Alerta de compliance' : 'Etiquetas vencendo',
+          ncCount > 0 || asoCount > 0
+            ? 'Alerta de compliance'
+            : 'Etiquetas vencendo',
         body: parts.join(' - ') + '.',
-        url: ncCount > 0 ? '/nao-conformidades' : '/',
+        url,
       });
 
       try {
