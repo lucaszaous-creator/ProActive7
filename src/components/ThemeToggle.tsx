@@ -9,7 +9,9 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      aria-label={theme === 'dark' ? t('layout.theme.light') : t('layout.theme.dark')}
+      aria-label={
+        theme === 'dark' ? t('layout.theme.light') : t('layout.theme.dark')
+      }
       className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
     >
       {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}

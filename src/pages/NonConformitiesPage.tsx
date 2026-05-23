@@ -11,15 +11,8 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
-import type {
-  NcSeverity,
-  NcStatus,
-  NonConformity,
-} from '@/lib/types';
-import {
-  NC_SEVERITY_LABELS,
-  NC_STATUS_LABELS,
-} from '@/lib/types';
+import type { NcSeverity, NcStatus, NonConformity } from '@/lib/types';
+import { NC_SEVERITY_LABELS, NC_STATUS_LABELS } from '@/lib/types';
 
 const SEVERITY_COLOR: Record<NcSeverity, string> = {
   low: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200',
@@ -30,9 +23,12 @@ const SEVERITY_COLOR: Record<NcSeverity, string> = {
 
 const STATUS_COLOR: Record<NcStatus, string> = {
   open: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200',
-  in_progress: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200',
-  closed: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200',
-  cancelled: 'bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400',
+  in_progress:
+    'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200',
+  closed:
+    'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200',
+  cancelled:
+    'bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400',
 };
 
 type Row = NonConformity & { company: { name: string } | null };
@@ -73,7 +69,9 @@ export function NonConformitiesPage() {
   const [loading, setLoading] = useState(true);
 
   const [statusFilter, setStatusFilter] = useState<NcStatus | 'all'>('open');
-  const [severityFilter, setSeverityFilter] = useState<NcSeverity | 'all'>('all');
+  const [severityFilter, setSeverityFilter] = useState<NcSeverity | 'all'>(
+    'all',
+  );
   const [showOverdueOnly, setShowOverdueOnly] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -442,18 +440,14 @@ export function NonConformitiesPage() {
               id="nc-where"
               label="Onde (Where)"
               value={form.where_loc}
-              onChange={(e) =>
-                setForm({ ...form, where_loc: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, where_loc: e.target.value })}
             />
             <Input
               id="nc-when"
               label="Prazo (When)"
               type="date"
               value={form.when_due}
-              onChange={(e) =>
-                setForm({ ...form, when_due: e.target.value })
-              }
+              onChange={(e) => setForm({ ...form, when_due: e.target.value })}
             />
           </div>
           <Input

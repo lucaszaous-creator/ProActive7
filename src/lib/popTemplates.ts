@@ -63,13 +63,11 @@ export const POP_TEMPLATES: PopTemplate[] = [
   },
   {
     type: 'pop_higienizacao',
-    title: 'POP - Higienizacao de Instalacoes, Equipamentos, Moveis e Utensilios',
+    title:
+      'POP - Higienizacao de Instalacoes, Equipamentos, Moveis e Utensilios',
     legalRef: 'RDC ANVISA 275/2002 - item 1',
     content:
-      HEADER(
-        'POP - Higienizacao',
-        'RDC ANVISA 275/2002 - item 1',
-      ) +
+      HEADER('POP - Higienizacao', 'RDC ANVISA 275/2002 - item 1') +
       `## Objetivo\n\nGarantir higiene em areas, equipamentos e utensilios para prevenir contaminacao cruzada.\n\n` +
       `## Frequencia\n\n- Diaria: bancadas, fogoes, pias, pisos.\n- Semanal: refrigeradores, freezers, exaustores.\n- Mensal: paredes, tetos, ralos profundos.\n\n` +
       `## Procedimento\n\n1. Pre-lavagem com agua morna.\n2. Aplicacao de detergente neutro com esponja apropriada.\n3. Enxague com agua potavel.\n4. Sanitizacao com hipoclorito de sodio 200 ppm (10 mL p/ 1 L), tempo de contato 15 min.\n5. Enxague final e secagem.\n\n` +
@@ -112,10 +110,7 @@ export const POP_TEMPLATES: PopTemplate[] = [
     title: 'POP - Manejo dos Residuos',
     legalRef: 'RDC ANVISA 275/2002 - item 4',
     content:
-      HEADER(
-        'POP - Residuos',
-        'RDC ANVISA 275/2002 - item 4',
-      ) +
+      HEADER('POP - Residuos', 'RDC ANVISA 275/2002 - item 4') +
       `## Objetivo\n\nGarantir armazenamento e descarte adequados dos residuos solidos e organicos.\n\n` +
       `## Procedimento\n\n1. Lixeiras com tampa, pedal e saco plastico em todas as areas.\n2. Retirada minima a cada 4 horas, ou ao atingir 3/4 da capacidade.\n3. Acondicionamento externo em area fechada, distante das areas de preparo.\n4. Coleta municipal conforme cronograma; oleo de cozinha entregue a coletor licenciado.\n\n` +
       `## Higienizacao das Lixeiras\n\n- Lavagem diaria com detergente.\n- Sanitizacao semanal com hipoclorito 200 ppm.\n\n` +
@@ -126,10 +121,7 @@ export const POP_TEMPLATES: PopTemplate[] = [
     title: 'POP - Manutencao Preventiva e Calibracao de Equipamentos',
     legalRef: 'RDC ANVISA 275/2002 - item 5',
     content:
-      HEADER(
-        'POP - Manutencao e Calibracao',
-        'RDC ANVISA 275/2002 - item 5',
-      ) +
+      HEADER('POP - Manutencao e Calibracao', 'RDC ANVISA 275/2002 - item 5') +
       `## Objetivo\n\nManter equipamentos em condicoes adequadas de uso e termometros aferidos.\n\n` +
       `## Manutencao Preventiva\n\n- Geladeiras, freezers, fogoes e fritadeiras: revisao trimestral por empresa especializada.\n- Coifas e exaustores: limpeza profissional semestral.\n- Apresentacao de laudo apos cada manutencao.\n\n` +
       `## Calibracao de Termometros\n\n- Calibracao semestral por laboratorio acreditado.\n- Termometros internos verificados semanalmente em banho de gelo (deve marcar 0 +/- 1 C).\n- Substituicao imediata em caso de desvio > 2 C.\n\n` +

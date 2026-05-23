@@ -44,7 +44,8 @@ interface ComplianceRow {
 }
 
 const TIER_BG: Record<ScoreTier, string> = {
-  green: 'border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950',
+  green:
+    'border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950',
   amber: 'border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950',
   red: 'border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-950',
 };
@@ -112,8 +113,7 @@ export function MasterPortfolio() {
       const tb = b.tier ?? 'green';
       if (order[ta] !== order[tb]) return order[ta] - order[tb];
       // desempate: NC criticas abertas
-      if (b.nc_open_now !== a.nc_open_now)
-        return b.nc_open_now - a.nc_open_now;
+      if (b.nc_open_now !== a.nc_open_now) return b.nc_open_now - a.nc_open_now;
       return a.company_name.localeCompare(b.company_name);
     });
 
@@ -131,8 +131,12 @@ export function MasterPortfolio() {
     <div className="flex flex-col gap-3">
       {enriched.map((r) => {
         const tier = r.tier;
-        const bgClass = tier ? TIER_BG[tier] : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-slate-900';
-        const textClass = tier ? TIER_TEXT[tier] : 'text-neutral-500 dark:text-neutral-400';
+        const bgClass = tier
+          ? TIER_BG[tier]
+          : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-slate-900';
+        const textClass = tier
+          ? TIER_TEXT[tier]
+          : 'text-neutral-500 dark:text-neutral-400';
         return (
           <div
             key={r.company_id}
@@ -150,14 +154,15 @@ export function MasterPortfolio() {
                     {r.nc_overdue_30d > 0 ? (
                       <span className="font-semibold text-red-600 dark:text-red-300">
                         {' '}
-                        ({r.nc_overdue_30d} vencida{r.nc_overdue_30d === 1 ? '' : 's'})
+                        ({r.nc_overdue_30d} vencida
+                        {r.nc_overdue_30d === 1 ? '' : 's'})
                       </span>
                     ) : null}
                   </span>
                   <span className="inline-flex items-center gap-1">
                     <ClipboardCheck size={12} />
-                    {r.checklists_ran_30d}/{r.checklists_planned_30d}{' '}
-                    checklists 30d
+                    {r.checklists_ran_30d}/{r.checklists_planned_30d} checklists
+                    30d
                   </span>
                   <span className="inline-flex items-center gap-1">
                     <Thermometer size={12} />
@@ -166,9 +171,7 @@ export function MasterPortfolio() {
                   <span className="inline-flex items-center gap-1">
                     <FileText size={12} />
                     {r.docs_published}/6 documentos
-                    {r.docs_pending > 0
-                      ? ` (${r.docs_pending} rascunho)`
-                      : ''}
+                    {r.docs_pending > 0 ? ` (${r.docs_pending} rascunho)` : ''}
                   </span>
                   <span className="inline-flex items-center gap-1">
                     <HardHat size={12} />
@@ -177,9 +180,12 @@ export function MasterPortfolio() {
                     0 ? (
                       <span className="font-semibold text-red-600 dark:text-red-300">
                         {' '}
-                        ({r.manipulators_aso_expired + r.manipulators_aso_missing}{' '}
+                        (
+                        {r.manipulators_aso_expired +
+                          r.manipulators_aso_missing}{' '}
                         pendente
-                        {r.manipulators_aso_expired + r.manipulators_aso_missing ===
+                        {r.manipulators_aso_expired +
+                          r.manipulators_aso_missing ===
                         1
                           ? ''
                           : 's'}
