@@ -14,6 +14,9 @@ import {
   ClipboardCheck,
   BarChart3,
   ChefHat,
+  FileText,
+  ShieldCheck,
+  AlertOctagon,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -38,6 +41,13 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/temperatura', labelKey: 'nav.temperature', icon: Thermometer },
   { to: '/checklists', labelKey: 'nav.checklists', icon: ClipboardCheck },
   { to: '/fichas-tecnicas', labelKey: 'nav.recipes', icon: ChefHat },
+  { to: '/documentos', labelKey: 'nav.documents', icon: FileText },
+  { to: '/visitas', labelKey: 'nav.audits', icon: ShieldCheck },
+  {
+    to: '/nao-conformidades',
+    labelKey: 'nav.nonConformities',
+    icon: AlertOctagon,
+  },
   { to: '/relatorios', labelKey: 'nav.reports', icon: BarChart3 },
   {
     to: '/admin/empresas',

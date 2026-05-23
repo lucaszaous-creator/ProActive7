@@ -51,11 +51,33 @@ Deno.serve(async (req) => {
       (countsByCompany.get(r.company_id) ?? 0) + 1,
     );
   }
-  if (countsByCompany.size === 0) {
-    return ok({ ok: true, sent: 0, message: 'Nada vencendo nas proximas 24h.' });
+
+  // Nao-conformidades vencidas ou vencendo em 24h.
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowDate = tomorrow.toISOString().slice(0, 10);
+  const { data: ncRows } = await admin
+    .from('non_conformities')
+    .select('company_id, when_due, status')
+    .in('status', ['open', 'in_progress'])
+    .not('when_due', 'is', null)
+    .lte('when_due', tomorrowDate);
+
+  const ncCountsByCompany = new Map<string, number>();
+  for (const r of ncRows ?? []) {
+    ncCountsByCompany.set(
+      r.company_id,
+      (ncCountsByCompany.get(r.company_id) ?? 0) + 1,
+    );
   }
 
-  const companyIds = [...countsByCompany.keys()];
+  if (countsByCompany.size === 0 && ncCountsByCompany.size === 0) {
+    return ok({ ok: true, sent: 0, message: 'Nada a notificar hoje.' });
+  }
+
+  const companyIds = [
+    ...new Set([...countsByCompany.keys(), ...ncCountsByCompany.keys()]),
+  ];
 
   // Inscritos de cada empresa: profiles -> push_subscriptions.
   const { data: subs, error: subsErr } = await admin
@@ -87,19 +109,36 @@ Deno.serve(async (req) => {
 
   await Promise.all(
     allSubs.map(async (s) => {
-      const count =
-        s.profiles?.role === 'master'
-          ? [...countsByCompany.values()].reduce((a, b) => a + b, 0)
-          : (countsByCompany.get(s.profiles?.company_id ?? '') ?? 0);
-      if (count === 0) return;
+      const isMaster = s.profiles?.role === 'master';
+      const labelCount = isMaster
+        ? [...countsByCompany.values()].reduce((a, b) => a + b, 0)
+        : (countsByCompany.get(s.profiles?.company_id ?? '') ?? 0);
+      const ncCount = isMaster
+        ? [...ncCountsByCompany.values()].reduce((a, b) => a + b, 0)
+        : (ncCountsByCompany.get(s.profiles?.company_id ?? '') ?? 0);
+      if (labelCount === 0 && ncCount === 0) return;
+
+      const parts: string[] = [];
+      if (labelCount > 0) {
+        parts.push(
+          labelCount === 1
+            ? '1 etiqueta vence nas proximas 24h'
+            : `${labelCount} etiquetas vencem nas proximas 24h`,
+        );
+      }
+      if (ncCount > 0) {
+        parts.push(
+          ncCount === 1
+            ? '1 nao-conformidade com prazo vencendo'
+            : `${ncCount} nao-conformidades com prazo vencendo`,
+        );
+      }
 
       const payload = JSON.stringify({
-        title: 'Etiquetas vencendo',
-        body:
-          count === 1
-            ? '1 etiqueta vence nas próximas 24h.'
-            : `${count} etiquetas vencem nas próximas 24h.`,
-        url: '/',
+        title:
+          ncCount > 0 ? 'Alerta de compliance' : 'Etiquetas vencendo',
+        body: parts.join(' - ') + '.',
+        url: ncCount > 0 ? '/nao-conformidades' : '/',
       });
 
       try {

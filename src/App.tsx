@@ -45,6 +45,24 @@ const ReportsPage = lazy(() =>
 const RecipesPage = lazy(() =>
   import('./pages/RecipesPage').then((m) => ({ default: m.RecipesPage })),
 );
+const DocumentsPage = lazy(() =>
+  import('./pages/DocumentsPage').then((m) => ({
+    default: m.DocumentsPage,
+  })),
+);
+const AuditsPage = lazy(() =>
+  import('./pages/AuditsPage').then((m) => ({ default: m.AuditsPage })),
+);
+const AuditDetailPage = lazy(() =>
+  import('./pages/AuditDetailPage').then((m) => ({
+    default: m.AuditDetailPage,
+  })),
+);
+const NonConformitiesPage = lazy(() =>
+  import('./pages/NonConformitiesPage').then((m) => ({
+    default: m.NonConformitiesPage,
+  })),
+);
 const CompaniesPage = lazy(() =>
   import('./pages/admin/CompaniesPage').then((m) => ({
     default: m.CompaniesPage,
@@ -72,6 +90,13 @@ export default function App() {
             <Route path="/checklists" element={<ChecklistsPage />} />
             <Route path="/relatorios" element={<ReportsPage />} />
             <Route path="/fichas-tecnicas" element={<RecipesPage />} />
+            <Route path="/documentos" element={<DocumentsPage />} />
+            <Route path="/visitas" element={<AuditsPage />} />
+            <Route path="/visitas/:id" element={<AuditDetailPage />} />
+            <Route
+              path="/nao-conformidades"
+              element={<NonConformitiesPage />}
+            />
           </Route>
         </Route>
 

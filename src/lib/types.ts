@@ -41,6 +41,8 @@ export interface Profile {
   full_name: string | null;
   email: string | null;
   active: boolean;
+  crn: string | null;
+  phone: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -186,6 +188,125 @@ export interface ChecklistRun {
   notes: string | null;
   photo_id: string | null;
   created_at: string;
+}
+
+export type NcSeverity = 'low' | 'medium' | 'high' | 'critical';
+export type NcStatus = 'open' | 'in_progress' | 'closed' | 'cancelled';
+export type NcSource = 'audit' | 'checklist' | 'manual';
+
+export const NC_SEVERITY_LABELS: Record<NcSeverity, string> = {
+  low: 'Baixa',
+  medium: 'Media',
+  high: 'Alta',
+  critical: 'Critica',
+};
+
+export const NC_STATUS_LABELS: Record<NcStatus, string> = {
+  open: 'Aberta',
+  in_progress: 'Em andamento',
+  closed: 'Fechada',
+  cancelled: 'Cancelada',
+};
+
+export interface NonConformity {
+  id: string;
+  company_id: string;
+  audit_id: string | null;
+  checklist_run_id: string | null;
+  source: NcSource;
+  category: string | null;
+  description: string;
+  severity: NcSeverity;
+  status: NcStatus;
+  what: string | null;
+  why: string | null;
+  where_loc: string | null;
+  when_due: string | null;
+  who_uuid: string | null;
+  how: string | null;
+  how_much: number | null;
+  evidence_photo_id: string | null;
+  closing_photo_id: string | null;
+  closing_note: string | null;
+  opened_by: string | null;
+  opened_at: string;
+  closed_by: string | null;
+  closed_at: string | null;
+  updated_at: string;
+}
+
+export type AuditStatus =
+  | 'scheduled'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled';
+
+export type AuditResult = 'C' | 'NC' | 'NA';
+
+export interface AuditItem {
+  id: string;
+  category: string;
+  text: string;
+  weight: number;
+  legal_ref?: string;
+}
+
+export interface AuditResponse {
+  itemId: string;
+  result: AuditResult;
+  note?: string;
+  photo_id?: string;
+}
+
+export interface AuditTemplate {
+  id: string;
+  company_id: string | null;
+  name: string;
+  items: AuditItem[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Audit {
+  id: string;
+  company_id: string;
+  template_id: string | null;
+  scheduled_at: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+  auditor_id: string | null;
+  status: AuditStatus;
+  score: number | null;
+  responses: AuditResponse[];
+  notes: string | null;
+  signature_path: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type DocumentType =
+  | 'mbp'
+  | 'pop_higienizacao'
+  | 'pop_agua'
+  | 'pop_manipuladores'
+  | 'pop_residuos'
+  | 'pop_manutencao';
+
+export type DocumentStatus = 'draft' | 'published' | 'archived';
+
+export interface ComplianceDocument {
+  id: string;
+  company_id: string;
+  type: DocumentType;
+  title: string;
+  content_md: string;
+  version: number;
+  status: DocumentStatus;
+  approved_by: string | null;
+  approved_at: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Photo {
