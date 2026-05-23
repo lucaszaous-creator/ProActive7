@@ -15,13 +15,16 @@ export function Select({
   return (
     <div className="flex flex-col gap-1.5">
       {label && (
-        <label htmlFor={id} className="text-sm font-medium text-neutral-700">
+        <label
+          htmlFor={id}
+          className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+        >
           {label}
         </label>
       )}
       <select
         id={id}
-        className={`rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 disabled:bg-neutral-100 ${className}`}
+        className={`rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 disabled:bg-neutral-100 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100 dark:disabled:bg-slate-900 ${className}`}
         {...rest}
       >
         {children}

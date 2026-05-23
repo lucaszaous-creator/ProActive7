@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+@variant dark (&:is(.dark *));
+
 html,
 body,
 #root {
@@ -11,6 +13,10 @@ body {
   background-color: #f8fafc;
 }
 
+.dark body {
+  background-color: #0f172a;
+}
+
 /* Quando imprimir, mostra apenas a area da etiqueta.
    O tamanho exato (@page size) e injetado dinamicamente em PrintLabelPage. */
 @media print {
@@ -18,10 +24,13 @@ body {
     visibility: hidden;
   }
   #print-label-area,
-  #print-label-area * {
+  #print-label-area *,
+  .recipe-print-area,
+  .recipe-print-area * {
     visibility: visible;
   }
-  #print-label-area {
+  #print-label-area,
+  .recipe-print-area {
     position: absolute;
     top: 0;
     left: 0;

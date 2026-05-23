@@ -45,7 +45,23 @@ export function useCompanyScope() {
     }
   }, [isMaster, profile?.company_id]);
 
-  const companyName = companies.find((c) => c.id === companyId)?.name ?? '';
+  const selectedCompany = companies.find((c) => c.id === companyId) ?? null;
+  const companyName = selectedCompany?.name ?? '';
+  const companyLogoUrl = selectedCompany?.logo_path
+    ? supabase.storage.from('branding').getPublicUrl(selectedCompany.logo_path)
+        .data.publicUrl
+    : null;
+  const companyPrimaryColor =
+    selectedCompany?.label_settings?.primary_color ?? null;
 
-  return { isMaster, companies, companyId, setCompanyId, companyName };
+  return {
+    isMaster,
+    companies,
+    companyId,
+    setCompanyId,
+    companyName,
+    companyLogoUrl,
+    companyPrimaryColor,
+    selectedCompany,
+  };
 }

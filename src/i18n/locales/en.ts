@@ -1,0 +1,48 @@
+const en = {
+  nav: {
+    dashboard: 'Dashboard',
+    products: 'Products',
+    printLabel: 'Print Label',
+    photos: 'Photos',
+    temperature: 'Temperature',
+    checklists: 'Checklists',
+    recipes: 'Recipes',
+    reports: 'Reports',
+    companies: 'Companies',
+    users: 'Users',
+  },
+  layout: {
+    master: 'Master user',
+    property: 'Company user',
+    signOut: 'Sign out',
+    openMenu: 'Open menu',
+    installApp: 'Install app',
+    notifications: 'Notifications',
+    theme: {
+      light: 'Light mode',
+      dark: 'Dark mode',
+    },
+    language: 'Language',
+  },
+  common: {
+    save: 'Save',
+    cancel: 'Cancel',
+    edit: 'Edit',
+    delete: 'Delete',
+    create: 'Create',
+    close: 'Close',
+    confirm: 'Confirm',
+    active: 'Active',
+    inactive: 'Inactive',
+    yes: 'Yes',
+    no: 'No',
+    loading: 'Loading...',
+    noData: 'No records found.',
+    actions: 'Actions',
+    search: 'Search...',
+    optional: 'optional',
+    status: 'Status',
+  },
+} as const;
+
+export default en;

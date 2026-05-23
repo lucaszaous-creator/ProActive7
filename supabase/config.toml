@@ -15,3 +15,8 @@ verify_jwt = true
 # secreto x-cleanup-secret (variavel CLEANUP_SECRET).
 [functions.cleanup-photos]
 verify_jwt = false
+
+# send-expiry-notifications: chamada pelo pg_cron, sem JWT. Protegida
+# pelo header x-cron-secret (variavel CRON_SECRET).
+[functions.send-expiry-notifications]
+verify_jwt = false

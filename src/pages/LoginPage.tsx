@@ -55,23 +55,23 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4 dark:bg-slate-950">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex flex-col items-center gap-2">
           <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-600 text-white">
             <Tag size={24} />
           </span>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
+          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
             Etiqueta
           </h1>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Validade e controle de alimentos
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col gap-4 rounded-xl border border-neutral-200 bg-white p-4 sm:p-6"
+          className="flex flex-col gap-4 rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-slate-900 sm:p-6"
         >
           <Input
             id="email"
@@ -104,7 +104,7 @@ export function LoginPage() {
           </button>
         </form>
 
-        <p className="mt-4 text-center text-xs text-neutral-400">
+        <p className="mt-4 text-center text-xs text-neutral-400 dark:text-neutral-500">
           Acesso fornecido pelo administrador.
         </p>
       </div>

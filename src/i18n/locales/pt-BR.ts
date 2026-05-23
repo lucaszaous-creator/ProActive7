@@ -1,0 +1,48 @@
+const ptBR = {
+  nav: {
+    dashboard: 'Painel',
+    products: 'Produtos',
+    printLabel: 'Imprimir Etiqueta',
+    photos: 'Fotos',
+    temperature: 'Temperatura',
+    checklists: 'Checklists',
+    recipes: 'Fichas técnicas',
+    reports: 'Relatórios',
+    companies: 'Empresas',
+    users: 'Usuários',
+  },
+  layout: {
+    master: 'Usuário master',
+    property: 'Usuário da empresa',
+    signOut: 'Sair',
+    openMenu: 'Abrir menu',
+    installApp: 'Instalar app',
+    notifications: 'Notificações',
+    theme: {
+      light: 'Modo claro',
+      dark: 'Modo escuro',
+    },
+    language: 'Idioma',
+  },
+  common: {
+    save: 'Salvar',
+    cancel: 'Cancelar',
+    edit: 'Editar',
+    delete: 'Excluir',
+    create: 'Criar',
+    close: 'Fechar',
+    confirm: 'Confirmar',
+    active: 'Ativo',
+    inactive: 'Inativo',
+    yes: 'Sim',
+    no: 'Não',
+    loading: 'Carregando...',
+    noData: 'Nenhum registro encontrado.',
+    actions: 'Ações',
+    search: 'Buscar...',
+    optional: 'opcional',
+    status: 'Status',
+  },
+} as const;
+
+export default ptBR;

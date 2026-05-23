@@ -10,6 +10,11 @@ const ResetPasswordPage = lazy(() =>
     default: m.ResetPasswordPage,
   })),
 );
+const PublicLabelPage = lazy(() =>
+  import('./pages/PublicLabelPage').then((m) => ({
+    default: m.PublicLabelPage,
+  })),
+);
 const DashboardPage = lazy(() =>
   import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage })),
 );
@@ -23,6 +28,22 @@ const PrintLabelPage = lazy(() =>
 );
 const PhotosPage = lazy(() =>
   import('./pages/PhotosPage').then((m) => ({ default: m.PhotosPage })),
+);
+const TemperaturePage = lazy(() =>
+  import('./pages/TemperaturePage').then((m) => ({
+    default: m.TemperaturePage,
+  })),
+);
+const ChecklistsPage = lazy(() =>
+  import('./pages/ChecklistsPage').then((m) => ({
+    default: m.ChecklistsPage,
+  })),
+);
+const ReportsPage = lazy(() =>
+  import('./pages/ReportsPage').then((m) => ({ default: m.ReportsPage })),
+);
+const RecipesPage = lazy(() =>
+  import('./pages/RecipesPage').then((m) => ({ default: m.RecipesPage })),
 );
 const CompaniesPage = lazy(() =>
   import('./pages/admin/CompaniesPage').then((m) => ({
@@ -39,6 +60,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
+        <Route path="/etiqueta/:id" element={<PublicLabelPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
@@ -46,6 +68,10 @@ export default function App() {
             <Route path="/produtos" element={<ProductsPage />} />
             <Route path="/imprimir" element={<PrintLabelPage />} />
             <Route path="/fotos" element={<PhotosPage />} />
+            <Route path="/temperatura" element={<TemperaturePage />} />
+            <Route path="/checklists" element={<ChecklistsPage />} />
+            <Route path="/relatorios" element={<ReportsPage />} />
+            <Route path="/fichas-tecnicas" element={<RecipesPage />} />
           </Route>
         </Route>
 
