@@ -348,7 +348,7 @@ export function ManipulatorsPage() {
       ) : null}
 
       {list.length > 0 ? (
-        <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-5">
+        <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           <Card>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
               Ativos
@@ -415,7 +415,7 @@ export function ManipulatorsPage() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="mb-1 flex flex-wrap items-center gap-2">
-                      <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                      <h2 className="min-w-0 max-w-full truncate text-sm font-semibold text-neutral-800 dark:text-neutral-200">
                         {m.full_name}
                       </h2>
                       {m.role ? (

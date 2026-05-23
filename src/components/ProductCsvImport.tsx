@@ -168,8 +168,8 @@ export function ProductCsvImport({
             ) : null}
 
             {parsed.rows.length > 0 ? (
-              <div className="max-h-48 overflow-y-auto rounded-lg border border-neutral-200">
-                <table className="w-full text-xs">
+              <div className="max-h-48 overflow-auto rounded-lg border border-neutral-200">
+                <table className="w-full min-w-[480px] text-xs">
                   <thead className="bg-neutral-50 text-left">
                     <tr>
                       <th className="px-2 py-1">Nome</th>

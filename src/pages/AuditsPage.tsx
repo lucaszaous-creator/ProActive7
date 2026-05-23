@@ -200,7 +200,7 @@ export function AuditsPage() {
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                    <p className="truncate text-sm font-semibold text-neutral-800 dark:text-neutral-200">
                       {a.company?.name ?? companyMap.get(a.company_id) ?? ''}
                     </p>
                     <p className="text-xs text-neutral-500 dark:text-neutral-400">
@@ -213,7 +213,7 @@ export function AuditsPage() {
                         : ''}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     {a.score != null ? (
                       <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-sm font-semibold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
                         {a.score.toFixed(1)}%
