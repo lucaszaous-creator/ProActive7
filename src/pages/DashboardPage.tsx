@@ -15,6 +15,7 @@ import { useAuth } from '@/context/AuthContext';
 import { formatDateTime } from '@/lib/dates';
 import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/Spinner';
+import { MasterPortfolio } from '@/components/MasterPortfolio';
 
 async function countRows(table: string): Promise<number> {
   const { count, error } = await supabase
@@ -231,10 +232,16 @@ export function DashboardPage() {
         <p className="text-sm text-neutral-500 dark:text-neutral-400">
           Olá, {profile?.full_name ?? profile?.email}.
           {isMaster
-            ? ' Você vê os dados de todas as empresas.'
+            ? ' Carteira de empresas com score de compliance.'
             : ' Resumo da sua empresa.'}
         </p>
       </div>
+
+      {isMaster ? (
+        <div className="mb-6">
+          <MasterPortfolio />
+        </div>
+      ) : null}
 
       {!stats ? (
         <div className="flex justify-center py-16">
