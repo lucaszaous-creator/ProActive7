@@ -48,8 +48,7 @@ export function calculateComplianceScore(
     (i.manipulatorsActive ?? 0) > 0;
   if (!hasAnyData) return null;
 
-  const overdueRatio =
-    i.ncTotal30d > 0 ? i.ncOverdue30d / i.ncTotal30d : 0;
+  const overdueRatio = i.ncTotal30d > 0 ? i.ncOverdue30d / i.ncTotal30d : 0;
   const ncPart = 30 * (1 - overdueRatio);
 
   const checklistRatio =

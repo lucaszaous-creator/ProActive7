@@ -36,7 +36,9 @@ export function ConfirmDialog({
         </>
       }
     >
-      <p className="text-sm text-neutral-600 dark:text-neutral-400">{message}</p>
+      <p className="text-sm text-neutral-600 dark:text-neutral-400">
+        {message}
+      </p>
     </Modal>
   );
 }

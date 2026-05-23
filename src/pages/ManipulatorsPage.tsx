@@ -78,8 +78,9 @@ export function ManipulatorsPage() {
   const [asoFile, setAsoFile] = useState<File | null>(null);
   const [asoSaving, setAsoSaving] = useState(false);
 
-  const [trainingModalFor, setTrainingModalFor] =
-    useState<Manipulator | null>(null);
+  const [trainingModalFor, setTrainingModalFor] = useState<Manipulator | null>(
+    null,
+  );
   const [trTopic, setTrTopic] = useState('');
   const [trHours, setTrHours] = useState('');
   const [trCompletedAt, setTrCompletedAt] = useState('');
@@ -97,9 +98,7 @@ export function ManipulatorsPage() {
     setLoading(true);
     const { data, error } = await supabase
       .from('manipulators')
-      .select(
-        '*, asos:manipulator_asos(*), trainings:manipulator_trainings(*)',
-      )
+      .select('*, asos:manipulator_asos(*), trainings:manipulator_trainings(*)')
       .eq('company_id', companyId)
       .order('full_name');
     setLoading(false);
@@ -153,10 +152,7 @@ export function ManipulatorsPage() {
       notes: form.notes.trim() || null,
     };
     const { error } = editing
-      ? await supabase
-          .from('manipulators')
-          .update(payload)
-          .eq('id', editing.id)
+      ? await supabase.from('manipulators').update(payload).eq('id', editing.id)
       : await supabase.from('manipulators').insert(payload);
     setSaving(false);
     if (error) {
@@ -449,10 +445,7 @@ export function ManipulatorsPage() {
                     </p>
                     {m.trainings.length > 0 ? (
                       <p className="mt-2 text-xs text-neutral-600 dark:text-neutral-400">
-                        <GraduationCap
-                          size={12}
-                          className="mr-1 inline"
-                        />
+                        <GraduationCap size={12} className="mr-1 inline" />
                         {m.trainings.length} treinamento
                         {m.trainings.length === 1 ? '' : 's'}; ultimo:{' '}
                         {formatDate(

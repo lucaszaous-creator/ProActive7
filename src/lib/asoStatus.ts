@@ -14,8 +14,7 @@ export const ASO_STATUS_LABELS: Record<AsoStatus, string> = {
 export const ASO_STATUS_COLOR: Record<AsoStatus, string> = {
   valid:
     'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200',
-  expiring:
-    'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200',
+  expiring: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200',
   expired: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200',
   missing:
     'bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
@@ -32,7 +31,11 @@ export const ASO_STATUS_COLOR: Record<AsoStatus, string> = {
 export function asoStatusFromList(
   asos: ManipulatorAso[],
   referenceDate: Date = new Date(),
-): { status: AsoStatus; latest: ManipulatorAso | null; daysLeft: number | null } {
+): {
+  status: AsoStatus;
+  latest: ManipulatorAso | null;
+  daysLeft: number | null;
+} {
   if (asos.length === 0) {
     return { status: 'missing', latest: null, daysLeft: null };
   }
@@ -46,7 +49,9 @@ export function asoStatusFromList(
     referenceDate.getMonth(),
     referenceDate.getDate(),
   );
-  const daysLeft = Math.round((expiry.getTime() - today.getTime()) / MS_PER_DAY);
+  const daysLeft = Math.round(
+    (expiry.getTime() - today.getTime()) / MS_PER_DAY,
+  );
   let status: AsoStatus = 'valid';
   if (daysLeft < 0) status = 'expired';
   else if (daysLeft <= 30) status = 'expiring';

@@ -116,10 +116,7 @@ export function AuditDetailPage() {
     void load();
   }, [load]);
 
-  const items: AuditItem[] = useMemo(
-    () => template?.items ?? [],
-    [template],
-  );
+  const items: AuditItem[] = useMemo(() => template?.items ?? [], [template]);
   const score = useMemo(
     () => calculateAuditScore(items, responses),
     [items, responses],
@@ -168,8 +165,7 @@ export function AuditDetailPage() {
       .update({
         responses,
         notes,
-        status:
-          audit.status === 'scheduled' ? 'in_progress' : audit.status,
+        status: audit.status === 'scheduled' ? 'in_progress' : audit.status,
         started_at: audit.started_at ?? new Date().toISOString(),
         score,
       })
@@ -267,9 +263,8 @@ export function AuditDetailPage() {
       : null;
     const sigDataUrl = audit.signature_path
       ? await urlToDataUrl(
-          supabase.storage
-            .from('signatures')
-            .getPublicUrl(audit.signature_path).data.publicUrl,
+          supabase.storage.from('signatures').getPublicUrl(audit.signature_path)
+            .data.publicUrl,
         )
       : null;
 
@@ -308,7 +303,11 @@ export function AuditDetailPage() {
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(20);
       const scoreColor =
-        score >= 85 ? [16, 185, 129] : score >= 70 ? [245, 158, 11] : [220, 38, 38];
+        score >= 85
+          ? [16, 185, 129]
+          : score >= 70
+            ? [245, 158, 11]
+            : [220, 38, 38];
       pdf.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2]);
       pdf.text(`Score: ${score.toFixed(1)}%`, 14, y + 7);
       pdf.setTextColor(0);
@@ -354,8 +353,8 @@ export function AuditDetailPage() {
     if (notes) {
       const pageHeight = pdf.internal.pageSize.getHeight();
       let yPos =
-        (pdf as unknown as { lastAutoTable?: { finalY: number } })
-          .lastAutoTable?.finalY ?? y;
+        (pdf as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable
+          ?.finalY ?? y;
       yPos += 8;
       if (yPos > pageHeight - 30) {
         pdf.addPage();
@@ -613,8 +612,8 @@ export function AuditDetailPage() {
       >
         <div className="flex flex-col gap-3">
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            Assine no campo abaixo. A assinatura ficara registrada no PDF
-            junto com seus dados profissionais ({profile?.full_name}
+            Assine no campo abaixo. A assinatura ficara registrada no PDF junto
+            com seus dados profissionais ({profile?.full_name}
             {profile?.crn ? ` - CRN ${profile.crn}` : ''}).
           </p>
           <div className="rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-slate-800">

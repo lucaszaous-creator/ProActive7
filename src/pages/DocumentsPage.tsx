@@ -48,7 +48,8 @@ const STATUS_COLOR: Record<DocumentStatus, string> = {
   draft: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200',
   published:
     'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200',
-  archived: 'bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400',
+  archived:
+    'bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400',
 };
 
 export function DocumentsPage() {
@@ -209,7 +210,9 @@ export function DocumentsPage() {
   }
 
   async function handleExportPdf(doc: ComplianceDocument) {
-    const logoDataUrl = companyLogoUrl ? await urlToDataUrl(companyLogoUrl) : null;
+    const logoDataUrl = companyLogoUrl
+      ? await urlToDataUrl(companyLogoUrl)
+      : null;
     const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
     let y = drawPdfHeader(pdf, {
       companyName: selectedCompany?.name ?? '',
@@ -399,7 +402,9 @@ export function DocumentsPage() {
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editing ? `Editar documento (v${editing.version})` : 'Novo documento'}
+        title={
+          editing ? `Editar documento (v${editing.version})` : 'Novo documento'
+        }
         footer={
           <>
             <Button
