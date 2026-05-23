@@ -190,6 +190,55 @@ export interface ChecklistRun {
   created_at: string;
 }
 
+export type AuditStatus =
+  | 'scheduled'
+  | 'in_progress'
+  | 'completed'
+  | 'cancelled';
+
+export type AuditResult = 'C' | 'NC' | 'NA';
+
+export interface AuditItem {
+  id: string;
+  category: string;
+  text: string;
+  weight: number;
+  legal_ref?: string;
+}
+
+export interface AuditResponse {
+  itemId: string;
+  result: AuditResult;
+  note?: string;
+  photo_id?: string;
+}
+
+export interface AuditTemplate {
+  id: string;
+  company_id: string | null;
+  name: string;
+  items: AuditItem[];
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Audit {
+  id: string;
+  company_id: string;
+  template_id: string | null;
+  scheduled_at: string | null;
+  started_at: string | null;
+  completed_at: string | null;
+  auditor_id: string | null;
+  status: AuditStatus;
+  score: number | null;
+  responses: AuditResponse[];
+  notes: string | null;
+  signature_path: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type DocumentType =
   | 'mbp'
   | 'pop_higienizacao'

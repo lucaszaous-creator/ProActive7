@@ -15,6 +15,7 @@ import {
   BarChart3,
   ChefHat,
   FileText,
+  ShieldCheck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -40,6 +41,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/checklists', labelKey: 'nav.checklists', icon: ClipboardCheck },
   { to: '/fichas-tecnicas', labelKey: 'nav.recipes', icon: ChefHat },
   { to: '/documentos', labelKey: 'nav.documents', icon: FileText },
+  { to: '/visitas', labelKey: 'nav.audits', icon: ShieldCheck },
   { to: '/relatorios', labelKey: 'nav.reports', icon: BarChart3 },
   {
     to: '/admin/empresas',
