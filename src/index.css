@@ -18,10 +18,13 @@ body {
     visibility: hidden;
   }
   #print-label-area,
-  #print-label-area * {
+  #print-label-area *,
+  .recipe-print-area,
+  .recipe-print-area * {
     visibility: visible;
   }
-  #print-label-area {
+  #print-label-area,
+  .recipe-print-area {
     position: absolute;
     top: 0;
     left: 0;

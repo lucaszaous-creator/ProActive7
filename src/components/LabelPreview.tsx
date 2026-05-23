@@ -4,6 +4,8 @@ import { formatAllergenList } from '@/lib/allergens';
 export interface LabelData {
   companyName: string;
   companyLogoUrl?: string | null;
+  /** Hex (#rrggbb). Tinge o nome da empresa e a linha VALIDADE. */
+  primaryColor?: string | null;
   productName: string;
   storageConditionLabel: string;
   manipulationText: string;
@@ -29,6 +31,7 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
   // QR ocupa cerca de 10mm; so cabe em etiquetas grandes o suficiente.
   const showQr = Boolean(data.qrUrl) && widthMm >= 50 && heightMm >= 30;
   const qrSizeMm = Math.min(12, Math.floor(widthMm * 0.22));
+  const accent = data.primaryColor ?? undefined;
 
   return (
     <div
@@ -37,6 +40,7 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
         height: `${heightMm}mm`,
         padding: '2mm',
         boxSizing: 'border-box',
+        borderTop: accent ? `0.8mm solid ${accent}` : undefined,
       }}
       className="flex flex-col justify-between overflow-hidden border border-neutral-400 bg-white text-black"
     >
@@ -49,7 +53,7 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
           />
         ) : null}
         <p
-          style={{ fontSize: '2mm' }}
+          style={{ fontSize: '2mm', color: accent }}
           className="truncate uppercase tracking-wide"
         >
           {data.companyName || ' '}
@@ -77,7 +81,10 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
             <span>Manip.:</span>
             <span>{data.manipulationText}</span>
           </div>
-          <div className="flex justify-between gap-1 font-bold">
+          <div
+            className="flex justify-between gap-1 font-bold"
+            style={{ color: accent }}
+          >
             <span>VALIDADE:</span>
             <span>{data.expiryText}</span>
           </div>

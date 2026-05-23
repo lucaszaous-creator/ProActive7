@@ -17,6 +17,8 @@ export interface LabelSettings {
   show_phone?: boolean;
   show_address?: boolean;
   show_responsible?: boolean;
+  /** Cor primaria hex (#rrggbb) usada como acento no preview e na pagina publica. */
+  primary_color?: string;
 }
 
 export interface Company {
@@ -147,6 +149,32 @@ export interface ChecklistRunItem {
   id: string;
   checked: boolean;
   note?: string;
+}
+
+export interface Recipe {
+  id: string;
+  company_id: string;
+  name: string;
+  yield_amount: string | null;
+  prep_time_minutes: number | null;
+  instructions: string | null;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RecipeItem {
+  id: string;
+  recipe_id: string;
+  product_id: string;
+  quantity: number;
+  unit: string;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface RecipeWithItems extends Recipe {
+  recipe_items: (RecipeItem & { product: { name: string } | null })[];
 }
 
 export interface ChecklistRun {

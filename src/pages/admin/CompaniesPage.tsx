@@ -25,6 +25,7 @@ export function CompaniesPage() {
   const [active, setActive] = useState(true);
   const [logoPath, setLogoPath] = useState<string | null>(null);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [primaryColor, setPrimaryColor] = useState('');
 
   const [deleting, setDeleting] = useState<Company | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -55,6 +56,7 @@ export function CompaniesPage() {
     setPhone('');
     setActive(true);
     setLogoPath(null);
+    setPrimaryColor('');
     setModalOpen(true);
   }
 
@@ -66,6 +68,7 @@ export function CompaniesPage() {
     setPhone(c.phone ?? '');
     setActive(c.active);
     setLogoPath(c.logo_path ?? null);
+    setPrimaryColor(c.label_settings?.primary_color ?? '');
     setModalOpen(true);
   }
 
@@ -128,12 +131,21 @@ export function CompaniesPage() {
       return;
     }
     setSaving(true);
+    const currentSettings = editing?.label_settings ?? {};
+    const labelSettings = primaryColor.trim()
+      ? { ...currentSettings, primary_color: primaryColor.trim() }
+      : (() => {
+          const next = { ...currentSettings };
+          delete next.primary_color;
+          return next;
+        })();
     const payload = {
       name: name.trim(),
       cnpj: cnpj.trim() || null,
       address: address.trim() || null,
       phone: phone.trim() || null,
       active,
+      label_settings: labelSettings,
     };
     const { error } = editing
       ? await supabase.from('companies').update(payload).eq('id', editing.id)
@@ -377,6 +389,40 @@ export function CompaniesPage() {
               Salve a empresa para enviar um logo personalizado.
             </p>
           )}
+
+          <div className="border-t border-neutral-200 pt-4">
+            <p className="mb-2 text-sm font-medium text-neutral-700">
+              Cor primária (etiquetas e página pública)
+            </p>
+            <div className="flex items-center gap-3">
+              <input
+                type="color"
+                value={primaryColor || '#059669'}
+                onChange={(e) => setPrimaryColor(e.target.value)}
+                className="h-10 w-12 cursor-pointer rounded border border-neutral-300"
+                aria-label="Cor primária"
+              />
+              <input
+                type="text"
+                value={primaryColor}
+                onChange={(e) => setPrimaryColor(e.target.value)}
+                placeholder="#059669"
+                className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+              />
+              {primaryColor ? (
+                <button
+                  type="button"
+                  onClick={() => setPrimaryColor('')}
+                  className="text-xs text-red-600 hover:underline"
+                >
+                  Limpar
+                </button>
+              ) : null}
+            </div>
+            <p className="mt-2 text-xs text-neutral-400">
+              Deixe em branco para usar o verde padrão.
+            </p>
+          </div>
         </div>
       </Modal>
 

@@ -78,6 +78,7 @@ export function PrintLabelPage() {
     setCompanyId,
     companyName,
     companyLogoUrl,
+    companyPrimaryColor,
   } = useCompanyScope();
 
   const [products, setProducts] = useState<ProductWithShelfLives[]>([]);
@@ -173,6 +174,7 @@ export function PrintLabelPage() {
   const labelData: LabelData = {
     companyName,
     companyLogoUrl,
+    primaryColor: companyPrimaryColor,
     productName: selectedProduct?.name ?? '',
     storageConditionLabel: STORAGE_CONDITION_LABELS[condition],
     manipulationText: manipValid ? formatDateTime(manipDate) : '',

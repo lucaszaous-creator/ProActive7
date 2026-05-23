@@ -51,6 +51,8 @@ export function useCompanyScope() {
     ? supabase.storage.from('branding').getPublicUrl(selectedCompany.logo_path)
         .data.publicUrl
     : null;
+  const companyPrimaryColor =
+    selectedCompany?.label_settings?.primary_color ?? null;
 
   return {
     isMaster,
@@ -59,6 +61,7 @@ export function useCompanyScope() {
     setCompanyId,
     companyName,
     companyLogoUrl,
+    companyPrimaryColor,
     selectedCompany,
   };
 }
