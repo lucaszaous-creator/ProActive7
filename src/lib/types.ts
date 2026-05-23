@@ -41,6 +41,8 @@ export interface Profile {
   full_name: string | null;
   email: string | null;
   active: boolean;
+  crn: string | null;
+  phone: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -186,6 +188,31 @@ export interface ChecklistRun {
   notes: string | null;
   photo_id: string | null;
   created_at: string;
+}
+
+export type DocumentType =
+  | 'mbp'
+  | 'pop_higienizacao'
+  | 'pop_agua'
+  | 'pop_manipuladores'
+  | 'pop_residuos'
+  | 'pop_manutencao';
+
+export type DocumentStatus = 'draft' | 'published' | 'archived';
+
+export interface ComplianceDocument {
+  id: string;
+  company_id: string;
+  type: DocumentType;
+  title: string;
+  content_md: string;
+  version: number;
+  status: DocumentStatus;
+  approved_by: string | null;
+  approved_at: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Photo {
