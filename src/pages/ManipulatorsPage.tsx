@@ -324,11 +324,22 @@ export function ManipulatorsPage() {
             Funcionários, ASO (RDC 216 art. 4.6.7) e treinamentos.
           </p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Novo manipulador
-        </Button>
+        {isMaster ? (
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Novo manipulador
+          </Button>
+        ) : null}
       </div>
+
+      {!isMaster ? (
+        <Card className="mb-4 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
+          <p className="text-xs text-amber-800 dark:text-amber-200">
+            Somente a nutricionista responsável técnica pode adicionar, editar
+            ou remover manipuladores, ASOs e treinamentos.
+          </p>
+        </Card>
+      ) : null}
 
       {isMaster && companies.length > 0 ? (
         <div className="mb-4">
@@ -468,38 +479,40 @@ export function ManipulatorsPage() {
                       </button>
                     ) : null}
                   </div>
-                  <div className="flex flex-wrap gap-1">
-                    <button
-                      onClick={() => openAsoModal(m)}
-                      aria-label="Registrar ASO"
-                      title="Registrar ASO"
-                      className="rounded-lg p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
-                    >
-                      <FileCheck2 size={16} />
-                    </button>
-                    <button
-                      onClick={() => openTrainingModal(m)}
-                      aria-label="Registrar treinamento"
-                      title="Registrar treinamento"
-                      className="rounded-lg p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
-                    >
-                      <GraduationCap size={16} />
-                    </button>
-                    <button
-                      onClick={() => openEdit(m)}
-                      aria-label="Editar"
-                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                    >
-                      <Pencil size={16} />
-                    </button>
-                    <button
-                      onClick={() => setDeleting(m)}
-                      aria-label="Excluir"
-                      className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
+                  {isMaster ? (
+                    <div className="flex flex-wrap gap-1">
+                      <button
+                        onClick={() => openAsoModal(m)}
+                        aria-label="Registrar ASO"
+                        title="Registrar ASO"
+                        className="rounded-lg p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                      >
+                        <FileCheck2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => openTrainingModal(m)}
+                        aria-label="Registrar treinamento"
+                        title="Registrar treinamento"
+                        className="rounded-lg p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
+                      >
+                        <GraduationCap size={16} />
+                      </button>
+                      <button
+                        onClick={() => openEdit(m)}
+                        aria-label="Editar"
+                        className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      >
+                        <Pencil size={16} />
+                      </button>
+                      <button
+                        onClick={() => setDeleting(m)}
+                        aria-label="Excluir"
+                        className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               </Card>
             );
