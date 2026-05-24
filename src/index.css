@@ -17,6 +17,13 @@ body {
   background-color: #0f172a;
 }
 
+/* Areas de impressao (portal direto em <body>, irmas de #root) ficam
+   ocultas na visualizacao normal — so aparecem dentro do @media print. */
+#print-label-area,
+.recipe-print-area {
+  display: none;
+}
+
 /* Impressao: a area da etiqueta/ficha eh montada via React Portal
    direto no <body>, como irma de #root. Aqui escondemos o app
    inteiro (#root) e mostramos somente o portal — evita paginas em
