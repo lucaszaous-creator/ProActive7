@@ -9,6 +9,7 @@ import {
   HardHat,
   Thermometer,
   TrendingUp,
+  Bug,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatDate } from '@/lib/dates';
@@ -41,6 +42,9 @@ interface ComplianceRow {
   manipulators_aso_ok: number;
   manipulators_aso_expired: number;
   manipulators_aso_missing: number;
+  has_pest_service_active: boolean;
+  last_pest_at: string | null;
+  next_pest_due_at: string | null;
 }
 
 const TIER_BG: Record<ScoreTier, string> = {
@@ -96,6 +100,7 @@ export function MasterPortfolio() {
         publishedDocs: r.docs_published,
         manipulatorsActive: r.manipulators_active,
         manipulatorsAsoOk: r.manipulators_aso_ok,
+        hasPestServiceActive: r.has_pest_service_active,
       });
       return {
         ...r,
@@ -192,6 +197,22 @@ export function MasterPortfolio() {
                         )
                       </span>
                     ) : null}
+                  </span>
+                  <span className="inline-flex items-center gap-1 whitespace-nowrap">
+                    <Bug size={12} />
+                    CIP:{' '}
+                    {r.has_pest_service_active ? (
+                      <span className="text-emerald-700 dark:text-emerald-300">
+                        em dia
+                      </span>
+                    ) : (
+                      <span className="font-semibold text-red-600 dark:text-red-300">
+                        sem servico vigente
+                      </span>
+                    )}
+                    {r.next_pest_due_at
+                      ? ` - vence ${formatDate(r.next_pest_due_at)}`
+                      : ''}
                   </span>
                   <span className="inline-flex items-center gap-1 whitespace-nowrap">
                     <CalendarDays size={12} />

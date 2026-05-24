@@ -190,6 +190,50 @@ export interface ChecklistRun {
   created_at: string;
 }
 
+export type PestServiceType =
+  | 'desinsetizacao'
+  | 'desratizacao'
+  | 'descupinizacao'
+  | 'sanitizacao'
+  | 'outro';
+
+export const PEST_SERVICE_TYPE_LABELS: Record<PestServiceType, string> = {
+  desinsetizacao: 'Desinsetização',
+  desratizacao: 'Desratização',
+  descupinizacao: 'Descupinização',
+  sanitizacao: 'Sanitização',
+  outro: 'Outro',
+};
+
+export interface PestControlProvider {
+  id: string;
+  company_id: string;
+  name: string;
+  cnpj: string | null;
+  license_number: string | null;
+  phone: string | null;
+  email: string | null;
+  notes: string | null;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PestControlService {
+  id: string;
+  company_id: string;
+  provider_id: string | null;
+  service_type: PestServiceType;
+  performed_at: string;
+  next_due_at: string | null;
+  products_used: string | null;
+  responsible_technician: string | null;
+  certificate_path: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Manipulator {
   id: string;
   company_id: string;
