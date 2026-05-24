@@ -12,6 +12,7 @@ const en = {
     agenda: 'Calendar',
     nonConformities: 'Non-conformities',
     manipulators: 'Food handlers',
+    pestControl: 'Pest control',
     reports: 'Reports',
     companies: 'Companies',
     users: 'Users',

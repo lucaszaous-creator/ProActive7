@@ -109,10 +109,36 @@ Deno.serve(async (req) => {
     }
   }
 
+  // Controle de pragas com next_due_at em <= 30 dias ou ja vencido.
+  const { data: pestRows } = await admin
+    .from('pest_control_services')
+    .select('company_id, next_due_at')
+    .not('next_due_at', 'is', null)
+    .lte('next_due_at', in30Date);
+
+  // Conta apenas o servico mais recente por empresa (proximo a vencer).
+  const pestLatestByCompany = new Map<string, string>();
+  for (const r of (pestRows ?? []) as Array<{
+    company_id: string;
+    next_due_at: string;
+  }>) {
+    const cur = pestLatestByCompany.get(r.company_id);
+    if (!cur || r.next_due_at > cur) {
+      pestLatestByCompany.set(r.company_id, r.next_due_at);
+    }
+  }
+  const pestCountsByCompany = new Map<string, number>();
+  for (const [companyId, due] of pestLatestByCompany) {
+    if (due <= in30Date) {
+      pestCountsByCompany.set(companyId, 1);
+    }
+  }
+
   if (
     countsByCompany.size === 0 &&
     ncCountsByCompany.size === 0 &&
-    asoCountsByCompany.size === 0
+    asoCountsByCompany.size === 0 &&
+    pestCountsByCompany.size === 0
   ) {
     return ok({ ok: true, sent: 0, message: 'Nada a notificar hoje.' });
   }
@@ -122,6 +148,7 @@ Deno.serve(async (req) => {
       ...countsByCompany.keys(),
       ...ncCountsByCompany.keys(),
       ...asoCountsByCompany.keys(),
+      ...pestCountsByCompany.keys(),
     ]),
   ];
 
@@ -165,7 +192,16 @@ Deno.serve(async (req) => {
       const asoCount = isMaster
         ? [...asoCountsByCompany.values()].reduce((a, b) => a + b, 0)
         : (asoCountsByCompany.get(s.profiles?.company_id ?? '') ?? 0);
-      if (labelCount === 0 && ncCount === 0 && asoCount === 0) return;
+      const pestCount = isMaster
+        ? [...pestCountsByCompany.values()].reduce((a, b) => a + b, 0)
+        : (pestCountsByCompany.get(s.profiles?.company_id ?? '') ?? 0);
+      if (
+        labelCount === 0 &&
+        ncCount === 0 &&
+        asoCount === 0 &&
+        pestCount === 0
+      )
+        return;
 
       const parts: string[] = [];
       if (labelCount > 0) {
@@ -189,13 +225,22 @@ Deno.serve(async (req) => {
             : `${asoCount} manipuladores com ASO vencendo/vencido`,
         );
       }
+      if (pestCount > 0) {
+        parts.push(
+          pestCount === 1
+            ? '1 empresa com controle de pragas a renovar'
+            : `${pestCount} empresas com controle de pragas a renovar`,
+        );
+      }
 
       const url =
-        asoCount > 0
-          ? '/manipuladores'
-          : ncCount > 0
-            ? '/nao-conformidades'
-            : '/';
+        pestCount > 0
+          ? '/controle-pragas'
+          : asoCount > 0
+            ? '/manipuladores'
+            : ncCount > 0
+              ? '/nao-conformidades'
+              : '/';
 
       const payload = JSON.stringify({
         title:

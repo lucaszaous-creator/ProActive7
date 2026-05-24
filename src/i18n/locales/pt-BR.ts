@@ -12,6 +12,7 @@ const ptBR = {
     agenda: 'Agenda',
     nonConformities: 'Não-conformidades',
     manipulators: 'Manipuladores',
+    pestControl: 'Controle de pragas',
     reports: 'Relatórios',
     companies: 'Empresas',
     users: 'Usuários',

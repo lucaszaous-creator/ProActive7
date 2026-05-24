@@ -19,6 +19,7 @@ import {
   AlertOctagon,
   HardHat,
   CalendarRange,
+  Bug,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -52,6 +53,7 @@ const NAV_ITEMS: NavItem[] = [
     icon: AlertOctagon,
   },
   { to: '/manipuladores', labelKey: 'nav.manipulators', icon: HardHat },
+  { to: '/controle-pragas', labelKey: 'nav.pestControl', icon: Bug },
   { to: '/relatorios', labelKey: 'nav.reports', icon: BarChart3 },
   {
     to: '/admin/empresas',

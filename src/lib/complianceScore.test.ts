@@ -34,6 +34,7 @@ describe('calculateComplianceScore', () => {
       publishedDocs: 6,
       manipulatorsActive: 5,
       manipulatorsAsoOk: 5,
+      hasPestServiceActive: true,
     });
     expect(r?.total).toBe(100);
   });
@@ -51,19 +52,35 @@ describe('calculateComplianceScore', () => {
       publishedDocs: 0,
       manipulatorsActive: 5,
       manipulatorsAsoOk: 0,
+      hasPestServiceActive: false,
     });
     expect(r?.total).toBe(0);
   });
 
   it('parcela de NCs penaliza atraso', () => {
-    // 2 de 5 atrasadas = 60% no prazo -> 30*0.6 = 18
+    // 2 de 5 atrasadas = 60% no prazo -> 25*0.6 = 15
     const r = calculateComplianceScore({
       ...empty,
       ncTotal30d: 5,
       ncOverdue30d: 2,
       hasAuditLast90d: true,
     });
-    expect(r?.ncPart).toBe(18);
+    expect(r?.ncPart).toBe(15);
+  });
+
+  it('CIP ativo vale 5 pontos', () => {
+    const r1 = calculateComplianceScore({
+      ...empty,
+      publishedDocs: 6,
+      hasPestServiceActive: true,
+    });
+    const r2 = calculateComplianceScore({
+      ...empty,
+      publishedDocs: 6,
+      hasPestServiceActive: false,
+    });
+    expect(r1?.pestPart).toBe(5);
+    expect(r2?.pestPart).toBe(0);
   });
 
   it('documentos sao all-or-nothing', () => {
@@ -95,7 +112,7 @@ describe('calculateComplianceScore', () => {
   it('mix realista produz score intermediario', () => {
     const r = calculateComplianceScore({
       ncTotal30d: 4,
-      ncOverdue30d: 1, // 75% no prazo -> 22.5
+      ncOverdue30d: 1, // 75% no prazo -> 25*0.75 = 18.75
       checklistsPlanned30d: 30,
       checklistsRan30d: 24, // 80% -> 16
       hasAuditLast90d: true, // 20
@@ -104,8 +121,9 @@ describe('calculateComplianceScore', () => {
       publishedDocs: 6, // 10
       manipulatorsActive: 5,
       manipulatorsAsoOk: 4, // 80% -> 8
+      hasPestServiceActive: true, // 5
     });
-    expect(r?.total).toBeCloseTo(85.5, 1);
+    expect(r?.total).toBeCloseTo(86.75, 1);
   });
 });
 
