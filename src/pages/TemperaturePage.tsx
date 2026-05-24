@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Plus, Pencil, Thermometer, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDateTime } from '@/lib/dates';
@@ -31,6 +32,7 @@ interface LogWithEquip extends TemperatureLog {
 }
 
 export function TemperaturePage() {
+  usePageTitle('Temperatura');
   const { profile } = useAuth();
   const { isMaster, companies, companyId, setCompanyId } = useCompanyScope();
 

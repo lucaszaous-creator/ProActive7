@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Printer, Bluetooth, BluetoothOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { computeExpiry, formatDateTime, toLocalInputValue } from '@/lib/dates';
@@ -71,6 +72,7 @@ function applyPageStyle(w: number, h: number) {
 }
 
 export function PrintLabelPage() {
+  usePageTitle('Imprimir etiqueta');
   const { profile } = useAuth();
   const {
     isMaster,

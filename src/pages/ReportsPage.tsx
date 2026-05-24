@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { STORAGE_CONDITION_LABELS, type StorageCondition } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
@@ -83,6 +84,7 @@ function Bar({
 }
 
 export function ReportsPage() {
+  usePageTitle('Relatorios');
   const { isMaster, companies, companyId, setCompanyId } = useCompanyScope();
   const [period, setPeriod] = useState<(typeof PERIODS)[number]['id']>('30');
   const [rows, setRows] = useState<LabelRow[]>([]);

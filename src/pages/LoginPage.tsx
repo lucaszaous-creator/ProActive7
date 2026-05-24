@@ -1,14 +1,15 @@
 import { useState, type FormEvent } from 'react';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Tag } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { FullPageSpinner } from '@/components/ui/Spinner';
 
 export function LoginPage() {
+  usePageTitle('Entrar');
   const { session, loading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -58,14 +59,14 @@ export function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4 dark:bg-slate-950">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex flex-col items-center gap-2">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-600 text-white">
-            <Tag size={24} />
+          <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-600 text-lg font-bold text-white">
+            P7
           </span>
           <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Etiqueta
+            ProActive7
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Validade e controle de alimentos
+          <p className="text-center text-sm text-neutral-500 dark:text-neutral-400">
+            Consultoria Nutricional · Segurança Alimentar
           </p>
         </div>
 

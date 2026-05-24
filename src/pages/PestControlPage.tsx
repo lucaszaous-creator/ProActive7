@@ -11,6 +11,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDate } from '@/lib/dates';
@@ -81,6 +82,7 @@ function emptyServiceForm(): ServiceForm {
 }
 
 export function PestControlPage() {
+  usePageTitle('Controle de pragas');
   const { isMaster } = useAuth();
   const { companies, companyId, setCompanyId } = useCompanyScope();
 

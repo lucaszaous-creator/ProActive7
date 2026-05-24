@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Tag } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { formatDateTime } from '@/lib/dates';
 import { STORAGE_CONDITION_LABELS, type StorageCondition } from '@/lib/types';
 import { allergenLabel } from '@/lib/allergens';
 import { FullPageSpinner } from '@/components/ui/Spinner';
+import {
+  BRAND_NAME,
+  BRAND_TAGLINE,
+  SITE_URL,
+  usePageTitle,
+} from '@/lib/usePageTitle';
 
 interface PublicLabel {
   product_name: string;
@@ -19,6 +24,19 @@ interface PublicLabel {
   allergens: string[];
   company_name: string;
   company_logo_path: string | null;
+}
+
+/** Adiciona/atualiza <meta name="..."> ou <meta property="..."> no head. */
+function upsertMeta(attr: 'name' | 'property', key: string, content: string) {
+  let el = document.head.querySelector<HTMLMetaElement>(
+    `meta[${attr}="${key}"]`,
+  );
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute(attr, key);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', content);
 }
 
 export function PublicLabelPage() {
@@ -43,18 +61,36 @@ export function PublicLabelPage() {
     });
   }, [id]);
 
+  // Title dinamico + meta description + og:title/description para
+  // preview de WhatsApp/redes ao compartilhar o QR.
+  usePageTitle(label?.product_name ?? null);
+
+  useEffect(() => {
+    if (!label) return;
+    const description = `Rastreabilidade de ${label.product_name} — ${label.company_name}. Manipulado em ${formatDateTime(label.manipulation_at)}, válido até ${formatDateTime(label.expiry_at)}.`;
+    upsertMeta('name', 'description', description);
+    upsertMeta(
+      'property',
+      'og:title',
+      `${label.product_name} · ${label.company_name}`,
+    );
+    upsertMeta('property', 'og:description', description);
+    upsertMeta('property', 'og:url', `${SITE_URL}/etiqueta/${id}`);
+  }, [label, id]);
+
   if (loading) return <FullPageSpinner />;
 
   if (notFound || !label) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-slate-50 p-6 text-center">
+      <main className="flex min-h-screen flex-col items-center justify-center gap-3 bg-slate-50 p-6 text-center">
         <h1 className="text-lg font-semibold text-neutral-800">
           Etiqueta não encontrada
         </h1>
         <p className="max-w-sm text-sm text-neutral-600">
           Este QR aponta para uma etiqueta inexistente ou que foi removida.
         </p>
-      </div>
+        <BrandFooter />
+      </main>
     );
   }
 
@@ -65,28 +101,32 @@ export function PublicLabelPage() {
     : null;
 
   return (
-    <div className="flex min-h-screen items-start justify-center bg-slate-50 p-4">
+    <main className="flex min-h-screen items-start justify-center bg-slate-50 p-4">
       <div className="w-full max-w-md">
         <div className="mb-4 flex items-center gap-2">
           {logoUrl ? (
-            <img src={logoUrl} alt="" className="h-8 object-contain" />
+            <img
+              src={logoUrl}
+              alt={label.company_name}
+              className="h-8 object-contain"
+            />
           ) : (
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-white">
-              <Tag size={18} />
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-[10px] font-bold text-white">
+              P7
             </span>
           )}
-          <span className="text-sm font-medium text-neutral-700">
+          <span className="min-w-0 flex-1 truncate text-sm font-medium text-neutral-700">
             {label.company_name}
           </span>
         </div>
 
-        <div className="rounded-xl border border-neutral-200 bg-white p-5">
+        <article className="rounded-xl border border-neutral-200 bg-white p-5">
           <p className="mb-1 text-xs uppercase tracking-wide text-neutral-500">
             Produto
           </p>
-          <p className="mb-4 text-lg font-semibold text-neutral-900">
+          <h1 className="mb-4 text-lg font-semibold text-neutral-900">
             {label.product_name}
-          </p>
+          </h1>
 
           <div
             className={`mb-4 rounded-lg p-3 text-sm ${
@@ -132,13 +172,26 @@ export function PublicLabelPage() {
               </p>
             </div>
           ) : null}
-        </div>
+        </article>
 
-        <p className="mt-4 text-center text-xs text-neutral-400">
-          Rastreabilidade via QR · Etiqueta
-        </p>
+        <BrandFooter />
+
+        {/* JSON-LD Organization para rich result no Google */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: BRAND_NAME,
+              description: BRAND_TAGLINE,
+              url: SITE_URL,
+              logo: `${SITE_URL}/proactive7-logo.svg`,
+            }),
+          }}
+        />
       </div>
-    </div>
+    </main>
   );
 }
 
@@ -152,7 +205,24 @@ function Row({
   return (
     <div className="flex justify-between gap-3">
       <dt className="text-neutral-500">{label}</dt>
-      <dd className="text-right">{children}</dd>
+      <dd className="break-words text-right">{children}</dd>
     </div>
+  );
+}
+
+function BrandFooter() {
+  return (
+    <footer className="mt-4 flex flex-col items-center gap-2 text-center">
+      <p className="text-xs text-neutral-400">Rastreabilidade via QR Code</p>
+      <a
+        href={SITE_URL}
+        className="inline-flex items-center gap-1.5 text-xs text-neutral-500 hover:text-emerald-700"
+      >
+        <span className="flex h-5 w-5 items-center justify-center rounded bg-emerald-600 text-[9px] font-bold text-white">
+          P7
+        </span>
+        Sistema {BRAND_NAME} · {BRAND_TAGLINE}
+      </a>
+    </footer>
   );
 }

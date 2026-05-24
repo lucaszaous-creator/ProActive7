@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { formatDateTime } from '@/lib/dates';
 import { Card } from '@/components/ui/Card';
@@ -109,6 +110,7 @@ interface Stats {
 }
 
 export function DashboardPage() {
+  usePageTitle('Painel');
   const { isMaster, profile } = useAuth();
   const [stats, setStats] = useState<Stats | null>(null);
 

@@ -12,6 +12,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDateTime } from '@/lib/dates';
@@ -33,6 +34,7 @@ import {
   getPopTemplate,
 } from '@/lib/popTemplates';
 import {
+  drawPdfFooter,
   drawPdfHeader,
   plainTextFromMarkdown,
   urlToDataUrl,
@@ -53,6 +55,7 @@ const STATUS_COLOR: Record<DocumentStatus, string> = {
 };
 
 export function DocumentsPage() {
+  usePageTitle('Documentos');
   const { isMaster, profile } = useAuth();
   const {
     companies,
@@ -258,6 +261,7 @@ export function DocumentsPage() {
       y += 5;
     }
 
+    drawPdfFooter(pdf);
     pdf.save(`${doc.title.replace(/\s+/g, '_')}_v${doc.version}.pdf`);
   }
 

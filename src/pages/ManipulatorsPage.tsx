@@ -11,6 +11,7 @@ import {
   FileText as FileTextIcon,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDate } from '@/lib/dates';
@@ -56,6 +57,7 @@ const emptyForm: Form = {
 };
 
 export function ManipulatorsPage() {
+  usePageTitle('Manipuladores');
   const { isMaster } = useAuth();
   const { companies, companyId, setCompanyId } = useCompanyScope();
 

@@ -1,8 +1,21 @@
 {
-  "name": "etiqueta-saas",
+  "name": "proactive7",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
+  "description": "Sistema ProActive7 — Consultoria nutricional e segurança alimentar para serviços de alimentação (ANVISA RDC 216).",
+  "homepage": "https://pro-active7.vercel.app",
+  "keywords": [
+    "nutricionista",
+    "consultoria-nutricional",
+    "anvisa",
+    "rdc-216",
+    "seguranca-alimentar",
+    "etiquetas-validade",
+    "boas-praticas",
+    "foodservice",
+    "compliance"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",

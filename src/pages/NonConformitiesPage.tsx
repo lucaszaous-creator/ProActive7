@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { AlertTriangle, Plus, Pencil, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDate } from '@/lib/dates';
@@ -62,6 +63,7 @@ const emptyForm: Form = {
 };
 
 export function NonConformitiesPage() {
+  usePageTitle('Nao-conformidades');
   const { isMaster, profile } = useAuth();
   const { companies, companyId } = useCompanyScope();
 

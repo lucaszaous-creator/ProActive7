@@ -24,7 +24,7 @@ self.addEventListener('push', (event) => {
   } catch {
     payload = { body: event.data?.text() ?? '' };
   }
-  const title = payload.title ?? 'Etiqueta';
+  const title = payload.title ?? 'ProActive7';
   event.waitUntil(
     self.registration.showNotification(title, {
       body: payload.body ?? '',

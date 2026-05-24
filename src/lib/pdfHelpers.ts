@@ -1,5 +1,9 @@
 import { jsPDF } from 'jspdf';
 
+const PRODUCT_NAME = 'ProActive7';
+const PRODUCT_TAGLINE = 'Consultoria Nutricional';
+const PRODUCT_URL = 'pro-active7.vercel.app';
+
 export interface PdfHeaderInfo {
   companyName: string;
   companyCnpj?: string | null;
@@ -53,6 +57,36 @@ export function drawPdfHeader(doc: jsPDF, info: PdfHeaderInfo): number {
   doc.setDrawColor(180);
   doc.line(14, y, pageWidth - 14, y);
   return y + 4;
+}
+
+/**
+ * Desenha o rodape de marca em TODAS as paginas do documento.
+ * Deve ser chamado depois de toda a renderizacao (autoTable etc).
+ */
+export function drawPdfFooter(doc: jsPDF): void {
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const pageCount = doc.getNumberOfPages();
+  const generatedAt = new Date().toLocaleDateString('pt-BR');
+
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.setTextColor(120);
+    doc.setDrawColor(220);
+    doc.line(14, pageHeight - 10, pageWidth - 14, pageHeight - 10);
+    doc.text(
+      `${PRODUCT_NAME} — ${PRODUCT_TAGLINE} · ${PRODUCT_URL}`,
+      14,
+      pageHeight - 6,
+    );
+    doc.text(`Pagina ${i} de ${pageCount}`, pageWidth / 2, pageHeight - 6, {
+      align: 'center',
+    });
+    doc.text(generatedAt, pageWidth - 14, pageHeight - 6, { align: 'right' });
+    doc.setTextColor(0);
+  }
 }
 
 /** Carrega uma imagem remota como DataURL para inserir no PDF. */
