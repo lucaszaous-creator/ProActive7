@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, Printer, ChefHat } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -488,45 +489,50 @@ export function RecipesPage() {
         onCancel={() => setDeleting(null)}
       />
 
-      {/* Area exclusiva de impressao da ficha. */}
-      {printing ? (
-        <div className="recipe-print-area absolute -left-[9999px] top-0 p-6 text-black">
-          <h1 className="mb-1 text-2xl font-bold">{printing.name}</h1>
-          <p className="mb-4 text-sm text-neutral-600">{companyName}</p>
-          <div className="mb-4 grid grid-cols-2 gap-2 text-sm">
-            {printing.yield_amount ? (
-              <div>
-                <strong>Rendimento:</strong> {printing.yield_amount}
+      {/* Area exclusiva de impressao da ficha — portal direto em body. */}
+      {printing && typeof document !== 'undefined'
+        ? createPortal(
+            <div className="recipe-print-area p-6 text-black">
+              <h1 className="mb-1 text-2xl font-bold">{printing.name}</h1>
+              <p className="mb-4 text-sm text-neutral-600">{companyName}</p>
+              <div className="mb-4 grid grid-cols-2 gap-2 text-sm">
+                {printing.yield_amount ? (
+                  <div>
+                    <strong>Rendimento:</strong> {printing.yield_amount}
+                  </div>
+                ) : null}
+                {printing.prep_time_minutes ? (
+                  <div>
+                    <strong>Tempo:</strong> {printing.prep_time_minutes} min
+                  </div>
+                ) : null}
               </div>
-            ) : null}
-            {printing.prep_time_minutes ? (
-              <div>
-                <strong>Tempo:</strong> {printing.prep_time_minutes} min
-              </div>
-            ) : null}
-          </div>
-          <h2 className="mb-2 text-lg font-semibold">Ingredientes</h2>
-          <ul className="mb-4 ml-5 list-disc text-sm">
-            {printing.recipe_items
-              .slice()
-              .sort((a, b) => a.sort_order - b.sort_order)
-              .map((i) => (
-                <li key={i.id}>
-                  {i.quantity} {i.unit} —{' '}
-                  {i.product?.name ?? 'Produto removido'}
-                </li>
-              ))}
-          </ul>
-          {printing.instructions ? (
-            <>
-              <h2 className="mb-2 text-lg font-semibold">Modo de preparo</h2>
-              <p className="whitespace-pre-wrap text-sm">
-                {printing.instructions}
-              </p>
-            </>
-          ) : null}
-        </div>
-      ) : null}
+              <h2 className="mb-2 text-lg font-semibold">Ingredientes</h2>
+              <ul className="mb-4 ml-5 list-disc text-sm">
+                {printing.recipe_items
+                  .slice()
+                  .sort((a, b) => a.sort_order - b.sort_order)
+                  .map((i) => (
+                    <li key={i.id}>
+                      {i.quantity} {i.unit} —{' '}
+                      {i.product?.name ?? 'Produto removido'}
+                    </li>
+                  ))}
+              </ul>
+              {printing.instructions ? (
+                <>
+                  <h2 className="mb-2 text-lg font-semibold">
+                    Modo de preparo
+                  </h2>
+                  <p className="whitespace-pre-wrap text-sm">
+                    {printing.instructions}
+                  </p>
+                </>
+              ) : null}
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

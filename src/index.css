@@ -17,22 +17,24 @@ body {
   background-color: #0f172a;
 }
 
-/* Quando imprimir, mostra apenas a area da etiqueta.
-   O tamanho exato (@page size) e injetado dinamicamente em PrintLabelPage. */
+/* Impressao: a area da etiqueta/ficha eh montada via React Portal
+   direto no <body>, como irma de #root. Aqui escondemos o app
+   inteiro (#root) e mostramos somente o portal — evita paginas em
+   branco que apareciam com visibility: hidden (que mantem o espaco
+   do conteudo na hora de paginar). O tamanho exato (@page size)
+   eh injetado dinamicamente em PrintLabelPage. */
 @media print {
-  body * {
-    visibility: hidden;
+  html,
+  body {
+    background: white;
+    margin: 0 !important;
+    padding: 0 !important;
   }
-  #print-label-area,
-  #print-label-area *,
-  .recipe-print-area,
-  .recipe-print-area * {
-    visibility: visible;
+  body > #root {
+    display: none !important;
   }
-  #print-label-area,
-  .recipe-print-area {
-    position: absolute;
-    top: 0;
-    left: 0;
+  body > #print-label-area,
+  body > .recipe-print-area {
+    display: block !important;
   }
 }

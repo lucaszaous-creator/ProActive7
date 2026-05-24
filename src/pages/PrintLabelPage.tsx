@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { Printer, Bluetooth, BluetoothOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -632,17 +633,30 @@ export function PrintLabelPage() {
         </div>
       )}
 
-      {/* Área exclusiva de impressão: fora da tela, revelada pelo @media print */}
-      <div id="print-label-area" className="absolute -left-[9999px] top-0">
-        {Array.from({ length: quantity }).map((_, i) => (
-          <div
-            key={i}
-            style={{ breakAfter: i < quantity - 1 ? 'page' : 'auto' }}
-          >
-            <LabelPreview data={labelData} widthMm={size.w} heightMm={size.h} />
-          </div>
-        ))}
-      </div>
+      {/* Area exclusiva de impressao: renderizada via Portal direto em
+          <body>, fora da arvore #root. O @media print esconde #root
+          e revela apenas este node, sem deixar paginas em branco. */}
+      {typeof document !== 'undefined'
+        ? createPortal(
+            <div id="print-label-area">
+              {Array.from({ length: quantity }).map((_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    breakAfter: i < quantity - 1 ? 'page' : 'auto',
+                  }}
+                >
+                  <LabelPreview
+                    data={labelData}
+                    widthMm={size.w}
+                    heightMm={size.h}
+                  />
+                </div>
+              ))}
+            </div>,
+            document.body,
+          )
+        : null}
 
       <ConfirmDialog
         open={confirmPrint !== null}
