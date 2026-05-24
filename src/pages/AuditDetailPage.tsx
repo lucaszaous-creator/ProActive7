@@ -30,7 +30,7 @@ import type {
   AuditTemplate,
 } from '@/lib/types';
 import { calculateAuditScore, scoresByCategory } from '@/lib/auditScore';
-import { drawPdfHeader, urlToDataUrl } from '@/lib/pdfHelpers';
+import { drawPdfFooter, drawPdfHeader, urlToDataUrl } from '@/lib/pdfHelpers';
 
 const RESULT_OPTIONS: {
   value: AuditResult;
@@ -424,6 +424,7 @@ export function AuditDetailPage() {
       );
     }
 
+    drawPdfFooter(pdf);
     pdf.save(
       `visita_${selectedCompany?.name?.replace(/\s+/g, '_') ?? 'empresa'}_${audit.id.slice(0, 8)}.pdf`,
     );

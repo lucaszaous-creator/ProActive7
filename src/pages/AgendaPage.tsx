@@ -9,6 +9,7 @@ import {
   CalendarClock,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { formatDate } from '@/lib/dates';
 import { Card } from '@/components/ui/Card';
@@ -47,6 +48,7 @@ const STATUS_LABEL_SHORT: Record<AuditStatus, string> = {
 };
 
 export function AgendaPage() {
+  usePageTitle('Agenda');
   const { isMaster } = useAuth();
   const today = useMemo(() => new Date(), []);
   const [cursor, setCursor] = useState(

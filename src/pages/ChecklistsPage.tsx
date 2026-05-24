@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, ClipboardCheck, Play } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDateTime } from '@/lib/dates';
@@ -65,6 +66,7 @@ interface RunWithTemplate extends ChecklistRun {
 }
 
 export function ChecklistsPage() {
+  usePageTitle('Checklists');
   const { profile } = useAuth();
   const { isMaster, companies, companyId, setCompanyId } = useCompanyScope();
 

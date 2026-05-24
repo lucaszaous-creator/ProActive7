@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { Upload, Trash2, ImageOff } from 'lucide-react';
 import { differenceInCalendarDays } from 'date-fns';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDate } from '@/lib/dates';
@@ -26,6 +27,7 @@ function daysLeft(uploadedAt: string): number {
 }
 
 export function PhotosPage() {
+  usePageTitle('Fotos');
   const { profile } = useAuth();
   const { isMaster, companies, companyId, setCompanyId } = useCompanyScope();
 

@@ -22,10 +22,10 @@ export default defineConfig({
         'pwa-512-maskable.png',
       ],
       manifest: {
-        name: 'Etiqueta — Validade de Alimentos',
-        short_name: 'Etiqueta',
+        name: 'ProActive7 — Consultoria Nutricional',
+        short_name: 'ProActive7',
         description:
-          'Imprima etiquetas de validade e controle alimentos manipulados.',
+          'ProActive7 — etiquetas de validade, POPs, manipuladores e compliance ANVISA RDC 216 para serviços de alimentação.',
         theme_color: '#059669',
         background_color: '#f8fafc',
         display: 'standalone',

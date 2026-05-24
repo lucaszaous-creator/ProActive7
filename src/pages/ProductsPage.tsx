@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, Search, FileUp } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import {
@@ -60,6 +61,7 @@ function shelfSummary(rows: ProductShelfLife[]): string {
 }
 
 export function ProductsPage() {
+  usePageTitle('Produtos');
   const { profile } = useAuth();
   const { isMaster, companies, companyId, setCompanyId } = useCompanyScope();
 

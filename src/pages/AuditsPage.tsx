@@ -10,6 +10,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDateTime } from '@/lib/dates';
@@ -48,6 +49,7 @@ const STATUS_STYLE: Record<AuditStatus, { icon: typeof Clock; bg: string }> = {
 };
 
 export function AuditsPage() {
+  usePageTitle('Visitas tecnicas');
   const { isMaster, profile } = useAuth();
   const { companies, companyId } = useCompanyScope();
 
