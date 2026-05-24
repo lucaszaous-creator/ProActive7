@@ -37,7 +37,7 @@ export function PropertyTodayTasks({
 }: PropertyTodayTasksProps) {
   if (loading) {
     return (
-      <section className="mb-5 grid grid-cols-1 gap-3 lg:grid-cols-2">
+      <section className="mb-5 grid grid-cols-1 gap-3 md:grid-cols-2">
         <Card>
           <Skeleton className="mb-3 h-4 w-1/3" />
           <Skeleton className="mb-2 h-8" />
@@ -79,7 +79,7 @@ export function PropertyTodayTasks({
   }
 
   return (
-    <section className="mb-5 grid grid-cols-1 gap-3 lg:grid-cols-2">
+    <section className="mb-5 grid grid-cols-1 gap-3 md:grid-cols-2">
       <Card>
         <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
           <ClipboardCheck

@@ -331,7 +331,7 @@ export function ProductsPage() {
                 type="checkbox"
                 checked={showInactive}
                 onChange={(e) => setShowInactive(e.target.checked)}
-                className="h-4 w-4 accent-emerald-600"
+                className="h-5 w-5 accent-emerald-600"
               />
               Mostrar inativos
             </label>
@@ -392,14 +392,14 @@ export function ProductsPage() {
                         <button
                           onClick={() => openEdit(p)}
                           aria-label="Editar"
-                          className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100"
+                          className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
                         >
                           <Pencil size={16} />
                         </button>
                         <button
                           onClick={() => setDeleting(p)}
                           aria-label="Excluir"
-                          className="rounded-lg p-1.5 text-red-500 hover:bg-red-50"
+                          className="rounded-lg p-2.5 text-red-500 hover:bg-red-50"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -553,7 +553,7 @@ export function ProductsPage() {
               type="checkbox"
               checked={active}
               onChange={(e) => setActive(e.target.checked)}
-              className="h-4 w-4 accent-emerald-600"
+              className="h-5 w-5 accent-emerald-600"
             />
             Produto ativo
           </label>

@@ -253,7 +253,7 @@ export function UsersPage() {
                         <button
                           onClick={() => openEdit(u)}
                           aria-label="Editar"
-                          className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100"
+                          className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
                         >
                           <Pencil size={16} />
                         </button>
@@ -266,7 +266,7 @@ export function UsersPage() {
                               ? 'Você não pode excluir o próprio usuário'
                               : 'Excluir'
                           }
-                          className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+                          className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -359,7 +359,7 @@ export function UsersPage() {
                 checked={active}
                 onChange={(e) => setActive(e.target.checked)}
                 disabled={editing.id === callerProfile?.id}
-                className="h-4 w-4 accent-emerald-600"
+                className="h-5 w-5 accent-emerald-600"
               />
               Usuário ativo
               {editing.id === callerProfile?.id && (

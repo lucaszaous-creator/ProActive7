@@ -520,7 +520,7 @@ export function AuditDetailPage() {
           <p className="mb-2 text-sm font-semibold text-neutral-700 dark:text-neutral-300">
             Score por categoria
           </p>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
             {categories.map((c) => (
               <div
                 key={c.category}
@@ -571,7 +571,7 @@ export function AuditDetailPage() {
                               type="button"
                               disabled={isCompleted}
                               onClick={() => setResult(it.id, opt.value)}
-                              className={`inline-flex h-8 w-10 items-center justify-center gap-1 rounded-lg border text-xs font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                              className={`inline-flex h-11 w-14 items-center justify-center gap-1 rounded-lg border text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
                                 active ? opt.activeClasses : opt.classes
                               }`}
                             >
@@ -667,7 +667,7 @@ export function AuditDetailPage() {
               type="checkbox"
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
-              className="h-4 w-4 accent-emerald-600"
+              className="h-5 w-5 accent-emerald-600"
             />
             Li e revisei todas as respostas e observacoes.
           </label>

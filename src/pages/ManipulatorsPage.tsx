@@ -361,7 +361,7 @@ export function ManipulatorsPage() {
       ) : null}
 
       {list.length > 0 ? (
-        <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
           <Card>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
               Ativos
@@ -482,12 +482,12 @@ export function ManipulatorsPage() {
                     ) : null}
                   </div>
                   {isMaster ? (
-                    <div className="flex flex-wrap gap-1">
+                    <div className="flex flex-wrap gap-2">
                       <button
                         onClick={() => openAsoModal(m)}
                         aria-label="Registrar ASO"
                         title="Registrar ASO"
-                        className="rounded-lg p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                        className="rounded-lg p-2.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
                       >
                         <FileCheck2 size={16} />
                       </button>
@@ -495,21 +495,21 @@ export function ManipulatorsPage() {
                         onClick={() => openTrainingModal(m)}
                         aria-label="Registrar treinamento"
                         title="Registrar treinamento"
-                        className="rounded-lg p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
+                        className="rounded-lg p-2.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
                       >
                         <GraduationCap size={16} />
                       </button>
                       <button
                         onClick={() => openEdit(m)}
                         aria-label="Editar"
-                        className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                       >
                         <Pencil size={16} />
                       </button>
                       <button
                         onClick={() => setDeleting(m)}
                         aria-label="Excluir"
-                        className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                        className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -580,7 +580,7 @@ export function ManipulatorsPage() {
               type="checkbox"
               checked={form.active}
               onChange={(e) => setForm({ ...form, active: e.target.checked })}
-              className="h-4 w-4 accent-emerald-600"
+              className="h-5 w-5 accent-emerald-600"
             />
             Ativo
           </label>

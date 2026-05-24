@@ -64,7 +64,7 @@ export function MasterKPIs({ stats }: MasterKPIsProps) {
           ? 'amber'
           : 'red';
   return (
-    <section className="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <section className="mb-5 grid grid-cols-2 gap-3 md:grid-cols-4">
       <Kpi
         label="Score médio"
         value={

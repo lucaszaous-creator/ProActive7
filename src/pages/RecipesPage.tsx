@@ -303,21 +303,21 @@ export function RecipesPage() {
                   <button
                     onClick={() => handlePrintRecipe(r)}
                     aria-label="Imprimir"
-                    className="rounded-lg p-1.5 text-emerald-600 hover:bg-emerald-50"
+                    className="rounded-lg p-2.5 text-emerald-600 hover:bg-emerald-50"
                   >
                     <Printer size={16} />
                   </button>
                   <button
                     onClick={() => openEdit(r)}
                     aria-label="Editar"
-                    className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100"
+                    className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
                   >
                     <Pencil size={16} />
                   </button>
                   <button
                     onClick={() => setDeleting(r)}
                     aria-label="Excluir"
-                    className="rounded-lg p-1.5 text-red-500 hover:bg-red-50"
+                    className="rounded-lg p-2.5 text-red-500 hover:bg-red-50"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -354,7 +354,7 @@ export function RecipesPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               id="r-yield"
               label="Rendimento (opcional)"
@@ -471,7 +471,7 @@ export function RecipesPage() {
               type="checkbox"
               checked={active}
               onChange={(e) => setActive(e.target.checked)}
-              className="h-4 w-4 accent-emerald-600"
+              className="h-5 w-5 accent-emerald-600"
             />
             Ficha ativa
           </label>

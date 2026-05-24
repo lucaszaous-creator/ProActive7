@@ -266,7 +266,7 @@ export function TemperaturePage() {
                     <button
                       onClick={() => openEdit(e)}
                       aria-label="Editar"
-                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100"
+                      className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
                     >
                       <Pencil size={16} />
                     </button>
@@ -409,7 +409,7 @@ export function TemperaturePage() {
               </option>
             ))}
           </Select>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               id="eq-min"
               label="Temp. mínima (°C)"
@@ -432,7 +432,7 @@ export function TemperaturePage() {
               type="checkbox"
               checked={equipActive}
               onChange={(e) => setEquipActive(e.target.checked)}
-              className="h-4 w-4 accent-emerald-600"
+              className="h-5 w-5 accent-emerald-600"
             />
             Equipamento ativo
           </label>

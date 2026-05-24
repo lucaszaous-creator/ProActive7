@@ -9,6 +9,7 @@ import {
   Users,
   LogOut,
   Menu,
+  X,
   Thermometer,
   ClipboardCheck,
   BarChart3,
@@ -89,12 +90,19 @@ export function Layout() {
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex items-center justify-center border-b border-neutral-200 bg-white px-4 py-4 dark:border-neutral-800 dark:bg-white">
+        <div className="relative flex items-center justify-center border-b border-neutral-200 bg-white px-4 py-4 dark:border-neutral-800 dark:bg-white">
           <img
             src="/proactive7-logo.svg"
             alt="ProActive7 — Boa alimentação, bem-estar e saúde!"
             className="h-12 w-auto max-w-full"
           />
+          <button
+            onClick={() => setMobileOpen(false)}
+            aria-label="Fechar menu"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 lg:hidden"
+          >
+            <X size={22} />
+          </button>
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
@@ -148,7 +156,7 @@ export function Layout() {
           <button
             onClick={() => setMobileOpen(true)}
             aria-label={t('layout.openMenu')}
-            className="rounded-lg p-1.5 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+            className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
           >
             <Menu size={22} />
           </button>
