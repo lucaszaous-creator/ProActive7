@@ -26,8 +26,8 @@ export default defineConfig({
         short_name: 'ProActive7',
         description:
           'ProActive7 — etiquetas de validade, POPs, manipuladores e compliance ANVISA RDC 216 para serviços de alimentação.',
-        theme_color: '#059669',
-        background_color: '#f8fafc',
+        theme_color: '#14b8a6',
+        background_color: '#ffffff',
         display: 'standalone',
         orientation: 'portrait',
         lang: 'pt-BR',

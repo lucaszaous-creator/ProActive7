@@ -8,7 +8,9 @@ import { useEffect } from 'react';
  * Uso: `usePageTitle('Documentos')` -> "Documentos · ProActive7"
  */
 export const BRAND_NAME = 'ProActive7';
-export const BRAND_TAGLINE = 'Consultoria Nutricional e Segurança Alimentar';
+export const BRAND_TAGLINE = 'Boa alimentação, bem-estar e saúde!';
+export const BRAND_TAGLINE_LONG =
+  'Consultoria Nutricional e Segurança Alimentar';
 export const SITE_URL =
   import.meta.env.VITE_SITE_URL ?? 'https://pro-active7.vercel.app';
 

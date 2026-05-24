@@ -89,18 +89,12 @@ export function Layout() {
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="flex items-center gap-2 border-b border-neutral-200 px-5 py-4 dark:border-neutral-800">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-xs font-bold text-white">
-            P7
-          </span>
-          <div className="min-w-0 flex-1">
-            <span className="block truncate text-base font-semibold text-neutral-800 dark:text-neutral-100">
-              ProActive7
-            </span>
-            <span className="block truncate text-[10px] uppercase tracking-wide text-neutral-500 dark:text-neutral-500">
-              Consultoria Nutricional
-            </span>
-          </div>
+        <div className="flex items-center justify-center border-b border-neutral-200 bg-white px-4 py-4 dark:border-neutral-800 dark:bg-white">
+          <img
+            src="/proactive7-logo.svg"
+            alt="ProActive7 — Boa alimentação, bem-estar e saúde!"
+            className="h-12 w-auto max-w-full"
+          />
         </div>
 
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
@@ -158,12 +152,11 @@ export function Layout() {
           >
             <Menu size={22} />
           </button>
-          <span className="flex items-center gap-2 text-base font-semibold text-neutral-800 dark:text-neutral-100">
-            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-emerald-600 text-[10px] font-bold text-white">
-              P7
-            </span>
-            ProActive7
-          </span>
+          <img
+            src="/proactive7-logo.svg"
+            alt="ProActive7"
+            className="h-7 w-auto"
+          />
         </header>
 
         <main className="flex-1 overflow-x-clip p-4 sm:p-6">

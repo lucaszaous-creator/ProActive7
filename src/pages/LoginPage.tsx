@@ -58,13 +58,13 @@ export function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4 dark:bg-slate-950">
       <div className="w-full max-w-sm">
-        <div className="mb-6 flex flex-col items-center gap-2">
-          <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-600 text-lg font-bold text-white">
-            P7
-          </span>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            ProActive7
-          </h1>
+        <div className="mb-6 flex flex-col items-center gap-3">
+          <img
+            src="/proactive7-logo.svg"
+            alt="ProActive7 — Boa alimentação, bem-estar e saúde!"
+            className="h-20 w-auto"
+          />
+          <h1 className="sr-only">ProActive7</h1>
           <p className="text-center text-sm text-neutral-500 dark:text-neutral-400">
             Consultoria Nutricional · Segurança Alimentar
           </p>

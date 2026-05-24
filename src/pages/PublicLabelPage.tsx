@@ -212,16 +212,18 @@ function Row({
 
 function BrandFooter() {
   return (
-    <footer className="mt-4 flex flex-col items-center gap-2 text-center">
+    <footer className="mt-4 flex flex-col items-center gap-3 text-center">
       <p className="text-xs text-neutral-400">Rastreabilidade via QR Code</p>
       <a
         href={SITE_URL}
-        className="inline-flex items-center gap-1.5 text-xs text-neutral-500 hover:text-emerald-700"
+        aria-label={`Sistema ${BRAND_NAME} — ${BRAND_TAGLINE}`}
+        className="inline-block"
       >
-        <span className="flex h-5 w-5 items-center justify-center rounded bg-emerald-600 text-[9px] font-bold text-white">
-          P7
-        </span>
-        Sistema {BRAND_NAME} · {BRAND_TAGLINE}
+        <img
+          src="/proactive7-logo.svg"
+          alt="ProActive7"
+          className="h-9 w-auto opacity-80 transition hover:opacity-100"
+        />
       </a>
     </footer>
   );
