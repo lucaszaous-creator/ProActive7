@@ -263,7 +263,7 @@ export function NonConformitiesPage() {
               type="checkbox"
               checked={showOverdueOnly}
               onChange={(e) => setShowOverdueOnly(e.target.checked)}
-              className="h-4 w-4 accent-red-600"
+              className="h-5 w-5 accent-red-600"
             />
             So vencidas
           </label>
@@ -338,7 +338,7 @@ export function NonConformitiesPage() {
                     <button
                       onClick={() => openEdit(nc)}
                       aria-label="Editar"
-                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                     >
                       <Pencil size={16} />
                     </button>
@@ -346,7 +346,7 @@ export function NonConformitiesPage() {
                       <button
                         onClick={() => void handleQuickClose(nc)}
                         aria-label="Fechar NC"
-                        className="rounded-lg p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                        className="rounded-lg p-2.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
                       >
                         <CheckCircle2 size={16} />
                       </button>

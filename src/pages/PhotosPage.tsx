@@ -202,7 +202,7 @@ export function PhotosPage() {
           </p>
         </Card>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {photos.map((p) => (
             <Card key={p.id} className="!p-0">
               <div className="flex aspect-square items-center justify-center overflow-hidden rounded-t-xl bg-neutral-100">
@@ -229,7 +229,7 @@ export function PhotosPage() {
                 <button
                   onClick={() => setDeleting(p)}
                   aria-label="Excluir foto"
-                  className="shrink-0 rounded-lg p-1.5 text-red-500 hover:bg-red-50"
+                  className="shrink-0 rounded-lg p-2.5 text-red-500 hover:bg-red-50"
                 >
                   <Trash2 size={16} />
                 </button>

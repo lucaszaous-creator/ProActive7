@@ -193,7 +193,7 @@ export function DashboardPage() {
             loading={masterLoading}
             companies={portfolio ?? []}
           />
-          <section className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <section className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <UpcomingAudits loading={masterLoading} items={upcomingAudits} />
             <RecentActivity loading={masterLoading} items={activity} />
           </section>

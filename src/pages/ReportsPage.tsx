@@ -196,7 +196,7 @@ export function ReportsPage() {
             </p>
           </Card>
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-2">
             <Card>
               <h2 className="mb-3 text-sm font-semibold text-neutral-700">
                 Por categoria

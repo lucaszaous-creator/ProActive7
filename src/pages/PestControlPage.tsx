@@ -526,18 +526,18 @@ export function PestControlPage() {
                         </button>
                       ) : null}
                     </div>
-                    <div className="flex shrink-0 flex-wrap gap-1">
+                    <div className="flex shrink-0 flex-wrap gap-2">
                       <button
                         onClick={() => openEditService(s)}
                         aria-label="Editar"
-                        className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                       >
                         <Pencil size={16} />
                       </button>
                       <button
                         onClick={() => setDeletingSvc(s)}
                         aria-label="Excluir"
-                        className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                        className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -593,18 +593,18 @@ export function PestControlPage() {
                     ) : null}
                   </p>
                 </div>
-                <div className="flex shrink-0 flex-wrap gap-1">
+                <div className="flex shrink-0 flex-wrap gap-2">
                   <button
                     onClick={() => openEditProvider(p)}
                     aria-label="Editar"
-                    className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                    className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                   >
                     <Pencil size={16} />
                   </button>
                   <button
                     onClick={() => setDeletingProv(p)}
                     aria-label="Excluir"
-                    className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                    className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -694,7 +694,7 @@ export function PestControlPage() {
               onChange={(e) =>
                 setProvForm({ ...provForm, active: e.target.checked })
               }
-              className="h-4 w-4 accent-emerald-600"
+              className="h-5 w-5 accent-emerald-600"
             />
             Ativo
           </label>

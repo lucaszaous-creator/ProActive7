@@ -365,18 +365,18 @@ export function DocumentsPage() {
                       : ''}
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-2">
                   <button
                     onClick={() => openEdit(d)}
                     aria-label="Editar"
-                    className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                    className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                   >
                     <Pencil size={16} />
                   </button>
                   <button
                     onClick={() => void handleExportPdf(d)}
                     aria-label="Exportar PDF"
-                    className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                    className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                   >
                     <Download size={16} />
                   </button>
@@ -384,7 +384,7 @@ export function DocumentsPage() {
                     <button
                       onClick={() => void handleApprove(d)}
                       aria-label="Aprovar"
-                      className="rounded-lg p-1.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                      className="rounded-lg p-2.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
                     >
                       <CheckCircle2 size={16} />
                     </button>
@@ -392,7 +392,7 @@ export function DocumentsPage() {
                   <button
                     onClick={() => setDeleting(d)}
                     aria-label="Excluir"
-                    className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                    className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
                   >
                     <Trash2 size={16} />
                   </button>
