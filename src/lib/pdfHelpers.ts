@@ -1,4 +1,5 @@
 import { jsPDF } from 'jspdf';
+import { supabase } from './supabase';
 
 const PRODUCT_NAME = 'ProActive7';
 const PRODUCT_TAGLINE = 'Consultoria Nutricional';
@@ -89,17 +90,40 @@ export function drawPdfFooter(doc: jsPDF): void {
   }
 }
 
-/** Carrega uma imagem remota como DataURL para inserir no PDF. */
+function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+/** Carrega uma imagem remota (URL publica) como DataURL para inserir no PDF. */
 export async function urlToDataUrl(url: string): Promise<string | null> {
   try {
     const resp = await fetch(url);
+    if (!resp.ok) return null;
     const blob = await resp.blob();
-    return await new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
+    return await blobToDataUrl(blob);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Baixa um objeto de bucket privado do Supabase Storage (auth session)
+ * e converte para DataURL. Use para buckets privados como `signatures`
+ * ou `employee-docs` — `urlToDataUrl(getPublicUrl(...))` falha com 403.
+ */
+export async function storageObjectToDataUrl(
+  bucket: string,
+  path: string,
+): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.storage.from(bucket).download(path);
+    if (error || !data) return null;
+    return await blobToDataUrl(data);
   } catch {
     return null;
   }
