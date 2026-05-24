@@ -30,7 +30,12 @@ import type {
   AuditTemplate,
 } from '@/lib/types';
 import { calculateAuditScore, scoresByCategory } from '@/lib/auditScore';
-import { drawPdfFooter, drawPdfHeader, urlToDataUrl } from '@/lib/pdfHelpers';
+import {
+  drawPdfFooter,
+  drawPdfHeader,
+  storageObjectToDataUrl,
+  urlToDataUrl,
+} from '@/lib/pdfHelpers';
 
 const RESULT_OPTIONS: {
   value: AuditResult;
@@ -291,11 +296,9 @@ export function AuditDetailPage() {
     const logoDataUrl = companyLogoUrl
       ? await urlToDataUrl(companyLogoUrl)
       : null;
+    // Bucket 'signatures' eh privado — download autenticado.
     const sigDataUrl = audit.signature_path
-      ? await urlToDataUrl(
-          supabase.storage.from('signatures').getPublicUrl(audit.signature_path)
-            .data.publicUrl,
-        )
+      ? await storageObjectToDataUrl('signatures', audit.signature_path)
       : null;
 
     const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
