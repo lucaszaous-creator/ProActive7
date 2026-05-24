@@ -7,6 +7,7 @@ import { useCompanyScope } from '@/lib/useCompanyScope';
 import { computeExpiry, formatDateTime, toLocalInputValue } from '@/lib/dates';
 import {
   STORAGE_CONDITION_LABELS,
+  type Manipulator,
   type ProductWithShelfLives,
   type StorageCondition,
 } from '@/lib/types';
@@ -82,6 +83,7 @@ export function PrintLabelPage() {
   } = useCompanyScope();
 
   const [products, setProducts] = useState<ProductWithShelfLives[]>([]);
+  const [manipulators, setManipulators] = useState<Manipulator[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [productId, setProductId] = useState('');
@@ -126,24 +128,38 @@ export function PrintLabelPage() {
   useEffect(() => {
     if (!companyId) {
       setProducts([]);
+      setManipulators([]);
       setLoading(false);
       return;
     }
     setLoading(true);
-    supabase
-      .from('products')
-      .select('*, product_shelf_lives(*)')
-      .eq('company_id', companyId)
-      .eq('active', true)
-      .order('name')
-      .then(({ data, error }) => {
-        setLoading(false);
-        if (error) {
-          toast.error('Erro ao carregar produtos: ' + error.message);
-          return;
-        }
-        setProducts((data as ProductWithShelfLives[] | null) ?? []);
-      });
+    Promise.all([
+      supabase
+        .from('products')
+        .select('*, product_shelf_lives(*)')
+        .eq('company_id', companyId)
+        .eq('active', true)
+        .order('name'),
+      supabase
+        .from('manipulators')
+        .select('*')
+        .eq('company_id', companyId)
+        .eq('active', true)
+        .order('full_name'),
+    ]).then(([prodRes, manipRes]) => {
+      setLoading(false);
+      if (prodRes.error) {
+        toast.error('Erro ao carregar produtos: ' + prodRes.error.message);
+        return;
+      }
+      if (manipRes.error) {
+        toast.error(
+          'Erro ao carregar manipuladores: ' + manipRes.error.message,
+        );
+      }
+      setProducts((prodRes.data as ProductWithShelfLives[] | null) ?? []);
+      setManipulators((manipRes.data as Manipulator[] | null) ?? []);
+    });
   }, [companyId]);
 
   const selectedProduct = products.find((p) => p.id === productId) ?? null;
@@ -366,13 +382,34 @@ export function PrintLabelPage() {
                 onChange={(e) => setManipulationLocal(e.target.value)}
               />
 
-              <Input
-                id="resp"
-                label="Responsável"
-                value={responsible}
-                onChange={(e) => setResponsible(e.target.value)}
-                placeholder="Nome de quem manipulou"
-              />
+              {manipulators.length > 0 ? (
+                <Select
+                  id="resp"
+                  label="Responsável manipulação"
+                  value={
+                    manipulators.some((m) => m.full_name === responsible)
+                      ? responsible
+                      : ''
+                  }
+                  onChange={(e) => setResponsible(e.target.value)}
+                >
+                  <option value="">Selecione um responsável...</option>
+                  {manipulators.map((m) => (
+                    <option key={m.id} value={m.full_name}>
+                      {m.full_name}
+                      {m.role ? ` — ${m.role}` : ''}
+                    </option>
+                  ))}
+                </Select>
+              ) : (
+                <Input
+                  id="resp"
+                  label="Responsável manipulação"
+                  value={responsible}
+                  onChange={(e) => setResponsible(e.target.value)}
+                  placeholder="Cadastre manipuladores em Manipuladores"
+                />
+              )}
 
               <div className="grid grid-cols-2 gap-3">
                 <Input
