@@ -64,18 +64,26 @@ export interface EscPosLabelInput {
   companyName: string;
   productName: string;
   storageConditionLabel: string;
+  displayQuantity?: string | null;
   manipulationText: string;
   expiryText: string;
+  originalExpiryText?: string | null;
   responsibleName: string;
+  batch?: string | null;
+  supplier?: string | null;
   /** "Contem: X, Y" — ja formatado pelo chamador (usa allergens.ts). */
   allergensText?: string;
+  companyAddress?: string | null;
+  companyCnpj?: string | null;
+  printId?: string | null;
   qrUrl?: string;
 }
 
 /**
- * Monta a sequencia ESC/POS completa de uma etiqueta. Layout fixo,
- * desenhado para 58mm. Para imprimir N copias basta concatenar o
- * resultado N vezes.
+ * Monta a sequencia ESC/POS completa de uma etiqueta. Layout
+ * inspirado no padrao Suflex: nome do produto em destaque,
+ * condicao + quantidade na 2a linha, bloco key/value e rodape
+ * com empresa/CNPJ/QR.
  */
 export function buildLabelEscPos(label: EscPosLabelInput): Uint8Array {
   const parts: Uint8Array[] = [
@@ -84,23 +92,53 @@ export function buildLabelEscPos(label: EscPosLabelInput): Uint8Array {
     escpos.size(0, 0),
     escpos.line(label.companyName || ' '),
     escpos.feed(1),
+    // Nome do produto em destaque
     escpos.size(1, 1),
     escpos.bold(true),
     escpos.line(label.productName),
     escpos.bold(false),
     escpos.size(0, 0),
-    escpos.line(label.storageConditionLabel),
+    // Condicao + quantidade na mesma linha
+    escpos.line(
+      label.displayQuantity
+        ? `${label.storageConditionLabel}  |  ${label.displayQuantity}`
+        : label.storageConditionLabel,
+    ),
     escpos.feed(1),
     escpos.align(0),
-    escpos.line(`Manip.: ${label.manipulationText}`),
+  ];
+
+  if (label.originalExpiryText) {
+    parts.push(escpos.line(`VALID. ORIGINAL: ${label.originalExpiryText}`));
+  }
+  parts.push(
+    escpos.line(`MANIPULACAO: ${label.manipulationText}`),
     escpos.bold(true),
     escpos.line(`VALIDADE: ${label.expiryText}`),
     escpos.bold(false),
-    escpos.line(`Resp.: ${label.responsibleName || '-'}`),
-  ];
+  );
+  if (label.supplier) {
+    parts.push(escpos.line(`FORNECEDOR: ${label.supplier}`));
+  }
+  if (label.batch) {
+    parts.push(escpos.line(`LOTE: ${label.batch}`));
+  }
+  parts.push(escpos.line(`RESP.: ${label.responsibleName || '-'}`));
 
   if (label.allergensText && label.allergensText.length > 0) {
     parts.push(escpos.line(`Contem: ${label.allergensText}`));
+  }
+
+  // Rodape: empresa + CNPJ + print ID
+  parts.push(escpos.feed(1));
+  if (label.companyAddress) {
+    parts.push(escpos.line(label.companyAddress));
+  }
+  if (label.companyCnpj) {
+    parts.push(escpos.line(`CNPJ ${label.companyCnpj}`));
+  }
+  if (label.printId) {
+    parts.push(escpos.line(`#${label.printId}`));
   }
 
   if (label.qrUrl) {

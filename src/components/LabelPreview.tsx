@@ -4,16 +4,28 @@ import { formatAllergenList } from '@/lib/allergens';
 export interface LabelData {
   companyName: string;
   companyLogoUrl?: string | null;
-  /** Hex (#rrggbb). Tinge o nome da empresa e a linha VALIDADE. */
+  companyCnpj?: string | null;
+  companyAddress?: string | null;
+  /** Hex (#rrggbb). Tinge linha de acento e VALIDADE. */
   primaryColor?: string | null;
   productName: string;
   storageConditionLabel: string;
+  /** Quantidade / peso impressa em destaque (ex: "500 g", "2 L"). */
+  displayQuantity?: string | null;
+  /** Validade original do fabricante (opcional). */
+  originalExpiryText?: string | null;
   manipulationText: string;
   expiryText: string;
   responsibleName: string;
-  /** Chaves de alergenicos para imprimir "Contem: X, Y" quando presente. */
+  /** Lote do produto / numero da nota (opcional). */
+  batch?: string | null;
+  /** Marca / fornecedor (opcional). */
+  supplier?: string | null;
+  /** Chaves de alergenicos para imprimir "Contém: X, Y" quando presente. */
   allergens?: string[];
-  /** URL codificada no QR (rastreabilidade). Quando ausente, oculta o QR. */
+  /** Id curto da impressao (ex: "T154B3"). */
+  printId?: string | null;
+  /** URL codificada no QR. Quando ausente, oculta o QR. */
   qrUrl?: string;
 }
 
@@ -23,15 +35,46 @@ interface LabelPreviewProps {
   heightMm: number;
 }
 
+interface RowProps {
+  label: string;
+  value?: string | null;
+  bold?: boolean;
+  accent?: string | undefined;
+  fontSize: string;
+}
+
+function Row({ label, value, bold, accent, fontSize }: RowProps) {
+  if (!value) return null;
+  return (
+    <div
+      className="flex justify-between gap-2"
+      style={{ fontSize, color: bold ? accent : undefined }}
+    >
+      <span className={bold ? 'font-bold' : 'font-bold'}>{label}</span>
+      <span className={bold ? 'font-bold' : ''}>{value}</span>
+    </div>
+  );
+}
+
 /**
- * Etiqueta de validade de alimento, dimensionada em milimetros para sair
- * no tamanho exato pela impressora termica (via @page / window.print).
+ * Etiqueta de validade — layout key/value inspirado no padrao
+ * Suflex Restaurant: nome do produto em destaque, condicao + quantidade
+ * na 2a linha, bloco de campos com label em negrito, rodape com
+ * empresa + endereco + CNPJ e QR no canto inferior direito.
  */
 export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
-  // QR ocupa cerca de 10mm; so cabe em etiquetas grandes o suficiente.
   const showQr = Boolean(data.qrUrl) && widthMm >= 50 && heightMm >= 30;
-  const qrSizeMm = Math.min(12, Math.floor(widthMm * 0.22));
+  const qrSizeMm = Math.min(14, Math.floor(widthMm * 0.22));
   const accent = data.primaryColor ?? undefined;
+
+  // Tamanhos proporcionais ao tamanho da etiqueta — etiquetas pequenas
+  // omitem campos secundarios automaticamente.
+  const fsXs = `${Math.max(1.4, heightMm * 0.04).toFixed(2)}mm`;
+  const fsSm = `${Math.max(1.6, heightMm * 0.045).toFixed(2)}mm`;
+  const fsLg = `${Math.max(3.0, heightMm * 0.085).toFixed(2)}mm`;
+
+  // Etiqueta pequena (<40mm altura): suprime campos extras.
+  const compact = heightMm < 40;
 
   return (
     <div
@@ -42,68 +85,118 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
         boxSizing: 'border-box',
         borderTop: accent ? `0.8mm solid ${accent}` : undefined,
       }}
-      className="flex flex-col justify-between overflow-hidden border border-neutral-400 bg-white text-black"
+      className="flex flex-col gap-[1mm] overflow-hidden border border-neutral-400 bg-white text-black"
     >
-      <div className="flex items-center justify-center gap-1">
-        {data.companyLogoUrl ? (
-          <img
-            src={data.companyLogoUrl}
-            alt=""
-            style={{ height: '4mm', objectFit: 'contain' }}
-          />
-        ) : null}
-        <p
-          style={{ fontSize: '2mm', color: accent }}
-          className="truncate uppercase tracking-wide"
-        >
-          {data.companyName || ' '}
-        </p>
-      </div>
-
-      <div className="text-center">
-        <p
-          style={{ fontSize: '3.4mm', lineHeight: 1.1 }}
-          className="font-bold uppercase"
-        >
-          {data.productName || '—'}
-        </p>
-        <p style={{ fontSize: '2mm' }} className="uppercase">
-          {data.storageConditionLabel}
-        </p>
-      </div>
-
-      <div className="flex items-end justify-between gap-2">
+      {/* Topo: logo + nome empresa */}
+      {data.companyLogoUrl || data.companyName ? (
         <div
-          style={{ fontSize: '2.4mm', lineHeight: 1.25 }}
-          className="min-w-0 flex-1"
+          className="flex items-center justify-center gap-1"
+          style={{ fontSize: fsXs }}
         >
-          <div className="flex justify-between gap-1">
-            <span>Manip.:</span>
-            <span>{data.manipulationText}</span>
-          </div>
-          <div
-            className="flex justify-between gap-1 font-bold"
+          {data.companyLogoUrl ? (
+            <img
+              src={data.companyLogoUrl}
+              alt=""
+              style={{ height: '3mm', objectFit: 'contain' }}
+            />
+          ) : null}
+          <p
+            className="truncate uppercase tracking-wide"
             style={{ color: accent }}
           >
-            <span>VALIDADE:</span>
-            <span>{data.expiryText}</span>
+            {data.companyName || ' '}
+          </p>
+        </div>
+      ) : null}
+
+      {/* Nome do produto centralizado */}
+      <p
+        className="text-center font-bold uppercase leading-tight"
+        style={{ fontSize: fsLg, lineHeight: 1.05 }}
+      >
+        {data.productName || '—'}
+      </p>
+
+      {/* Condicao | Quantidade */}
+      <div
+        className="flex items-center justify-between gap-2 border-y border-neutral-300"
+        style={{ fontSize: fsSm, paddingTop: '0.5mm', paddingBottom: '0.5mm' }}
+      >
+        <span className="font-bold uppercase">
+          {data.storageConditionLabel}
+        </span>
+        {data.displayQuantity ? (
+          <span className="font-bold">{data.displayQuantity}</span>
+        ) : null}
+      </div>
+
+      {/* Bloco de campos key/value */}
+      <div
+        className="flex flex-1 flex-col"
+        style={{ fontSize: fsSm, lineHeight: 1.2 }}
+      >
+        {!compact && data.originalExpiryText ? (
+          <Row
+            label="VALID. ORIGINAL:"
+            value={data.originalExpiryText}
+            fontSize={fsSm}
+          />
+        ) : null}
+        <Row
+          label="MANIPULAÇÃO:"
+          value={data.manipulationText}
+          fontSize={fsSm}
+        />
+        <Row
+          label="VALIDADE:"
+          value={data.expiryText}
+          bold
+          accent={accent}
+          fontSize={fsSm}
+        />
+        {!compact && data.supplier ? (
+          <Row label="FORNECEDOR:" value={data.supplier} fontSize={fsSm} />
+        ) : null}
+        {!compact && data.batch ? (
+          <Row label="LOTE:" value={data.batch} fontSize={fsSm} />
+        ) : null}
+        <Row
+          label="RESP.:"
+          value={data.responsibleName || '—'}
+          fontSize={fsSm}
+        />
+        {!compact && data.allergens && data.allergens.length > 0 ? (
+          <div
+            className="mt-[0.5mm] truncate"
+            style={{ fontSize: fsXs, lineHeight: 1.15 }}
+          >
+            <span className="font-bold">Contém: </span>
+            {formatAllergenList(data.allergens)}
           </div>
-          <div className="flex justify-between gap-1">
-            <span>Resp.:</span>
-            <span className="truncate">{data.responsibleName || '—'}</span>
-          </div>
-          {data.allergens && data.allergens.length > 0 ? (
-            <div
-              className="truncate"
-              style={{ fontSize: '1.8mm', lineHeight: 1.1 }}
-            >
-              <span className="font-bold">Contém: </span>
-              {formatAllergenList(data.allergens)}
-            </div>
+        ) : null}
+      </div>
+
+      {/* Rodape: endereco da empresa + QR + print ID */}
+      <div className="flex items-end justify-between gap-2">
+        <div
+          className="min-w-0 flex-1"
+          style={{ fontSize: fsXs, lineHeight: 1.15 }}
+        >
+          {!compact && data.companyAddress ? (
+            <p className="truncate">{data.companyAddress}</p>
+          ) : null}
+          {!compact && data.companyCnpj ? (
+            <p className="truncate">CNPJ: {data.companyCnpj}</p>
+          ) : null}
+          {data.printId ? (
+            <p className="truncate font-bold">#{data.printId}</p>
           ) : null}
         </div>
         {showQr && data.qrUrl ? (
-          <div style={{ width: `${qrSizeMm}mm`, height: `${qrSizeMm}mm` }}>
+          <div
+            className="shrink-0"
+            style={{ width: `${qrSizeMm}mm`, height: `${qrSizeMm}mm` }}
+          >
             <QRCodeSVG
               value={data.qrUrl}
               level="M"
