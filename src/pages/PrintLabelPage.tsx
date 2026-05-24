@@ -41,6 +41,8 @@ interface LabelPrintInsert {
   batch: string | null;
   supplier: string | null;
   fabricated_at: string | null;
+  original_expiry_at: string | null;
+  display_quantity: string | null;
   allergens: string[];
   printed_by: string | null;
 }
@@ -82,6 +84,7 @@ export function PrintLabelPage() {
     companyName,
     companyLogoUrl,
     companyPrimaryColor,
+    selectedCompany,
   } = useCompanyScope();
 
   const [products, setProducts] = useState<ProductWithShelfLives[]>([]);
@@ -98,6 +101,8 @@ export function PrintLabelPage() {
   const [batch, setBatch] = useState('');
   const [supplier, setSupplier] = useState('');
   const [fabricatedLocal, setFabricatedLocal] = useState('');
+  const [originalExpiryLocal, setOriginalExpiryLocal] = useState('');
+  const [displayQuantity, setDisplayQuantity] = useState('');
   const [sizeId, setSizeId] = useState(LABEL_SIZES[0].id);
   const [labelId, setLabelId] = useState(() => crypto.randomUUID());
   const [confirmPrint, setConfirmPrint] = useState<LabelPrintInsert | null>(
@@ -189,14 +194,29 @@ export function PrintLabelPage() {
 
   const size = LABEL_SIZES.find((s) => s.id === sizeId) ?? LABEL_SIZES[0];
 
+  const originalExpiryDateForPreview = originalExpiryLocal
+    ? new Date(originalExpiryLocal)
+    : null;
+
   const labelData: LabelData = {
     companyName,
     companyLogoUrl,
+    companyCnpj: selectedCompany?.cnpj ?? null,
+    companyAddress: selectedCompany?.address ?? null,
     primaryColor: companyPrimaryColor,
     productName: selectedProduct?.name ?? '',
     storageConditionLabel: STORAGE_CONDITION_LABELS[condition],
+    displayQuantity: displayQuantity.trim() || null,
     manipulationText: manipValid ? formatDateTime(manipDate) : '',
     expiryText: expiry ? formatDateTime(expiry) : '',
+    originalExpiryText:
+      originalExpiryDateForPreview &&
+      !isNaN(originalExpiryDateForPreview.valueOf())
+        ? formatDateTime(originalExpiryDateForPreview)
+        : null,
+    batch: batch.trim() || null,
+    supplier: supplier.trim() || null,
+    printId: labelId.replace(/-/g, '').slice(0, 6).toUpperCase(),
     allergens: selectedProduct?.allergens ?? [],
     qrUrl:
       typeof window !== 'undefined'
@@ -220,6 +240,12 @@ export function PrintLabelPage() {
     const fabricatedDate = fabricatedLocal ? new Date(fabricatedLocal) : null;
     const fabricatedValid =
       fabricatedDate !== null && !Number.isNaN(fabricatedDate.getTime());
+    const originalExpiryDate = originalExpiryLocal
+      ? new Date(originalExpiryLocal)
+      : null;
+    const originalExpiryValid =
+      originalExpiryDate !== null &&
+      !Number.isNaN(originalExpiryDate.getTime());
     const insertPayload: LabelPrintInsert = {
       id: labelId,
       company_id: companyId,
@@ -233,6 +259,10 @@ export function PrintLabelPage() {
       batch: batch.trim() || null,
       supplier: supplier.trim() || null,
       fabricated_at: fabricatedValid ? fabricatedDate.toISOString() : null,
+      original_expiry_at: originalExpiryValid
+        ? originalExpiryDate.toISOString()
+        : null,
+      display_quantity: displayQuantity.trim() || null,
       allergens: selectedProduct.allergens ?? [],
       printed_by: profile?.id ?? null,
     };
@@ -247,10 +277,21 @@ export function PrintLabelPage() {
           companyName,
           productName: selectedProduct.name,
           storageConditionLabel: STORAGE_CONDITION_LABELS[condition],
+          displayQuantity: displayQuantity.trim() || null,
           manipulationText: formatDateTime(manipDate),
           expiryText: formatDateTime(expiry),
+          originalExpiryText:
+            originalExpiryDateForPreview &&
+            !isNaN(originalExpiryDateForPreview.valueOf())
+              ? formatDateTime(originalExpiryDateForPreview)
+              : null,
           responsibleName: responsible.trim(),
+          batch: batch.trim() || null,
+          supplier: supplier.trim() || null,
           allergensText: formatAllergenList(selectedProduct.allergens ?? []),
+          companyAddress: selectedCompany?.address ?? null,
+          companyCnpj: selectedCompany?.cnpj ?? null,
+          printId: labelId.replace(/-/g, '').slice(0, 6).toUpperCase(),
           qrUrl: labelData.qrUrl,
         });
         for (let i = 0; i < quantity; i++) {
@@ -437,6 +478,14 @@ export function PrintLabelPage() {
                 </Select>
               </div>
 
+              <Input
+                id="display-qty"
+                label="Quantidade impressa na etiqueta (opcional)"
+                value={displayQuantity}
+                onChange={(e) => setDisplayQuantity(e.target.value)}
+                placeholder='Ex.: "500 g", "2 L", "10 un."'
+              />
+
               <details className="rounded-lg border border-neutral-200 bg-neutral-50 p-3">
                 <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-neutral-500">
                   Mais detalhes (lote, fornecedor, fabricação)
@@ -451,9 +500,10 @@ export function PrintLabelPage() {
                   />
                   <Input
                     id="supplier"
-                    label="Fornecedor (opcional)"
+                    label="Fornecedor / marca (opcional)"
                     value={supplier}
                     onChange={(e) => setSupplier(e.target.value)}
+                    placeholder='Ex.: "SWIFT", "Sadia"'
                   />
                   <Input
                     id="fabricated"
@@ -461,6 +511,13 @@ export function PrintLabelPage() {
                     type="datetime-local"
                     value={fabricatedLocal}
                     onChange={(e) => setFabricatedLocal(e.target.value)}
+                  />
+                  <Input
+                    id="original-expiry"
+                    label="Validade original do fabricante (opcional)"
+                    type="datetime-local"
+                    value={originalExpiryLocal}
+                    onChange={(e) => setOriginalExpiryLocal(e.target.value)}
                   />
                   <p className="text-xs text-neutral-400">
                     Esses dados ficam no histórico e aparecem na página pública

@@ -87,6 +87,8 @@ export interface LabelPrint {
   batch: string | null;
   supplier: string | null;
   fabricated_at: string | null;
+  original_expiry_at: string | null;
+  display_quantity: string | null;
   allergens: string[];
   printed_by: string | null;
   printed_at: string;
