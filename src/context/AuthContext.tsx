@@ -14,7 +14,13 @@ interface AuthState {
   profile: Profile | null;
   loading: boolean;
   profileLoading: boolean;
-  isMaster: boolean;          // backward compat — true for platform_admin
+  /**
+   * Tem privilegios de gestao no escopo visivel (platform_admin: tudo;
+   * nutritionist: empresas da propria org). Em todo o codigo o flag e
+   * usado para gatear botoes/telas de escrita. Para diferenciar entre
+   * platform_admin e nutritionist, use isPlatformAdmin / isNutritionist.
+   */
+  isMaster: boolean;
   isPlatformAdmin: boolean;
   isNutritionist: boolean;
   refreshProfile: () => Promise<void>;
@@ -83,7 +89,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profile,
     loading,
     profileLoading,
-    isMaster: profile?.role === 'master' || profile?.role === 'platform_admin',
+    isMaster:
+      profile?.role === 'master' ||
+      profile?.role === 'platform_admin' ||
+      profile?.role === 'nutritionist',
     isPlatformAdmin: profile?.role === 'master' || profile?.role === 'platform_admin',
     isNutritionist: profile?.role === 'nutritionist',
     refreshProfile: async () => {
