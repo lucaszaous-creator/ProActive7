@@ -20,7 +20,7 @@ export function LoginPage() {
   if (session) {
     // Nutricionista nao tem company_id e cai num dashboard property vazio:
     // mandar direto para a gestao de empresas dele.
-    const dest = isNutritionist && !profile?.company_id ? '/admin/empresas' : '/';
+    const dest = isNutritionist && !profile?.company_id ? '/admin/empresas' : '/painel';
     return <Navigate to={dest} replace />;
   }
 

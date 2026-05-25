@@ -41,7 +41,7 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', labelKey: 'nav.dashboard', icon: LayoutDashboard },
+  { to: '/painel', labelKey: 'nav.dashboard', icon: LayoutDashboard },
   { to: '/produtos', labelKey: 'nav.products', icon: Package },
   { to: '/imprimir', labelKey: 'nav.printLabel', icon: Printer },
   { to: '/fotos', labelKey: 'nav.photos', icon: Images },

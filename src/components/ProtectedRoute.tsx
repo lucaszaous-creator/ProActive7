@@ -52,8 +52,8 @@ export function ProtectedRoute({
   if (!session) return <Navigate to="/login" replace />;
   if (!profile) return <ProfileMissing onSignOut={signOut} />;
   if (!profile.active) return <ProfileInactive onSignOut={signOut} />;
-  if ((masterOnly || platformAdminOnly) && !isPlatformAdmin) return <Navigate to="/" replace />;
-  if (nutritionistOrAdmin && !isPlatformAdmin && !isNutritionist) return <Navigate to="/" replace />;
+  if ((masterOnly || platformAdminOnly) && !isPlatformAdmin) return <Navigate to="/painel" replace />;
+  if (nutritionistOrAdmin && !isPlatformAdmin && !isNutritionist) return <Navigate to="/painel" replace />;
 
   return <Outlet />;
 }
