@@ -1,0 +1,5 @@
+-- Wave 15 / Item F: view do compliance ignora companies soft-deletadas
+-- e tambem nao conta documents/audits/manipulators que estao deletados.
+-- (corpo identico ao aplicado via MCP — ver dashboard).
+-- A view foi DROPped e recriada porque a 0032 antes nao tinha
+-- esses filtros.

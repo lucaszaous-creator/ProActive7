@@ -16,6 +16,8 @@ const en = {
     reports: 'Reports',
     companies: 'Companies',
     users: 'Users',
+    auditLog: 'Audit log',
+    trash: 'Trash',
   },
   layout: {
     master: 'Master user',

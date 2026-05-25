@@ -5,7 +5,9 @@ import {
   Package,
   Printer,
   Images,
+  Activity,
   Building2,
+  Trash2,
   Users,
   LogOut,
   Menu,
@@ -65,6 +67,18 @@ const NAV_ITEMS: NavItem[] = [
     to: '/admin/usuarios',
     labelKey: 'nav.users',
     icon: Users,
+    masterOnly: true,
+  },
+  {
+    to: '/admin/trilha',
+    labelKey: 'nav.auditLog',
+    icon: Activity,
+    masterOnly: true,
+  },
+  {
+    to: '/admin/lixeira',
+    labelKey: 'nav.trash',
+    icon: Trash2,
     masterOnly: true,
   },
 ];

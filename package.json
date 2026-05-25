@@ -27,6 +27,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@sentry/react": "^10.53.1",
     "@supabase/supabase-js": "^2.104.0",
     "date-fns": "^4.1.0",
     "i18next": "^26.2.0",

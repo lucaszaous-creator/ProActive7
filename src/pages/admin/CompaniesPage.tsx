@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, Upload, ImageOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { softDelete } from '@/lib/supabaseHelpers';
 import type { Company } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -168,27 +169,13 @@ export function CompaniesPage() {
   async function handleDelete() {
     if (!deleting) return;
     setDeleteBusy(true);
-    const { data, error } = await supabase
-      .from('companies')
-      .delete()
-      .eq('id', deleting.id)
-      .select('id');
+    const err = await softDelete('companies', deleting.id);
     setDeleteBusy(false);
-    if (error) {
-      if (error.code === '23503') {
-        toast.error(
-          'Esta empresa tem usuários vinculados. Desvincule-os antes de excluir.',
-        );
-      } else {
-        toast.error('Erro ao excluir: ' + error.message);
-      }
+    if (err) {
+      toast.error(err);
       return;
     }
-    if (!data || data.length === 0) {
-      toast.error('Você não tem permissão para excluir esta empresa.');
-      return;
-    }
-    toast.success('Empresa excluída.');
+    toast.success('Empresa movida para a lixeira (30 dias para restaurar).');
     setDeleting(null);
     void load();
   }
