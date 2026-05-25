@@ -12,9 +12,16 @@ import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Spinner } from '@/components/ui/Spinner';
 
+interface CompanyRow extends Company {
+  organizations: {
+    name: string | null;
+    owner: { full_name: string | null; email: string | null } | null;
+  } | null;
+}
+
 export function CompaniesPage() {
   const { profile } = useAuth();
-  const [companies, setCompanies] = useState<Company[]>([]);
+  const [companies, setCompanies] = useState<CompanyRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -37,14 +44,16 @@ export function CompaniesPage() {
     setLoading(true);
     const { data, error } = await supabase
       .from('companies')
-      .select('*')
+      .select(
+        '*, organizations(name, owner:profiles!organizations_owner_profile_fkey(full_name, email))',
+      )
       .order('name');
     setLoading(false);
     if (error) {
       toast.error('Erro ao carregar empresas: ' + error.message);
       return;
     }
-    setCompanies((data as Company[] | null) ?? []);
+    setCompanies((data as unknown as CompanyRow[] | null) ?? []);
   }, []);
 
   useEffect(() => {
@@ -214,10 +223,11 @@ export function CompaniesPage() {
       ) : (
         <Card className="!p-0">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[560px] text-sm">
+            <table className="w-full min-w-[720px] text-sm">
               <thead>
                 <tr className="border-b border-neutral-200 text-left text-xs uppercase text-neutral-500">
                   <th className="px-4 py-3">Empresa</th>
+                  <th className="px-4 py-3">Nutricionista / Organização</th>
                   <th className="px-4 py-3">CNPJ</th>
                   <th className="px-4 py-3">Telefone</th>
                   <th className="px-4 py-3">Status</th>
@@ -232,6 +242,9 @@ export function CompaniesPage() {
                   >
                     <td className="px-4 py-3 font-medium text-neutral-800">
                       {c.name}
+                    </td>
+                    <td className="px-4 py-3 text-neutral-600">
+                      <CompanyOrgLink row={c} />
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
                       {c.cnpj ?? '—'}
@@ -436,6 +449,37 @@ export function CompaniesPage() {
         onConfirm={handleDelete}
         onCancel={() => setDeleting(null)}
       />
+    </div>
+  );
+}
+
+/**
+ * Mostra a quem a empresa pertence:
+ *  - linha 1: nome do nutricionista responsavel (owner_user_id da org)
+ *  - linha 2: nome da organizacao
+ *  - sem org vinculada: aviso amarelo
+ */
+function CompanyOrgLink({ row }: { row: CompanyRow }) {
+  const org = row.organizations;
+  if (!org) {
+    return (
+      <span className="text-xs font-medium text-amber-600">
+        Sem organização vinculada
+      </span>
+    );
+  }
+  const owner = org.owner;
+  const ownerName = owner?.full_name ?? owner?.email ?? null;
+  return (
+    <div className="leading-tight">
+      <div className="font-medium text-neutral-800">
+        {ownerName ?? 'Sem nutricionista titular'}
+      </div>
+      {org.name ? (
+        <div className="mt-0.5 text-xs text-neutral-500">
+          {org.name}
+        </div>
+      ) : null}
     </div>
   );
 }
