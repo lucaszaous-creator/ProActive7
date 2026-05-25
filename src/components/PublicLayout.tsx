@@ -95,18 +95,25 @@ function PublicNav() {
       {mobileOpen ? (
         <>
           <div
-            className="fixed inset-0 z-50 bg-[#1A2A22]/40"
+            className="fixed inset-0 z-50 bg-[#1A2A22]/55 backdrop-blur-sm"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="fixed right-0 top-0 z-50 flex h-full w-[78%] max-w-xs flex-col bg-[#FAFAF7] shadow-xl">
-            <div className="flex items-center justify-between border-b border-[#E8F1EA] px-5 py-4">
-              <span className="text-sm font-semibold text-[#2F5D3F]">
-                ProActive7
-              </span>
+          <aside className="fixed right-0 top-0 z-50 flex h-full w-[82%] max-w-xs flex-col bg-[#2F5D3F] text-white shadow-2xl">
+            <div className="flex items-center justify-between border-b border-white/12 px-5 py-4">
+              <div className="flex items-center gap-2">
+                <img
+                  src="/proactive7-logo.svg"
+                  alt=""
+                  className="h-7 w-auto brightness-0 invert"
+                />
+                <span className="text-sm font-semibold text-white">
+                  ProActive7
+                </span>
+              </div>
               <button
                 onClick={() => setMobileOpen(false)}
                 aria-label="Fechar menu"
-                className="rounded-full p-2 text-[#1A2A22]/65 hover:bg-[#E8F1EA]"
+                className="rounded-full p-2 text-white/75 hover:bg-white/10 hover:text-white"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -121,8 +128,8 @@ function PublicNav() {
                   className={({ isActive }) =>
                     `rounded-xl px-4 py-3 text-sm transition ${
                       isActive
-                        ? 'bg-[#E8F1EA] text-[#2F5D3F] font-medium'
-                        : 'text-[#1A2A22]/75 hover:bg-[#E8F1EA]/60'
+                        ? 'bg-white/15 font-medium text-white'
+                        : 'text-white/80 hover:bg-white/10 hover:text-white'
                     }`
                   }
                 >
@@ -132,17 +139,17 @@ function PublicNav() {
               <Link
                 to="/login"
                 onClick={() => setMobileOpen(false)}
-                className="mt-2 inline-flex items-center justify-center gap-1.5 rounded-full bg-[#2F5D3F] px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-[#234731]"
+                className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-full bg-white px-4 py-3 text-sm font-medium text-[#2F5D3F] shadow-sm transition hover:bg-[#E8F1EA]"
               >
                 Acessar sistema
                 <ArrowRight className="h-4 w-4" />
               </Link>
             </nav>
-            <div className="mt-auto border-t border-[#E8F1EA] px-5 py-4">
-              <p className="mb-2 text-[11px] uppercase tracking-wider text-[#1A2A22]/45">
+            <div className="mt-auto border-t border-white/12 px-5 py-4">
+              <p className="mb-2 text-[11px] uppercase tracking-wider text-white/55">
                 Acompanhe
               </p>
-              <SocialIcons className="flex" />
+              <SocialIcons className="flex" dark />
             </div>
           </aside>
         </>
@@ -151,9 +158,16 @@ function PublicNav() {
   );
 }
 
-function SocialIcons({ className = '' }: { className?: string }) {
-  const cls =
-    'flex h-9 w-9 items-center justify-center rounded-full text-[#1A2A22]/55 transition hover:bg-[#E8F1EA] hover:text-[#2F5D3F]';
+function SocialIcons({
+  className = '',
+  dark = false,
+}: {
+  className?: string;
+  dark?: boolean;
+}) {
+  const cls = dark
+    ? 'flex h-9 w-9 items-center justify-center rounded-full text-white/65 transition hover:bg-white/10 hover:text-white'
+    : 'flex h-9 w-9 items-center justify-center rounded-full text-[#1A2A22]/55 transition hover:bg-[#E8F1EA] hover:text-[#2F5D3F]';
   return (
     <div className={`items-center gap-0.5 ${className}`}>
       <a
