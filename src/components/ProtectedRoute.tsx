@@ -46,10 +46,13 @@ export function ProtectedRoute({
   platformAdminOnly?: boolean;
   nutritionistOrAdmin?: boolean;
 }) {
-  const { session, profile, loading, isPlatformAdmin, isNutritionist, signOut } = useAuth();
+  const { session, profile, loading, profileLoading, isPlatformAdmin, isNutritionist, signOut } = useAuth();
 
   if (loading) return <FullPageSpinner />;
   if (!session) return <Navigate to="/login" replace />;
+  // Enquanto o profile ainda esta carregando (logo apos signIn), mostra
+  // spinner em vez do fallback "Conta sem perfil" para evitar flash.
+  if (profileLoading) return <FullPageSpinner />;
   if (!profile) return <ProfileMissing onSignOut={signOut} />;
   if (!profile.active) return <ProfileInactive onSignOut={signOut} />;
   if ((masterOnly || platformAdminOnly) && !isPlatformAdmin) return <Navigate to="/painel" replace />;

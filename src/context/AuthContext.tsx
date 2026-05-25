@@ -13,6 +13,7 @@ interface AuthState {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
+  profileLoading: boolean;
   isMaster: boolean;          // backward compat — true for platform_admin
   isPlatformAdmin: boolean;
   isNutritionist: boolean;
@@ -26,13 +27,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
 
   async function loadProfile(userId: string) {
+    setProfileLoading(true);
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .maybeSingle();
+    setProfileLoading(false);
     if (error) {
       console.error('Erro ao carregar perfil:', error.message);
       setProfile(null);
@@ -60,6 +64,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       (_event, newSession) => {
         setSession(newSession);
         if (newSession?.user) {
+          // Marcamos profileLoading=true imediatamente para evitar o
+          // flash de "Conta sem perfil" entre o session set e o profile
+          // chegar do banco.
+          setProfileLoading(true);
           void loadProfile(newSession.user.id);
         } else {
           setProfile(null);
@@ -74,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     profile,
     loading,
+    profileLoading,
     isMaster: profile?.role === 'master' || profile?.role === 'platform_admin',
     isPlatformAdmin: profile?.role === 'master' || profile?.role === 'platform_admin',
     isNutritionist: profile?.role === 'nutritionist',
