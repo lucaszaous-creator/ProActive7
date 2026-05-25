@@ -87,25 +87,34 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
       }}
       className="flex flex-col gap-[1mm] overflow-hidden border border-neutral-400 bg-white text-black"
     >
-      {/* Topo: logo + nome empresa */}
+      {/* Topo: logo (proeminente) + nome empresa */}
       {data.companyLogoUrl || data.companyName ? (
         <div
-          className="flex items-center justify-center gap-1"
+          className="flex flex-col items-center justify-center gap-[0.5mm]"
           style={{ fontSize: fsXs }}
         >
           {data.companyLogoUrl ? (
             <img
               src={data.companyLogoUrl}
               alt=""
-              style={{ height: '3mm', objectFit: 'contain' }}
+              style={{
+                // Escala o logo com a altura da etiqueta: 4mm em etiquetas
+                // pequenas, ate 10mm nas grandes. Largura limitada para
+                // logos retangulares nao "estourarem" o card.
+                height: `${Math.max(4, Math.min(10, heightMm * 0.15)).toFixed(2)}mm`,
+                maxWidth: '80%',
+                objectFit: 'contain',
+              }}
             />
           ) : null}
-          <p
-            className="truncate uppercase tracking-wide"
-            style={{ color: accent }}
-          >
-            {data.companyName || ' '}
-          </p>
+          {data.companyName ? (
+            <p
+              className="truncate uppercase tracking-wide"
+              style={{ color: accent, maxWidth: '95%' }}
+            >
+              {data.companyName}
+            </p>
+          ) : null}
         </div>
       ) : null}
 
