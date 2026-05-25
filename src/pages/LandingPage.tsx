@@ -1,4 +1,4 @@
-import { Link, Navigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   Tag,
   ClipboardCheck,
@@ -14,19 +14,12 @@ import {
   Leaf,
   Sparkles,
 } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
 import { usePageTitle } from '@/lib/usePageTitle';
-import { FullPageSpinner } from '@/components/ui/Spinner';
 
 export function LandingPage() {
   usePageTitle('Consultoria Nutricional e Segurança Alimentar');
-  const { session, loading } = useAuth();
-  if (loading) return <FullPageSpinner />;
-  if (session) return <Navigate to="/painel" replace />;
-
   return (
-    <div className="min-h-screen bg-[#FAFAF7] text-[#1A2A22]">
-      <Nav />
+    <>
       <Hero />
       <TrustStrip />
       <Pillars />
@@ -36,45 +29,7 @@ export function LandingPage() {
       <ForNutritionists />
       <HowItWorks />
       <FinalCta />
-      <Footer />
-    </div>
-  );
-}
-
-/* =====================================================================
- * NAV
- * ===================================================================== */
-function Nav() {
-  return (
-    <header className="sticky top-0 z-30 border-b border-[#E8F1EA] bg-[#FAFAF7]/90 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
-        <Link to="/" className="flex items-center gap-2.5">
-          <img src="/proactive7-logo.svg" alt="" className="h-9 w-auto" />
-          <span className="text-base font-semibold tracking-tight text-[#2F5D3F]">
-            ProActive7
-          </span>
-        </Link>
-        <nav className="hidden items-center gap-7 text-sm text-[#1A2A22]/75 md:flex">
-          <a href="#recursos" className="hover:text-[#2F5D3F]">
-            Recursos
-          </a>
-          <a href="#nutricionistas" className="hover:text-[#2F5D3F]">
-            Para nutricionistas
-          </a>
-          <a href="#como-funciona" className="hover:text-[#2F5D3F]">
-            Como funciona
-          </a>
-        </nav>
-        <div className="flex items-center gap-2">
-          <Link
-            to="/login"
-            className="rounded-full border border-[#2F5D3F]/15 px-4 py-2 text-sm font-medium text-[#2F5D3F] transition hover:border-[#2F5D3F]/40 hover:bg-[#E8F1EA]"
-          >
-            Entrar
-          </Link>
-        </div>
-      </div>
-    </header>
+    </>
   );
 }
 
@@ -106,21 +61,21 @@ function Hero() {
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
-              to="/login"
+              to="/servicos"
               className="inline-flex items-center gap-2 rounded-full bg-[#2F5D3F] px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#234731]"
             >
-              Acessar o sistema
+              Conhecer os serviços
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <a
-              href="#recursos"
+            <Link
+              to="/login"
               className="inline-flex items-center gap-2 rounded-full border border-[#2F5D3F]/20 bg-white px-5 py-3 text-sm font-medium text-[#2F5D3F] hover:border-[#2F5D3F]/40"
             >
-              Conhecer recursos
-            </a>
+              Acessar o sistema
+            </Link>
           </div>
           <p className="mt-5 text-xs text-[#1A2A22]/50">
-            Acesso liberado pelo administrador da sua organização.
+            Atendendo Macaé e região desde 2013.
           </p>
         </div>
 
@@ -439,20 +394,25 @@ function FinalCta() {
     <section className="bg-[#E8F1EA]">
       <div className="mx-auto max-w-6xl px-5 py-20 text-center">
         <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-          Vamos transformar a sua consultoria?
+          Vamos conversar sobre a sua operação?
         </h2>
         <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-[#1A2A22]/70">
-          Acesso é fornecido pela administração da plataforma. Se você já tem
-          conta, entre aqui — se ainda não, fale com a consultoria que está
-          te apresentando o ProActive7.
+          Conte sobre o seu estabelecimento. A gente avalia o que faz sentido —
+          consultoria, treinamentos ou acesso ao sistema.
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
-            to="/login"
+            to="/contato"
             className="inline-flex items-center gap-2 rounded-full bg-[#2F5D3F] px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#234731]"
           >
-            Entrar no sistema
+            Falar com a ProActive7
             <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-2 rounded-full border border-[#2F5D3F]/20 bg-white px-6 py-3 text-sm font-medium text-[#2F5D3F] hover:border-[#2F5D3F]/40"
+          >
+            Acessar o sistema
           </Link>
         </div>
       </div>
@@ -463,30 +423,6 @@ function FinalCta() {
 /* =====================================================================
  * FOOTER
  * ===================================================================== */
-function Footer() {
-  return (
-    <footer className="border-t border-[#E8F1EA] bg-[#FAFAF7]">
-      <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 px-5 py-10 md:flex-row md:items-center">
-        <div className="flex items-center gap-2.5">
-          <img src="/proactive7-logo.svg" alt="" className="h-7 w-auto" />
-          <span className="text-sm font-semibold text-[#2F5D3F]">
-            ProActive7
-          </span>
-          <span className="text-xs text-[#1A2A22]/45">
-            · Consultoria nutricional e segurança alimentar
-          </span>
-        </div>
-        <div className="flex items-center gap-6 text-xs text-[#1A2A22]/55">
-          <span>© {new Date().getFullYear()} ProActive7</span>
-          <Link to="/login" className="hover:text-[#2F5D3F]">
-            Entrar
-          </Link>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 /* =====================================================================
  * Helpers
  * ===================================================================== */

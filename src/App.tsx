@@ -1,10 +1,40 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
+import { PublicLayout } from './components/PublicLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { FullPageSpinner } from './components/ui/Spinner';
 import { LoginPage } from './pages/LoginPage';
 import { LandingPage } from './pages/LandingPage';
+
+const PerfilPage = lazy(() =>
+  import('./pages/public/PerfilPage').then((m) => ({ default: m.PerfilPage })),
+);
+const ServicosPage = lazy(() =>
+  import('./pages/public/ServicosPage').then((m) => ({
+    default: m.ServicosPage,
+  })),
+);
+const CursosPublicPage = lazy(() =>
+  import('./pages/public/ComingSoonPage').then((m) => ({
+    default: m.CursosPage,
+  })),
+);
+const ClientesPublicPage = lazy(() =>
+  import('./pages/public/ComingSoonPage').then((m) => ({
+    default: m.ClientesPage,
+  })),
+);
+const NovidadesPage = lazy(() =>
+  import('./pages/public/NovidadesPage').then((m) => ({
+    default: m.NovidadesPage,
+  })),
+);
+const ContatoPage = lazy(() =>
+  import('./pages/public/ContatoPage').then((m) => ({
+    default: m.ContatoPage,
+  })),
+);
 
 const ResetPasswordPage = lazy(() =>
   import('./pages/ResetPasswordPage').then((m) => ({
@@ -108,7 +138,20 @@ export default function App() {
   return (
     <Suspense fallback={<FullPageSpinner />}>
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        {/* Site institucional publico */}
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/perfil" element={<PerfilPage />} />
+          <Route path="/servicos" element={<ServicosPage />} />
+          <Route path="/cursos" element={<CursosPublicPage />} />
+          <Route path="/clientes" element={<ClientesPublicPage />} />
+          <Route path="/novidades" element={<NovidadesPage />} />
+          <Route path="/contato" element={<ContatoPage />} />
+        </Route>
+
+        {/* Compat: o site antigo usava /sistema para o login */}
+        <Route path="/sistema" element={<Navigate to="/login" replace />} />
+
         <Route path="/login" element={<LoginPage />} />
         <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
         <Route path="/etiqueta/:id" element={<PublicLabelPage />} />
