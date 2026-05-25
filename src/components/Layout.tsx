@@ -103,7 +103,7 @@ export function Layout() {
   );
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="flex min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-slate-50 dark:bg-slate-950">
       {mobileOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/40 lg:hidden"

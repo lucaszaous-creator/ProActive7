@@ -264,7 +264,7 @@ export function CompaniesPage() {
             ) : null}
           </div>
         <Card className="!p-0">
-          <div className="overflow-x-auto">
+          <div className="w-full overflow-x-auto">
             <table className="w-full min-w-[720px] text-sm">
               <thead>
                 <tr className="border-b border-neutral-200 text-left text-xs uppercase text-neutral-500">
