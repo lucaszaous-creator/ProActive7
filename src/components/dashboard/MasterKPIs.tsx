@@ -29,22 +29,23 @@ function Kpi({
       'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
   } as Record<string, string>;
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-slate-900 sm:p-5">
-      <div className="flex items-center gap-3">
+    <div className="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-slate-900 sm:p-5">
+      <div className="flex items-center gap-2.5 sm:gap-3">
         <span
-          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${accent[tone]}`}
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg sm:h-10 sm:w-10 ${accent[tone]}`}
         >
-          <Icon size={20} />
+          <Icon size={18} className="sm:hidden" />
+          <Icon size={20} className="hidden sm:inline" />
         </span>
         <div className="min-w-0">
-          <p className="truncate text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+          <p className="truncate text-[10px] font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 sm:text-xs">
             {label}
           </p>
-          <p className="truncate text-2xl font-semibold text-neutral-800 dark:text-neutral-100">
+          <p className="truncate text-lg font-semibold leading-tight text-neutral-800 dark:text-neutral-100 sm:text-2xl">
             {value}
           </p>
           {hint ? (
-            <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+            <p className="truncate text-[10px] text-neutral-500 dark:text-neutral-400 sm:text-xs">
               {hint}
             </p>
           ) : null}

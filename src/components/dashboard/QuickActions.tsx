@@ -36,18 +36,19 @@ function ActionTile({
   return (
     <Link
       to={to}
-      className="group flex min-h-[88px] flex-col gap-2 rounded-xl border border-neutral-200 bg-white p-3 transition hover:border-teal-300 hover:shadow-sm dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-teal-700 sm:p-4"
+      className="group flex flex-col gap-1.5 rounded-xl border border-neutral-200 bg-white p-2.5 transition hover:border-teal-300 hover:shadow-sm dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-teal-700 sm:min-h-[88px] sm:gap-2 sm:p-4"
     >
       <span
-        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition ${ACCENT_BG[accent]}`}
+        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition sm:h-10 sm:w-10 ${ACCENT_BG[accent]}`}
       >
-        <Icon size={20} />
+        <Icon size={16} className="sm:hidden" />
+        <Icon size={20} className="hidden sm:inline" />
       </span>
       <div className="min-w-0">
-        <p className="truncate text-sm font-semibold text-neutral-800 dark:text-neutral-100">
+        <p className="truncate text-xs font-semibold text-neutral-800 dark:text-neutral-100 sm:text-sm">
           {title}
         </p>
-        <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+        <p className="truncate text-[10px] text-neutral-500 dark:text-neutral-400 sm:text-xs">
           {subtitle}
         </p>
       </div>

@@ -27,18 +27,18 @@ export function HeroGreeting({
   const name = firstName(fullName) || (email?.split('@')[0] ?? '');
 
   return (
-    <header className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <header className="mb-4 flex flex-col gap-2 sm:mb-5 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
       <div className="min-w-0 flex-1">
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 sm:text-xs">
           {greeting}
         </p>
-        <h1 className="truncate text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
+        <h1 className="truncate text-lg font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
           {name || 'Bem-vindo'}
         </h1>
       </div>
       {summary ? (
         <span
-          className={`inline-flex items-center self-start rounded-full px-3 py-1.5 text-xs font-medium sm:self-end ${ACCENT[summaryAccent]}`}
+          className={`inline-flex items-center self-start rounded-full px-2.5 py-1 text-[11px] font-medium sm:self-end sm:px-3 sm:py-1.5 sm:text-xs ${ACCENT[summaryAccent]}`}
         >
           {summary}
         </span>

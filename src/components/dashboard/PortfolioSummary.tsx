@@ -170,13 +170,34 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
     ? TIER_TEXT[tier]
     : 'text-neutral-500 dark:text-neutral-400';
   return (
-    <div className={`rounded-xl border p-4 sm:p-5 ${bgClass}`}>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className={`rounded-xl border p-3 sm:p-5 ${bgClass}`}>
+      {/* Linha 1 mobile: titulo + score na mesma linha. Desktop volta a layout horizontal. */}
+      <div className="flex items-start justify-between gap-3 sm:items-center">
+        <h3 className="min-w-0 flex-1 truncate text-sm font-semibold text-neutral-800 dark:text-neutral-100 sm:text-base">
+          {r.company_name}
+        </h3>
+        <div className="flex shrink-0 items-center gap-2">
+          <div className="text-right">
+            <p className={`text-xl font-bold leading-none sm:text-2xl ${textClass}`}>
+              {r.score != null ? `${r.score.toFixed(0)}%` : '—'}
+            </p>
+            <p className="text-[10px] text-neutral-500 dark:text-neutral-400 sm:text-xs">
+              score
+            </p>
+          </div>
+          <Link
+            to={`/visitas?company=${r.company_id}`}
+            aria-label="Ver detalhes"
+            className="rounded-lg p-1.5 text-neutral-600 hover:bg-white/60 dark:text-neutral-300 dark:hover:bg-black/30 sm:p-2"
+          >
+            <TrendingUp size={16} className="sm:hidden" />
+            <TrendingUp size={18} className="hidden sm:inline" />
+          </Link>
+        </div>
+      </div>
+      <div className="mt-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0 flex-1">
-          <h3 className="truncate text-base font-semibold text-neutral-800 dark:text-neutral-100">
-            {r.company_name}
-          </h3>
-          <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400">
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-neutral-600 dark:text-neutral-400 sm:text-xs">
             <span className="inline-flex items-center gap-1 whitespace-nowrap">
               <AlertOctagon size={12} />
               {r.nc_open_now} NC aberta{r.nc_open_now === 1 ? '' : 's'}
@@ -228,23 +249,6 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
               </span>
             ) : null}
           </div>
-        </div>
-        <div className="flex shrink-0 items-center justify-end gap-3 self-end sm:self-center">
-          <div className="text-right">
-            <p className={`text-2xl font-bold ${textClass}`}>
-              {r.score != null ? `${r.score.toFixed(0)}%` : '—'}
-            </p>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              score
-            </p>
-          </div>
-          <Link
-            to={`/visitas?company=${r.company_id}`}
-            aria-label="Ver detalhes"
-            className="rounded-lg p-2 text-neutral-600 hover:bg-white/60 dark:text-neutral-300 dark:hover:bg-black/30"
-          >
-            <TrendingUp size={18} />
-          </Link>
         </div>
       </div>
     </div>
