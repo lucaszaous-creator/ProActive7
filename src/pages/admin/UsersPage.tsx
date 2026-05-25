@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import type { Company, UserRole } from '@/lib/types';
@@ -57,6 +57,26 @@ export function UsersPage() {
 
   const [deleting, setDeleting] = useState<ProfileRow | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
+
+  const [search, setSearch] = useState('');
+  const filteredUsers = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return users;
+    return users.filter((u) => {
+      const haystack = [
+        u.full_name,
+        u.email,
+        ROLE_LABELS[u.role],
+        u.companies?.name,
+        u.companies?.organizations?.name,
+        u.organizations?.name,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [users, search]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -219,6 +239,27 @@ export function UsersPage() {
           </p>
         </Card>
       ) : (
+        <>
+        <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
+          <Search size={16} className="shrink-0 text-neutral-400" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por nome, e-mail, empresa ou organização..."
+            className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400"
+          />
+          {search ? (
+            <button
+              type="button"
+              onClick={() => setSearch('')}
+              aria-label="Limpar busca"
+              className="rounded p-1 text-neutral-400 hover:bg-neutral-100"
+            >
+              <X size={14} />
+            </button>
+          ) : null}
+        </div>
         <Card className="!p-0">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[680px] text-sm">
@@ -233,7 +274,17 @@ export function UsersPage() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((u) => (
+                {filteredUsers.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="px-4 py-8 text-center text-sm text-neutral-500"
+                    >
+                      Nenhum usuário encontrado para "{search}".
+                    </td>
+                  </tr>
+                ) : null}
+                {filteredUsers.map((u) => (
                   <tr
                     key={u.id}
                     className="border-b border-neutral-100 last:border-0"
@@ -291,6 +342,7 @@ export function UsersPage() {
             </table>
           </div>
         </Card>
+        </>
       )}
 
       <Modal

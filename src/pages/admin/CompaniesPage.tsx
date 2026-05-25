@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, Upload, ImageOff } from 'lucide-react';
+import { Plus, Pencil, Trash2, Upload, ImageOff, Search, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { softDelete } from '@/lib/supabaseHelpers';
 import { useAuth } from '@/context/AuthContext';
@@ -39,6 +39,27 @@ export function CompaniesPage() {
 
   const [deleting, setDeleting] = useState<Company | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
+
+  const [search, setSearch] = useState('');
+  const filteredCompanies = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return companies;
+    return companies.filter((c) => {
+      const haystack = [
+        c.name,
+        c.cnpj,
+        c.phone,
+        c.address,
+        c.organizations?.name,
+        c.organizations?.owner?.full_name,
+        c.organizations?.owner?.email,
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [companies, search]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -221,6 +242,27 @@ export function CompaniesPage() {
           </p>
         </Card>
       ) : (
+        <>
+          <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
+            <Search size={16} className="shrink-0 text-neutral-400" />
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por empresa, CNPJ, nutricionista ou organização..."
+              className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400"
+            />
+            {search ? (
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                aria-label="Limpar busca"
+                className="rounded p-1 text-neutral-400 hover:bg-neutral-100"
+              >
+                <X size={14} />
+              </button>
+            ) : null}
+          </div>
         <Card className="!p-0">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-sm">
@@ -235,7 +277,17 @@ export function CompaniesPage() {
                 </tr>
               </thead>
               <tbody>
-                {companies.map((c) => (
+                {filteredCompanies.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="px-4 py-8 text-center text-sm text-neutral-500"
+                    >
+                      Nenhuma empresa encontrada para "{search}".
+                    </td>
+                  </tr>
+                ) : null}
+                {filteredCompanies.map((c) => (
                   <tr
                     key={c.id}
                     className="border-b border-neutral-100 last:border-0"
@@ -287,6 +339,7 @@ export function CompaniesPage() {
             </table>
           </div>
         </Card>
+        </>
       )}
 
       <Modal
