@@ -4,6 +4,7 @@ import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { FullPageSpinner } from './components/ui/Spinner';
 import { LoginPage } from './pages/LoginPage';
+import { LandingPage } from './pages/LandingPage';
 
 const ResetPasswordPage = lazy(() =>
   import('./pages/ResetPasswordPage').then((m) => ({
@@ -107,13 +108,14 @@ export default function App() {
   return (
     <Suspense fallback={<FullPageSpinner />}>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
         <Route path="/etiqueta/:id" element={<PublicLabelPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
-            <Route path="/" element={<DashboardPage />} />
+            <Route path="/painel" element={<DashboardPage />} />
             <Route path="/produtos" element={<ProductsPage />} />
             <Route path="/imprimir" element={<PrintLabelPage />} />
             <Route path="/fotos" element={<PhotosPage />} />
