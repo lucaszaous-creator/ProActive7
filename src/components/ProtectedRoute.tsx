@@ -39,16 +39,21 @@ function ProfileInactive({ onSignOut }: { onSignOut: () => void }) {
 
 export function ProtectedRoute({
   masterOnly = false,
+  platformAdminOnly = false,
+  nutritionistOrAdmin = false,
 }: {
   masterOnly?: boolean;
+  platformAdminOnly?: boolean;
+  nutritionistOrAdmin?: boolean;
 }) {
-  const { session, profile, loading, isMaster, signOut } = useAuth();
+  const { session, profile, loading, isPlatformAdmin, isNutritionist, signOut } = useAuth();
 
   if (loading) return <FullPageSpinner />;
   if (!session) return <Navigate to="/login" replace />;
   if (!profile) return <ProfileMissing onSignOut={signOut} />;
   if (!profile.active) return <ProfileInactive onSignOut={signOut} />;
-  if (masterOnly && !isMaster) return <Navigate to="/" replace />;
+  if ((masterOnly || platformAdminOnly) && !isPlatformAdmin) return <Navigate to="/" replace />;
+  if (nutritionistOrAdmin && !isPlatformAdmin && !isNutritionist) return <Navigate to="/" replace />;
 
   return <Outlet />;
 }

@@ -23,14 +23,21 @@ interface ProfileRow {
 }
 
 const ROLE_LABELS: Record<UserRole, string> = {
-  master: 'Master',
+  master: 'Master (legado)',
+  platform_admin: 'Administrador da plataforma',
+  nutritionist: 'Nutricionista',
   property: 'Usuário da empresa',
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function UsersPage() {
-  const { profile: callerProfile } = useAuth();
+  const { profile: callerProfile, isPlatformAdmin, isNutritionist } = useAuth();
+
+  // Available roles based on caller's own role
+  const availableRoles: UserRole[] = isPlatformAdmin
+    ? ['platform_admin', 'nutritionist', 'property']
+    : ['property']; // nutritionist can only create property users
   const [users, setUsers] = useState<ProfileRow[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
@@ -119,6 +126,10 @@ export function UsersPage() {
     }
     if (role === 'property' && !companyId) {
       toast.error('Selecione a empresa do usuário.');
+      return;
+    }
+    if (role === 'nutritionist' && !isPlatformAdmin) {
+      toast.error('Apenas administradores da plataforma podem criar nutricionistas.');
       return;
     }
 
@@ -235,7 +246,9 @@ export function UsersPage() {
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
                       {u.companies?.name ??
-                        (u.role === 'master' ? 'Todas' : '—')}
+                        (u.role === 'master' || u.role === 'platform_admin' || u.role === 'nutritionist'
+                          ? '—'
+                          : '—')}
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -334,8 +347,11 @@ export function UsersPage() {
             value={role}
             onChange={(e) => setRole(e.target.value as UserRole)}
           >
-            <option value="property">Usuário da empresa</option>
-            <option value="master">Master (vê todas as empresas)</option>
+            {availableRoles.map((r) => (
+              <option key={r} value={r}>
+                {ROLE_LABELS[r]}
+              </option>
+            ))}
           </Select>
           {role === 'property' && (
             <Select

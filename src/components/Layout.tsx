@@ -22,6 +22,7 @@ import {
   HardHat,
   CalendarRange,
   Bug,
+  Network,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -36,6 +37,7 @@ interface NavItem {
   labelKey: string;
   icon: LucideIcon;
   masterOnly?: boolean;
+  nutritionistOrAdmin?: boolean;
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -61,13 +63,13 @@ const NAV_ITEMS: NavItem[] = [
     to: '/admin/empresas',
     labelKey: 'nav.companies',
     icon: Building2,
-    masterOnly: true,
+    nutritionistOrAdmin: true,
   },
   {
     to: '/admin/usuarios',
     labelKey: 'nav.users',
     icon: Users,
-    masterOnly: true,
+    nutritionistOrAdmin: true,
   },
   {
     to: '/admin/trilha',
@@ -81,14 +83,24 @@ const NAV_ITEMS: NavItem[] = [
     icon: Trash2,
     masterOnly: true,
   },
+  {
+    to: '/platform/organizacoes',
+    labelKey: 'nav.organizations',
+    icon: Network,
+    masterOnly: true,
+  },
 ];
 
 export function Layout() {
-  const { profile, isMaster, signOut } = useAuth();
+  const { profile, isMaster, isPlatformAdmin, isNutritionist, signOut } = useAuth();
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const items = NAV_ITEMS.filter((i) => !i.masterOnly || isMaster);
+  const items = NAV_ITEMS.filter(
+    (i) =>
+      (!i.masterOnly || isPlatformAdmin) &&
+      (!i.nutritionistOrAdmin || isPlatformAdmin || isNutritionist),
+  );
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
@@ -146,7 +158,11 @@ export function Layout() {
               {profile?.full_name ?? profile?.email}
             </p>
             <p className="text-xs text-neutral-500 dark:text-neutral-500">
-              {isMaster ? t('layout.master') : t('layout.property')}
+              {isPlatformAdmin
+                ? t('layout.master')
+                : isNutritionist
+                  ? 'Nutricionista'
+                  : t('layout.property')}
             </p>
           </div>
           <div className="space-y-1">

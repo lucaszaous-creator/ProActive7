@@ -13,7 +13,9 @@ interface AuthState {
   session: Session | null;
   profile: Profile | null;
   loading: boolean;
-  isMaster: boolean;
+  isMaster: boolean;          // backward compat — true for platform_admin
+  isPlatformAdmin: boolean;
+  isNutritionist: boolean;
   refreshProfile: () => Promise<void>;
   signOut: () => Promise<void>;
 }
@@ -72,7 +74,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     profile,
     loading,
-    isMaster: profile?.role === 'master',
+    isMaster: profile?.role === 'master' || profile?.role === 'platform_admin',
+    isPlatformAdmin: profile?.role === 'master' || profile?.role === 'platform_admin',
+    isNutritionist: profile?.role === 'nutritionist',
     refreshProfile: async () => {
       if (session?.user) await loadProfile(session.user.id);
     },

@@ -92,6 +92,16 @@ const AuditLogPage = lazy(() =>
 const TrashPage = lazy(() =>
   import('./pages/admin/TrashPage').then((m) => ({ default: m.TrashPage })),
 );
+const OrganizationsPage = lazy(() =>
+  import('./pages/platform/OrganizationsPage').then((m) => ({
+    default: m.OrganizationsPage,
+  })),
+);
+const OrganizationDetailPage = lazy(() =>
+  import('./pages/platform/OrganizationDetailPage').then((m) => ({
+    default: m.OrganizationDetailPage,
+  })),
+);
 
 export default function App() {
   return (
@@ -124,12 +134,27 @@ export default function App() {
           </Route>
         </Route>
 
-        <Route element={<ProtectedRoute masterOnly />}>
+        {/* Admin routes (platform_admin AND nutritionist) */}
+        <Route element={<ProtectedRoute nutritionistOrAdmin />}>
           <Route element={<Layout />}>
             <Route path="/admin/empresas" element={<CompaniesPage />} />
             <Route path="/admin/usuarios" element={<UsersPage />} />
+          </Route>
+        </Route>
+
+        {/* Platform admin only */}
+        <Route element={<ProtectedRoute masterOnly />}>
+          <Route element={<Layout />}>
             <Route path="/admin/trilha" element={<AuditLogPage />} />
             <Route path="/admin/lixeira" element={<TrashPage />} />
+            <Route
+              path="/platform/organizacoes"
+              element={<OrganizationsPage />}
+            />
+            <Route
+              path="/platform/organizacoes/:id"
+              element={<OrganizationDetailPage />}
+            />
           </Route>
         </Route>
 

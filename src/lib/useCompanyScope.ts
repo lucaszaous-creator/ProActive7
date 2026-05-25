@@ -7,15 +7,19 @@ import type { Company } from './types';
 /**
  * Resolve a empresa "ativa" para uma pagina.
  * - Usuario property: fixado na propria empresa.
- * - Usuario master: pode escolher entre todas as empresas.
+ * - Usuario master/platform_admin: pode escolher entre todas as empresas.
+ * - Usuario nutritionist: RLS escope automaticamente para a org deles.
  */
 export function useCompanyScope() {
-  const { profile, isMaster } = useAuth();
+  const { profile, isMaster, isPlatformAdmin, isNutritionist } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>(profile?.company_id ?? '');
 
+  // Show all companies for platform_admin or nutritionist (RLS scopes nutritionist automatically)
+  const showAllCompanies = isPlatformAdmin || isNutritionist;
+
   useEffect(() => {
-    if (isMaster) {
+    if (showAllCompanies) {
       supabase
         .from('companies')
         .select('*')
@@ -44,7 +48,7 @@ export function useCompanyScope() {
           setCompanies((data as Company[] | null) ?? []);
         });
     }
-  }, [isMaster, profile?.company_id]);
+  }, [showAllCompanies, profile?.company_id]);
 
   const selectedCompany = companies.find((c) => c.id === companyId) ?? null;
   const companyName = selectedCompany?.name ?? '';
@@ -57,6 +61,9 @@ export function useCompanyScope() {
 
   return {
     isMaster,
+    isPlatformAdmin,
+    isNutritionist,
+    showAllCompanies,
     companies,
     companyId,
     setCompanyId,

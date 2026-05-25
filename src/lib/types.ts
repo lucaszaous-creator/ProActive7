@@ -1,4 +1,19 @@
-export type UserRole = 'master' | 'property';
+export type UserRole = 'master' | 'platform_admin' | 'nutritionist' | 'property';
+
+export interface Organization {
+  id: string;
+  name: string;
+  slug: string | null;
+  status: 'active' | 'suspended';
+  logo_path: string | null;
+  primary_color: string | null;
+  contact_email: string | null;
+  contact_phone: string | null;
+  owner_user_id: string | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+}
 export type StorageCondition = 'ambiente' | 'refrigerado' | 'congelado';
 export type ValidityUnit = 'hours' | 'days';
 
@@ -37,6 +52,7 @@ export interface Company {
 export interface Profile {
   id: string;
   company_id: string | null;
+  organization_id: string | null;
   role: UserRole;
   full_name: string | null;
   email: string | null;
