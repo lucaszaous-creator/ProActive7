@@ -92,7 +92,7 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 export function Layout() {
-  const { profile, isMaster, isPlatformAdmin, isNutritionist, signOut } = useAuth();
+  const { profile, isPlatformAdmin, isNutritionist, signOut } = useAuth();
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
