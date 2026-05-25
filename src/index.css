@@ -6,6 +6,13 @@ html,
 body,
 #root {
   height: 100%;
+  /* Barreira global contra overflow horizontal — qualquer widget rogue
+     (tabelas com min-width, badges com whitespace-nowrap, imagens sem
+     constraint) fica contido na largura do viewport. Sem isso o body
+     cresce alem do viewport e a pagina inteira ganha scroll lateral. */
+  overflow-x: hidden;
+  /* Mantém o conteudo dentro da largura da tela em iOS Safari */
+  max-width: 100vw;
 }
 
 body {
