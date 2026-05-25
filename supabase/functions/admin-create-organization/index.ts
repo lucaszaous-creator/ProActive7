@@ -92,6 +92,19 @@ Deno.serve(async (req) => {
     // 4. Gera slug automaticamente se nao fornecido.
     const orgSlug = orgSlugInput ? orgSlugInput : slugify(orgName);
 
+    // 4b. Confere se o slug ja esta em uso (mensagem amigavel).
+    const { data: existing } = await admin
+      .from('organizations')
+      .select('id')
+      .eq('slug', orgSlug)
+      .maybeSingle();
+    if (existing) {
+      return json(
+        { error: `Slug "${orgSlug}" já existe. Informe um org_slug diferente.` },
+        400,
+      );
+    }
+
     // 5. Cria a organizacao (sem owner_user_id ainda).
     const { data: newOrg, error: orgErr } = await admin
       .from('organizations')

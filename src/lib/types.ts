@@ -45,6 +45,7 @@ export interface Company {
   active: boolean;
   logo_path: string | null;
   label_settings: LabelSettings;
+  organization_id: string | null;
   created_at: string;
   updated_at: string;
 }

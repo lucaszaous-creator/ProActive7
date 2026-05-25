@@ -48,8 +48,9 @@ async function fetchExpiringLabels(): Promise<ExpiringLabel[]> {
 
 export function DashboardPage() {
   usePageTitle('Painel');
-  const { isMaster, profile } = useAuth();
+  const { isMaster, isNutritionist, profile } = useAuth();
   const { companyId } = useCompanyScope();
+  const showPortfolio = isMaster || isNutritionist;
 
   // Master state
   const [portfolio, setPortfolio] = useState<EnrichedCompany[] | null>(null);
@@ -69,9 +70,9 @@ export function DashboardPage() {
 
   const [masterLoading, setMasterLoading] = useState(true);
 
-  // ----- Master fetch -----
+  // ----- Master / Nutricionist fetch (portfolio scoped by RLS) -----
   useEffect(() => {
-    if (!isMaster) {
+    if (!showPortfolio) {
       setMasterLoading(false);
       return;
     }
@@ -102,11 +103,11 @@ export function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [isMaster]);
+  }, [showPortfolio]);
 
   // ----- Property fetch -----
   useEffect(() => {
-    if (isMaster) {
+    if (showPortfolio) {
       setPropertyLoading(false);
       return;
     }
@@ -136,7 +137,7 @@ export function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [isMaster, companyId]);
+  }, [showPortfolio, companyId]);
 
   // ----- Master derived -----
   const stats = portfolio
@@ -171,9 +172,9 @@ export function DashboardPage() {
       <HeroGreeting
         fullName={profile?.full_name}
         email={profile?.email}
-        summary={isMaster ? masterSummary : propertySummary}
+        summary={showPortfolio ? masterSummary : propertySummary}
         summaryAccent={
-          isMaster
+          showPortfolio
             ? stats?.critical && stats.critical > 0
               ? 'amber'
               : 'teal'
@@ -184,9 +185,9 @@ export function DashboardPage() {
         }
       />
 
-      <QuickActions isMaster={isMaster} />
+      <QuickActions isMaster={showPortfolio} />
 
-      {isMaster ? (
+      {showPortfolio ? (
         <>
           {stats ? <MasterKPIs stats={stats} /> : null}
           <PortfolioSummary

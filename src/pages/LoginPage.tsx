@@ -10,14 +10,19 @@ import { FullPageSpinner } from '@/components/ui/Spinner';
 
 export function LoginPage() {
   usePageTitle('Entrar');
-  const { session, loading } = useAuth();
+  const { session, loading, profile, isNutritionist } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sendingReset, setSendingReset] = useState(false);
 
   if (loading) return <FullPageSpinner />;
-  if (session) return <Navigate to="/" replace />;
+  if (session) {
+    // Nutricionista nao tem company_id e cai num dashboard property vazio:
+    // mandar direto para a gestao de empresas dele.
+    const dest = isNutritionist && !profile?.company_id ? '/admin/empresas' : '/';
+    return <Navigate to={dest} replace />;
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();

@@ -120,10 +120,9 @@ export function OrganizationsPage() {
         'admin-create-organization',
         {
           body: {
-            name: name.trim(),
+            org_name: name.trim(),
             contact_email: contactEmail.trim() || null,
             contact_phone: contactPhone.trim() || null,
-            status,
             nutritionist_email: nutritionistEmail.trim(),
             nutritionist_password: nutritionistPassword,
             nutritionist_name: nutritionistName.trim() || null,

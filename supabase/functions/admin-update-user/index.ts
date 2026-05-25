@@ -48,16 +48,22 @@ Deno.serve(async (req) => {
       return json({ error: 'Não autenticado' }, 401);
     }
 
-    // 2. Confirma master.
+    // 2. Carrega o perfil do chamador e valida o role.
     const admin = createClient(url, serviceKey);
     const { data: callerProfile } = await admin
       .from('profiles')
-      .select('role')
+      .select('role, organization_id')
       .eq('id', user.id)
       .maybeSingle();
-    if (callerProfile?.role !== 'master') {
+
+    const callerRole = callerProfile?.role;
+    const isPlatformAdmin =
+      callerRole === 'platform_admin' || callerRole === 'master';
+    const isNutritionist = callerRole === 'nutritionist';
+
+    if (!isPlatformAdmin && !isNutritionist) {
       return json(
-        { error: 'Apenas o usuário master pode editar usuários' },
+        { error: 'Apenas administradores podem editar usuários' },
         403,
       );
     }
@@ -72,10 +78,15 @@ Deno.serve(async (req) => {
     const password: string | undefined = body?.password;
 
     if (!userId) return json({ error: 'user_id é obrigatório' }, 400);
-    if (role !== undefined && role !== 'master' && role !== 'property') {
+
+    const validRoles = ['master', 'platform_admin', 'nutritionist', 'property'];
+    if (role !== undefined && !validRoles.includes(role)) {
       return json({ error: 'Role inválido' }, 400);
     }
-    if (role === 'property' && !companyId) {
+    // Normaliza 'master' para 'platform_admin'.
+    const normalizedRole = role === 'master' ? 'platform_admin' : role;
+
+    if (normalizedRole === 'property' && companyId === null) {
       return json(
         { error: 'company_id é obrigatório para usuário da empresa' },
         400,
@@ -83,6 +94,45 @@ Deno.serve(async (req) => {
     }
     if (password !== undefined && password.length < 6) {
       return json({ error: 'A senha deve ter ao menos 6 caracteres' }, 400);
+    }
+
+    // 3b. Nutricionista: so pode mexer em usuarios da propria org, e so cria/edita 'property'.
+    if (isNutritionist) {
+      if (normalizedRole !== undefined && normalizedRole !== 'property') {
+        return json(
+          { error: 'Nutricionista só pode editar usuários da empresa' },
+          403,
+        );
+      }
+      // Valida que o usuario-alvo pertence a org do nutricionista.
+      const { data: targetProfile } = await admin
+        .from('profiles')
+        .select('organization_id')
+        .eq('id', userId)
+        .maybeSingle();
+      if (
+        !targetProfile ||
+        targetProfile.organization_id !== callerProfile?.organization_id
+      ) {
+        return json(
+          { error: 'Usuário não pertence à sua organização' },
+          403,
+        );
+      }
+      // Se mudou de empresa, valida que a nova empresa tambem e da org.
+      if (companyId) {
+        const { data: company } = await admin
+          .from('companies')
+          .select('organization_id')
+          .eq('id', companyId)
+          .maybeSingle();
+        if (company?.organization_id !== callerProfile?.organization_id) {
+          return json(
+            { error: 'Empresa não pertence à sua organização' },
+            403,
+          );
+        }
+      }
     }
 
     // 4. Atualizacoes em auth.users (senha / banimento).
@@ -102,8 +152,8 @@ Deno.serve(async (req) => {
     // 5. Atualizacoes em profiles.
     const profileUpdate: Record<string, unknown> = {};
     if (fullName !== undefined) profileUpdate.full_name = fullName;
-    if (role !== undefined) profileUpdate.role = role;
-    if (role === 'master') profileUpdate.company_id = null;
+    if (normalizedRole !== undefined) profileUpdate.role = normalizedRole;
+    if (normalizedRole === 'platform_admin') profileUpdate.company_id = null;
     else if (companyId !== undefined) profileUpdate.company_id = companyId;
     if (active !== undefined) profileUpdate.active = active;
 

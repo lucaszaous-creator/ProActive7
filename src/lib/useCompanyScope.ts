@@ -15,7 +15,7 @@ export function useCompanyScope() {
   const [companies, setCompanies] = useState<Company[]>([]);
   const [companyId, setCompanyId] = useState<string>(profile?.company_id ?? '');
 
-  // Show all companies for platform_admin or nutritionist (RLS scopes nutritionist automatically)
+  // Platform_admin ve todas; nutritionist recebe apenas as da propria org via RLS.
   const showAllCompanies = isPlatformAdmin || isNutritionist;
 
   useEffect(() => {

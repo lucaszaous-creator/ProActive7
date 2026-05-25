@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, Upload, ImageOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { softDelete } from '@/lib/supabaseHelpers';
+import { useAuth } from '@/context/AuthContext';
 import type { Company } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -12,6 +13,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Spinner } from '@/components/ui/Spinner';
 
 export function CompaniesPage() {
+  const { profile } = useAuth();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -145,7 +147,7 @@ export function CompaniesPage() {
           delete next.primary_color;
           return next;
         })();
-    const payload = {
+    const basePayload = {
       name: name.trim(),
       cnpj: cnpj.trim() || null,
       address: address.trim() || null,
@@ -154,8 +156,10 @@ export function CompaniesPage() {
       label_settings: labelSettings,
     };
     const { error } = editing
-      ? await supabase.from('companies').update(payload).eq('id', editing.id)
-      : await supabase.from('companies').insert(payload);
+      ? await supabase.from('companies').update(basePayload).eq('id', editing.id)
+      : await supabase
+          .from('companies')
+          .insert({ ...basePayload, organization_id: profile?.organization_id ?? null });
     setSaving(false);
     if (error) {
       toast.error('Erro ao salvar: ' + error.message);

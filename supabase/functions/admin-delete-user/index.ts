@@ -45,12 +45,18 @@ Deno.serve(async (req) => {
     const admin = createClient(url, serviceKey);
     const { data: callerProfile } = await admin
       .from('profiles')
-      .select('role')
+      .select('role, organization_id')
       .eq('id', user.id)
       .maybeSingle();
-    if (callerProfile?.role !== 'master') {
+
+    const callerRole = callerProfile?.role;
+    const isPlatformAdmin =
+      callerRole === 'platform_admin' || callerRole === 'master';
+    const isNutritionist = callerRole === 'nutritionist';
+
+    if (!isPlatformAdmin && !isNutritionist) {
       return json(
-        { error: 'Apenas o usuário master pode excluir usuários' },
+        { error: 'Apenas administradores podem excluir usuários' },
         403,
       );
     }
@@ -60,6 +66,30 @@ Deno.serve(async (req) => {
     if (!userId) return json({ error: 'user_id é obrigatório' }, 400);
     if (userId === user.id) {
       return json({ error: 'Você não pode excluir o próprio usuário' }, 400);
+    }
+
+    // Nutricionista so pode deletar usuarios da propria org.
+    if (isNutritionist) {
+      const { data: targetProfile } = await admin
+        .from('profiles')
+        .select('organization_id, role')
+        .eq('id', userId)
+        .maybeSingle();
+      if (
+        !targetProfile ||
+        targetProfile.organization_id !== callerProfile?.organization_id
+      ) {
+        return json(
+          { error: 'Usuário não pertence à sua organização' },
+          403,
+        );
+      }
+      if (targetProfile.role !== 'property') {
+        return json(
+          { error: 'Nutricionista só pode excluir usuários da empresa' },
+          403,
+        );
+      }
     }
 
     const { error: delErr } = await admin.auth.admin.deleteUser(userId);
