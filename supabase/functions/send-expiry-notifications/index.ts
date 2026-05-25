@@ -2,8 +2,10 @@
 // Identifica etiquetas vencendo nas proximas 24h por empresa e envia
 // um push para cada usuario inscrito da empresa correspondente.
 //
-// Autorizacao: header x-cron-secret deve bater com CRON_SECRET
-// (verify_jwt e false; mesma estrategia da cleanup-photos).
+// Autorizacao: header x-cron-secret eh comparado contra o valor
+// guardado em supabase_vault (entrada 'cron_secret_expiry'). A
+// validacao roda dentro do banco via RPC verify_cron_secret — o
+// valor nunca atravessa a fronteira do banco.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import webpush from 'npm:web-push@3.6.7';
 
@@ -15,23 +17,40 @@ function ok(body: unknown, status = 200): Response {
 }
 
 Deno.serve(async (req) => {
-  const expectedSecret = Deno.env.get('CRON_SECRET');
-  if (
-    expectedSecret &&
-    req.headers.get('x-cron-secret') !== expectedSecret
-  ) {
+  const url = Deno.env.get('SUPABASE_URL')!;
+  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+  const admin = createClient(url, serviceKey);
+
+  const provided = req.headers.get('x-cron-secret') ?? '';
+  const { data: authorized, error: authErr } = await admin.rpc(
+    'verify_cron_secret',
+    { p_name: 'cron_secret_expiry', p_provided: provided },
+  );
+  if (authErr || !authorized) {
     return ok({ error: 'Forbidden' }, 403);
   }
 
-  const url = Deno.env.get('SUPABASE_URL')!;
-  const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-  const vapidPublic = Deno.env.get('VAPID_PUBLIC_KEY')!;
-  const vapidPrivate = Deno.env.get('VAPID_PRIVATE_KEY')!;
-  const vapidSubject = Deno.env.get('VAPID_SUBJECT') ?? 'mailto:no-reply@etiqueta.app';
-
-  webpush.setVapidDetails(vapidSubject, vapidPublic, vapidPrivate);
-
-  const admin = createClient(url, serviceKey);
+  // VAPID keys vem do supabase_vault via RPC get_vapid_keys.
+  const { data: vapidRows, error: vapidErr } = await admin.rpc('get_vapid_keys');
+  const vapid = (vapidRows as Array<{
+    vapid_public: string | null;
+    vapid_private: string | null;
+    vapid_subject: string | null;
+  }> | null)?.[0];
+  if (vapidErr || !vapid?.vapid_public || !vapid?.vapid_private) {
+    return ok(
+      {
+        error:
+          'VAPID keys ausentes no vault. Cadastre via vault.create_secret().',
+      },
+      500,
+    );
+  }
+  webpush.setVapidDetails(
+    vapid.vapid_subject ?? 'mailto:no-reply@proactive7.com.br',
+    vapid.vapid_public,
+    vapid.vapid_private,
+  );
 
   const nowIso = new Date().toISOString();
   const in24hIso = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
