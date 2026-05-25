@@ -134,6 +134,30 @@ export function getPopTemplate(type: DocumentType): PopTemplate | undefined {
   return POP_TEMPLATES.find((p) => p.type === type);
 }
 
+export interface PopPlaceholderVars {
+  empresa?: string | null;
+  rt_nome?: string | null;
+  rt_crn?: string | null;
+  data?: string | null;
+}
+
+/**
+ * Substitui os placeholders `{{empresa}}`, `{{rt_nome}}`, `{{rt_crn}}`
+ * e `{{data}}` no conteudo do template pelos valores reais. Valores
+ * ausentes viram "_____________" para o usuario preencher na mao.
+ */
+export function fillPopPlaceholders(
+  content: string,
+  vars: PopPlaceholderVars,
+): string {
+  const blank = '_____________';
+  return content
+    .replace(/\{\{empresa\}\}/g, vars.empresa?.trim() || blank)
+    .replace(/\{\{rt_nome\}\}/g, vars.rt_nome?.trim() || blank)
+    .replace(/\{\{rt_crn\}\}/g, vars.rt_crn?.trim() || blank)
+    .replace(/\{\{data\}\}/g, vars.data?.trim() || blank);
+}
+
 export const DOCUMENT_TYPE_LABELS: Record<DocumentType, string> = {
   mbp: 'Manual de Boas Praticas',
   pop_higienizacao: 'POP - Higienizacao',

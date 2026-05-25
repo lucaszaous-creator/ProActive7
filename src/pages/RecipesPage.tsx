@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, Printer, ChefHat } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { checkDeleteResult } from '@/lib/supabaseHelpers';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
@@ -201,13 +202,15 @@ export function RecipesPage() {
   async function handleDelete() {
     if (!deleting) return;
     setDeleteBusy(true);
-    const { error } = await supabase
+    const result = await supabase
       .from('recipes')
       .delete()
-      .eq('id', deleting.id);
+      .eq('id', deleting.id)
+      .select('id');
     setDeleteBusy(false);
-    if (error) {
-      toast.error('Erro ao excluir: ' + error.message);
+    const err = checkDeleteResult(result);
+    if (err) {
+      toast.error(err);
       return;
     }
     toast.success('Ficha excluída.');

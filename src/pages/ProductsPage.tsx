@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, Search, FileUp } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { checkDeleteResult } from '@/lib/supabaseHelpers';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
@@ -224,13 +225,15 @@ export function ProductsPage() {
   async function handleDelete() {
     if (!deleting) return;
     setDeleteBusy(true);
-    const { error } = await supabase
+    const result = await supabase
       .from('products')
       .delete()
-      .eq('id', deleting.id);
+      .eq('id', deleting.id)
+      .select('id');
     setDeleteBusy(false);
-    if (error) {
-      toast.error('Erro ao excluir: ' + error.message);
+    const err = checkDeleteResult(result);
+    if (err) {
+      toast.error(err);
       return;
     }
     toast.success('Produto excluído.');

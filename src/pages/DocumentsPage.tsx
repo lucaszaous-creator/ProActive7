@@ -12,6 +12,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { checkDeleteResult } from '@/lib/supabaseHelpers';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
@@ -31,8 +32,10 @@ import type {
 import {
   DOCUMENT_TYPE_LABELS,
   POP_TEMPLATES,
+  fillPopPlaceholders,
   getPopTemplate,
 } from '@/lib/popTemplates';
+import { formatDate } from '@/lib/dates';
 import {
   drawPdfFooter,
   drawPdfHeader,
@@ -108,8 +111,16 @@ export function DocumentsPage() {
     setEditing(null);
     setDocType(type);
     const template = getPopTemplate(type);
+    const filled = template?.content
+      ? fillPopPlaceholders(template.content, {
+          empresa: selectedCompany?.name,
+          rt_nome: profile?.full_name,
+          rt_crn: profile?.crn,
+          data: formatDate(new Date()),
+        })
+      : '';
     setTitle(template?.title ?? DOCUMENT_TYPE_LABELS[type]);
-    setContent(template?.content ?? '');
+    setContent(filled);
     setShowPreview(false);
     setModalOpen(true);
   }
@@ -198,13 +209,15 @@ export function DocumentsPage() {
   async function handleDelete() {
     if (!deleting) return;
     setDeleteBusy(true);
-    const { error } = await supabase
+    const result = await supabase
       .from('documents')
       .delete()
-      .eq('id', deleting.id);
+      .eq('id', deleting.id)
+      .select('id');
     setDeleteBusy(false);
-    if (error) {
-      toast.error('Erro ao excluir: ' + error.message);
+    const err = checkDeleteResult(result);
+    if (err) {
+      toast.error(err);
       return;
     }
     toast.success('Documento excluido.');
@@ -443,7 +456,14 @@ export function DocumentsPage() {
                 const tpl = getPopTemplate(t);
                 if (tpl) {
                   setTitle(tpl.title);
-                  setContent(tpl.content);
+                  setContent(
+                    fillPopPlaceholders(tpl.content, {
+                      empresa: selectedCompany?.name,
+                      rt_nome: profile?.full_name,
+                      rt_crn: profile?.crn,
+                      data: formatDate(new Date()),
+                    }),
+                  );
                 }
               }}
             >

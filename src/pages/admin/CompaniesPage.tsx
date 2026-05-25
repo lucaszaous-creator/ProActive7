@@ -99,6 +99,11 @@ export function CompaniesPage() {
       .eq('id', editing.id);
     setUploadingLogo(false);
     if (dbErr) {
+      // Remove o arquivo orfao (upsert pode ter sobrescrito o anterior,
+      // mas remover devolve o estado anterior do banco — se algum
+      // logo antigo apontava para esse path, precisaria de re-upload
+      // manual).
+      await supabase.storage.from('branding').remove([path]);
       toast.error('Erro ao salvar logo: ' + dbErr.message);
       return;
     }
@@ -163,10 +168,11 @@ export function CompaniesPage() {
   async function handleDelete() {
     if (!deleting) return;
     setDeleteBusy(true);
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('companies')
       .delete()
-      .eq('id', deleting.id);
+      .eq('id', deleting.id)
+      .select('id');
     setDeleteBusy(false);
     if (error) {
       if (error.code === '23503') {
@@ -176,6 +182,10 @@ export function CompaniesPage() {
       } else {
         toast.error('Erro ao excluir: ' + error.message);
       }
+      return;
+    }
+    if (!data || data.length === 0) {
+      toast.error('Você não tem permissão para excluir esta empresa.');
       return;
     }
     toast.success('Empresa excluída.');

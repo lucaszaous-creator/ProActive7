@@ -11,6 +11,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { checkDeleteResult } from '@/lib/supabaseHelpers';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
@@ -215,12 +216,14 @@ export function PestControlPage() {
 
   async function handleDeleteProvider() {
     if (!deletingProv) return;
-    const { error } = await supabase
+    const result = await supabase
       .from('pest_control_providers')
       .delete()
-      .eq('id', deletingProv.id);
-    if (error) {
-      toast.error('Erro ao excluir: ' + error.message);
+      .eq('id', deletingProv.id)
+      .select('id');
+    const err = checkDeleteResult(result);
+    if (err) {
+      toast.error(err);
       return;
     }
     toast.success('Fornecedor excluído.');
@@ -298,6 +301,10 @@ export function PestControlPage() {
       : await supabase.from('pest_control_services').insert(payload);
     setSvcSaving(false);
     if (error) {
+      // Cleanup arquivo orfao se foi feito upload novo.
+      if (typeof certPath === 'string') {
+        await supabase.storage.from('pest-docs').remove([certPath]);
+      }
       toast.error('Erro ao salvar: ' + error.message);
       return;
     }
@@ -308,12 +315,14 @@ export function PestControlPage() {
 
   async function handleDeleteService() {
     if (!deletingSvc) return;
-    const { error } = await supabase
+    const result = await supabase
       .from('pest_control_services')
       .delete()
-      .eq('id', deletingSvc.id);
-    if (error) {
-      toast.error('Erro ao excluir: ' + error.message);
+      .eq('id', deletingSvc.id)
+      .select('id');
+    const err = checkDeleteResult(result);
+    if (err) {
+      toast.error(err);
       return;
     }
     toast.success('Serviço excluído.');
@@ -452,7 +461,20 @@ export function PestControlPage() {
         )}
       </div>
 
-      {loading ? (
+      {isMaster && companies.length === 0 ? (
+        <Card>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            Nenhuma empresa cadastrada. Crie uma empresa em{' '}
+            <a
+              href="/admin/empresas"
+              className="font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+            >
+              Empresas
+            </a>{' '}
+            para começar.
+          </p>
+        </Card>
+      ) : loading ? (
         <div className="flex justify-center py-16">
           <Spinner className="h-8 w-8" />
         </div>
