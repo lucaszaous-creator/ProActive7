@@ -19,7 +19,9 @@ interface ProfileRow {
   role: UserRole;
   active: boolean;
   company_id: string | null;
-  companies: { name: string } | null;
+  organization_id: string | null;
+  companies: { name: string; organizations: { name: string | null } | null } | null;
+  organizations: { name: string | null } | null;
 }
 
 const ROLE_LABELS: Record<UserRole, string> = {
@@ -62,7 +64,8 @@ export function UsersPage() {
       supabase
         .from('profiles')
         .select(
-          'id, full_name, email, role, active, company_id, companies(name)',
+          'id, full_name, email, role, active, company_id, organization_id, ' +
+            'companies(name, organizations(name)), organizations(name)',
         )
         .order('full_name'),
       supabase.from('companies').select('*').eq('active', true).order('name'),
@@ -224,7 +227,7 @@ export function UsersPage() {
                   <th className="px-4 py-3">Nome</th>
                   <th className="px-4 py-3">E-mail</th>
                   <th className="px-4 py-3">Perfil</th>
-                  <th className="px-4 py-3">Empresa</th>
+                  <th className="px-4 py-3">Vínculo</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3 text-right">Ações</th>
                 </tr>
@@ -245,10 +248,7 @@ export function UsersPage() {
                       {ROLE_LABELS[u.role]}
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
-                      {u.companies?.name ??
-                        (u.role === 'master' || u.role === 'platform_admin' || u.role === 'nutritionist'
-                          ? '—'
-                          : '—')}
+                      <UserLink user={u} />
                     </td>
                     <td className="px-4 py-3">
                       <span
@@ -399,6 +399,56 @@ export function UsersPage() {
         onConfirm={handleDelete}
         onCancel={() => setDeleting(null)}
       />
+    </div>
+  );
+}
+
+/**
+ * Mostra o vinculo do usuario:
+ *  - property:        "Empresa X" + sub-linha "Org Y"
+ *  - nutritionist:    "Org Y"     + sub-linha "Nutricionista responsavel"
+ *  - platform_admin:  "Plataforma" + sub-linha "Org da plataforma"
+ */
+function UserLink({ user }: { user: ProfileRow }) {
+  if (user.role === 'property') {
+    const empresa = user.companies?.name ?? '—';
+    const org =
+      user.companies?.organizations?.name ?? user.organizations?.name ?? null;
+    return (
+      <div className="leading-tight">
+        <div className="font-medium text-neutral-800">{empresa}</div>
+        {org ? (
+          <div className="mt-0.5 text-xs text-neutral-500">
+            Org · {org}
+          </div>
+        ) : (
+          <div className="mt-0.5 text-xs text-amber-600">
+            Sem organização vinculada
+          </div>
+        )}
+      </div>
+    );
+  }
+  if (user.role === 'nutritionist') {
+    const org = user.organizations?.name ?? '—';
+    return (
+      <div className="leading-tight">
+        <div className="font-medium text-neutral-800">{org}</div>
+        <div className="mt-0.5 text-xs text-neutral-500">
+          Nutricionista responsável
+        </div>
+      </div>
+    );
+  }
+  // platform_admin / master
+  return (
+    <div className="leading-tight">
+      <div className="font-medium text-neutral-800">Plataforma</div>
+      {user.organizations?.name ? (
+        <div className="mt-0.5 text-xs text-neutral-500">
+          {user.organizations.name}
+        </div>
+      ) : null}
     </div>
   );
 }
