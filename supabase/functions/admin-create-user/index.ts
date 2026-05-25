@@ -1,5 +1,6 @@
-// admin-create-user — cria um usuario (auth + profile) com company_id e role.
-// Apenas o usuario master pode invocar. Usa a service role key.
+// admin-create-user — cria um usuario (auth + profile) com role e org/company.
+// platform_admin pode criar qualquer role. nutritionist pode criar apenas 'property'
+// para empresas dentro da sua propria organizacao. Usa a service role key.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const corsHeaders = {
@@ -42,16 +43,22 @@ Deno.serve(async (req) => {
       return json({ error: 'Nao autenticado' }, 401);
     }
 
-    // 2. Confirma que o chamador e o usuario master.
+    // 2. Busca o perfil do chamador para verificar autorizacao.
     const admin = createClient(url, serviceKey);
     const { data: callerProfile } = await admin
       .from('profiles')
-      .select('role')
+      .select('role, organization_id')
       .eq('id', user.id)
       .maybeSingle();
-    if (callerProfile?.role !== 'master') {
+
+    const callerRole = callerProfile?.role;
+    const isPlatformAdmin =
+      callerRole === 'platform_admin' || callerRole === 'master';
+    const isNutritionist = callerRole === 'nutritionist';
+
+    if (!isPlatformAdmin && !isNutritionist) {
       return json(
-        { error: 'Apenas o usuario master pode criar usuarios' },
+        { error: 'Apenas administradores podem criar usuarios' },
         403,
       );
     }
@@ -63,21 +70,64 @@ Deno.serve(async (req) => {
     const fullName: string | null = body?.full_name ?? null;
     const role: string | undefined = body?.role;
     const companyId: string | null = body?.company_id ?? null;
+    const organizationId: string | null = body?.organization_id ?? null;
 
     if (!email || !password || !role) {
       return json({ error: 'Dados incompletos (email, senha, role)' }, 400);
     }
-    if (role !== 'master' && role !== 'property') {
+
+    // Roles validos (mantendo 'master' para compatibilidade retroativa).
+    const validRoles = ['platform_admin', 'master', 'nutritionist', 'property'];
+    if (!validRoles.includes(role)) {
       return json({ error: 'Role invalido' }, 400);
     }
-    if (role === 'property' && !companyId) {
+
+    // Normaliza 'master' para 'platform_admin' para consistencia no BD.
+    const normalizedRole = role === 'master' ? 'platform_admin' : role;
+
+    // 4. Verifica autorizacao especifica por role do chamador.
+    if (isNutritionist) {
+      if (normalizedRole !== 'property') {
+        return json(
+          { error: 'Nutricionista so pode criar usuarios da empresa' },
+          403,
+        );
+      }
+      // Verifica se o company_id pertence a organizacao do chamador.
+      if (!companyId) {
+        return json(
+          { error: 'company_id e obrigatorio para usuario da empresa' },
+          400,
+        );
+      }
+      const { data: company } = await admin
+        .from('companies')
+        .select('organization_id')
+        .eq('id', companyId)
+        .maybeSingle();
+      if (company?.organization_id !== callerProfile?.organization_id) {
+        return json(
+          { error: 'Empresa nao pertence a sua organizacao' },
+          403,
+        );
+      }
+    }
+
+    // 5. Validacoes de campos obrigatorios por role.
+    if (normalizedRole === 'property' && !companyId) {
       return json(
         { error: 'company_id e obrigatorio para usuario da empresa' },
         400,
       );
     }
+    if (normalizedRole === 'nutritionist' && !organizationId) {
+      return json(
+        { error: 'organization_id e obrigatorio para nutricionista' },
+        400,
+      );
+    }
 
-    // 4. Cria o usuario no Auth.
+    // 6. Cria o usuario no Auth.
     const { data: created, error: createErr } =
       await admin.auth.admin.createUser({
         email,
@@ -92,13 +142,15 @@ Deno.serve(async (req) => {
       );
     }
 
-    // 5. Define role e empresa no profile (o trigger ja criou a linha base).
+    // 7. Define role, empresa e organizacao no profile.
+    // Para 'property', organization_id e sincronizado automaticamente pelo trigger do BD.
     const { error: upsertErr } = await admin.from('profiles').upsert({
       id: created.user.id,
       email,
       full_name: fullName,
-      role,
-      company_id: role === 'master' ? null : companyId,
+      role: normalizedRole,
+      company_id: normalizedRole === 'property' ? companyId : null,
+      organization_id: normalizedRole === 'nutritionist' ? organizationId : null,
       active: true,
     });
     if (upsertErr) {
