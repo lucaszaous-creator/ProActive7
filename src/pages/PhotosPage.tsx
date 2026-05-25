@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { Upload, Trash2, ImageOff } from 'lucide-react';
 import { differenceInCalendarDays } from 'date-fns';
 import { supabase } from '@/lib/supabase';
+import { checkDeleteResult } from '@/lib/supabaseHelpers';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
@@ -116,13 +117,15 @@ export function PhotosPage() {
   async function handleDelete() {
     if (!deleting) return;
     setDeleteBusy(true);
-    const { error } = await supabase
+    const result = await supabase
       .from('photos')
       .delete()
-      .eq('id', deleting.id);
-    if (error) {
+      .eq('id', deleting.id)
+      .select('id');
+    const err = checkDeleteResult(result);
+    if (err) {
       setDeleteBusy(false);
-      toast.error('Erro ao excluir: ' + error.message);
+      toast.error(err);
       return;
     }
     await supabase.storage.from(BUCKET).remove([deleting.storage_path]);

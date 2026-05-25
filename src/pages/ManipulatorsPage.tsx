@@ -11,6 +11,7 @@ import {
   FileText as FileTextIcon,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { checkDeleteResult } from '@/lib/supabaseHelpers';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
@@ -169,13 +170,15 @@ export function ManipulatorsPage() {
   async function handleDelete() {
     if (!deleting) return;
     setDeleteBusy(true);
-    const { error } = await supabase
+    const result = await supabase
       .from('manipulators')
       .delete()
-      .eq('id', deleting.id);
+      .eq('id', deleting.id)
+      .select('id');
     setDeleteBusy(false);
-    if (error) {
-      toast.error('Erro ao excluir: ' + error.message);
+    const err = checkDeleteResult(result);
+    if (err) {
+      toast.error(err);
       return;
     }
     toast.success('Manipulador excluido.');
@@ -227,6 +230,10 @@ export function ManipulatorsPage() {
     });
     setAsoSaving(false);
     if (error) {
+      // Insert falhou — remover o arquivo orfao do bucket.
+      if (filePath) {
+        await supabase.storage.from('employee-docs').remove([filePath]);
+      }
       toast.error('Erro ao salvar ASO: ' + error.message);
       return;
     }
@@ -279,6 +286,9 @@ export function ManipulatorsPage() {
     });
     setTrSaving(false);
     if (error) {
+      if (certPath) {
+        await supabase.storage.from('employee-docs').remove([certPath]);
+      }
       toast.error('Erro ao salvar: ' + error.message);
       return;
     }
@@ -403,7 +413,20 @@ export function ManipulatorsPage() {
         </div>
       ) : null}
 
-      {loading ? (
+      {isMaster && companies.length === 0 ? (
+        <Card>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            Nenhuma empresa cadastrada. Crie uma empresa em{' '}
+            <a
+              href="/admin/empresas"
+              className="font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+            >
+              Empresas
+            </a>{' '}
+            para começar.
+          </p>
+        </Card>
+      ) : loading ? (
         <div className="flex justify-center py-16">
           <Spinner className="h-8 w-8" />
         </div>

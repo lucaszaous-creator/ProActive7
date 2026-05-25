@@ -220,6 +220,8 @@ export function AuditDetailPage() {
       .eq('id', audit.id);
     setFinalizing(false);
     if (error) {
+      // Remove a assinatura orfa do bucket.
+      await supabase.storage.from('signatures').remove([path]);
       toast.error('Erro ao finalizar: ' + error.message);
       return;
     }
@@ -259,17 +261,32 @@ export function AuditDetailPage() {
     }
 
     // Recorrencia: agenda automaticamente a proxima visita.
+    // Base = quando ESTA visita foi finalizada (mais correto que o
+    // scheduled_at, que pode estar no passado se houve atraso). Se
+    // ainda assim a proxima data calculada cair no passado (visita
+    // muito atrasada + recurrencia curta), avanca em ciclos ate
+    // passar de hoje.
     if (audit.recurrence_months && audit.recurrence_months > 0) {
-      const baseDate = audit.scheduled_at
-        ? new Date(audit.scheduled_at)
-        : new Date();
-      const nextDate = new Date(
+      const baseDate = new Date(
+        audit.completed_at ?? audit.scheduled_at ?? new Date().toISOString(),
+      );
+      let nextDate = new Date(
         baseDate.getFullYear(),
         baseDate.getMonth() + audit.recurrence_months,
         baseDate.getDate(),
         baseDate.getHours(),
         baseDate.getMinutes(),
       );
+      const now = new Date();
+      while (nextDate < now) {
+        nextDate = new Date(
+          nextDate.getFullYear(),
+          nextDate.getMonth() + audit.recurrence_months,
+          nextDate.getDate(),
+          nextDate.getHours(),
+          nextDate.getMinutes(),
+        );
+      }
       const { error: nextErr } = await supabase.from('audits').insert({
         company_id: audit.company_id,
         template_id: audit.template_id,

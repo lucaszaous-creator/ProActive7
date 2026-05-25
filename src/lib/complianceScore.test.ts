@@ -53,6 +53,7 @@ describe('calculateComplianceScore', () => {
       manipulatorsActive: 5,
       manipulatorsAsoOk: 0,
       hasPestServiceActive: false,
+      hasPestServiceRegistered: true,
     });
     expect(r?.total).toBe(0);
   });
@@ -69,18 +70,34 @@ describe('calculateComplianceScore', () => {
   });
 
   it('CIP ativo vale 5 pontos', () => {
-    const r1 = calculateComplianceScore({
+    const r = calculateComplianceScore({
       ...empty,
       publishedDocs: 6,
       hasPestServiceActive: true,
     });
-    const r2 = calculateComplianceScore({
+    expect(r?.pestPart).toBe(5);
+  });
+
+  it('CIP registrado mas vencido zera a parcela', () => {
+    const r = calculateComplianceScore({
       ...empty,
       publishedDocs: 6,
       hasPestServiceActive: false,
+      hasPestServiceRegistered: true,
     });
-    expect(r1?.pestPart).toBe(5);
-    expect(r2?.pestPart).toBe(0);
+    expect(r?.pestPart).toBe(0);
+  });
+
+  it('CIP nunca registrado = neutro (5 pontos)', () => {
+    // Empresa pequena sem necessidade de CIP terceirizado nao deve
+    // ser penalizada — score precisa ser capaz de chegar a 100%.
+    const r = calculateComplianceScore({
+      ...empty,
+      publishedDocs: 6,
+      hasPestServiceActive: false,
+      hasPestServiceRegistered: false,
+    });
+    expect(r?.pestPart).toBe(5);
   });
 
   it('documentos sao all-or-nothing', () => {

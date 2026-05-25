@@ -7,7 +7,13 @@
  * + 10 * (1 - temp_out_of_range_ratio_7d)
  * + 10 * (1 se MBP + 5 POPs publicados, senao 0)
  * + 10 * (manipuladores_aso_ok / manipuladores_ativos)
- * +  5 * (1 se CIP ativo, senao 0)
+ * +  5 * (CIP — ver regra abaixo)
+ *
+ * Regra do CIP:
+ * - Empresa que NUNCA registrou um servico de CIP recebe parcela
+ *   cheia (neutro — empresa pequena nao eh obrigada a contratar
+ *   CIP terceirizado). Sem isso, o score travaria em 95%.
+ * - Empresa que TEM CIP registrado mas atual venceu recebe 0.
  *
  * Inputs sao numeros agregados que vem do backend (view
  * `company_compliance_v`). Retorna 0-100 ou null (empresa sem
@@ -25,6 +31,7 @@ export interface ComplianceInputs {
   manipulatorsActive?: number;
   manipulatorsAsoOk?: number;
   hasPestServiceActive?: boolean;
+  hasPestServiceRegistered?: boolean;
 }
 
 export interface ComplianceBreakdown {
@@ -73,7 +80,14 @@ export function calculateComplianceScore(
   const okRatio = active > 0 ? (i.manipulatorsAsoOk ?? 0) / active : 1;
   const manipulatorsPart = 10 * Math.min(1, okRatio);
 
-  const pestPart = i.hasPestServiceActive ? 5 : 0;
+  // CIP nao registrado = neutro (parcela cheia); registrado mas
+  // vencido = 0; registrado e ativo = 5. Quando o flag de registro
+  // nao foi informado, assume nao-registrado (neutro) — safe default.
+  const pestPart = i.hasPestServiceActive
+    ? 5
+    : i.hasPestServiceRegistered === true
+      ? 0
+      : 5;
 
   const total =
     Math.round(

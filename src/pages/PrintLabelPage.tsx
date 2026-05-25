@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { Printer, Bluetooth, BluetoothOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { usePageTitle } from '@/lib/usePageTitle';
+import { SITE_URL, usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { computeExpiry, formatDateTime, toLocalInputValue } from '@/lib/dates';
@@ -136,6 +136,9 @@ export function PrintLabelPage() {
   ]);
 
   useEffect(() => {
+    // Trocou de empresa: zera produto selecionado para evitar estado
+    // invalido (produto da empresa anterior).
+    setProductId('');
     if (!companyId) {
       setProducts([]);
       setManipulators([]);
@@ -221,10 +224,7 @@ export function PrintLabelPage() {
     supplier: supplier.trim() || null,
     printId: labelId.replace(/-/g, '').slice(0, 6).toUpperCase(),
     allergens: selectedProduct?.allergens ?? [],
-    qrUrl:
-      typeof window !== 'undefined'
-        ? `${window.location.origin}/etiqueta/${labelId}`
-        : `/etiqueta/${labelId}`,
+    qrUrl: `${SITE_URL}/etiqueta/${labelId}`,
     responsibleName: responsible,
   };
 

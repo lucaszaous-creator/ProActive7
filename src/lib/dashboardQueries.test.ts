@@ -31,6 +31,7 @@ function row(
     manipulators_aso_expired: 0,
     manipulators_aso_missing: 0,
     has_pest_service_active: false,
+    has_pest_service_registered: false,
     last_pest_at: null,
     next_pest_due_at: null,
     ...overrides,

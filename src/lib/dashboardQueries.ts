@@ -27,6 +27,7 @@ export interface ComplianceRow {
   manipulators_aso_expired: number;
   manipulators_aso_missing: number;
   has_pest_service_active: boolean;
+  has_pest_service_registered: boolean;
   last_pest_at: string | null;
   next_pest_due_at: string | null;
 }
@@ -63,6 +64,7 @@ export function enrichCompanies(rows: ComplianceRow[]): EnrichedCompany[] {
         manipulatorsActive: r.manipulators_active,
         manipulatorsAsoOk: r.manipulators_aso_ok,
         hasPestServiceActive: r.has_pest_service_active,
+        hasPestServiceRegistered: r.has_pest_service_registered,
       });
       return {
         ...r,
@@ -98,13 +100,16 @@ export function aggregatePortfolioStats(
     (c) => c.tier === 'red' || c.tier === 'amber',
   ).length;
 
+  // CIP so conta como alerta se a empresa REGISTROU pelo menos um
+  // servico anteriormente e o atual venceu. Empresa que nunca contratou
+  // CIP nao deve aparecer como "alerta" — isso inflava o KPI.
   const alertsToday = companies.reduce(
     (s, c) =>
       s +
       c.nc_overdue_30d +
       c.manipulators_aso_expired +
       c.manipulators_aso_missing +
-      (c.has_pest_service_active ? 0 : 1),
+      (c.has_pest_service_registered && !c.has_pest_service_active ? 1 : 0),
     0,
   );
 

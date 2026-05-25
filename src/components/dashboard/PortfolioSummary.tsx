@@ -211,9 +211,13 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
                 <span className="text-emerald-700 dark:text-emerald-300">
                   em dia
                 </span>
-              ) : (
+              ) : r.has_pest_service_registered ? (
                 <span className="font-semibold text-red-600 dark:text-red-300">
-                  pendente
+                  vencido
+                </span>
+              ) : (
+                <span className="text-neutral-500 dark:text-neutral-400">
+                  não contratado
                 </span>
               )}
             </span>
