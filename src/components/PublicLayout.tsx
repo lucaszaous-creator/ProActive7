@@ -31,9 +31,20 @@ const SOCIALS = {
 };
 
 export function PublicLayout() {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <div className="flex min-h-screen flex-col bg-[#FAFAF7] text-[#1A2A22]">
-      <PublicNav />
+      <PublicNav onOpenMenu={() => setMobileOpen(true)} />
+
+      {/* Drawer fica FORA do header. O header tem backdrop-blur, que cria um
+          containing block para descendentes 'fixed' — colocando o drawer
+          aqui ele se posiciona em relacao ao viewport, nao a barra. */}
+      <MobileDrawer
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+      />
+
       <main className="flex-1">
         <Outlet />
       </main>
@@ -42,9 +53,7 @@ export function PublicLayout() {
   );
 }
 
-function PublicNav() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-
+function PublicNav({ onOpenMenu }: { onOpenMenu: () => void }) {
   const linkCls = ({ isActive }: { isActive: boolean }) =>
     `text-sm transition ${
       isActive
@@ -53,7 +62,7 @@ function PublicNav() {
     }`;
 
   return (
-    <header className="sticky top-0 z-40 border-b border-[#E8F1EA] bg-[#FAFAF7]/92 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-[#E8F1EA] bg-[#FAFAF7]/92 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
         <Link to="/" className="flex shrink-0 items-center gap-2.5">
           <img src="/proactive7-logo.svg" alt="" className="h-9 w-auto" />
@@ -82,7 +91,7 @@ function PublicNav() {
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
           <button
-            onClick={() => setMobileOpen(true)}
+            onClick={onOpenMenu}
             aria-label="Abrir menu"
             className="rounded-full p-2 text-[#2F5D3F] hover:bg-[#E8F1EA] lg:hidden"
           >
@@ -90,71 +99,83 @@ function PublicNav() {
           </button>
         </div>
       </div>
-
-      {/* Mobile drawer */}
-      {mobileOpen ? (
-        <>
-          <div
-            className="fixed inset-0 z-50 bg-[#1A2A22]/55 backdrop-blur-sm"
-            onClick={() => setMobileOpen(false)}
-          />
-          <aside className="fixed right-0 top-0 z-50 flex h-full w-[82%] max-w-xs flex-col bg-[#2F5D3F] text-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/12 px-5 py-4">
-              <div className="flex items-center gap-2">
-                <img
-                  src="/proactive7-logo.svg"
-                  alt=""
-                  className="h-7 w-auto brightness-0 invert"
-                />
-                <span className="text-sm font-semibold text-white">
-                  ProActive7
-                </span>
-              </div>
-              <button
-                onClick={() => setMobileOpen(false)}
-                aria-label="Fechar menu"
-                className="rounded-full p-2 text-white/75 hover:bg-white/10 hover:text-white"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-            <nav className="flex flex-col gap-1 p-3">
-              {NAV_ITEMS.map((it) => (
-                <NavLink
-                  key={it.to}
-                  to={it.to}
-                  end={it.to === '/'}
-                  onClick={() => setMobileOpen(false)}
-                  className={({ isActive }) =>
-                    `rounded-xl px-4 py-3 text-sm transition ${
-                      isActive
-                        ? 'bg-white/15 font-medium text-white'
-                        : 'text-white/80 hover:bg-white/10 hover:text-white'
-                    }`
-                  }
-                >
-                  {it.label}
-                </NavLink>
-              ))}
-              <Link
-                to="/login"
-                onClick={() => setMobileOpen(false)}
-                className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-full bg-white px-4 py-3 text-sm font-medium text-[#2F5D3F] shadow-sm transition hover:bg-[#E8F1EA]"
-              >
-                Acessar sistema
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </nav>
-            <div className="mt-auto border-t border-white/12 px-5 py-4">
-              <p className="mb-2 text-[11px] uppercase tracking-wider text-white/55">
-                Acompanhe
-              </p>
-              <SocialIcons className="flex" dark />
-            </div>
-          </aside>
-        </>
-      ) : null}
     </header>
+  );
+}
+
+function MobileDrawer({
+  open,
+  onClose,
+}: {
+  open: boolean;
+  onClose: () => void;
+}) {
+  if (!open) return null;
+  return (
+    <>
+      <div
+        className="fixed inset-0 z-50 bg-[#1A2A22]/55 backdrop-blur-sm lg:hidden"
+        onClick={onClose}
+      />
+      <aside
+        className="fixed inset-y-0 right-0 z-50 flex w-[82%] max-w-xs flex-col bg-[#2F5D3F] text-white shadow-2xl lg:hidden"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div className="flex items-center justify-between border-b border-white/12 px-5 py-4">
+          <div className="flex items-center gap-2">
+            <img
+              src="/proactive7-logo.svg"
+              alt=""
+              className="h-7 w-auto brightness-0 invert"
+            />
+            <span className="text-sm font-semibold text-white">ProActive7</span>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Fechar menu"
+            className="rounded-full p-2 text-white/75 hover:bg-white/10 hover:text-white"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        <nav className="flex flex-col gap-1 overflow-y-auto p-3">
+          {NAV_ITEMS.map((it) => (
+            <NavLink
+              key={it.to}
+              to={it.to}
+              end={it.to === '/'}
+              onClick={onClose}
+              className={({ isActive }) =>
+                `rounded-xl px-4 py-3 text-sm transition ${
+                  isActive
+                    ? 'bg-white/15 font-medium text-white'
+                    : 'text-white/80 hover:bg-white/10 hover:text-white'
+                }`
+              }
+            >
+              {it.label}
+            </NavLink>
+          ))}
+          <Link
+            to="/login"
+            onClick={onClose}
+            className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-full bg-white px-4 py-3 text-sm font-medium text-[#2F5D3F] shadow-sm transition hover:bg-[#E8F1EA]"
+          >
+            Acessar sistema
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </nav>
+
+        <div className="mt-auto border-t border-white/12 px-5 py-4">
+          <p className="mb-2 text-[11px] uppercase tracking-wider text-white/55">
+            Acompanhe
+          </p>
+          <SocialIcons className="flex" dark />
+        </div>
+      </aside>
+    </>
   );
 }
 
