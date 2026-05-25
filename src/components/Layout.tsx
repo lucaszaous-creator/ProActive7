@@ -103,7 +103,7 @@ export function Layout() {
   );
 
   return (
-    <div className="flex min-h-screen w-full max-w-[100vw] overflow-x-hidden bg-slate-50 dark:bg-slate-950">
+    <div className="relative flex min-h-screen w-full overflow-x-hidden bg-slate-50 dark:bg-slate-950">
       {mobileOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/40 lg:hidden"
@@ -181,8 +181,8 @@ export function Layout() {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center gap-3 border-b border-neutral-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-slate-900 lg:hidden">
+      <div className="flex min-w-0 w-full flex-1 flex-col">
+        <header className="flex w-full items-center gap-3 border-b border-neutral-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-slate-900 lg:hidden">
           <button
             onClick={() => setMobileOpen(true)}
             aria-label={t('layout.openMenu')}
@@ -197,7 +197,7 @@ export function Layout() {
           />
         </header>
 
-        <main className="flex-1 overflow-x-clip p-4 sm:p-6">
+        <main className="w-full min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6">
           <Outlet />
         </main>
       </div>
