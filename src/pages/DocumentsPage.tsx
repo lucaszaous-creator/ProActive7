@@ -12,7 +12,7 @@ import {
   Eye,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { checkDeleteResult } from '@/lib/supabaseHelpers';
+import { softDelete } from '@/lib/supabaseHelpers';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
@@ -209,18 +209,13 @@ export function DocumentsPage() {
   async function handleDelete() {
     if (!deleting) return;
     setDeleteBusy(true);
-    const result = await supabase
-      .from('documents')
-      .delete()
-      .eq('id', deleting.id)
-      .select('id');
+    const err = await softDelete('documents', deleting.id);
     setDeleteBusy(false);
-    const err = checkDeleteResult(result);
     if (err) {
       toast.error(err);
       return;
     }
-    toast.success('Documento excluido.');
+    toast.success('Documento movido para a lixeira.');
     setDeleting(null);
     void load();
   }

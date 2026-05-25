@@ -16,6 +16,8 @@ const ptBR = {
     reports: 'Relatórios',
     companies: 'Empresas',
     users: 'Usuários',
+    auditLog: 'Trilha de auditoria',
+    trash: 'Lixeira',
   },
   layout: {
     master: 'Usuário master',

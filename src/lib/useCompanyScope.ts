@@ -20,6 +20,7 @@ export function useCompanyScope() {
         .from('companies')
         .select('*')
         .eq('active', true)
+        .is('deleted_at', null)
         .order('name')
         .then(({ data, error }) => {
           if (error) {

@@ -84,6 +84,14 @@ const CompaniesPage = lazy(() =>
 const UsersPage = lazy(() =>
   import('./pages/admin/UsersPage').then((m) => ({ default: m.UsersPage })),
 );
+const AuditLogPage = lazy(() =>
+  import('./pages/admin/AuditLogPage').then((m) => ({
+    default: m.AuditLogPage,
+  })),
+);
+const TrashPage = lazy(() =>
+  import('./pages/admin/TrashPage').then((m) => ({ default: m.TrashPage })),
+);
 
 export default function App() {
   return (
@@ -120,6 +128,8 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/admin/empresas" element={<CompaniesPage />} />
             <Route path="/admin/usuarios" element={<UsersPage />} />
+            <Route path="/admin/trilha" element={<AuditLogPage />} />
+            <Route path="/admin/lixeira" element={<TrashPage />} />
           </Route>
         </Route>
 
