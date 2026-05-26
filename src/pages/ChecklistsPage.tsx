@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, ClipboardCheck, Play } from 'lucide-react';
+import { Plus, Pencil, Trash2, ClipboardCheck, Play, BookOpen } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { checkDeleteResult } from '@/lib/supabaseHelpers';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -22,6 +22,7 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Spinner } from '@/components/ui/Spinner';
+import { LibraryBrowser } from '@/components/LibraryBrowser';
 
 const FREQUENCIES: ChecklistFrequency[] = ['daily', 'weekly', 'monthly'];
 
@@ -94,6 +95,7 @@ export function ChecklistsPage() {
   const [runChecks, setRunChecks] = useState<Record<string, boolean>>({});
   const [runNotes, setRunNotes] = useState('');
   const [runSaving, setRunSaving] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
   const load = useCallback(async () => {
     if (!companyId) {
@@ -278,11 +280,29 @@ export function ChecklistsPage() {
             Procedimentos operacionais com histórico de execução.
           </p>
         </div>
-        <Button onClick={openCreate} disabled={!companyId}>
-          <Plus size={18} />
-          Novo template
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => setLibraryOpen(true)}
+            disabled={!companyId}
+          >
+            <BookOpen size={16} />
+            Biblioteca
+          </Button>
+          <Button onClick={openCreate} disabled={!companyId}>
+            <Plus size={18} />
+            Novo template
+          </Button>
+        </div>
       </div>
+
+      <LibraryBrowser
+        open={libraryOpen}
+        onClose={() => setLibraryOpen(false)}
+        kind="checklist"
+        companyId={companyId}
+        onCloned={() => void load()}
+      />
 
       {isMaster && companies.length > 0 && (
         <div className="mb-4 max-w-xs">

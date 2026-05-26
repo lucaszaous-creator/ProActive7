@@ -138,6 +138,11 @@ const AnnouncementsPage = lazy(() =>
     default: m.AnnouncementsPage,
   })),
 );
+const PlatformLibraryPage = lazy(() =>
+  import('./pages/platform/PlatformLibraryPage').then((m) => ({
+    default: m.PlatformLibraryPage,
+  })),
+);
 const OrganizationsPage = lazy(() =>
   import('./pages/platform/OrganizationsPage').then((m) => ({
     default: m.OrganizationsPage,
@@ -215,6 +220,10 @@ export default function App() {
             <Route
               path="/platform/comunicados"
               element={<AnnouncementsPage />}
+            />
+            <Route
+              path="/platform/biblioteca"
+              element={<PlatformLibraryPage />}
             />
             <Route
               path="/platform/organizacoes"
