@@ -135,6 +135,25 @@ const EstoqueMovimentacoesPage = lazy(() =>
     default: m.EstoqueMovimentacoesPage,
   })),
 );
+const ValidadesPage = lazy(() =>
+  import('./pages/ValidadesPage').then((m) => ({ default: m.ValidadesPage })),
+);
+const ProducaoPage = lazy(() =>
+  import('./pages/ProducaoPage').then((m) => ({ default: m.ProducaoPage })),
+);
+const ContagemPage = lazy(() =>
+  import('./pages/ContagemPage').then((m) => ({ default: m.ContagemPage })),
+);
+const ControladosPage = lazy(() =>
+  import('./pages/ControladosPage').then((m) => ({
+    default: m.ControladosPage,
+  })),
+);
+const GruposPage = lazy(() =>
+  import('./pages/cadastros/GruposPage').then((m) => ({
+    default: m.GruposPage,
+  })),
+);
 const CompaniesPage = lazy(() =>
   import('./pages/admin/CompaniesPage').then((m) => ({
     default: m.CompaniesPage,
@@ -229,6 +248,10 @@ export default function App() {
             <Route path="/recebimentos/:id" element={<RecebimentoDetailPage />} />
             <Route path="/estoque" element={<EstoquePage />} />
             <Route path="/estoque/movimentacoes" element={<EstoqueMovimentacoesPage />} />
+            <Route path="/validades" element={<ValidadesPage />} />
+            <Route path="/producao" element={<ProducaoPage />} />
+            <Route path="/contagem" element={<ContagemPage />} />
+            <Route path="/controlados" element={<ControladosPage />} />
           </Route>
         </Route>
 
@@ -239,6 +262,7 @@ export default function App() {
             <Route path="/admin/usuarios" element={<UsersPage />} />
             <Route path="/admin/hardware" element={<HardwarePage />} />
             <Route path="/fornecedores" element={<SuppliersPage />} />
+            <Route path="/cadastros/grupos" element={<GruposPage />} />
           </Route>
         </Route>
 

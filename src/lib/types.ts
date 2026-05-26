@@ -69,11 +69,24 @@ export interface Product {
   company_id: string | null;
   name: string;
   category: string | null;
+  group_id: string | null;
+  is_controlled: boolean;
   default_storage_condition: StorageCondition;
   active: boolean;
   allergens: string[];
   is_seed: boolean;
   created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProductGroup {
+  id: string;
+  organization_id: string;
+  name: string;
+  color: string | null;
+  sort_order: number;
+  active: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -91,6 +104,14 @@ export interface ProductShelfLife {
 export interface ProductWithShelfLives extends Product {
   product_shelf_lives: ProductShelfLife[];
 }
+
+export type LabelConsumedReason = 'producao' | 'descarte' | 'vencimento';
+
+export const LABEL_CONSUMED_REASON_LABELS: Record<LabelConsumedReason, string> = {
+  producao: 'Uso na produção',
+  descarte: 'Descarte',
+  vencimento: 'Vencimento',
+};
 
 export interface LabelPrint {
   id: string;
@@ -110,6 +131,9 @@ export interface LabelPrint {
   allergens: string[];
   printed_by: string | null;
   printed_at: string;
+  consumed_at: string | null;
+  consumed_by: string | null;
+  consumed_reason: LabelConsumedReason | null;
   created_at: string;
 }
 

@@ -61,6 +61,7 @@ interface LabelSize {
 // nutricionista. Ordem: medio (default), grande, pequeno, etiqueta fina.
 const LABEL_SIZES: LabelSize[] = [
   { id: '60x40', label: '60 x 40 mm', w: 60, h: 40 },
+  { id: '60x60', label: '60 x 60 mm', w: 60, h: 60 },
   { id: '80x60', label: '80 x 60 mm', w: 80, h: 60 },
   { id: '50x30', label: '50 x 30 mm', w: 50, h: 30 },
   { id: '33x22', label: '33 x 22 mm', w: 33, h: 22 },

@@ -69,6 +69,7 @@ export function ProductsPage() {
   const { isMaster, companies, companyId, setCompanyId } = useCompanyScope();
 
   const [products, setProducts] = useState<ProductWithShelfLives[]>([]);
+  const [groups, setGroups] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -77,6 +78,8 @@ export function ProductsPage() {
 
   const [name, setName] = useState('');
   const [category, setCategory] = useState('');
+  const [groupId, setGroupId] = useState<string>('');
+  const [isControlled, setIsControlled] = useState(false);
   const [defaultCondition, setDefaultCondition] =
     useState<StorageCondition>('refrigerado');
   const [active, setActive] = useState(true);
@@ -115,10 +118,22 @@ export function ProductsPage() {
     void load();
   }, [load]);
 
+  useEffect(() => {
+    supabase
+      .from('product_groups')
+      .select('id, name')
+      .eq('active', true)
+      .order('sort_order')
+      .order('name')
+      .then(({ data }) => setGroups((data as { id: string; name: string }[] | null) ?? []));
+  }, []);
+
   function openCreate() {
     setEditing(null);
     setName('');
     setCategory('');
+    setGroupId('');
+    setIsControlled(false);
     setDefaultCondition('refrigerado');
     setActive(true);
     setAllergens([]);
@@ -131,6 +146,8 @@ export function ProductsPage() {
     setEditing(p);
     setName(p.name);
     setCategory(p.category ?? '');
+    setGroupId(p.group_id ?? '');
+    setIsControlled(p.is_controlled ?? false);
     setDefaultCondition(p.default_storage_condition);
     setActive(p.active);
     setAllergens(p.allergens ?? []);
@@ -170,6 +187,8 @@ export function ProductsPage() {
           .update({
             name: name.trim(),
             category: category.trim() || null,
+            group_id: groupId || null,
+            is_controlled: isControlled,
             default_storage_condition: defaultCondition,
             active,
             allergens,
@@ -186,6 +205,8 @@ export function ProductsPage() {
             company_id: makeSeed ? null : companyId,
             name: name.trim(),
             category: category.trim() || null,
+            group_id: groupId || null,
+            is_controlled: isControlled,
             default_storage_condition: defaultCondition,
             active,
             allergens,
@@ -471,11 +492,36 @@ export function ProductsPage() {
           />
           <Input
             id="prod-cat"
-            label="Categoria (opcional)"
+            label="Categoria (texto livre, opcional)"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             placeholder="Ex.: Molhos"
           />
+          <Select
+            id="prod-group"
+            label="Grupo"
+            value={groupId}
+            onChange={(e) => setGroupId(e.target.value)}
+          >
+            <option value="">Sem grupo</option>
+            {groups.map((g) => (
+              <option key={g.id} value={g.id}>
+                {g.name}
+              </option>
+            ))}
+          </Select>
+          <label className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+            <input
+              type="checkbox"
+              checked={isControlled}
+              onChange={(e) => setIsControlled(e.target.checked)}
+              className="mt-0.5 h-5 w-5 accent-amber-600"
+            />
+            <span>
+              Produto controlado (saneante, químico, ou outro item que exige
+              rastreio especial)
+            </span>
+          </label>
           <Select
             id="prod-cond"
             label="Condição padrão de armazenamento"
