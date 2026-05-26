@@ -85,7 +85,7 @@ export function UsersPage() {
         .from('profiles')
         .select(
           'id, full_name, email, role, active, company_id, organization_id, ' +
-            'companies(name, organizations(name)), organizations(name)',
+            'companies(name, organizations(name)), organizations!profiles_organization_id_fkey(name)',
         )
         .order('full_name'),
       supabase.from('companies').select('*').eq('active', true).order('name'),
