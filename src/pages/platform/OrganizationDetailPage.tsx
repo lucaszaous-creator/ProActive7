@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, LogIn, Send, Download } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Organization, Company } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
 
 interface OrgProfile {
@@ -27,6 +29,70 @@ export function OrganizationDetailPage() {
   const [users, setUsers] = useState<OrgProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [togglingStatus, setTogglingStatus] = useState(false);
+  const [impersonating, setImpersonating] = useState<string | null>(null);
+  const [pushOpen, setPushOpen] = useState(false);
+  const [pushTitle, setPushTitle] = useState('');
+  const [pushBody, setPushBody] = useState('');
+  const [pushing, setPushing] = useState(false);
+  const [exporting, setExporting] = useState(false);
+
+  async function handleExport() {
+    if (!org) return;
+    setExporting(true);
+    const { data, error } = await supabase.functions.invoke('admin-export-org', {
+      body: { organization_id: org.id },
+    });
+    setExporting(false);
+    if (error || !data?.dump) {
+      toast.error('Erro ao exportar: ' + (error?.message ?? data?.error ?? '?'));
+      return;
+    }
+    const blob = new Blob([JSON.stringify(data.dump, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `backup-${org.slug ?? org.id.slice(0, 8)}-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Backup exportado.');
+  }
+
+  async function handleImpersonate(targetId: string, targetName: string) {
+    setImpersonating(targetId);
+    const { data, error } = await supabase.functions.invoke('admin-impersonate', {
+      body: { target_user_id: targetId },
+    });
+    setImpersonating(null);
+    if (error || !data?.action_link) {
+      toast.error('Erro: ' + (error?.message ?? data?.error ?? 'desconhecido'));
+      return;
+    }
+    toast.success(`Abrindo sessão como ${targetName}...`);
+    window.open(data.action_link, '_blank');
+  }
+
+  async function handlePush() {
+    if (!org) return;
+    if (!pushTitle.trim() || !pushBody.trim()) {
+      toast.error('Preencha título e mensagem.');
+      return;
+    }
+    setPushing(true);
+    const { data, error } = await supabase.functions.invoke('admin-push-org', {
+      body: { organization_id: org.id, title: pushTitle.trim(), body: pushBody.trim() },
+    });
+    setPushing(false);
+    if (error) {
+      toast.error('Erro: ' + error.message);
+      return;
+    }
+    toast.success(`Push enviado para ${data?.sent ?? 0} dispositivos.`);
+    setPushOpen(false);
+    setPushTitle('');
+    setPushBody('');
+  }
 
   useEffect(() => {
     if (!id) return;
@@ -143,18 +209,31 @@ export function OrganizationDetailPage() {
             {org.status === 'active' ? 'Ativa' : 'Suspensa'}
           </span>
         </div>
-        <Button
-          variant="secondary"
-          onClick={() => void handleToggleStatus()}
-          loading={togglingStatus}
-          className={
-            org.status === 'active'
-              ? 'border-red-200 text-red-600 hover:bg-red-50'
-              : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
-          }
-        >
-          {org.status === 'active' ? 'Suspender organização' : 'Reativar organização'}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" onClick={() => setPushOpen(true)}>
+            <Send size={14} /> Notificar
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => void handleExport()}
+            loading={exporting}
+            title="Backup LGPD: exporta tudo da org em JSON"
+          >
+            <Download size={14} /> Backup
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => void handleToggleStatus()}
+            loading={togglingStatus}
+            className={
+              org.status === 'active'
+                ? 'border-red-200 text-red-600 hover:bg-red-50'
+                : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
+            }
+          >
+            {org.status === 'active' ? 'Suspender' : 'Reativar'}
+          </Button>
+        </div>
       </div>
 
       {/* Org info */}
@@ -278,6 +357,7 @@ export function OrganizationDetailPage() {
                     <th className="px-4 py-3">Perfil</th>
                     <th className="px-4 py-3">Empresa</th>
                     <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -313,6 +393,17 @@ export function OrganizationDetailPage() {
                           {u.active ? 'Ativo' : 'Inativo'}
                         </span>
                       </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          onClick={() => void handleImpersonate(u.id, u.full_name ?? u.email ?? 'usuário')}
+                          disabled={impersonating === u.id || !u.active}
+                          className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2 py-1 text-xs text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                          title="Abrir sessão como este usuário"
+                        >
+                          <LogIn size={12} />
+                          {impersonating === u.id ? '...' : 'Entrar como'}
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -321,6 +412,47 @@ export function OrganizationDetailPage() {
           </Card>
         )}
       </div>
+
+      <Modal
+        open={pushOpen}
+        onClose={() => setPushOpen(false)}
+        title={`Notificar ${org.name}`}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setPushOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={() => void handlePush()} loading={pushing}>
+              Enviar
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3">
+          <Input
+            label="Título"
+            value={pushTitle}
+            onChange={(e) => setPushTitle(e.target.value)}
+            maxLength={60}
+          />
+          <div>
+            <label className="mb-1 block text-xs font-medium text-neutral-600">
+              Mensagem
+            </label>
+            <textarea
+              value={pushBody}
+              onChange={(e) => setPushBody(e.target.value)}
+              rows={3}
+              maxLength={240}
+              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-neutral-700 dark:bg-slate-800"
+            />
+          </div>
+          <p className="text-xs text-neutral-500">
+            Será enviado para todos os dispositivos com push habilitado nos
+            usuários desta organização.
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 }

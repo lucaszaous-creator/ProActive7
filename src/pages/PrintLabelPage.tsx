@@ -22,6 +22,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { buildLabelEscPos } from '@/lib/escpos';
 import { formatAllergenList } from '@/lib/allergens';
+import { logFeatureEvent } from '@/lib/platformMetrics';
 import {
   isBluetoothSupported,
   pairPrinter,
@@ -338,6 +339,7 @@ export function PrintLabelPage() {
       return;
     }
     toast.success('Etiqueta registrada no histórico.');
+    void logFeatureEvent('label_printed');
   }
 
   const noCompany = isMaster && companies.length === 0;

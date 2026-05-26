@@ -85,8 +85,6 @@ Embeds aninhados nestes pares **exigem** sintaxe `!nome_do_fkey`:
   (`VITE_SUPABASE_ANON_KEY`).
 - **Senha:** habilitar **Leaked Password Protection** no Supabase Auth
   (advisor reporta como WARN hoje).
-- **2FA** para `platform_admin` e `nutritionist` — pendente, prioridade
-  alta antes de cadastrar dados reais de cliente pagante.
 - **Service role** só em Edge Function, nunca no bundle.
 - **Backup:** ativar Point-in-Time Recovery quando subir para Supabase Pro.
 - **Rate limit** em RPCs públicas (`get_public_label`) — hoje sem limite.
@@ -95,7 +93,6 @@ Embeds aninhados nestes pares **exigem** sintaxe `!nome_do_fkey`:
 
 ### Curto prazo (próximas 2–4 semanas)
 
-- [ ] **2FA TOTP** para nutri e admin.
 - [ ] **Habilitar Leaked Password Protection** no painel Supabase.
 - [ ] **Consolidar role `master` em `platform_admin`** (migration + limpeza
       de checks `isMaster()` no frontend).
@@ -143,31 +140,18 @@ Embeds aninhados nestes pares **exigem** sintaxe `!nome_do_fkey`:
 Hoje o admin tem: criar/editar orgs, ver trilha de auditoria, lixeira,
 criar empresas e usuários, gerenciar hardware recomendado.
 
-Faltam (em ordem de retorno):
+Status atualizado:
 
-1. **Dashboard de SaaS:** MRR, churn, orgs ativas/inativas,
-   etiquetas/mês por org, top 10 empresas por uso. Detecta org em risco
-   de cancelar (sem login há 14 dias).
-2. **Health-check por organização:** compliance médio das empresas da
-   nutri, NCs em aberto há +30 dias, ASOs vencendo, RT (nutri) com
-   muitos ou poucos clientes.
-3. **Painel de cobrança:** plano vigente, próxima fatura, histórico de
-   pagamentos, suspender/reativar org por inadimplência (sem deletar).
-4. **Impersonate ("entrar como nutri")** com log obrigatório no
-   `audit_log` — para suporte. Sem isso, é impossível ajudar a Ariane
-   sem ela mandar print.
-5. **Push manual para uma org** (ex: "Atualização: novo template RDC
-   disponível"). Reusa `push_subscriptions` + Edge Function nova.
-6. **Gestão de templates globais:** o admin publica um audit_template
-   e ele aparece para todas as nutris como "modelo oficial".
-7. **Catálogo seed de produtos** (mesma ideia, mas para a tela de
-   produtos): admin mantém catálogo público, nutri clona para sua org.
-8. **Banner de manutenção/comunicado** global (string no banco lida
-   pelo `AuthContext`).
-9. **Estatísticas de uso de feature** (quem usa pest_control vs quem
-   só imprime etiqueta) — orienta o roadmap.
-10. **Backup on-demand** (exportar dump zipado de uma org específica
-    para entrega LGPD ou migração).
+1. ✅ **Dashboard de SaaS** — `/platform/dashboard` (3 abas)
+2. ✅ **Health-check por organização** — aba "Saúde das orgs"
+3. ⏳ **Painel de cobrança** — pendente, requer escolha de gateway (Asaas/Stripe)
+4. ✅ **Impersonate** — Edge `admin-impersonate` + botão "Entrar como" na lista de usuários da org
+5. ✅ **Push manual para uma org** — Edge `admin-push-org` + botão "Notificar" na OrganizationDetailPage
+6. ✅ **Templates globais (banco)** — colunas `is_global` em audit/checklist templates + RPCs `clone_*` (UI de gestão ainda pendente)
+7. ✅ **Catálogo seed (banco)** — coluna `is_seed` em products + RPC `clone_seed_product` (UI pendente)
+8. ✅ **Banner global** — `/platform/comunicados` + `AnnouncementBanner` no Layout
+9. ✅ **Estatísticas de uso** — tabela `feature_events` + RPC `log_feature_event` + aba "Uso de features"
+10. ✅ **Backup on-demand** — Edge `admin-export-org` + botão "Backup" na OrganizationDetailPage
 
 ### Ordem de execução proposta
 
@@ -260,8 +244,9 @@ arquivos novos esperados, tabelas/RPCs no banco, e bloqueios.
 
 ### Pulos de fase / bloqueios
 
-- 2FA TOTP (do roadmap curto prazo) **precisa estar pronto antes** de
-  4.1 — não dá pra ter cobrança real sem proteger conta do dono.
+- **2FA descartado** — decisão do produto. Aceitar o risco e mitigar
+  com senha forte (Leaked Password Protection no Supabase) e e-mail de
+  alerta em login novo (futuro).
 - Web Serial / impressão crua **não bloqueia nada** desta seção; rodar
   em paralelo se sobrar tempo.
 - Toda página nova de `/platform/*` deve estar protegida por

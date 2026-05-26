@@ -20,6 +20,8 @@ const ptBR = {
     auditLog: 'Trilha de auditoria',
     trash: 'Lixeira',
     organizations: 'Organizações',
+    platformDashboard: 'Dashboard SaaS',
+    announcements: 'Comunicados',
   },
   layout: {
     master: 'Usuário master',
