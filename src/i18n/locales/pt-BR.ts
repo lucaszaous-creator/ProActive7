@@ -21,6 +21,7 @@ const ptBR = {
     trash: 'Lixeira',
     organizations: 'Organizações',
     platformDashboard: 'Dashboard SaaS',
+    announcements: 'Comunicados',
   },
   layout: {
     master: 'Usuário master',

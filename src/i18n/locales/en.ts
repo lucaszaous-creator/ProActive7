@@ -21,6 +21,7 @@ const en = {
     trash: 'Trash',
     organizations: 'Organizations',
     platformDashboard: 'SaaS Dashboard',
+    announcements: 'Announcements',
   },
   layout: {
     master: 'Master user',

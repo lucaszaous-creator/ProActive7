@@ -24,10 +24,12 @@ import {
   Bug,
   Network,
   LineChart,
+  Megaphone,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
+import { AnnouncementBanner } from './AnnouncementBanner';
 import { PwaInstallButton } from './PwaInstallButton';
 import { PushToggle } from './PushToggle';
 import { ThemeToggle } from './ThemeToggle';
@@ -100,6 +102,12 @@ const NAV_ITEMS: NavItem[] = [
     to: '/platform/organizacoes',
     labelKey: 'nav.organizations',
     icon: Network,
+    masterOnly: true,
+  },
+  {
+    to: '/platform/comunicados',
+    labelKey: 'nav.announcements',
+    icon: Megaphone,
     masterOnly: true,
   },
 ];
@@ -209,6 +217,8 @@ export function Layout() {
             className="h-7 w-auto"
           />
         </header>
+
+        <AnnouncementBanner />
 
         <main className="w-full min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6">
           <Outlet />
