@@ -72,6 +72,12 @@ const NAV_ITEMS: NavItem[] = [
     nutritionistOrAdmin: true,
   },
   {
+    to: '/admin/hardware',
+    labelKey: 'nav.hardware',
+    icon: Printer,
+    nutritionistOrAdmin: true,
+  },
+  {
     to: '/admin/trilha',
     labelKey: 'nav.auditLog',
     icon: Activity,
