@@ -45,24 +45,29 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
+  // ---------- Operação diária ----------
   { to: '/painel', labelKey: 'nav.dashboard', icon: LayoutDashboard },
-  { to: '/produtos', labelKey: 'nav.products', icon: Package },
   { to: '/imprimir', labelKey: 'nav.printLabel', icon: Printer },
-  { to: '/fotos', labelKey: 'nav.photos', icon: Images },
-  { to: '/temperatura', labelKey: 'nav.temperature', icon: Thermometer },
-  { to: '/checklists', labelKey: 'nav.checklists', icon: ClipboardCheck },
+  { to: '/produtos', labelKey: 'nav.products', icon: Package },
+  { to: '/manipuladores', labelKey: 'nav.manipulators', icon: HardHat },
   { to: '/fichas-tecnicas', labelKey: 'nav.recipes', icon: ChefHat },
-  { to: '/documentos', labelKey: 'nav.documents', icon: FileText },
+
+  // ---------- Compliance / RDC ----------
   { to: '/visitas', labelKey: 'nav.audits', icon: ShieldCheck },
-  { to: '/agenda', labelKey: 'nav.agenda', icon: CalendarRange },
   {
     to: '/nao-conformidades',
     labelKey: 'nav.nonConformities',
     icon: AlertOctagon,
   },
-  { to: '/manipuladores', labelKey: 'nav.manipulators', icon: HardHat },
+  { to: '/checklists', labelKey: 'nav.checklists', icon: ClipboardCheck },
+  { to: '/temperatura', labelKey: 'nav.temperature', icon: Thermometer },
   { to: '/controle-pragas', labelKey: 'nav.pestControl', icon: Bug },
+  { to: '/documentos', labelKey: 'nav.documents', icon: FileText },
+  { to: '/fotos', labelKey: 'nav.photos', icon: Images },
+  { to: '/agenda', labelKey: 'nav.agenda', icon: CalendarRange },
   { to: '/relatorios', labelKey: 'nav.reports', icon: BarChart3 },
+
+  // ---------- Admin da org (nutri + platform_admin) ----------
   {
     to: '/admin/empresas',
     labelKey: 'nav.companies',
@@ -81,18 +86,8 @@ const NAV_ITEMS: NavItem[] = [
     icon: Printer,
     nutritionistOrAdmin: true,
   },
-  {
-    to: '/admin/trilha',
-    labelKey: 'nav.auditLog',
-    icon: Activity,
-    masterOnly: true,
-  },
-  {
-    to: '/admin/lixeira',
-    labelKey: 'nav.trash',
-    icon: Trash2,
-    masterOnly: true,
-  },
+
+  // ---------- Plataforma (apenas platform_admin) ----------
   {
     to: '/platform/dashboard',
     labelKey: 'nav.platformDashboard',
@@ -106,15 +101,27 @@ const NAV_ITEMS: NavItem[] = [
     masterOnly: true,
   },
   {
+    to: '/platform/biblioteca',
+    labelKey: 'nav.library',
+    icon: BookOpen,
+    masterOnly: true,
+  },
+  {
     to: '/platform/comunicados',
     labelKey: 'nav.announcements',
     icon: Megaphone,
     masterOnly: true,
   },
   {
-    to: '/platform/biblioteca',
-    labelKey: 'nav.library',
-    icon: BookOpen,
+    to: '/admin/trilha',
+    labelKey: 'nav.auditLog',
+    icon: Activity,
+    masterOnly: true,
+  },
+  {
+    to: '/admin/lixeira',
+    labelKey: 'nav.trash',
+    icon: Trash2,
     masterOnly: true,
   },
 ];
