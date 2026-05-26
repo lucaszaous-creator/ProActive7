@@ -25,6 +25,7 @@ import { PortfolioSummary } from '@/components/dashboard/PortfolioSummary';
 import { UpcomingAudits } from '@/components/dashboard/UpcomingAudits';
 import { RecentActivity } from '@/components/dashboard/RecentActivity';
 import { PropertyTodayTasks } from '@/components/dashboard/PropertyTodayTasks';
+import { NutriAlerts } from '@/components/dashboard/NutriAlerts';
 
 interface ExpiringLabel {
   id: string;
@@ -190,6 +191,7 @@ export function DashboardPage() {
       {showPortfolio ? (
         <>
           {stats ? <MasterKPIs stats={stats} /> : null}
+          {isNutritionist && <NutriAlerts />}
           <PortfolioSummary
             loading={masterLoading}
             companies={portfolio ?? []}
