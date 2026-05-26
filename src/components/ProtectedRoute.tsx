@@ -50,9 +50,10 @@ export function ProtectedRoute({
 
   if (loading) return <FullPageSpinner />;
   if (!session) return <Navigate to="/login" replace />;
-  // Enquanto o profile ainda esta carregando (logo apos signIn), mostra
-  // spinner em vez do fallback "Conta sem perfil" para evitar flash.
-  if (profileLoading) return <FullPageSpinner />;
+  // Spinner apenas no carregamento INICIAL do profile. Recarregar o
+  // profile com um perfil ja em memoria nao deve desmontar a rota
+  // (preserva estado de formulario, scroll, modais abertos).
+  if (profileLoading && !profile) return <FullPageSpinner />;
   if (!profile) return <ProfileMissing onSignOut={signOut} />;
   if (!profile.active) return <ProfileInactive onSignOut={signOut} />;
   if ((masterOnly || platformAdminOnly) && !isPlatformAdmin) return <Navigate to="/painel" replace />;

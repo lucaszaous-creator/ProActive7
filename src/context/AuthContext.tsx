@@ -67,8 +67,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
     const { data: sub } = supabase.auth.onAuthStateChange(
-      (_event, newSession) => {
+      (event, newSession) => {
         setSession(newSession);
+        // TOKEN_REFRESHED dispara sempre que o navegador volta para a aba
+        // e renova o JWT. O profile não muda nesses casos — recarregar
+        // causaria spinner cheio e desmontaria a rota atual, perdendo
+        // estado de formulário e scroll. Mesmo para USER_UPDATED, o
+        // session em si já tem os metadados, sem precisar refetch do
+        // profile aqui.
+        if (event === 'TOKEN_REFRESHED' || event === 'USER_UPDATED') {
+          return;
+        }
         if (newSession?.user) {
           // Marcamos profileLoading=true imediatamente para evitar o
           // flash de "Conta sem perfil" entre o session set e o profile
