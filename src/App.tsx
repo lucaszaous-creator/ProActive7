@@ -57,6 +57,11 @@ const PrintLabelPage = lazy(() =>
     default: m.PrintLabelPage,
   })),
 );
+const PrintWizardPage = lazy(() =>
+  import('./pages/PrintWizardPage').then((m) => ({
+    default: m.PrintWizardPage,
+  })),
+);
 const PhotosPage = lazy(() =>
   import('./pages/PhotosPage').then((m) => ({ default: m.PhotosPage })),
 );
@@ -228,6 +233,7 @@ export default function App() {
             <Route path="/painel" element={<DashboardPage />} />
             <Route path="/produtos" element={<ProductsPage />} />
             <Route path="/imprimir" element={<PrintLabelPage />} />
+            <Route path="/imprimir/novo" element={<PrintWizardPage />} />
             <Route path="/fotos" element={<PhotosPage />} />
             <Route path="/temperatura" element={<TemperaturePage />} />
             <Route path="/checklists" element={<ChecklistsPage />} />
