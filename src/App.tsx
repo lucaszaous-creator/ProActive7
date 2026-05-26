@@ -127,6 +127,14 @@ const RecebimentoDetailPage = lazy(() =>
     default: m.RecebimentoDetailPage,
   })),
 );
+const EstoquePage = lazy(() =>
+  import('./pages/EstoquePage').then((m) => ({ default: m.EstoquePage })),
+);
+const EstoqueMovimentacoesPage = lazy(() =>
+  import('./pages/EstoqueMovimentacoesPage').then((m) => ({
+    default: m.EstoqueMovimentacoesPage,
+  })),
+);
 const CompaniesPage = lazy(() =>
   import('./pages/admin/CompaniesPage').then((m) => ({
     default: m.CompaniesPage,
@@ -219,6 +227,8 @@ export default function App() {
             <Route path="/recebimentos" element={<RecebimentosPage />} />
             <Route path="/recebimentos/novo" element={<RecebimentoFormPage />} />
             <Route path="/recebimentos/:id" element={<RecebimentoDetailPage />} />
+            <Route path="/estoque" element={<EstoquePage />} />
+            <Route path="/estoque/movimentacoes" element={<EstoqueMovimentacoesPage />} />
           </Route>
         </Route>
 

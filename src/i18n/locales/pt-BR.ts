@@ -15,6 +15,7 @@ const ptBR = {
     pestControl: 'Controle de pragas',
     reports: 'Relatórios',
     receivings: 'Recebimentos',
+    stock: 'Estoque',
     suppliers: 'Fornecedores',
     companies: 'Empresas',
     users: 'Usuários',

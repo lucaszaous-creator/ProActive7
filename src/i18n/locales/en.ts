@@ -15,6 +15,7 @@ const en = {
     pestControl: 'Pest control',
     reports: 'Reports',
     receivings: 'Receivings',
+    stock: 'Stock',
     suppliers: 'Suppliers',
     companies: 'Companies',
     users: 'Users',

@@ -28,6 +28,7 @@ import {
   BookOpen,
   PackagePlus,
   Truck,
+  Boxes,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -50,6 +51,7 @@ const NAV_ITEMS: NavItem[] = [
   // ---------- Operação diária ----------
   { to: '/painel', labelKey: 'nav.dashboard', icon: LayoutDashboard },
   { to: '/recebimentos', labelKey: 'nav.receivings', icon: PackagePlus },
+  { to: '/estoque', labelKey: 'nav.stock', icon: Boxes },
   { to: '/imprimir', labelKey: 'nav.printLabel', icon: Printer },
   { to: '/produtos', labelKey: 'nav.products', icon: Package },
   { to: '/manipuladores', labelKey: 'nav.manipulators', icon: HardHat },

@@ -487,3 +487,50 @@ export interface ReceivingWithRelations extends Receiving {
     product: { id: string; name: string } | null;
   })[];
 }
+
+export type StockMovementKind =
+  | 'entrada'
+  | 'saida'
+  | 'ajuste'
+  | 'descarte'
+  | 'vencimento';
+
+export const STOCK_MOVEMENT_KIND_LABELS: Record<StockMovementKind, string> = {
+  entrada: 'Entrada',
+  saida: 'Saída',
+  ajuste: 'Ajuste',
+  descarte: 'Descarte',
+  vencimento: 'Vencimento',
+};
+
+export const STOCK_EXIT_REASONS: { value: StockMovementKind; label: string }[] = [
+  { value: 'saida', label: 'Uso na produção / venda' },
+  { value: 'descarte', label: 'Descarte (qualidade)' },
+  { value: 'vencimento', label: 'Vencimento' },
+  { value: 'ajuste', label: 'Ajuste de inventário' },
+];
+
+export interface StockMovement {
+  id: string;
+  company_id: string;
+  product_id: string;
+  batch: string;
+  quantity_delta: number;
+  unit: ReceivingUnit;
+  kind: StockMovementKind;
+  reason: string | null;
+  reference_type: 'receiving_item' | 'manual' | 'production' | null;
+  reference_id: string | null;
+  moved_at: string;
+  moved_by: string | null;
+  created_at: string;
+}
+
+export interface StockBalance {
+  company_id: string;
+  product_id: string;
+  batch: string;
+  balance: number;
+  unit: ReceivingUnit;
+  oldest_expiry: string | null;
+}
