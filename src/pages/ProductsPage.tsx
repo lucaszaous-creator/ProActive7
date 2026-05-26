@@ -65,7 +65,7 @@ function shelfSummary(rows: ProductShelfLife[]): string {
 
 export function ProductsPage() {
   usePageTitle('Produtos');
-  const { profile } = useAuth();
+  const { profile, isPlatformAdmin } = useAuth();
   const { isMaster, companies, companyId, setCompanyId } = useCompanyScope();
 
   const [products, setProducts] = useState<ProductWithShelfLives[]>([]);
@@ -81,6 +81,7 @@ export function ProductsPage() {
     useState<StorageCondition>('refrigerado');
   const [active, setActive] = useState(true);
   const [allergens, setAllergens] = useState<string[]>([]);
+  const [isSeed, setIsSeed] = useState(false);
   const [shelf, setShelf] = useState<ShelfFormMap>(emptyShelfMap());
 
   const [deleting, setDeleting] = useState<ProductWithShelfLives | null>(null);
@@ -98,18 +99,17 @@ export function ProductsPage() {
       return;
     }
     setLoading(true);
-    const { data, error } = await supabase
-      .from('products')
-      .select('*, product_shelf_lives(*)')
-      .eq('company_id', companyId)
-      .order('name');
+    const q = supabase.from('products').select('*, product_shelf_lives(*)');
+    const { data, error } = await (isPlatformAdmin
+      ? q.or(`company_id.eq.${companyId},is_seed.eq.true`).order('name')
+      : q.eq('company_id', companyId).order('name'));
     setLoading(false);
     if (error) {
       toast.error('Erro ao carregar produtos: ' + error.message);
       return;
     }
     setProducts((data as ProductWithShelfLives[] | null) ?? []);
-  }, [companyId]);
+  }, [companyId, isPlatformAdmin]);
 
   useEffect(() => {
     void load();
@@ -122,6 +122,7 @@ export function ProductsPage() {
     setDefaultCondition('refrigerado');
     setActive(true);
     setAllergens([]);
+    setIsSeed(false);
     setShelf(emptyShelfMap());
     setModalOpen(true);
   }
@@ -133,6 +134,7 @@ export function ProductsPage() {
     setDefaultCondition(p.default_storage_condition);
     setActive(p.active);
     setAllergens(p.allergens ?? []);
+    setIsSeed(p.is_seed ?? false);
     setShelf(shelfMapFrom(p.product_shelf_lives ?? []));
     setModalOpen(true);
   }
@@ -142,7 +144,8 @@ export function ProductsPage() {
       toast.error('Informe o nome do produto.');
       return;
     }
-    if (!companyId) {
+    const makeSeed = isPlatformAdmin && isSeed;
+    if (!companyId && !makeSeed) {
       toast.error('Selecione uma empresa.');
       return;
     }
@@ -170,6 +173,9 @@ export function ProductsPage() {
             default_storage_condition: defaultCondition,
             active,
             allergens,
+            ...(isPlatformAdmin
+              ? { is_seed: isSeed, company_id: makeSeed ? null : companyId }
+              : {}),
           })
           .eq('id', editing.id);
         if (error) throw error;
@@ -177,12 +183,13 @@ export function ProductsPage() {
         const { data, error } = await supabase
           .from('products')
           .insert({
-            company_id: companyId,
+            company_id: makeSeed ? null : companyId,
             name: name.trim(),
             category: category.trim() || null,
             default_storage_condition: defaultCondition,
             active,
             allergens,
+            ...(isPlatformAdmin ? { is_seed: isSeed } : {}),
             created_by: profile?.id ?? null,
           })
           .select('id')
@@ -386,6 +393,11 @@ export function ProductsPage() {
                   >
                     <td className="px-4 py-3 font-medium text-neutral-800">
                       {p.name}
+                      {p.is_seed ? (
+                        <span className="ml-2 inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                          Seed
+                        </span>
+                      ) : null}
                     </td>
                     <td className="px-4 py-3 text-neutral-600">
                       {p.category ?? '—'}
@@ -574,6 +586,25 @@ export function ProductsPage() {
             />
             Produto ativo
           </label>
+
+          {isPlatformAdmin ? (
+            <label className="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-2 text-sm dark:border-emerald-900 dark:bg-emerald-950">
+              <input
+                type="checkbox"
+                checked={isSeed}
+                onChange={(e) => setIsSeed(e.target.checked)}
+                className="mt-0.5 h-5 w-5 accent-emerald-600"
+              />
+              <span>
+                <span className="font-medium text-emerald-700 dark:text-emerald-300">
+                  Publicar no catálogo seed
+                </span>
+                <span className="block text-xs text-emerald-600 dark:text-emerald-400">
+                  Visível para todas as orgs. Elas podem clonar com os prazos.
+                </span>
+              </span>
+            </label>
+          ) : null}
         </div>
       </Modal>
 

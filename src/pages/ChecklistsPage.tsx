@@ -69,7 +69,7 @@ interface RunWithTemplate extends ChecklistRun {
 
 export function ChecklistsPage() {
   usePageTitle('Checklists');
-  const { profile } = useAuth();
+  const { profile, isPlatformAdmin } = useAuth();
   const { isMaster, companies, companyId, setCompanyId } = useCompanyScope();
 
   const [templates, setTemplates] = useState<ChecklistTemplate[]>([]);
@@ -96,6 +96,7 @@ export function ChecklistsPage() {
   const [runNotes, setRunNotes] = useState('');
   const [runSaving, setRunSaving] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
+  const [tplIsGlobal, setTplIsGlobal] = useState(false);
 
   const load = useCallback(async () => {
     if (!companyId) {
@@ -105,11 +106,11 @@ export function ChecklistsPage() {
       return;
     }
     setLoading(true);
-    const tplRes = await supabase
-      .from('checklist_templates')
-      .select('*')
-      .eq('company_id', companyId)
-      .order('name');
+    // Admin enxerga também os globais (sem company_id) na lista
+    const tplQuery = supabase.from('checklist_templates').select('*');
+    const tplRes = await (isPlatformAdmin
+      ? tplQuery.or(`company_id.eq.${companyId},is_global.eq.true`).order('name')
+      : tplQuery.eq('company_id', companyId).order('name'));
     if (tplRes.error) {
       setLoading(false);
       toast.error('Erro ao carregar templates: ' + tplRes.error.message);
@@ -133,7 +134,7 @@ export function ChecklistsPage() {
       setRecentRuns([]);
     }
     setLoading(false);
-  }, [companyId]);
+  }, [companyId, isPlatformAdmin]);
 
   useEffect(() => {
     void load();
@@ -145,6 +146,7 @@ export function ChecklistsPage() {
     setTplFreq('daily');
     setTplItems(['']);
     setTplActive(true);
+    setTplIsGlobal(false);
     setModalOpen(true);
   }
 
@@ -154,6 +156,7 @@ export function ChecklistsPage() {
     setTplFreq(t.frequency);
     setTplItems(t.items.length > 0 ? t.items.map((i) => i.text) : ['']);
     setTplActive(t.active);
+    setTplIsGlobal(t.is_global ?? false);
     setModalOpen(true);
   }
 
@@ -171,20 +174,25 @@ export function ChecklistsPage() {
       return;
     }
     setSaving(true);
+    const makeGlobal = isPlatformAdmin && tplIsGlobal;
     const payload = {
       name: tplName.trim(),
       frequency: tplFreq,
       items,
       active: tplActive,
+      ...(isPlatformAdmin ? { is_global: tplIsGlobal } : {}),
     };
     const { error } = editing
       ? await supabase
           .from('checklist_templates')
-          .update(payload)
+          .update({
+            ...payload,
+            ...(isPlatformAdmin && tplIsGlobal ? { company_id: null } : {}),
+          })
           .eq('id', editing.id)
       : await supabase.from('checklist_templates').insert({
           ...payload,
-          company_id: companyId,
+          company_id: makeGlobal ? null : companyId,
           created_by: profile?.id ?? null,
         });
     setSaving(false);
@@ -360,6 +368,11 @@ export function ChecklistsPage() {
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-neutral-800">
                         {t.name}
+                        {t.is_global ? (
+                          <span className="ml-2 inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                            Modelo oficial
+                          </span>
+                        ) : null}
                       </p>
                       <p className="text-xs text-neutral-500">
                         {CHECKLIST_FREQUENCY_LABELS[t.frequency]} ·{' '}
@@ -521,6 +534,25 @@ export function ChecklistsPage() {
             />
             Template ativo
           </label>
+
+          {isPlatformAdmin ? (
+            <label className="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-2 text-sm dark:border-emerald-900 dark:bg-emerald-950">
+              <input
+                type="checkbox"
+                checked={tplIsGlobal}
+                onChange={(e) => setTplIsGlobal(e.target.checked)}
+                className="mt-0.5 h-5 w-5 accent-emerald-600"
+              />
+              <span>
+                <span className="font-medium text-emerald-700 dark:text-emerald-300">
+                  Publicar como modelo oficial
+                </span>
+                <span className="block text-xs text-emerald-600 dark:text-emerald-400">
+                  Visível para todas as orgs como leitura. Elas podem clonar.
+                </span>
+              </span>
+            </label>
+          ) : null}
         </div>
       </Modal>
 
