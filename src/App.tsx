@@ -115,6 +115,11 @@ const CompaniesPage = lazy(() =>
 const UsersPage = lazy(() =>
   import('./pages/admin/UsersPage').then((m) => ({ default: m.UsersPage })),
 );
+const HardwarePage = lazy(() =>
+  import('./pages/admin/HardwarePage').then((m) => ({
+    default: m.HardwarePage,
+  })),
+);
 const AuditLogPage = lazy(() =>
   import('./pages/admin/AuditLogPage').then((m) => ({
     default: m.AuditLogPage,
@@ -184,6 +189,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/admin/empresas" element={<CompaniesPage />} />
             <Route path="/admin/usuarios" element={<UsersPage />} />
+            <Route path="/admin/hardware" element={<HardwarePage />} />
           </Route>
         </Route>
 
