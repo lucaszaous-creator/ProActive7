@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { Printer, Bluetooth, BluetoothOff } from 'lucide-react';
@@ -80,6 +81,7 @@ function applyPageStyle(w: number, h: number) {
 export function PrintLabelPage() {
   usePageTitle('Imprimir etiqueta');
   const { profile } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     isMaster,
     companies,
@@ -113,6 +115,10 @@ export function PrintLabelPage() {
     null,
   );
   const [savingPrint, setSavingPrint] = useState(false);
+
+  const [prefillFromReceivingId, setPrefillFromReceivingId] = useState<
+    string | null
+  >(null);
 
   const [outputMode, setOutputMode] = useState<'system' | 'bluetooth'>(
     'system',
@@ -175,6 +181,37 @@ export function PrintLabelPage() {
       setManipulators((manipRes.data as Manipulator[] | null) ?? []);
     });
   }, [companyId]);
+
+  const prefillApplied = useRef(false);
+
+  useEffect(() => {
+    if (prefillApplied.current) return;
+    if (products.length === 0) return;
+    const qProduct = searchParams.get('product_id');
+    if (!qProduct) {
+      prefillApplied.current = true;
+      return;
+    }
+    if (!products.some((p) => p.id === qProduct)) return;
+    prefillApplied.current = true;
+
+    setProductId(qProduct);
+    const qBatch = searchParams.get('batch');
+    if (qBatch) setBatch(qBatch);
+    const qSupplier = searchParams.get('supplier');
+    if (qSupplier) setSupplier(qSupplier);
+    const qStorage = searchParams.get('storage');
+    if (qStorage === 'ambiente' || qStorage === 'refrigerado' || qStorage === 'congelado') {
+      setCondition(qStorage);
+    }
+    const qExpiry = searchParams.get('expiry');
+    if (qExpiry) {
+      // expiry vem como YYYY-MM-DD (do recebimento); converte para o input datetime-local
+      setOriginalExpiryLocal(`${qExpiry}T23:59`);
+    }
+    const qReceiving = searchParams.get('receiving_id');
+    if (qReceiving) setPrefillFromReceivingId(qReceiving);
+  }, [products, searchParams]);
 
   const selectedProduct = products.find((p) => p.id === productId) ?? null;
   const rules = selectedProduct?.product_shelf_lives ?? [];
@@ -369,6 +406,24 @@ export function PrintLabelPage() {
         <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
           <Card>
             <div className="flex flex-col gap-4">
+              {prefillFromReceivingId && (
+                <div className="flex items-center justify-between rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+                  <span>
+                    Preenchido a partir do recebimento #
+                    {prefillFromReceivingId.slice(0, 8)}.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPrefillFromReceivingId(null);
+                      setSearchParams({}, { replace: true });
+                    }}
+                    className="rounded px-2 py-0.5 text-emerald-700 hover:bg-emerald-100"
+                  >
+                    Fechar
+                  </button>
+                </div>
+              )}
               {isMaster && companies.length > 0 && (
                 <Select
                   label="Empresa"

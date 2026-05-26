@@ -14,6 +14,8 @@ const en = {
     manipulators: 'Food handlers',
     pestControl: 'Pest control',
     reports: 'Reports',
+    receivings: 'Receivings',
+    suppliers: 'Suppliers',
     companies: 'Companies',
     users: 'Users',
     hardware: 'Hardware',

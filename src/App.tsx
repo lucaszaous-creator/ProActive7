@@ -107,6 +107,26 @@ const ManipulatorsPage = lazy(() =>
     default: m.ManipulatorsPage,
   })),
 );
+const SuppliersPage = lazy(() =>
+  import('./pages/SuppliersPage').then((m) => ({
+    default: m.SuppliersPage,
+  })),
+);
+const RecebimentosPage = lazy(() =>
+  import('./pages/RecebimentosPage').then((m) => ({
+    default: m.RecebimentosPage,
+  })),
+);
+const RecebimentoFormPage = lazy(() =>
+  import('./pages/RecebimentoFormPage').then((m) => ({
+    default: m.RecebimentoFormPage,
+  })),
+);
+const RecebimentoDetailPage = lazy(() =>
+  import('./pages/RecebimentoDetailPage').then((m) => ({
+    default: m.RecebimentoDetailPage,
+  })),
+);
 const CompaniesPage = lazy(() =>
   import('./pages/admin/CompaniesPage').then((m) => ({
     default: m.CompaniesPage,
@@ -196,6 +216,9 @@ export default function App() {
               element={<NonConformitiesPage />}
             />
             <Route path="/manipuladores" element={<ManipulatorsPage />} />
+            <Route path="/recebimentos" element={<RecebimentosPage />} />
+            <Route path="/recebimentos/novo" element={<RecebimentoFormPage />} />
+            <Route path="/recebimentos/:id" element={<RecebimentoDetailPage />} />
           </Route>
         </Route>
 
@@ -205,6 +228,7 @@ export default function App() {
             <Route path="/admin/empresas" element={<CompaniesPage />} />
             <Route path="/admin/usuarios" element={<UsersPage />} />
             <Route path="/admin/hardware" element={<HardwarePage />} />
+            <Route path="/fornecedores" element={<SuppliersPage />} />
           </Route>
         </Route>
 

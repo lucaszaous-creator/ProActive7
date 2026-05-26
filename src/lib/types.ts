@@ -425,3 +425,65 @@ export interface Photo {
   uploaded_at: string;
   created_at: string;
 }
+
+export interface Supplier {
+  id: string;
+  organization_id: string;
+  name: string;
+  cnpj: string | null;
+  email: string | null;
+  phone: string | null;
+  notes: string | null;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export type ReceivingUnit = 'kg' | 'g' | 'un' | 'L' | 'mL' | 'cx';
+
+export const RECEIVING_UNIT_LABELS: Record<ReceivingUnit, string> = {
+  kg: 'kg',
+  g: 'g',
+  un: 'un',
+  L: 'L',
+  mL: 'mL',
+  cx: 'cx',
+};
+
+export const RECEIVING_UNITS: ReceivingUnit[] = ['kg', 'g', 'un', 'L', 'mL', 'cx'];
+
+export interface Receiving {
+  id: string;
+  company_id: string;
+  supplier_id: string | null;
+  invoice_nf: string | null;
+  received_at: string;
+  received_by: string | null;
+  notes: string | null;
+  photo_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ReceivingItem {
+  id: string;
+  receiving_id: string;
+  product_id: string;
+  batch: string;
+  quantity: number;
+  unit: ReceivingUnit;
+  temp_at_arrival: number | null;
+  manufacturing_date: string | null;
+  expiry_date: string | null;
+  storage_condition: StorageCondition | null;
+  rejected: boolean;
+  rejection_reason: string | null;
+  created_at: string;
+}
+
+export interface ReceivingWithRelations extends Receiving {
+  supplier: { id: string; name: string } | null;
+  receiving_items: (ReceivingItem & {
+    product: { id: string; name: string } | null;
+  })[];
+}

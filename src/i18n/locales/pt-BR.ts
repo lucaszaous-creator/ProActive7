@@ -14,6 +14,8 @@ const ptBR = {
     manipulators: 'Manipuladores',
     pestControl: 'Controle de pragas',
     reports: 'Relatórios',
+    receivings: 'Recebimentos',
+    suppliers: 'Fornecedores',
     companies: 'Empresas',
     users: 'Usuários',
     hardware: 'Hardware',

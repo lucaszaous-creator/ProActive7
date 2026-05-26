@@ -26,6 +26,8 @@ import {
   LineChart,
   Megaphone,
   BookOpen,
+  PackagePlus,
+  Truck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -47,6 +49,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   // ---------- Operação diária ----------
   { to: '/painel', labelKey: 'nav.dashboard', icon: LayoutDashboard },
+  { to: '/recebimentos', labelKey: 'nav.receivings', icon: PackagePlus },
   { to: '/imprimir', labelKey: 'nav.printLabel', icon: Printer },
   { to: '/produtos', labelKey: 'nav.products', icon: Package },
   { to: '/manipuladores', labelKey: 'nav.manipulators', icon: HardHat },
@@ -68,6 +71,12 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/relatorios', labelKey: 'nav.reports', icon: BarChart3 },
 
   // ---------- Admin da org (nutri + platform_admin) ----------
+  {
+    to: '/fornecedores',
+    labelKey: 'nav.suppliers',
+    icon: Truck,
+    nutritionistOrAdmin: true,
+  },
   {
     to: '/admin/empresas',
     labelKey: 'nav.companies',
