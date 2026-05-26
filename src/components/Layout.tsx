@@ -25,6 +25,7 @@ import {
   Network,
   LineChart,
   Megaphone,
+  BookOpen,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -108,6 +109,12 @@ const NAV_ITEMS: NavItem[] = [
     to: '/platform/comunicados',
     labelKey: 'nav.announcements',
     icon: Megaphone,
+    masterOnly: true,
+  },
+  {
+    to: '/platform/biblioteca',
+    labelKey: 'nav.library',
+    icon: BookOpen,
     masterOnly: true,
   },
 ];

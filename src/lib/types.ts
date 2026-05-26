@@ -66,12 +66,13 @@ export interface Profile {
 
 export interface Product {
   id: string;
-  company_id: string;
+  company_id: string | null;
   name: string;
   category: string | null;
   default_storage_condition: StorageCondition;
   active: boolean;
   allergens: string[];
+  is_seed: boolean;
   created_by: string | null;
   created_at: string;
   updated_at: string;
@@ -157,11 +158,12 @@ export interface ChecklistItem {
 
 export interface ChecklistTemplate {
   id: string;
-  company_id: string;
+  company_id: string | null;
   name: string;
   items: ChecklistItem[];
   frequency: ChecklistFrequency;
   active: boolean;
+  is_global: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -364,6 +366,7 @@ export interface AuditTemplate {
   company_id: string | null;
   name: string;
   items: AuditItem[];
+  is_global: boolean;
   created_at: string;
   updated_at: string;
 }

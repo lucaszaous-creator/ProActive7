@@ -8,6 +8,7 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
+  BookOpen,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -20,6 +21,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
+import { LibraryBrowser } from '@/components/LibraryBrowser';
 import type { Audit, AuditStatus, AuditTemplate, Company } from '@/lib/types';
 
 const STATUS_LABELS: Record<AuditStatus, string> = {
@@ -66,6 +68,17 @@ export function AuditsPage() {
   const [newScheduledAt, setNewScheduledAt] = useState('');
   const [newRecurrence, setNewRecurrence] = useState('0');
   const [saving, setSaving] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
+
+  const reloadTemplates = useCallback(() => {
+    void supabase
+      .from('audit_templates')
+      .select('*')
+      .order('name')
+      .then(({ data }) => {
+        setTemplates((data as AuditTemplate[] | null) ?? []);
+      });
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -151,13 +164,31 @@ export function AuditsPage() {
             Inspecoes sanitarias da RT baseadas em RDC 216/2004.
           </p>
         </div>
-        {isMaster ? (
-          <Button onClick={openSchedule}>
-            <Plus size={18} />
-            Agendar visita
+        <div className="flex gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => setLibraryOpen(true)}
+            disabled={!companyId && !isMaster}
+          >
+            <BookOpen size={16} />
+            Biblioteca
           </Button>
-        ) : null}
+          {isMaster ? (
+            <Button onClick={openSchedule}>
+              <Plus size={18} />
+              Agendar visita
+            </Button>
+          ) : null}
+        </div>
       </div>
+
+      <LibraryBrowser
+        open={libraryOpen}
+        onClose={() => setLibraryOpen(false)}
+        kind="audit"
+        companyId={companyId}
+        onCloned={reloadTemplates}
+      />
 
       <div className="mb-4">
         <Select

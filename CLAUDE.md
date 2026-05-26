@@ -147,8 +147,8 @@ Status atualizado:
 3. ⏳ **Painel de cobrança** — pendente, requer escolha de gateway (Asaas/Stripe)
 4. ✅ **Impersonate** — Edge `admin-impersonate` + botão "Entrar como" na lista de usuários da org
 5. ✅ **Push manual para uma org** — Edge `admin-push-org` + botão "Notificar" na OrganizationDetailPage
-6. ✅ **Templates globais (banco)** — colunas `is_global` em audit/checklist templates + RPCs `clone_*` (UI de gestão ainda pendente)
-7. ✅ **Catálogo seed (banco)** — coluna `is_seed` em products + RPC `clone_seed_product` (UI pendente)
+6. ✅ **Templates globais** — `/platform/biblioteca` para publicar; botão "Biblioteca" em `ChecklistsPage` e `AuditsPage` para clonar
+7. ✅ **Catálogo seed** — mesma página + botão "Biblioteca" em `ProductsPage`
 8. ✅ **Banner global** — `/platform/comunicados` + `AnnouncementBanner` no Layout
 9. ✅ **Estatísticas de uso** — tabela `feature_events` + RPC `log_feature_event` + aba "Uso de features"
 10. ✅ **Backup on-demand** — Edge `admin-export-org` + botão "Backup" na OrganizationDetailPage

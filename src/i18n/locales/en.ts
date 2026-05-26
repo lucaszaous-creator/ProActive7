@@ -22,6 +22,7 @@ const en = {
     organizations: 'Organizations',
     platformDashboard: 'SaaS Dashboard',
     announcements: 'Announcements',
+    library: 'Global library',
   },
   layout: {
     master: 'Master user',

@@ -23,6 +23,8 @@ import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Spinner } from '@/components/ui/Spinner';
 import { ProductCsvImport } from '@/components/ProductCsvImport';
+import { LibraryBrowser } from '@/components/LibraryBrowser';
+import { BookOpen } from 'lucide-react';
 
 const CONDITIONS: StorageCondition[] = ['ambiente', 'refrigerado', 'congelado'];
 
@@ -87,6 +89,7 @@ export function ProductsPage() {
   const [search, setSearch] = useState('');
   const [showInactive, setShowInactive] = useState(false);
   const [csvOpen, setCsvOpen] = useState(false);
+  const [libraryOpen, setLibraryOpen] = useState(false);
 
   const load = useCallback(async () => {
     if (!companyId) {
@@ -259,7 +262,15 @@ export function ProductsPage() {
             Cadastro de produtos e regras de validade.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => setLibraryOpen(true)}
+            disabled={!companyId}
+          >
+            <BookOpen size={18} />
+            Biblioteca
+          </Button>
           <Button
             variant="secondary"
             onClick={() => setCsvOpen(true)}
@@ -274,6 +285,14 @@ export function ProductsPage() {
           </Button>
         </div>
       </div>
+
+      <LibraryBrowser
+        open={libraryOpen}
+        onClose={() => setLibraryOpen(false)}
+        kind="product"
+        companyId={companyId}
+        onCloned={() => void load()}
+      />
 
       {isMaster && companies.length > 0 && (
         <div className="mb-4 max-w-xs">

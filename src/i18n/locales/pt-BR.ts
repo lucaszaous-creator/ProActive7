@@ -22,6 +22,7 @@ const ptBR = {
     organizations: 'Organizações',
     platformDashboard: 'Dashboard SaaS',
     announcements: 'Comunicados',
+    library: 'Biblioteca global',
   },
   layout: {
     master: 'Usuário master',
