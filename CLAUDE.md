@@ -85,8 +85,6 @@ Embeds aninhados nestes pares **exigem** sintaxe `!nome_do_fkey`:
   (`VITE_SUPABASE_ANON_KEY`).
 - **Senha:** habilitar **Leaked Password Protection** no Supabase Auth
   (advisor reporta como WARN hoje).
-- **2FA** para `platform_admin` e `nutritionist` — pendente, prioridade
-  alta antes de cadastrar dados reais de cliente pagante.
 - **Service role** só em Edge Function, nunca no bundle.
 - **Backup:** ativar Point-in-Time Recovery quando subir para Supabase Pro.
 - **Rate limit** em RPCs públicas (`get_public_label`) — hoje sem limite.
@@ -95,7 +93,6 @@ Embeds aninhados nestes pares **exigem** sintaxe `!nome_do_fkey`:
 
 ### Curto prazo (próximas 2–4 semanas)
 
-- [ ] **2FA TOTP** para nutri e admin.
 - [ ] **Habilitar Leaked Password Protection** no painel Supabase.
 - [ ] **Consolidar role `master` em `platform_admin`** (migration + limpeza
       de checks `isMaster()` no frontend).
@@ -260,8 +257,9 @@ arquivos novos esperados, tabelas/RPCs no banco, e bloqueios.
 
 ### Pulos de fase / bloqueios
 
-- 2FA TOTP (do roadmap curto prazo) **precisa estar pronto antes** de
-  4.1 — não dá pra ter cobrança real sem proteger conta do dono.
+- **2FA descartado** — decisão do produto. Aceitar o risco e mitigar
+  com senha forte (Leaked Password Protection no Supabase) e e-mail de
+  alerta em login novo (futuro).
 - Web Serial / impressão crua **não bloqueia nada** desta seção; rodar
   em paralelo se sobrar tempo.
 - Toda página nova de `/platform/*` deve estar protegida por

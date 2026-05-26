@@ -30,6 +30,7 @@ import type {
   AuditTemplate,
 } from '@/lib/types';
 import { calculateAuditScore, scoresByCategory } from '@/lib/auditScore';
+import { logFeatureEvent } from '@/lib/platformMetrics';
 import {
   drawPdfFooter,
   drawPdfHeader,
@@ -226,6 +227,7 @@ export function AuditDetailPage() {
       return;
     }
     toast.success('Visita finalizada.');
+    void logFeatureEvent('audit_completed');
     setSignOpen(false);
 
     // Gera NCs a partir dos itens marcados como NC

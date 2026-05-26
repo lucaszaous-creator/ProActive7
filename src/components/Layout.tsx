@@ -23,6 +23,7 @@ import {
   CalendarRange,
   Bug,
   Network,
+  LineChart,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -87,6 +88,12 @@ const NAV_ITEMS: NavItem[] = [
     to: '/admin/lixeira',
     labelKey: 'nav.trash',
     icon: Trash2,
+    masterOnly: true,
+  },
+  {
+    to: '/platform/dashboard',
+    labelKey: 'nav.platformDashboard',
+    icon: LineChart,
     masterOnly: true,
   },
   {

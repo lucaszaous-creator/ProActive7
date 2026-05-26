@@ -128,6 +128,11 @@ const AuditLogPage = lazy(() =>
 const TrashPage = lazy(() =>
   import('./pages/admin/TrashPage').then((m) => ({ default: m.TrashPage })),
 );
+const PlatformDashboardPage = lazy(() =>
+  import('./pages/platform/PlatformDashboardPage').then((m) => ({
+    default: m.PlatformDashboardPage,
+  })),
+);
 const OrganizationsPage = lazy(() =>
   import('./pages/platform/OrganizationsPage').then((m) => ({
     default: m.OrganizationsPage,
@@ -198,6 +203,10 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/admin/trilha" element={<AuditLogPage />} />
             <Route path="/admin/lixeira" element={<TrashPage />} />
+            <Route
+              path="/platform/dashboard"
+              element={<PlatformDashboardPage />}
+            />
             <Route
               path="/platform/organizacoes"
               element={<OrganizationsPage />}

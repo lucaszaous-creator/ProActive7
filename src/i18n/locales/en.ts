@@ -20,6 +20,7 @@ const en = {
     auditLog: 'Audit log',
     trash: 'Trash',
     organizations: 'Organizations',
+    platformDashboard: 'SaaS Dashboard',
   },
   layout: {
     master: 'Master user',
