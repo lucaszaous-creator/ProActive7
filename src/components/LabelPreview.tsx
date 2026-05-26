@@ -50,8 +50,13 @@ function Row({ label, value, bold, accent, fontSize }: RowProps) {
       className="flex justify-between gap-2"
       style={{ fontSize, color: bold ? accent : undefined }}
     >
-      <span className={bold ? 'font-bold' : 'font-bold'}>{label}</span>
-      <span className={bold ? 'font-bold' : ''}>{value}</span>
+      <span className="shrink-0 font-bold">{label}</span>
+      <span
+        className={`min-w-0 flex-1 text-right ${bold ? 'font-bold' : ''}`}
+        style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+      >
+        {value}
+      </span>
     </div>
   );
 }
@@ -64,7 +69,7 @@ function Row({ label, value, bold, accent, fontSize }: RowProps) {
  */
 export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
   const showQr = Boolean(data.qrUrl) && widthMm >= 50 && heightMm >= 30;
-  const qrSizeMm = Math.min(14, Math.floor(widthMm * 0.22));
+  const qrSizeMm = Math.max(10, Math.min(14, Math.floor(widthMm * 0.2)));
   const accent = data.primaryColor ?? undefined;
 
   // Tamanhos proporcionais ao tamanho da etiqueta — etiquetas pequenas
@@ -73,19 +78,19 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
   const fsSm = `${Math.max(1.6, heightMm * 0.045).toFixed(2)}mm`;
   const fsLg = `${Math.max(3.0, heightMm * 0.085).toFixed(2)}mm`;
 
-  // Etiqueta pequena (<40mm altura): suprime campos extras.
-  const compact = heightMm < 40;
+  // Etiqueta pequena (≤40mm altura): suprime endereço, CNPJ e alergênicos.
+  const compact = heightMm <= 40;
 
   return (
     <div
       style={{
         width: `${widthMm}mm`,
         height: `${heightMm}mm`,
-        padding: '2mm',
+        padding: '1.5mm',
         boxSizing: 'border-box',
         borderTop: accent ? `0.8mm solid ${accent}` : undefined,
       }}
-      className="flex flex-col gap-[1mm] overflow-hidden border border-neutral-400 bg-white text-black"
+      className="flex flex-col gap-[0.6mm] overflow-hidden border border-neutral-400 bg-white text-black"
     >
       {/* Topo: logo (proeminente) + nome empresa */}
       {data.companyLogoUrl || data.companyName ? (
@@ -139,67 +144,42 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
         ) : null}
       </div>
 
-      {/* Bloco de campos key/value */}
-      <div
-        className="flex flex-1 flex-col"
-        style={{ fontSize: fsSm, lineHeight: 1.2 }}
-      >
-        {!compact && data.originalExpiryText ? (
+      {/* Bloco de campos key/value + QR no lado direito */}
+      <div className="flex flex-1 items-start gap-[1mm]">
+        <div
+          className="flex min-w-0 flex-1 flex-col"
+          style={{ fontSize: fsSm, lineHeight: 1.2 }}
+        >
+          {!compact && data.originalExpiryText ? (
+            <Row
+              label="VALID. ORIGINAL:"
+              value={data.originalExpiryText}
+              fontSize={fsSm}
+            />
+          ) : null}
           <Row
-            label="VALID. ORIGINAL:"
-            value={data.originalExpiryText}
+            label="MANIPULAÇÃO:"
+            value={data.manipulationText}
             fontSize={fsSm}
           />
-        ) : null}
-        <Row
-          label="MANIPULAÇÃO:"
-          value={data.manipulationText}
-          fontSize={fsSm}
-        />
-        <Row
-          label="VALIDADE:"
-          value={data.expiryText}
-          bold
-          accent={accent}
-          fontSize={fsSm}
-        />
-        {!compact && data.supplier ? (
-          <Row label="FORNECEDOR:" value={data.supplier} fontSize={fsSm} />
-        ) : null}
-        {!compact && data.batch ? (
-          <Row label="LOTE:" value={data.batch} fontSize={fsSm} />
-        ) : null}
-        <Row
-          label="RESP.:"
-          value={data.responsibleName || '—'}
-          fontSize={fsSm}
-        />
-        {!compact && data.allergens && data.allergens.length > 0 ? (
-          <div
-            className="mt-[0.5mm] truncate"
-            style={{ fontSize: fsXs, lineHeight: 1.15 }}
-          >
-            <span className="font-bold">Contém: </span>
-            {formatAllergenList(data.allergens)}
-          </div>
-        ) : null}
-      </div>
-
-      {/* Rodape: endereco da empresa + QR + print ID */}
-      <div className="flex items-end justify-between gap-2">
-        <div
-          className="min-w-0 flex-1"
-          style={{ fontSize: fsXs, lineHeight: 1.15 }}
-        >
-          {!compact && data.companyAddress ? (
-            <p className="truncate">{data.companyAddress}</p>
+          <Row
+            label="VALIDADE:"
+            value={data.expiryText}
+            bold
+            accent={accent}
+            fontSize={fsSm}
+          />
+          {data.supplier ? (
+            <Row label="FORNECEDOR:" value={data.supplier} fontSize={fsSm} />
           ) : null}
-          {!compact && data.companyCnpj ? (
-            <p className="truncate">CNPJ: {data.companyCnpj}</p>
+          {data.batch ? (
+            <Row label="LOTE:" value={data.batch} fontSize={fsSm} />
           ) : null}
-          {data.printId ? (
-            <p className="truncate font-bold">#{data.printId}</p>
-          ) : null}
+          <Row
+            label="RESP.:"
+            value={data.responsibleName || '—'}
+            fontSize={fsSm}
+          />
         </div>
         {showQr && data.qrUrl ? (
           <div
@@ -214,6 +194,31 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
           </div>
         ) : null}
       </div>
+
+      {/* Rodape full-width: alergenicos, endereco, CNPJ, printId */}
+      {(!compact &&
+        ((data.allergens && data.allergens.length > 0) ||
+          data.companyAddress ||
+          data.companyCnpj)) ||
+      data.printId ? (
+        <div style={{ fontSize: fsXs, lineHeight: 1.2 }}>
+          {!compact && data.allergens && data.allergens.length > 0 ? (
+            <p style={{ overflowWrap: 'anywhere' }}>
+              <span className="font-bold">Contém: </span>
+              {formatAllergenList(data.allergens)}
+            </p>
+          ) : null}
+          {!compact && data.companyAddress ? (
+            <p style={{ overflowWrap: 'anywhere' }}>{data.companyAddress}</p>
+          ) : null}
+          {!compact && data.companyCnpj ? (
+            <p className="truncate">CNPJ: {data.companyCnpj}</p>
+          ) : null}
+          {data.printId ? (
+            <p className="truncate font-bold">#{data.printId}</p>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
