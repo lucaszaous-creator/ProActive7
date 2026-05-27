@@ -1,8 +1,7 @@
 // admin-update-user — edita perfil, ativa/desativa e redefine senha de um
 // usuario. Apenas o usuario master pode invocar. Usa a service role key.
-//
-// Ativar/desativar usa o ban_duration do Supabase Auth para bloquear login
-// (a coluna profiles.active sozinha nao bloqueia a sessao).
+// JWT verificado dentro da função (verify_jwt:false no platform pra não
+// interceptar OPTIONS preflight do browser).
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const corsHeaders = {
@@ -10,6 +9,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers':
     'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 };
 
 function json(body: unknown, status: number): Response {
@@ -19,12 +19,11 @@ function json(body: unknown, status: number): Response {
   });
 }
 
-// ~100 anos, suficiente para banir indefinidamente.
 const BAN_FOREVER = '876000h';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+    return new Response(null, { status: 204, headers: corsHeaders });
   }
   if (req.method !== 'POST') {
     return json({ error: 'Método não permitido' }, 405);
@@ -35,8 +34,10 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const anonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
 
-    // 1. Identifica o chamador.
     const authHeader = req.headers.get('Authorization') ?? '';
+    if (!authHeader) {
+      return json({ error: 'Não autenticado' }, 401);
+    }
     const callerClient = createClient(url, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -48,7 +49,6 @@ Deno.serve(async (req) => {
       return json({ error: 'Não autenticado' }, 401);
     }
 
-    // 2. Carrega o perfil do chamador e valida o role.
     const admin = createClient(url, serviceKey);
     const { data: callerProfile } = await admin
       .from('profiles')
@@ -68,7 +68,6 @@ Deno.serve(async (req) => {
       );
     }
 
-    // 3. Valida o corpo.
     const body = await req.json().catch(() => null);
     const userId: string | undefined = body?.user_id;
     const fullName: string | undefined = body?.full_name;
@@ -84,7 +83,6 @@ Deno.serve(async (req) => {
     if (role !== undefined && !validRoles.includes(role)) {
       return json({ error: 'Role inválido' }, 400);
     }
-    // Normaliza 'master' para 'platform_admin'.
     const normalizedRole = role === 'master' ? 'platform_admin' : role;
 
     if (normalizedRole === 'property' && companyId === null) {
@@ -103,7 +101,6 @@ Deno.serve(async (req) => {
       return json({ error: 'A senha deve ter ao menos 6 caracteres' }, 400);
     }
 
-    // 3b. Nutricionista: so pode mexer em usuarios da propria org, e so cria/edita 'property'.
     if (isNutritionist) {
       if (normalizedRole !== undefined && normalizedRole !== 'property') {
         return json(
@@ -111,7 +108,6 @@ Deno.serve(async (req) => {
           403,
         );
       }
-      // Valida que o usuario-alvo pertence a org do nutricionista.
       const { data: targetProfile } = await admin
         .from('profiles')
         .select('organization_id')
@@ -126,7 +122,6 @@ Deno.serve(async (req) => {
           403,
         );
       }
-      // Se mudou de empresa, valida que a nova empresa tambem e da org.
       if (companyId) {
         const { data: company } = await admin
           .from('companies')
@@ -142,7 +137,6 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 4. Atualizacoes em auth.users (senha / banimento).
     const authUpdate: Record<string, unknown> = {};
     if (password !== undefined) authUpdate.password = password;
     if (active !== undefined) {
@@ -156,7 +150,6 @@ Deno.serve(async (req) => {
       if (authErr) return json({ error: authErr.message }, 400);
     }
 
-    // 5. Atualizacoes em profiles.
     const profileUpdate: Record<string, unknown> = {};
     if (fullName !== undefined) profileUpdate.full_name = fullName;
     if (normalizedRole !== undefined) profileUpdate.role = normalizedRole;
