@@ -6,7 +6,17 @@ declare const self: ServiceWorkerGlobalScope;
 // Precache injetado pelo vite-plugin-pwa (injectManifest).
 precacheAndRoute(self.__WB_MANIFEST);
 
-// Aceita ativacao imediata em updates.
+// Ativa o novo SW imediatamente assim que entra em "waiting", sem
+// depender de o navegador fechar todas as abas. Evita o cenário em
+// que duas versões do app convivem após um deploy.
+self.addEventListener('install', () => {
+  void self.skipWaiting();
+});
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
+// Aceita ativacao manual via postMessage (fallback / compat).
 self.addEventListener('message', (event) => {
   if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
 });
