@@ -570,6 +570,12 @@ export function PrintWizardPage() {
               totalLabels={totalBatchLabels}
               canPrint={batchValid && manipValid}
               onPrint={handlePrint}
+              companyName={companyName}
+              companyLogoUrl={companyLogoUrl}
+              companyCnpj={selectedCompany?.cnpj ?? null}
+              companyAddress={selectedCompany?.address ?? null}
+              primaryColor={companyPrimaryColor}
+              responsible={responsible}
             />
           )}
 
@@ -611,10 +617,18 @@ export function PrintWizardPage() {
                     </div>
                   ))
                 : (() => {
+                    // Pré-calcula o total para saber qual é o último (sem
+                    // breakAfter pra não gerar página extra em branco).
+                    const total = batchItems.reduce(
+                      (s, it) => s + it.quantity,
+                      0,
+                    );
                     const cells: React.ReactNode[] = [];
+                    let printedIdx = 0;
+                    if (!manipDate || !manipValid) return cells;
                     batchItems.forEach((it) => {
                       const prod = products.find((p) => p.id === it.product_id);
-                      if (!prod || !manipDate || !manipValid) return;
+                      if (!prod) return;
                       const r = resolveBatchRule(prod);
                       if (!r) return;
                       const exp = computeExpiry(
@@ -646,10 +660,11 @@ export function PrintWizardPage() {
                         responsibleName: responsible,
                       };
                       for (let i = 0; i < it.quantity; i++) {
+                        const isLast = printedIdx === total - 1;
                         cells.push(
                           <div
                             key={`${it.label_id}-${i}`}
-                            style={{ breakAfter: 'page' }}
+                            style={{ breakAfter: isLast ? 'auto' : 'page' }}
                           >
                             <LabelPreview
                               data={data}
@@ -658,30 +673,9 @@ export function PrintWizardPage() {
                             />
                           </div>,
                         );
+                        printedIdx++;
                       }
                     });
-                    // tira o breakAfter do último
-                    if (cells.length > 0) {
-                      const last = cells[
-                        cells.length - 1
-                      ] as React.ReactElement<{
-                        style?: React.CSSProperties;
-                      }>;
-                      cells[cells.length - 1] = (
-                        <div
-                          key={`last-${cells.length}`}
-                          style={{ ...last.props.style, breakAfter: 'auto' }}
-                        >
-                          {
-                            (
-                              last as React.ReactElement<{
-                                children?: React.ReactNode;
-                              }>
-                            ).props.children
-                          }
-                        </div>
-                      );
-                    }
                     return cells;
                   })()}
             </div>,
@@ -1386,6 +1380,12 @@ function Step5Batch({
   totalLabels,
   canPrint,
   onPrint,
+  companyName,
+  companyLogoUrl,
+  companyCnpj,
+  companyAddress,
+  primaryColor,
+  responsible,
 }: {
   batchItems: BatchItem[];
   products: ProductWithShelfLives[];
@@ -1394,8 +1394,15 @@ function Step5Batch({
   totalLabels: number;
   canPrint: boolean;
   onPrint: () => void;
+  companyName: string;
+  companyLogoUrl: string | null;
+  companyCnpj: string | null;
+  companyAddress: string | null;
+  primaryColor: string | null;
+  responsible: string;
 }) {
-  // Mostra prévia do primeiro item como amostra
+  // Mostra prévia do primeiro item como amostra — com os MESMOS dados
+  // que sairão na impressão para a nutri conferir antes.
   const first = batchItems[0];
   const firstProd = first
     ? products.find((p) => p.id === first.product_id)
@@ -1416,16 +1423,16 @@ function Step5Batch({
         <p className="text-sm font-medium text-neutral-700">
           Prévia da primeira etiqueta
         </p>
-        {firstProd && firstRule && firstExpiry && manipDate && (
+        {firstProd && firstRule && firstExpiry && manipDate && first && (
           <div className="w-full max-w-full overflow-x-auto">
             <div className="mx-auto w-fit">
               <LabelPreview
                 data={{
-                  companyName: '',
-                  companyLogoUrl: null,
-                  companyCnpj: null,
-                  companyAddress: null,
-                  primaryColor: null,
+                  companyName,
+                  companyLogoUrl,
+                  companyCnpj,
+                  companyAddress,
+                  primaryColor,
                   productName: firstProd.name,
                   storageConditionLabel:
                     STORAGE_CONDITION_LABELS[firstRule.storage_condition],
@@ -1440,8 +1447,8 @@ function Step5Batch({
                     .slice(0, 6)
                     .toUpperCase(),
                   allergens: firstProd.allergens ?? [],
-                  qrUrl: '',
-                  responsibleName: '',
+                  qrUrl: `${SITE_URL}/etiqueta/${first.label_id}`,
+                  responsibleName: responsible,
                 }}
                 widthMm={size.w}
                 heightMm={size.h}
