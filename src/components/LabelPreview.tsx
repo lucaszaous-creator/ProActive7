@@ -27,17 +27,15 @@ interface LabelPreviewProps {
   heightMm: number;
 }
 
-interface RowProps {
+function Row({
+  label,
+  value,
+  fontSize,
+}: {
   label: string;
-  value?: string | null;
-  bold?: boolean;
+  value: string;
   fontSize: string;
-  required?: boolean;
-}
-
-function Row({ label, value, bold, fontSize, required }: RowProps) {
-  if (!value && !required) return null;
-  const display = value && value.length > 0 ? value : '—';
+}) {
   return (
     <div
       className="flex justify-between gap-2"
@@ -47,26 +45,32 @@ function Row({ label, value, bold, fontSize, required }: RowProps) {
         {label}
       </span>
       <span
-        className={`min-w-0 flex-1 text-right ${bold ? 'font-bold' : ''}`}
+        className="min-w-0 flex-1 text-right"
         style={{
           overflowWrap: 'anywhere',
           wordBreak: 'break-word',
           color: '#000',
         }}
       >
-        {display}
+        {value || '—'}
       </span>
     </div>
   );
 }
 
+/**
+ * Etiqueta de validade — layout inspirado na Suflex Restaurant:
+ * nome do produto à esquerda em destaque, linha separadora, condição
+ * de armazenamento, bloco MANIPULAÇÃO/VALIDADE alinhado à direita,
+ * responsável, dados da empresa no rodapé, QR no canto inferior direito.
+ */
 export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
   const showQr = Boolean(data.qrUrl) && widthMm >= 50 && heightMm >= 30;
-  const qrSizeMm = Math.max(10, Math.min(14, Math.floor(widthMm * 0.2)));
+  const qrSizeMm = Math.max(10, Math.min(16, Math.floor(widthMm * 0.22)));
 
   const fsXs = `${Math.max(1.4, heightMm * 0.04).toFixed(2)}mm`;
   const fsSm = `${Math.max(1.6, heightMm * 0.045).toFixed(2)}mm`;
-  const fsLg = `${Math.max(3.0, heightMm * 0.085).toFixed(2)}mm`;
+  const fsLg = `${Math.max(2.8, heightMm * 0.075).toFixed(2)}mm`;
 
   const compact = heightMm <= 40;
 
@@ -75,102 +79,110 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
       style={{
         width: `${widthMm}mm`,
         height: `${heightMm}mm`,
-        padding: '1.5mm',
+        padding: '2mm',
         boxSizing: 'border-box',
         color: '#000',
         background: '#fff',
+        fontFamily: 'Arial, Helvetica, sans-serif',
       }}
       className="flex flex-col gap-[0.6mm] overflow-hidden border border-neutral-400"
     >
-      {data.companyLogoUrl || data.companyName ? (
-        <div
-          className="flex flex-col items-center justify-center gap-[0.5mm]"
-          style={{ fontSize: fsXs, color: '#000' }}
-        >
-          {data.companyLogoUrl ? (
-            <img
-              src={data.companyLogoUrl}
-              alt=""
-              style={{
-                height: `${Math.max(4, Math.min(10, heightMm * 0.15)).toFixed(2)}mm`,
-                maxWidth: '80%',
-                objectFit: 'contain',
-              }}
-            />
-          ) : null}
-          {data.companyName ? (
-            <p
-              className="truncate uppercase tracking-wide"
-              style={{ maxWidth: '95%', color: '#000' }}
-            >
-              {data.companyName}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
-
+      {/* Nome do produto — esquerda, bold, caixa alta */}
       <p
-        className="text-center font-bold uppercase leading-tight"
+        className="font-bold uppercase leading-tight"
         style={{ fontSize: fsLg, lineHeight: 1.05, color: '#000' }}
       >
         {data.productName || '—'}
       </p>
 
-      <div
-        className="flex items-center justify-between gap-2 border-y border-neutral-300"
-        style={{
-          fontSize: fsSm,
-          paddingTop: '0.5mm',
-          paddingBottom: '0.5mm',
-          color: '#000',
-        }}
+      {/* Linha separadora */}
+      <div style={{ borderTop: '0.25mm solid #000' }} />
+
+      {/* Condição de armazenamento */}
+      <p
+        className="font-bold uppercase"
+        style={{ fontSize: fsSm, color: '#000' }}
       >
-        <span className="font-bold uppercase" style={{ color: '#000' }}>
-          {data.storageConditionLabel}
-        </span>
+        {data.storageConditionLabel}
         {data.displayQuantity ? (
-          <span className="font-bold" style={{ color: '#000' }}>
-            {data.displayQuantity}
+          <span className="ml-2" style={{ color: '#000' }}>
+            — {data.displayQuantity}
           </span>
         ) : null}
+      </p>
+
+      {/* Bloco MANIPULAÇÃO / VALIDADE */}
+      <div
+        className="mt-[1mm] flex flex-col gap-[0.4mm]"
+        style={{ fontSize: fsSm, lineHeight: 1.2, color: '#000' }}
+      >
+        {!compact && data.originalExpiryText ? (
+          <Row
+            label="VALID. ORIGINAL:"
+            value={data.originalExpiryText}
+            fontSize={fsSm}
+          />
+        ) : null}
+        <Row
+          label="MANIPULAÇÃO:"
+          value={data.manipulationText}
+          fontSize={fsSm}
+        />
+        <Row label="VALIDADE:" value={data.expiryText} fontSize={fsSm} />
       </div>
 
-      <div className="flex flex-1 items-start gap-[1mm]">
+      {/* Espaço flexível */}
+      <div className="flex-1" />
+
+      {/* Rodapé: lado esquerdo (resp + empresa + endereço + printId), QR direita */}
+      <div className="flex items-end gap-[1.5mm]">
         <div
-          className="flex min-w-0 flex-1 flex-col"
-          style={{ fontSize: fsSm, lineHeight: 1.2, color: '#000' }}
+          className="min-w-0 flex-1"
+          style={{ fontSize: fsXs, lineHeight: 1.25, color: '#000' }}
         >
-          {!compact && data.originalExpiryText ? (
-            <Row
-              label="VALID. ORIGINAL:"
-              value={data.originalExpiryText}
-              fontSize={fsSm}
-            />
-          ) : null}
-          <Row
-            label="MANIPULAÇÃO:"
-            value={data.manipulationText}
-            fontSize={fsSm}
-            required
-          />
-          <Row
-            label="VALIDADE:"
-            value={data.expiryText}
-            bold
-            fontSize={fsSm}
-            required
-          />
+          <p style={{ color: '#000' }}>
+            <span className="font-bold">RESP.: </span>
+            {data.responsibleName || '—'}
+          </p>
           {data.supplier ? (
-            <Row label="FORNECEDOR:" value={data.supplier} fontSize={fsSm} />
+            <p style={{ color: '#000' }}>
+              <span className="font-bold">FORNECEDOR: </span>
+              {data.supplier}
+            </p>
           ) : null}
           {data.batch ? (
-            <Row label="LOTE:" value={data.batch} fontSize={fsSm} />
+            <p style={{ color: '#000' }}>
+              <span className="font-bold">LOTE: </span>
+              {data.batch}
+            </p>
           ) : null}
-          <Row
-            label="RESP.:"
-            value={data.responsibleName || '—'}
-            fontSize={fsSm}
-          />
+          {data.companyName ? (
+            <p
+              className="font-bold uppercase"
+              style={{ color: '#000', overflowWrap: 'anywhere' }}
+            >
+              {data.companyName}
+            </p>
+          ) : null}
+          {!compact && data.companyCnpj ? (
+            <p style={{ color: '#000' }}>CNPJ: {data.companyCnpj}</p>
+          ) : null}
+          {!compact && data.companyAddress ? (
+            <p style={{ overflowWrap: 'anywhere', color: '#000' }}>
+              {data.companyAddress}
+            </p>
+          ) : null}
+          {!compact && data.allergens && data.allergens.length > 0 ? (
+            <p style={{ overflowWrap: 'anywhere', color: '#000' }}>
+              <span className="font-bold">Contém: </span>
+              {formatAllergenList(data.allergens)}
+            </p>
+          ) : null}
+          {data.printId ? (
+            <p className="font-bold" style={{ color: '#000' }}>
+              #{data.printId}
+            </p>
+          ) : null}
         </div>
         {showQr && data.qrUrl ? (
           <div
@@ -185,36 +197,6 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
           </div>
         ) : null}
       </div>
-
-      {(!compact &&
-        ((data.allergens && data.allergens.length > 0) ||
-          data.companyAddress ||
-          data.companyCnpj)) ||
-      data.printId ? (
-        <div style={{ fontSize: fsXs, lineHeight: 1.2, color: '#000' }}>
-          {!compact && data.allergens && data.allergens.length > 0 ? (
-            <p style={{ overflowWrap: 'anywhere', color: '#000' }}>
-              <span className="font-bold">Contém: </span>
-              {formatAllergenList(data.allergens)}
-            </p>
-          ) : null}
-          {!compact && data.companyAddress ? (
-            <p style={{ overflowWrap: 'anywhere', color: '#000' }}>
-              {data.companyAddress}
-            </p>
-          ) : null}
-          {!compact && data.companyCnpj ? (
-            <p className="truncate" style={{ color: '#000' }}>
-              CNPJ: {data.companyCnpj}
-            </p>
-          ) : null}
-          {data.printId ? (
-            <p className="truncate font-bold" style={{ color: '#000' }}>
-              #{data.printId}
-            </p>
-          ) : null}
-        </div>
-      ) : null}
     </div>
   );
 }
