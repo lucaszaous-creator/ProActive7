@@ -24,7 +24,8 @@ const DEFAULT_COLORS = [
 
 export function GruposPage() {
   usePageTitle('Grupos de produtos');
-  const { profile } = useAuth();
+  const { profile, isPlatformAdmin, isNutritionist } = useAuth();
+  const canEdit = isPlatformAdmin || isNutritionist;
   const [groups, setGroups] = useState<ProductGroup[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -138,10 +139,12 @@ export function GruposPage() {
             etiqueta. Ex.: Carnes, Pescados, Vegetais.
           </p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Novo grupo
-        </Button>
+        {canEdit && (
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Novo grupo
+          </Button>
+        )}
       </div>
 
       {loading ? (
@@ -179,20 +182,24 @@ export function GruposPage() {
                     Ordem {g.sort_order}
                   </p>
                 </div>
-                <button
-                  onClick={() => openEdit(g)}
-                  aria-label="Editar"
-                  className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
-                >
-                  <Pencil size={16} />
-                </button>
-                <button
-                  onClick={() => setDeleting(g)}
-                  aria-label="Excluir"
-                  className="rounded-lg p-2.5 text-red-500 hover:bg-red-50"
-                >
-                  <Trash2 size={16} />
-                </button>
+                {canEdit && (
+                  <>
+                    <button
+                      onClick={() => openEdit(g)}
+                      aria-label="Editar"
+                      className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      onClick={() => setDeleting(g)}
+                      aria-label="Excluir"
+                      className="rounded-lg p-2.5 text-red-500 hover:bg-red-50"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </>
+                )}
               </li>
             ))}
           </ul>
