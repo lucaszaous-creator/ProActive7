@@ -281,6 +281,12 @@ export default function App() {
             <Route path="/admin/empresas" element={<CompaniesPage />} />
             <Route path="/admin/usuarios" element={<UsersPage />} />
             <Route path="/admin/hardware" element={<HardwarePage />} />
+          </Route>
+        </Route>
+
+        {/* Cadastros acessíveis a property também (UI gateia escrita por role) */}
+        <Route element={<ProtectedRoute />}>
+          <Route element={<Layout />}>
             <Route path="/fornecedores" element={<SuppliersPage />} />
             <Route path="/cadastros/grupos" element={<GruposPage />} />
           </Route>
