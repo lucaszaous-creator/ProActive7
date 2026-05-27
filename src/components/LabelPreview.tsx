@@ -6,26 +6,18 @@ export interface LabelData {
   companyLogoUrl?: string | null;
   companyCnpj?: string | null;
   companyAddress?: string | null;
-  /** Hex (#rrggbb). Tinge linha de acento e VALIDADE. */
   primaryColor?: string | null;
   productName: string;
   storageConditionLabel: string;
-  /** Quantidade / peso impressa em destaque (ex: "500 g", "2 L"). */
   displayQuantity?: string | null;
-  /** Validade original do fabricante (opcional). */
   originalExpiryText?: string | null;
   manipulationText: string;
   expiryText: string;
   responsibleName: string;
-  /** Lote do produto / numero da nota (opcional). */
   batch?: string | null;
-  /** Marca / fornecedor (opcional). */
   supplier?: string | null;
-  /** Chaves de alergenicos para imprimir "Contém: X, Y" quando presente. */
   allergens?: string[];
-  /** Id curto da impressao (ex: "T154B3"). */
   printId?: string | null;
-  /** URL codificada no QR. Quando ausente, oculta o QR. */
   qrUrl?: string;
 }
 
@@ -40,23 +32,7 @@ interface RowProps {
   value?: string | null;
   bold?: boolean;
   fontSize: string;
-  /** Linha obrigatória — renderiza com "—" mesmo quando value vier vazio. */
   required?: boolean;
-}
-
-// Garante contraste mínimo da cor primária da empresa contra fundo branco
-// da etiqueta — caso a cor seja muito clara (ex: branco), cai pra preto
-// para que VALIDADE não fique invisível.
-function isReadableOnWhite(hex?: string): boolean {
-  if (!hex) return false;
-  const m = /^#?([0-9a-f]{6})$/i.exec(hex);
-  if (!m) return true;
-  const n = parseInt(m[1], 16);
-  const r = (n >> 16) & 0xff;
-  const g = (n >> 8) & 0xff;
-  const b = n & 0xff;
-  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return lum < 0.75;
 }
 
 function Row({ label, value, bold, fontSize, required }: RowProps) {
@@ -65,14 +41,17 @@ function Row({ label, value, bold, fontSize, required }: RowProps) {
   return (
     <div
       className="flex justify-between gap-2"
-      style={{ fontSize }}
+      style={{ fontSize, color: '#000' }}
     >
-      <span className="shrink-0 font-bold">{label}</span>
+      <span className="shrink-0 font-bold" style={{ color: '#000' }}>
+        {label}
+      </span>
       <span
         className={`min-w-0 flex-1 text-right ${bold ? 'font-bold' : ''}`}
         style={{
           overflowWrap: 'anywhere',
           wordBreak: 'break-word',
+          color: '#000',
         }}
       >
         {display}
@@ -81,25 +60,14 @@ function Row({ label, value, bold, fontSize, required }: RowProps) {
   );
 }
 
-/**
- * Etiqueta de validade — layout key/value inspirado no padrao
- * Suflex Restaurant: nome do produto em destaque, condicao + quantidade
- * na 2a linha, bloco de campos com label em negrito, rodape com
- * empresa + endereco + CNPJ e QR no canto inferior direito.
- */
 export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
   const showQr = Boolean(data.qrUrl) && widthMm >= 50 && heightMm >= 30;
   const qrSizeMm = Math.max(10, Math.min(14, Math.floor(widthMm * 0.2)));
-  const rawAccent = data.primaryColor ?? undefined;
-  const accent = isReadableOnWhite(rawAccent) ? rawAccent : undefined;
 
-  // Tamanhos proporcionais ao tamanho da etiqueta — etiquetas pequenas
-  // omitem campos secundarios automaticamente.
   const fsXs = `${Math.max(1.4, heightMm * 0.04).toFixed(2)}mm`;
   const fsSm = `${Math.max(1.6, heightMm * 0.045).toFixed(2)}mm`;
   const fsLg = `${Math.max(3.0, heightMm * 0.085).toFixed(2)}mm`;
 
-  // Etiqueta pequena (≤40mm altura): suprime endereço, CNPJ e alergênicos.
   const compact = heightMm <= 40;
 
   return (
@@ -109,24 +77,21 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
         height: `${heightMm}mm`,
         padding: '1.5mm',
         boxSizing: 'border-box',
-        borderTop: accent ? `0.8mm solid ${accent}` : undefined,
+        color: '#000',
+        background: '#fff',
       }}
-      className="flex flex-col gap-[0.6mm] overflow-hidden border border-neutral-400 bg-white text-black"
+      className="flex flex-col gap-[0.6mm] overflow-hidden border border-neutral-400"
     >
-      {/* Topo: logo (proeminente) + nome empresa */}
       {data.companyLogoUrl || data.companyName ? (
         <div
           className="flex flex-col items-center justify-center gap-[0.5mm]"
-          style={{ fontSize: fsXs }}
+          style={{ fontSize: fsXs, color: '#000' }}
         >
           {data.companyLogoUrl ? (
             <img
               src={data.companyLogoUrl}
               alt=""
               style={{
-                // Escala o logo com a altura da etiqueta: 4mm em etiquetas
-                // pequenas, ate 10mm nas grandes. Largura limitada para
-                // logos retangulares nao "estourarem" o card.
                 height: `${Math.max(4, Math.min(10, heightMm * 0.15)).toFixed(2)}mm`,
                 maxWidth: '80%',
                 objectFit: 'contain',
@@ -136,7 +101,7 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
           {data.companyName ? (
             <p
               className="truncate uppercase tracking-wide"
-              style={{ color: accent, maxWidth: '95%' }}
+              style={{ maxWidth: '95%', color: '#000' }}
             >
               {data.companyName}
             </p>
@@ -144,32 +109,36 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
         </div>
       ) : null}
 
-      {/* Nome do produto centralizado */}
       <p
         className="text-center font-bold uppercase leading-tight"
-        style={{ fontSize: fsLg, lineHeight: 1.05 }}
+        style={{ fontSize: fsLg, lineHeight: 1.05, color: '#000' }}
       >
         {data.productName || '—'}
       </p>
 
-      {/* Condicao | Quantidade */}
       <div
         className="flex items-center justify-between gap-2 border-y border-neutral-300"
-        style={{ fontSize: fsSm, paddingTop: '0.5mm', paddingBottom: '0.5mm' }}
+        style={{
+          fontSize: fsSm,
+          paddingTop: '0.5mm',
+          paddingBottom: '0.5mm',
+          color: '#000',
+        }}
       >
-        <span className="font-bold uppercase">
+        <span className="font-bold uppercase" style={{ color: '#000' }}>
           {data.storageConditionLabel}
         </span>
         {data.displayQuantity ? (
-          <span className="font-bold">{data.displayQuantity}</span>
+          <span className="font-bold" style={{ color: '#000' }}>
+            {data.displayQuantity}
+          </span>
         ) : null}
       </div>
 
-      {/* Bloco de campos key/value + QR no lado direito */}
       <div className="flex flex-1 items-start gap-[1mm]">
         <div
           className="flex min-w-0 flex-1 flex-col"
-          style={{ fontSize: fsSm, lineHeight: 1.2 }}
+          style={{ fontSize: fsSm, lineHeight: 1.2, color: '#000' }}
         >
           {!compact && data.originalExpiryText ? (
             <Row
@@ -217,27 +186,32 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
         ) : null}
       </div>
 
-      {/* Rodape full-width: alergenicos, endereco, CNPJ, printId */}
       {(!compact &&
         ((data.allergens && data.allergens.length > 0) ||
           data.companyAddress ||
           data.companyCnpj)) ||
       data.printId ? (
-        <div style={{ fontSize: fsXs, lineHeight: 1.2 }}>
+        <div style={{ fontSize: fsXs, lineHeight: 1.2, color: '#000' }}>
           {!compact && data.allergens && data.allergens.length > 0 ? (
-            <p style={{ overflowWrap: 'anywhere' }}>
+            <p style={{ overflowWrap: 'anywhere', color: '#000' }}>
               <span className="font-bold">Contém: </span>
               {formatAllergenList(data.allergens)}
             </p>
           ) : null}
           {!compact && data.companyAddress ? (
-            <p style={{ overflowWrap: 'anywhere' }}>{data.companyAddress}</p>
+            <p style={{ overflowWrap: 'anywhere', color: '#000' }}>
+              {data.companyAddress}
+            </p>
           ) : null}
           {!compact && data.companyCnpj ? (
-            <p className="truncate">CNPJ: {data.companyCnpj}</p>
+            <p className="truncate" style={{ color: '#000' }}>
+              CNPJ: {data.companyCnpj}
+            </p>
           ) : null}
           {data.printId ? (
-            <p className="truncate font-bold">#{data.printId}</p>
+            <p className="truncate font-bold" style={{ color: '#000' }}>
+              #{data.printId}
+            </p>
           ) : null}
         </div>
       ) : null}
