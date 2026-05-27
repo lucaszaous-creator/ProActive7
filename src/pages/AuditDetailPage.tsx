@@ -402,47 +402,58 @@ export function AuditDetailPage() {
       },
     });
 
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    let currentY =
+      (pdf as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable
+        ?.finalY ?? y;
+
     if (notes) {
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      let yPos =
-        (pdf as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable
-          ?.finalY ?? y;
-      yPos += 8;
-      if (yPos > pageHeight - 30) {
+      currentY += 8;
+      if (currentY > pageHeight - 30) {
         pdf.addPage();
-        yPos = 14;
+        currentY = 14;
       }
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(10);
-      pdf.text('Observacoes gerais:', 14, yPos);
+      pdf.text('Observacoes gerais:', 14, currentY);
       pdf.setFont('helvetica', 'normal');
       const split = pdf.splitTextToSize(notes, 180);
-      pdf.text(split, 14, yPos + 5);
+      pdf.text(split, 14, currentY + 5);
+      // ~4mm por linha
+      currentY += 5 + split.length * 4;
     }
 
-    // Assinatura
+    // Assinatura — fica na mesma página se couber (~62mm), senão nova página.
     if (sigDataUrl && profile) {
-      pdf.addPage();
+      const SIG_BLOCK_HEIGHT = 62;
+      const FOOTER_MARGIN = 15;
+      if (currentY + SIG_BLOCK_HEIGHT > pageHeight - FOOTER_MARGIN) {
+        pdf.addPage();
+        currentY = 20;
+      } else {
+        currentY += 10;
+      }
       pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(11);
-      pdf.text('Assinatura do Responsavel Tecnico', 14, 30);
+      pdf.text('Assinatura do Responsavel Tecnico', 14, currentY);
       try {
-        pdf.addImage(sigDataUrl, 'PNG', 14, 36, 80, 30);
+        pdf.addImage(sigDataUrl, 'PNG', 14, currentY + 6, 80, 30);
       } catch {
         // ignore
       }
       pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(10);
+      const sigInfoY = currentY + 42;
       pdf.text(
         `Assinado digitalmente por ${profile.full_name ?? profile.email ?? ''}`,
         14,
-        72,
+        sigInfoY,
       );
-      if (profile.crn) pdf.text(`CRN ${profile.crn}`, 14, 78);
+      if (profile.crn) pdf.text(`CRN ${profile.crn}`, 14, sigInfoY + 6);
       pdf.text(
         `Data: ${audit.completed_at ? formatDateTime(audit.completed_at) : formatDateTime(new Date().toISOString())}`,
         14,
-        84,
+        sigInfoY + (profile.crn ? 12 : 6),
       );
     }
 
