@@ -3,11 +3,22 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import * as Sentry from '@sentry/react';
+import { registerSW } from 'virtual:pwa-register';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import './i18n';
 import './index.css';
+
+// Força o Service Worker antigo a checar atualização toda vez que o
+// app inicia, e aceitar o novo bundle imediatamente — destrava
+// usuários com SW pre-#40 que tinha auto-update preguiçoso.
+const updateSW = registerSW({
+  immediate: true,
+  onNeedRefresh() {
+    void updateSW(true); // força ativação do novo SW sem prompt
+  },
+});
 
 // Sentry so liga quando o DSN esta configurado (producao). Em dev
 // fica off para nao poluir o dashboard.

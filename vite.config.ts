@@ -13,7 +13,9 @@ export default defineConfig({
       srcDir: 'src',
       filename: 'sw.ts',
       registerType: 'autoUpdate',
-      injectRegister: 'auto',
+      // null: registramos manualmente em src/main.tsx via registerSW()
+      // pra forçar update aggressive nos clientes presos em SW antigo.
+      injectRegister: null,
       includeAssets: [
         'favicon.svg',
         'apple-touch-icon.png',
