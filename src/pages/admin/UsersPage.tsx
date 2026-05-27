@@ -3,7 +3,8 @@ import { toast } from 'sonner';
 import { Plus, Pencil, Trash2, Search, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
-import type { Company, UserRole } from '@/lib/types';
+import { extractInvokeError } from '@/lib/edgeFunction';
+import type { Company, Organization, UserRole } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -45,6 +46,7 @@ export function UsersPage() {
     : ['property']; // nutritionist can only create property users
   const [users, setUsers] = useState<ProfileRow[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -56,6 +58,7 @@ export function UsersPage() {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<UserRole>('property');
   const [companyId, setCompanyId] = useState('');
+  const [organizationId, setOrganizationId] = useState('');
   const [active, setActive] = useState(true);
 
   const [deleting, setDeleting] = useState<ProfileRow | null>(null);
@@ -83,7 +86,7 @@ export function UsersPage() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [usersRes, companiesRes] = await Promise.all([
+    const [usersRes, companiesRes, orgsRes] = await Promise.all([
       supabase
         .from('profiles')
         .select(
@@ -92,6 +95,11 @@ export function UsersPage() {
         )
         .order('full_name'),
       supabase.from('companies').select('*').eq('active', true).order('name'),
+      supabase
+        .from('organizations')
+        .select('*')
+        .is('deleted_at', null)
+        .order('name'),
     ]);
     setLoading(false);
     if (usersRes.error) {
@@ -100,6 +108,7 @@ export function UsersPage() {
     }
     setUsers((usersRes.data as unknown as ProfileRow[] | null) ?? []);
     setCompanies((companiesRes.data as Company[] | null) ?? []);
+    setOrganizations((orgsRes.data as Organization[] | null) ?? []);
   }, []);
 
   useEffect(() => {
@@ -113,6 +122,7 @@ export function UsersPage() {
     setPassword('');
     setRole('property');
     setCompanyId(companies[0]?.id ?? '');
+    setOrganizationId(organizations[0]?.id ?? '');
     setActive(true);
     setModalOpen(true);
   }
@@ -124,6 +134,7 @@ export function UsersPage() {
     setPassword('');
     setRole(u.role);
     setCompanyId(u.company_id ?? '');
+    setOrganizationId(u.organization_id ?? '');
     setActive(u.active);
     setModalOpen(true);
   }
@@ -154,6 +165,10 @@ export function UsersPage() {
       toast.error('Selecione a empresa do usuário.');
       return;
     }
+    if (role === 'nutritionist' && !organizationId) {
+      toast.error('Selecione a organização do nutricionista.');
+      return;
+    }
     if (role === 'nutritionist' && !isPlatformAdmin) {
       toast.error(
         'Apenas administradores da plataforma podem criar nutricionistas.',
@@ -169,13 +184,15 @@ export function UsersPage() {
           full_name: fullName.trim(),
           role,
           company_id: role === 'property' ? companyId : null,
+          organization_id: role === 'nutritionist' ? organizationId : null,
           active,
           ...(password.length > 0 ? { password } : {}),
         },
       });
       setSaving(false);
       if (error) {
-        toast.error('Erro ao salvar usuário: ' + error.message);
+        const msg = await extractInvokeError(error);
+        toast.error('Erro ao salvar usuário: ' + msg);
         return;
       }
       toast.success('Usuário atualizado.');
@@ -187,11 +204,13 @@ export function UsersPage() {
           full_name: fullName.trim(),
           role,
           company_id: role === 'property' ? companyId : null,
+          organization_id: role === 'nutritionist' ? organizationId : null,
         },
       });
       setSaving(false);
       if (error) {
-        toast.error('Erro ao criar usuário: ' + error.message);
+        const msg = await extractInvokeError(error);
+        toast.error('Erro ao criar usuário: ' + msg);
         return;
       }
       toast.success('Usuário criado.');
@@ -208,7 +227,8 @@ export function UsersPage() {
     });
     setDeleteBusy(false);
     if (error) {
-      toast.error('Erro ao excluir: ' + error.message);
+      const msg = await extractInvokeError(error);
+      toast.error('Erro ao excluir: ' + msg);
       return;
     }
     toast.success('Usuário excluído.');
@@ -421,6 +441,21 @@ export function UsersPage() {
               {companies.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
+                </option>
+              ))}
+            </Select>
+          )}
+          {role === 'nutritionist' && (
+            <Select
+              id="u-org"
+              label="Organização"
+              value={organizationId}
+              onChange={(e) => setOrganizationId(e.target.value)}
+            >
+              <option value="">Selecione...</option>
+              {organizations.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.name}
                 </option>
               ))}
             </Select>
