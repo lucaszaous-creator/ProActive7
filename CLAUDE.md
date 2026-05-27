@@ -55,6 +55,36 @@ Embeds aninhados nestes pares **exigem** sintaxe `!nome_do_fkey`:
 `admin-delete-user`, `cleanup-photos`, `send-expiry-notifications`.
 **Nunca** chamar service role direto do frontend — sempre via Edge Function.
 
+## Princípio de UX: zero digitação na cozinha
+
+O cliente (Ariane) é explícita sobre isso: **o manipulador no chão da
+cozinha não digita nada**. Toda informação que entra em uma etiqueta,
+recebimento, contagem ou baixa de produção é **escolhida de lista** —
+nunca digitada à mão. O nome do manipulador, o produto, o grupo, a
+unidade, o fornecedor: tudo vem de cadastros pré-feitos pela nutri ou
+pelo gerente.
+
+Implicações práticas para qualquer feature nova:
+
+- **Form de impressão**: o wizard `/imprimir/novo` é o único fluxo
+  exposto no menu. O legado `/imprimir` (com `<input>` texto livre)
+  fica acessível só por deeplink, **não** pelo menu.
+- **Sem manipuladores → bloquear**: se `manipulators` está vazio, não
+  oferecer um `<input>` para digitar o nome. Mostrar mensagem clara
+  ("Cadastre funcionários em Cadastros → Funcionários") com CTA para
+  a página de cadastro. Padrão a seguir em qualquer outra entidade
+  pré-requisito (produtos, grupos, fornecedores).
+- **Autocálculo > entrada manual**: validade vem de
+  `product_shelf_lives`; data de manipulação default é "agora"; lote
+  pode ser opcional ou auto-gerado (`L-YYYY-MM-DD-XX`) quando o
+  cliente não tem padrão próprio.
+- **Selecionar > digitar**: sempre que houver duas opções no design,
+  preferir `<Select>` ou cards selecionáveis a `<Input>` livre.
+- **Erros de digitação são bugs do produto**, não erro do operador.
+  Se aparecer um campo onde o cozinheiro tem que digitar fornecedor,
+  produto, manipulador: refatore para virar select com cadastro
+  prévio.
+
 ## Ética
 
 1. **LGPD primeiro.** ASO de manipulador inclui dado de saúde (sensível).
