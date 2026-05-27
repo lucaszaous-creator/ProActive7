@@ -79,7 +79,7 @@ const ITEM = {
   } as NavItemDef,
   imprimir: {
     kind: 'item',
-    to: '/imprimir',
+    to: '/imprimir/novo',
     labelKey: 'nav.printLabel',
     icon: Printer,
   } as NavItemDef,
@@ -338,7 +338,7 @@ const NAV_NUTRITIONIST: NavNode[] = [
     kind: 'group',
     labelKey: 'nav.cadastros',
     icon: Package,
-    defaultOpen: false,
+    defaultOpen: true,
     children: [ITEM.produtos, ITEM.grupos, ITEM.fornecedores],
   },
   {
@@ -403,7 +403,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
     kind: 'group',
     labelKey: 'nav.cadastros',
     icon: Package,
-    defaultOpen: false,
+    defaultOpen: true,
     children: [
       ITEM.produtos,
       ITEM.grupos,
