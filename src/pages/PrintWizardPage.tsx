@@ -12,6 +12,8 @@ import {
   HardHat,
   Package,
   Settings2,
+  Layers,
+  X,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle, SITE_URL } from '@/lib/usePageTitle';
@@ -61,6 +63,15 @@ function applyPageStyle(w: number, h: number) {
 }
 
 type Step = 1 | 2 | 3 | 4 | 5;
+type Mode = 'single' | 'batch';
+
+interface BatchItem {
+  label_id: string;
+  product_id: string;
+  quantity: number;
+  batch: string;
+  supplier: string;
+}
 
 const STEP_META: Record<Step, { titleKey: string; icon: typeof HardHat }> = {
   1: { titleKey: 'Manipulador', icon: HardHat },
@@ -69,6 +80,20 @@ const STEP_META: Record<Step, { titleKey: string; icon: typeof HardHat }> = {
   4: { titleKey: 'Informações', icon: Settings2 },
   5: { titleKey: 'Imprimir', icon: Printer },
 };
+
+// Resolve a regra de validade de um produto pra modo lote (sem perguntar
+// condição ao usuário): usa default_storage_condition; se não houver
+// shelf_life pra ela, cai no primeiro disponível.
+function resolveBatchRule(product: ProductWithShelfLives) {
+  const rules = product.product_shelf_lives;
+  return (
+    rules.find(
+      (r) => r.storage_condition === product.default_storage_condition,
+    ) ??
+    rules[0] ??
+    null
+  );
+}
 
 export function PrintWizardPage() {
   usePageTitle('Imprimir — modo rápido');
@@ -90,6 +115,8 @@ export function PrintWizardPage() {
   const [loading, setLoading] = useState(true);
 
   const [step, setStep] = useState<Step>(1);
+  const [mode, setMode] = useState<Mode>('single');
+  const [batchItems, setBatchItems] = useState<BatchItem[]>([]);
 
   // estado do form
   const [responsible, setResponsible] = useState(profile?.full_name ?? '');
@@ -238,22 +265,37 @@ export function PrintWizardPage() {
     if (step > 1) setStep((step - 1) as Step);
   }
 
+  // Em batch: cada item precisa ter regra de validade + qtd > 0
+  const batchValid =
+    batchItems.length >= 1 &&
+    batchItems.every((it) => {
+      const p = products.find((pp) => pp.id === it.product_id);
+      if (!p) return false;
+      if (it.quantity < 1) return false;
+      return resolveBatchRule(p) !== null;
+    });
+  const totalBatchLabels = batchItems.reduce((s, it) => s + it.quantity, 0);
+
   const stepValid: Record<Step, boolean> = {
     1: responsible.trim().length > 0,
     2: true, // grupo é opcional (pode pular como "Todos")
-    3: Boolean(productId),
-    4: manipValid && rule !== null && quantity >= 1,
-    5: canPrint,
+    3: mode === 'single' ? Boolean(productId) : batchValid,
+    4:
+      mode === 'single'
+        ? manipValid && rule !== null && quantity >= 1
+        : manipValid && batchValid,
+    5: mode === 'single' ? canPrint : manipValid && batchValid,
   };
 
   function handlePrint() {
-    if (!canPrint) return;
+    if (mode === 'single' && !canPrint) return;
+    if (mode === 'batch' && !batchValid) return;
     applyPageStyle(size.w, size.h);
     window.print();
     setConfirmOpen(true);
   }
 
-  async function confirmPrinted() {
+  async function confirmPrintedSingle() {
     if (!selectedProduct || !rule || !expiry || !manipDate) return;
     setSavingPrint(true);
     const { error } = await supabase.from('label_prints').insert({
@@ -287,6 +329,57 @@ export function PrintWizardPage() {
     setSupplier('');
     setDisplayQuantity('');
     setLabelId(crypto.randomUUID());
+  }
+
+  async function confirmPrintedBatch() {
+    if (!manipDate || !manipValid) return;
+    setSavingPrint(true);
+    const rows = batchItems
+      .map((it) => {
+        const product = products.find((p) => p.id === it.product_id);
+        if (!product) return null;
+        const r = resolveBatchRule(product);
+        if (!r) return null;
+        const exp = computeExpiry(manipDate, r.validity_value, r.validity_unit);
+        return {
+          id: it.label_id,
+          company_id: companyId,
+          product_id: product.id,
+          product_name_snapshot: product.name,
+          storage_condition: r.storage_condition,
+          manipulation_at: manipDate.toISOString(),
+          expiry_at: exp.toISOString(),
+          responsible_name: responsible.trim(),
+          quantity: it.quantity,
+          batch: it.batch.trim() || null,
+          supplier: it.supplier.trim() || null,
+          display_quantity: null,
+          allergens: product.allergens ?? [],
+          printed_by: profile?.id ?? null,
+        };
+      })
+      .filter((r): r is NonNullable<typeof r> => r !== null);
+
+    const { error } = await supabase.from('label_prints').insert(rows);
+    setSavingPrint(false);
+    setConfirmOpen(false);
+    if (error) {
+      toast.error('Falha ao registrar as etiquetas: ' + error.message);
+      return;
+    }
+    toast.success(
+      `${rows.length} ${rows.length === 1 ? 'etiqueta' : 'etiquetas'} registradas (${totalBatchLabels} ${totalBatchLabels === 1 ? 'cópia' : 'cópias'}).`,
+    );
+    void logFeatureEvent('label_batch_printed');
+    // reseta o lote mantendo o manipulador
+    setBatchItems([]);
+    setStep(2);
+    setProductId('');
+  }
+
+  function confirmPrinted() {
+    if (mode === 'single') void confirmPrintedSingle();
+    else void confirmPrintedBatch();
   }
 
   const noCompany = isMaster && companies.length === 0;
@@ -376,7 +469,7 @@ export function PrintWizardPage() {
               }}
             />
           )}
-          {step === 3 && (
+          {step === 3 && mode === 'single' && (
             <Step3
               products={filteredProducts}
               productId={productId}
@@ -391,9 +484,43 @@ export function PrintWizardPage() {
                   ? 'Todos os grupos'
                   : (groups.find((g) => g.id === groupId)?.name ?? '—')
               }
+              onSwitchToBatch={() => {
+                setMode('batch');
+                if (productId) {
+                  // pré-popula o lote com o produto que estava selecionado
+                  setBatchItems([
+                    {
+                      label_id: crypto.randomUUID(),
+                      product_id: productId,
+                      quantity: 1,
+                      batch: '',
+                      supplier: '',
+                    },
+                  ]);
+                  setProductId('');
+                }
+              }}
             />
           )}
-          {step === 4 && selectedProduct && (
+          {step === 3 && mode === 'batch' && (
+            <Step3Batch
+              products={filteredProducts}
+              batchItems={batchItems}
+              setBatchItems={setBatchItems}
+              search={productSearch}
+              setSearch={setProductSearch}
+              groupName={
+                groupId === 'all'
+                  ? 'Todos os grupos'
+                  : (groups.find((g) => g.id === groupId)?.name ?? '—')
+              }
+              onSwitchToSingle={() => {
+                setMode('single');
+                setBatchItems([]);
+              }}
+            />
+          )}
+          {step === 4 && mode === 'single' && selectedProduct && (
             <Step4
               product={selectedProduct}
               condition={condition}
@@ -414,12 +541,34 @@ export function PrintWizardPage() {
               expiry={expiry}
             />
           )}
-          {step === 5 && (
+          {step === 4 && mode === 'batch' && (
+            <Step4Batch
+              batchItems={batchItems}
+              products={products}
+              manipulationLocal={manipulationLocal}
+              setManipulationLocal={setManipulationLocal}
+              sizeId={sizeId}
+              setSizeId={setSizeId}
+              manipDate={manipDate}
+            />
+          )}
+          {step === 5 && mode === 'single' && (
             <Step5
               labelData={labelData}
               size={size}
               quantity={quantity}
               canPrint={canPrint}
+              onPrint={handlePrint}
+            />
+          )}
+          {step === 5 && mode === 'batch' && (
+            <Step5Batch
+              batchItems={batchItems}
+              products={products}
+              size={size}
+              manipDate={manipDate}
+              totalLabels={totalBatchLabels}
+              canPrint={batchValid && manipValid}
               onPrint={handlePrint}
             />
           )}
@@ -432,7 +581,9 @@ export function PrintWizardPage() {
             </Button>
             {step < 5 && (
               <Button onClick={next} disabled={!stepValid[step]}>
-                Avançar
+                {mode === 'batch' && step === 3 && batchItems.length > 0
+                  ? `Avançar (${batchItems.length} ${batchItems.length === 1 ? 'produto' : 'produtos'})`
+                  : 'Avançar'}
                 <ArrowRight size={16} />
               </Button>
             )}
@@ -444,18 +595,95 @@ export function PrintWizardPage() {
       {typeof document !== 'undefined'
         ? createPortal(
             <div id="print-label-area">
-              {Array.from({ length: quantity }).map((_, i) => (
-                <div
-                  key={i}
-                  style={{ breakAfter: i < quantity - 1 ? 'page' : 'auto' }}
-                >
-                  <LabelPreview
-                    data={labelData}
-                    widthMm={size.w}
-                    heightMm={size.h}
-                  />
-                </div>
-              ))}
+              {mode === 'single'
+                ? Array.from({ length: quantity }).map((_, i) => (
+                    <div
+                      key={i}
+                      style={{
+                        breakAfter: i < quantity - 1 ? 'page' : 'auto',
+                      }}
+                    >
+                      <LabelPreview
+                        data={labelData}
+                        widthMm={size.w}
+                        heightMm={size.h}
+                      />
+                    </div>
+                  ))
+                : (() => {
+                    const cells: React.ReactNode[] = [];
+                    batchItems.forEach((it) => {
+                      const prod = products.find((p) => p.id === it.product_id);
+                      if (!prod || !manipDate || !manipValid) return;
+                      const r = resolveBatchRule(prod);
+                      if (!r) return;
+                      const exp = computeExpiry(
+                        manipDate,
+                        r.validity_value,
+                        r.validity_unit,
+                      );
+                      const data: LabelData = {
+                        companyName,
+                        companyLogoUrl,
+                        companyCnpj: selectedCompany?.cnpj ?? null,
+                        companyAddress: selectedCompany?.address ?? null,
+                        primaryColor: companyPrimaryColor,
+                        productName: prod.name,
+                        storageConditionLabel:
+                          STORAGE_CONDITION_LABELS[r.storage_condition],
+                        displayQuantity: null,
+                        manipulationText: formatDateTime(manipDate),
+                        expiryText: formatDateTime(exp),
+                        originalExpiryText: null,
+                        batch: it.batch.trim() || null,
+                        supplier: it.supplier.trim() || null,
+                        printId: it.label_id
+                          .replace(/-/g, '')
+                          .slice(0, 6)
+                          .toUpperCase(),
+                        allergens: prod.allergens ?? [],
+                        qrUrl: `${SITE_URL}/etiqueta/${it.label_id}`,
+                        responsibleName: responsible,
+                      };
+                      for (let i = 0; i < it.quantity; i++) {
+                        cells.push(
+                          <div
+                            key={`${it.label_id}-${i}`}
+                            style={{ breakAfter: 'page' }}
+                          >
+                            <LabelPreview
+                              data={data}
+                              widthMm={size.w}
+                              heightMm={size.h}
+                            />
+                          </div>,
+                        );
+                      }
+                    });
+                    // tira o breakAfter do último
+                    if (cells.length > 0) {
+                      const last = cells[
+                        cells.length - 1
+                      ] as React.ReactElement<{
+                        style?: React.CSSProperties;
+                      }>;
+                      cells[cells.length - 1] = (
+                        <div
+                          key={`last-${cells.length}`}
+                          style={{ ...last.props.style, breakAfter: 'auto' }}
+                        >
+                          {
+                            (
+                              last as React.ReactElement<{
+                                children?: React.ReactNode;
+                              }>
+                            ).props.children
+                          }
+                        </div>
+                      );
+                    }
+                    return cells;
+                  })()}
             </div>,
             document.body,
           )
@@ -617,6 +845,7 @@ function Step3({
   search,
   setSearch,
   groupName,
+  onSwitchToBatch,
 }: {
   products: ProductWithShelfLives[];
   productId: string;
@@ -624,6 +853,7 @@ function Step3({
   search: string;
   setSearch: (s: string) => void;
   groupName: string;
+  onSwitchToBatch: () => void;
 }) {
   return (
     <Card>
@@ -633,6 +863,13 @@ function Step3({
           {groupName}
         </span>
       </div>
+      <button
+        onClick={onSwitchToBatch}
+        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-emerald-300 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100"
+      >
+        <Layers size={16} />
+        Imprimir vários produtos
+      </button>
       <div className="relative mb-3">
         <Search
           size={16}
@@ -867,6 +1104,368 @@ function Step5({
         </Button>
         <p className="text-xs text-neutral-400">
           Sai pelo diálogo de impressão do sistema no tamanho exato.
+        </p>
+      </div>
+    </Card>
+  );
+}
+
+// ---------------- Sub-componentes do modo lote ----------------
+
+function Step3Batch({
+  products,
+  batchItems,
+  setBatchItems,
+  search,
+  setSearch,
+  groupName,
+  onSwitchToSingle,
+}: {
+  products: ProductWithShelfLives[];
+  batchItems: BatchItem[];
+  setBatchItems: React.Dispatch<React.SetStateAction<BatchItem[]>>;
+  search: string;
+  setSearch: (s: string) => void;
+  groupName: string;
+  onSwitchToSingle: () => void;
+}) {
+  const itemByProduct = new Map(batchItems.map((it) => [it.product_id, it]));
+
+  function toggle(productId: string) {
+    setBatchItems((prev) => {
+      const exists = prev.find((it) => it.product_id === productId);
+      if (exists) {
+        return prev.filter((it) => it.product_id !== productId);
+      }
+      return [
+        ...prev,
+        {
+          label_id: crypto.randomUUID(),
+          product_id: productId,
+          quantity: 1,
+          batch: '',
+          supplier: '',
+        },
+      ];
+    });
+  }
+
+  function patch(productId: string, fields: Partial<BatchItem>) {
+    setBatchItems((prev) =>
+      prev.map((it) =>
+        it.product_id === productId ? { ...it, ...fields } : it,
+      ),
+    );
+  }
+
+  return (
+    <Card>
+      <div className="mb-3 flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-neutral-700">
+          Produtos do lote
+        </h2>
+        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500">
+          {groupName}
+        </span>
+      </div>
+      <button
+        onClick={onSwitchToSingle}
+        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-50"
+      >
+        <X size={16} />
+        Voltar para um produto só
+      </button>
+
+      {batchItems.length > 0 && (
+        <div className="mb-3 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+          {batchItems.length}{' '}
+          {batchItems.length === 1
+            ? 'produto selecionado'
+            : 'produtos selecionados'}
+        </div>
+      )}
+
+      <div className="relative mb-3">
+        <Search
+          size={16}
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
+        />
+        <input
+          type="search"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          placeholder="Buscar produto"
+          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:text-sm dark:bg-slate-800"
+        />
+      </div>
+
+      {products.length === 0 ? (
+        <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+          Nenhum produto encontrado neste grupo.
+        </p>
+      ) : (
+        <ul className="divide-y divide-neutral-100">
+          {products.map((p) => {
+            const item = itemByProduct.get(p.id);
+            const isSelected = Boolean(item);
+            const rule = resolveBatchRule(p);
+            const hasNoRule = !rule;
+            return (
+              <li key={p.id} className="py-2">
+                <label
+                  className={`flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 ${
+                    isSelected ? 'bg-emerald-50' : 'hover:bg-neutral-50'
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggle(p.id)}
+                    disabled={hasNoRule}
+                    className="h-5 w-5 shrink-0 accent-emerald-600 disabled:opacity-50"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium text-neutral-800">
+                      {p.name}
+                    </p>
+                    {hasNoRule ? (
+                      <p className="truncate text-xs text-red-500">
+                        Sem regra de validade — cadastre em Produtos
+                      </p>
+                    ) : (
+                      <p className="truncate text-xs text-neutral-500">
+                        {STORAGE_CONDITION_LABELS[rule.storage_condition]} ·{' '}
+                        {rule.validity_value}{' '}
+                        {rule.validity_unit === 'hours' ? 'h' : 'd'}
+                        {p.category ? ` · ${p.category}` : ''}
+                      </p>
+                    )}
+                  </div>
+                </label>
+                {item && (
+                  <div className="ml-8 mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    <Input
+                      id={`qty-${p.id}`}
+                      label="Quantidade"
+                      type="number"
+                      min={1}
+                      value={item.quantity}
+                      onChange={(e) =>
+                        patch(p.id, {
+                          quantity: Math.max(1, Number(e.target.value) || 1),
+                        })
+                      }
+                    />
+                    <Input
+                      id={`batch-${p.id}`}
+                      label="Lote (opcional)"
+                      value={item.batch}
+                      onChange={(e) => patch(p.id, { batch: e.target.value })}
+                      placeholder="Ex.: L-2026-05"
+                    />
+                    <details className="sm:col-span-2">
+                      <summary className="cursor-pointer text-xs text-neutral-500">
+                        Fornecedor (opcional)
+                      </summary>
+                      <div className="mt-2">
+                        <Input
+                          id={`supplier-${p.id}`}
+                          label=""
+                          value={item.supplier}
+                          onChange={(e) =>
+                            patch(p.id, { supplier: e.target.value })
+                          }
+                        />
+                      </div>
+                    </details>
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Card>
+  );
+}
+
+function Step4Batch({
+  batchItems,
+  products,
+  manipulationLocal,
+  setManipulationLocal,
+  sizeId,
+  setSizeId,
+  manipDate,
+}: {
+  batchItems: BatchItem[];
+  products: ProductWithShelfLives[];
+  manipulationLocal: string;
+  setManipulationLocal: (s: string) => void;
+  sizeId: string;
+  setSizeId: (s: string) => void;
+  manipDate: Date | null;
+}) {
+  return (
+    <Card>
+      <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+        Informações compartilhadas
+      </h2>
+      <p className="mb-3 text-xs text-neutral-500">
+        Manipulação e tamanho valem para todas as etiquetas do lote. Lote e
+        fornecedor seguem o que foi informado por produto no passo anterior.
+      </p>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <Input
+          id="manip"
+          label="Data e hora da manipulação"
+          type="datetime-local"
+          value={manipulationLocal}
+          onChange={(e) => setManipulationLocal(e.target.value)}
+        />
+        <Select
+          label="Tamanho"
+          value={sizeId}
+          onChange={(e) => setSizeId(e.target.value)}
+        >
+          {LABEL_SIZES.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.label}
+            </option>
+          ))}
+        </Select>
+      </div>
+
+      <div className="mt-4">
+        <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+          Resumo do lote ({batchItems.length}{' '}
+          {batchItems.length === 1 ? 'produto' : 'produtos'} ·{' '}
+          {batchItems.reduce((s, it) => s + it.quantity, 0)} etiquetas)
+        </h3>
+        <ul className="divide-y divide-neutral-100 rounded-lg border border-neutral-200">
+          {batchItems.map((it) => {
+            const prod = products.find((p) => p.id === it.product_id);
+            if (!prod || !manipDate) return null;
+            const rule = resolveBatchRule(prod);
+            const expiry = rule
+              ? computeExpiry(
+                  manipDate,
+                  rule.validity_value,
+                  rule.validity_unit,
+                )
+              : null;
+            return (
+              <li
+                key={it.label_id}
+                className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-medium text-neutral-800">
+                    {prod.name}
+                  </p>
+                  <p className="text-xs text-neutral-500">
+                    {it.quantity}× · vence{' '}
+                    {expiry ? formatDateTime(expiry) : '—'}
+                    {it.batch ? ` · lote ${it.batch}` : ''}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    </Card>
+  );
+}
+
+function Step5Batch({
+  batchItems,
+  products,
+  size,
+  manipDate,
+  totalLabels,
+  canPrint,
+  onPrint,
+}: {
+  batchItems: BatchItem[];
+  products: ProductWithShelfLives[];
+  size: LabelSize;
+  manipDate: Date | null;
+  totalLabels: number;
+  canPrint: boolean;
+  onPrint: () => void;
+}) {
+  // Mostra prévia do primeiro item como amostra
+  const first = batchItems[0];
+  const firstProd = first
+    ? products.find((p) => p.id === first.product_id)
+    : null;
+  const firstRule = firstProd ? resolveBatchRule(firstProd) : null;
+  const firstExpiry =
+    firstProd && firstRule && manipDate
+      ? computeExpiry(
+          manipDate,
+          firstRule.validity_value,
+          firstRule.validity_unit,
+        )
+      : null;
+
+  return (
+    <Card>
+      <div className="flex flex-col items-center gap-3">
+        <p className="text-sm font-medium text-neutral-700">
+          Prévia da primeira etiqueta
+        </p>
+        {firstProd && firstRule && firstExpiry && manipDate && (
+          <div className="w-full max-w-full overflow-x-auto">
+            <div className="mx-auto w-fit">
+              <LabelPreview
+                data={{
+                  companyName: '',
+                  companyLogoUrl: null,
+                  companyCnpj: null,
+                  companyAddress: null,
+                  primaryColor: null,
+                  productName: firstProd.name,
+                  storageConditionLabel:
+                    STORAGE_CONDITION_LABELS[firstRule.storage_condition],
+                  displayQuantity: null,
+                  manipulationText: formatDateTime(manipDate),
+                  expiryText: formatDateTime(firstExpiry),
+                  originalExpiryText: null,
+                  batch: first.batch.trim() || null,
+                  supplier: first.supplier.trim() || null,
+                  printId: first.label_id
+                    .replace(/-/g, '')
+                    .slice(0, 6)
+                    .toUpperCase(),
+                  allergens: firstProd.allergens ?? [],
+                  qrUrl: '',
+                  responsibleName: '',
+                }}
+                widthMm={size.w}
+                heightMm={size.h}
+              />
+            </div>
+          </div>
+        )}
+        <div className="text-center text-sm text-neutral-600">
+          Vai imprimir <strong>{totalLabels}</strong>{' '}
+          {totalLabels === 1 ? 'etiqueta' : 'etiquetas'} de{' '}
+          <strong>{batchItems.length}</strong>{' '}
+          {batchItems.length === 1 ? 'produto' : 'produtos'} no tamanho{' '}
+          {size.label}.
+        </div>
+        <Button
+          onClick={onPrint}
+          disabled={!canPrint}
+          className="w-full sm:w-auto"
+        >
+          <Printer size={18} />
+          Imprimir {totalLabels} {totalLabels === 1 ? 'etiqueta' : 'etiquetas'}
+        </Button>
+        <p className="text-xs text-neutral-400">
+          Cada produto sai com seu lote, fornecedor e validade próprios.
         </p>
       </div>
     </Card>
