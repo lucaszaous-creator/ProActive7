@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import {
@@ -73,7 +73,6 @@ const STEP_META: Record<Step, { titleKey: string; icon: typeof HardHat }> = {
 export function PrintWizardPage() {
   usePageTitle('Imprimir — modo rápido');
   const { profile } = useAuth();
-  const navigate = useNavigate();
   const {
     isMaster,
     companies,
@@ -295,18 +294,13 @@ export function PrintWizardPage() {
   return (
     <div className="mx-auto max-w-2xl">
       {/* Header com progresso */}
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Imprimir etiqueta
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Modo rápido — siga os passos.
-          </p>
-        </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate('/imprimir')}>
-          Modo desktop
-        </Button>
+      <div className="mb-4">
+        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
+          Imprimir etiqueta
+        </h1>
+        <p className="text-sm text-neutral-500">
+          Siga os passos — nenhum campo precisa ser digitado.
+        </p>
       </div>
 
       {/* Stepper visual */}
@@ -497,13 +491,20 @@ function Step1({
         Quem está manipulando?
       </h2>
       {manipulators.length === 0 ? (
-        <Input
-          id="resp"
-          label="Responsável"
-          value={responsible}
-          onChange={(e) => setResponsible(e.target.value)}
-          placeholder="Cadastre funcionários em Cadastros → Funcionários"
-        />
+        <div className="flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <p className="font-medium">Nenhum funcionário cadastrado.</p>
+          <p className="text-amber-800">
+            Para imprimir uma etiqueta, cadastre os manipuladores em Cadastros →
+            Funcionários. O nome do responsável é registrado automaticamente ao
+            escolher na lista — nada digitado à mão.
+          </p>
+          <Link to="/manipuladores">
+            <Button size="sm">
+              <HardHat size={14} />
+              Cadastrar funcionários
+            </Button>
+          </Link>
+        </div>
       ) : (
         <div className="grid gap-2 sm:grid-cols-2">
           {manipulators.map((m) => {

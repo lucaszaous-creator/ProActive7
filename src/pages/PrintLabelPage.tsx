@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
-import { Printer, Bluetooth, BluetoothOff, Wand2 } from 'lucide-react';
+import { Printer, Bluetooth, BluetoothOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { SITE_URL, usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
@@ -388,21 +388,13 @@ export function PrintLabelPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Imprimir Etiqueta
-          </h1>
-          <p className="text-sm text-neutral-500">
-            A etiqueta sai no tamanho exato pela impressora térmica.
-          </p>
-        </div>
-        <Link to="/imprimir/novo">
-          <Button variant="secondary" size="sm">
-            <Wand2 size={16} />
-            Modo rápido (wizard)
-          </Button>
-        </Link>
+      <div className="mb-5">
+        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
+          Imprimir Etiqueta
+        </h1>
+        <p className="text-sm text-neutral-500">
+          A etiqueta sai no tamanho exato pela impressora térmica.
+        </p>
       </div>
 
       {noCompany ? (
