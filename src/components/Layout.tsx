@@ -79,7 +79,7 @@ const ITEM = {
   } as NavItemDef,
   imprimir: {
     kind: 'item',
-    to: '/imprimir',
+    to: '/imprimir/novo',
     labelKey: 'nav.printLabel',
     icon: Printer,
   } as NavItemDef,
