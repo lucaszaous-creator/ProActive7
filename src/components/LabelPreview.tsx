@@ -41,10 +41,13 @@ interface RowProps {
   bold?: boolean;
   accent?: string | undefined;
   fontSize: string;
+  /** Linha obrigatória — renderiza com "—" mesmo quando value vier vazio. */
+  required?: boolean;
 }
 
-function Row({ label, value, bold, accent, fontSize }: RowProps) {
-  if (!value) return null;
+function Row({ label, value, bold, accent, fontSize, required }: RowProps) {
+  if (!value && !required) return null;
+  const display = value && value.length > 0 ? value : '—';
   return (
     <div
       className="flex justify-between gap-2"
@@ -55,7 +58,7 @@ function Row({ label, value, bold, accent, fontSize }: RowProps) {
         className={`min-w-0 flex-1 text-right ${bold ? 'font-bold' : ''}`}
         style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
       >
-        {value}
+        {display}
       </span>
     </div>
   );
@@ -161,6 +164,7 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
             label="MANIPULAÇÃO:"
             value={data.manipulationText}
             fontSize={fsSm}
+            required
           />
           <Row
             label="VALIDADE:"
@@ -168,6 +172,7 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
             bold
             accent={accent}
             fontSize={fsSm}
+            required
           />
           {data.supplier ? (
             <Row label="FORNECEDOR:" value={data.supplier} fontSize={fsSm} />
