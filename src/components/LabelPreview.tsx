@@ -45,18 +45,37 @@ interface RowProps {
   required?: boolean;
 }
 
+// Garante contraste mínimo da cor primária da empresa contra fundo branco
+// da etiqueta — caso a cor seja muito clara (ex: branco), cai pra preto
+// para que VALIDADE não fique invisível.
+function isReadableOnWhite(hex?: string): boolean {
+  if (!hex) return false;
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return true;
+  const n = parseInt(m[1], 16);
+  const r = (n >> 16) & 0xff;
+  const g = (n >> 8) & 0xff;
+  const b = n & 0xff;
+  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return lum < 0.75;
+}
+
 function Row({ label, value, bold, accent, fontSize, required }: RowProps) {
   if (!value && !required) return null;
   const display = value && value.length > 0 ? value : '—';
   return (
     <div
       className="flex justify-between gap-2"
-      style={{ fontSize, color: bold ? accent : undefined }}
+      style={{ fontSize }}
     >
       <span className="shrink-0 font-bold">{label}</span>
       <span
         className={`min-w-0 flex-1 text-right ${bold ? 'font-bold' : ''}`}
-        style={{ overflowWrap: 'anywhere', wordBreak: 'break-word' }}
+        style={{
+          overflowWrap: 'anywhere',
+          wordBreak: 'break-word',
+          color: bold ? accent : undefined,
+        }}
       >
         {display}
       </span>
@@ -73,7 +92,8 @@ function Row({ label, value, bold, accent, fontSize, required }: RowProps) {
 export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
   const showQr = Boolean(data.qrUrl) && widthMm >= 50 && heightMm >= 30;
   const qrSizeMm = Math.max(10, Math.min(14, Math.floor(widthMm * 0.2)));
-  const accent = data.primaryColor ?? undefined;
+  const rawAccent = data.primaryColor ?? undefined;
+  const accent = isReadableOnWhite(rawAccent) ? rawAccent : undefined;
 
   // Tamanhos proporcionais ao tamanho da etiqueta — etiquetas pequenas
   // omitem campos secundarios automaticamente.
