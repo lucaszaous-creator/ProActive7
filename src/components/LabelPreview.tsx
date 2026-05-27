@@ -39,7 +39,6 @@ interface RowProps {
   label: string;
   value?: string | null;
   bold?: boolean;
-  accent?: string | undefined;
   fontSize: string;
   /** Linha obrigatória — renderiza com "—" mesmo quando value vier vazio. */
   required?: boolean;
@@ -60,7 +59,7 @@ function isReadableOnWhite(hex?: string): boolean {
   return lum < 0.75;
 }
 
-function Row({ label, value, bold, accent, fontSize, required }: RowProps) {
+function Row({ label, value, bold, fontSize, required }: RowProps) {
   if (!value && !required) return null;
   const display = value && value.length > 0 ? value : '—';
   return (
@@ -74,7 +73,6 @@ function Row({ label, value, bold, accent, fontSize, required }: RowProps) {
         style={{
           overflowWrap: 'anywhere',
           wordBreak: 'break-word',
-          color: bold ? accent : undefined,
         }}
       >
         {display}
@@ -190,7 +188,6 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
             label="VALIDADE:"
             value={data.expiryText}
             bold
-            accent={accent}
             fontSize={fsSm}
             required
           />
