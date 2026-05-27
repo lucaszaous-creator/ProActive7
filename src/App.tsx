@@ -205,6 +205,11 @@ const OrganizationDetailPage = lazy(() =>
     default: m.OrganizationDetailPage,
   })),
 );
+const PlatformControlPage = lazy(() =>
+  import('./pages/platform/PlatformControlPage').then((m) => ({
+    default: m.PlatformControlPage,
+  })),
+);
 
 export default function App() {
   return (
@@ -277,6 +282,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/admin/trilha" element={<AuditLogPage />} />
             <Route path="/admin/lixeira" element={<TrashPage />} />
+            <Route path="/platform/centro" element={<PlatformControlPage />} />
             <Route
               path="/platform/dashboard"
               element={<PlatformDashboardPage />}

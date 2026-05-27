@@ -38,6 +38,7 @@ const en = {
     auditLog: 'Audit log',
     trash: 'Trash',
     organizations: 'Organizations',
+    platformControl: 'Control center',
     platformDashboard: 'SaaS Dashboard',
     announcements: 'Announcements',
     library: 'Global library',

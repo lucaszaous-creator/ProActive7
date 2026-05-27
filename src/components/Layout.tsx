@@ -36,6 +36,7 @@ import {
   Briefcase,
   Stethoscope,
   Settings,
+  Gauge,
   LucideIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -93,6 +94,7 @@ const ITEM = {
   hardware: { kind: 'item', to: '/admin/hardware', labelKey: 'nav.hardware', icon: Printer } as NavItemDef,
   trilha: { kind: 'item', to: '/admin/trilha', labelKey: 'nav.auditLog', icon: Activity } as NavItemDef,
   lixeira: { kind: 'item', to: '/admin/lixeira', labelKey: 'nav.trash', icon: Trash2 } as NavItemDef,
+  platformControl: { kind: 'item', to: '/platform/centro', labelKey: 'nav.platformControl', icon: Gauge } as NavItemDef,
   platformDash: { kind: 'item', to: '/platform/dashboard', labelKey: 'nav.platformDashboard', icon: LineChart } as NavItemDef,
   orgs: { kind: 'item', to: '/platform/organizacoes', labelKey: 'nav.organizations', icon: Network } as NavItemDef,
   biblioteca: { kind: 'item', to: '/platform/biblioteca', labelKey: 'nav.library', icon: BookOpen } as NavItemDef,
@@ -179,6 +181,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
     icon: Network,
     defaultOpen: true,
     children: [
+      ITEM.platformControl,
       ITEM.platformDash,
       ITEM.orgs,
       ITEM.biblioteca,
