@@ -102,7 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       profile?.role === 'master' ||
       profile?.role === 'platform_admin' ||
       profile?.role === 'nutritionist',
-    isPlatformAdmin: profile?.role === 'master' || profile?.role === 'platform_admin',
+    isPlatformAdmin:
+      profile?.role === 'master' || profile?.role === 'platform_admin',
     isNutritionist: profile?.role === 'nutritionist',
     refreshProfile: async () => {
       if (session?.user) await loadProfile(session.user.id);

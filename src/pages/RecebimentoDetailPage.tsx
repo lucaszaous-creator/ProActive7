@@ -71,14 +71,15 @@ export function RecebimentoDetailPage() {
     void load();
   }, [load]);
 
-  function buildLabelUrl(item: ReceivingWithRelations['receiving_items'][number]) {
+  function buildLabelUrl(
+    item: ReceivingWithRelations['receiving_items'][number],
+  ) {
     const params = new URLSearchParams();
     if (item.product_id) params.set('product_id', item.product_id);
     if (item.batch) params.set('batch', item.batch);
     if (data?.supplier?.name) params.set('supplier', data.supplier.name);
     if (item.expiry_date) params.set('expiry', item.expiry_date);
-    if (item.storage_condition)
-      params.set('storage', item.storage_condition);
+    if (item.storage_condition) params.set('storage', item.storage_condition);
     if (data?.id) params.set('receiving_id', data.id);
     return `/imprimir?${params.toString()}`;
   }

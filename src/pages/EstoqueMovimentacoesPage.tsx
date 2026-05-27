@@ -53,9 +53,7 @@ export function EstoqueMovimentacoesPage() {
     void load();
   }, [load]);
 
-  const filtered = rows.filter(
-    (r) => !kindFilter || r.kind === kindFilter,
-  );
+  const filtered = rows.filter((r) => !kindFilter || r.kind === kindFilter);
 
   return (
     <div className="mx-auto max-w-5xl">

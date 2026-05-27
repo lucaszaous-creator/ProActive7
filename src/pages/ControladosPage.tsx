@@ -129,7 +129,9 @@ export function ControladosPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">Nenhuma empresa cadastrada.</p>
+          <p className="text-sm text-neutral-600">
+            Nenhuma empresa cadastrada.
+          </p>
         </Card>
       ) : loading ? (
         <div className="flex justify-center py-16">
@@ -206,7 +208,9 @@ export function ControladosPage() {
                     </div>
                     <span
                       className={`text-sm font-medium ${
-                        m.quantity_delta > 0 ? 'text-emerald-700' : 'text-red-700'
+                        m.quantity_delta > 0
+                          ? 'text-emerald-700'
+                          : 'text-red-700'
                       }`}
                     >
                       {m.quantity_delta > 0 ? '+' : ''}

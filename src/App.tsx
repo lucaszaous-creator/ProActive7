@@ -255,10 +255,19 @@ export default function App() {
             />
             <Route path="/manipuladores" element={<ManipulatorsPage />} />
             <Route path="/recebimentos" element={<RecebimentosPage />} />
-            <Route path="/recebimentos/novo" element={<RecebimentoFormPage />} />
-            <Route path="/recebimentos/:id" element={<RecebimentoDetailPage />} />
+            <Route
+              path="/recebimentos/novo"
+              element={<RecebimentoFormPage />}
+            />
+            <Route
+              path="/recebimentos/:id"
+              element={<RecebimentoDetailPage />}
+            />
             <Route path="/estoque" element={<EstoquePage />} />
-            <Route path="/estoque/movimentacoes" element={<EstoqueMovimentacoesPage />} />
+            <Route
+              path="/estoque/movimentacoes"
+              element={<EstoqueMovimentacoesPage />}
+            />
             <Route path="/validades" element={<ValidadesPage />} />
             <Route path="/producao" element={<ProducaoPage />} />
             <Route path="/contagem" element={<ContagemPage />} />

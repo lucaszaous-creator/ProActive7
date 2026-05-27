@@ -76,7 +76,11 @@ function AlertCard({
               {title}
             </p>
             <p className="text-xs text-neutral-500">
-              {loading ? '...' : count === 0 ? emptyMsg : `${count} item${count === 1 ? '' : 's'}`}
+              {loading
+                ? '...'
+                : count === 0
+                  ? emptyMsg
+                  : `${count} item${count === 1 ? '' : 's'}`}
             </p>
           </div>
         </div>
@@ -166,7 +170,9 @@ export function NutriAlerts() {
               to="/visitas"
               className="flex items-center justify-between gap-2 rounded px-2 py-1 text-xs hover:bg-neutral-50"
             >
-              <span className="truncate text-neutral-700">{c.company_name}</span>
+              <span className="truncate text-neutral-700">
+                {c.company_name}
+              </span>
               <span className="shrink-0 text-neutral-400">
                 {c.last_audit_at
                   ? `há ${daysAgo(c.last_audit_at)}d`

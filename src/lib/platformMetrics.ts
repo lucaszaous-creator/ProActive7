@@ -46,7 +46,8 @@ export function summarize(rows: OrgMetricsRow[]): PlatformSummary {
       orgsInRisk += 1;
       continue;
     }
-    const days = (now - new Date(r.last_login_at).getTime()) / (1000 * 60 * 60 * 24);
+    const days =
+      (now - new Date(r.last_login_at).getTime()) / (1000 * 60 * 60 * 24);
     if (days > RISK_DAYS) orgsInRisk += 1;
   }
   return {

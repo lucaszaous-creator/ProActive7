@@ -56,8 +56,8 @@ function Hero() {
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-[#1A2A22]/70">
             Etiquetas, auditorias, manipuladores e POPs em conformidade com a
-            RDC 216 da ANVISA — em um sistema que cabe na rotina do
-            consultório e das suas unidades clientes.
+            RDC 216 da ANVISA — em um sistema que cabe na rotina do consultório
+            e das suas unidades clientes.
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
@@ -216,9 +216,9 @@ function FeatureAudits() {
             A visita técnica vira plano de ação automaticamente.
           </h3>
           <p className="mt-4 text-base leading-relaxed text-[#1A2A22]/70">
-            Use o template da RDC 216 ou monte o seu. Tire foto do não
-            conforme, classifique a gravidade e o sistema gera o relatório
-            assinado e o cronograma de correção para a unidade.
+            Use o template da RDC 216 ou monte o seu. Tire foto do não conforme,
+            classifique a gravidade e o sistema gera o relatório assinado e o
+            cronograma de correção para a unidade.
           </p>
           <FeatureBullets
             items={[
@@ -249,8 +249,8 @@ function FeatureMonitoring() {
           <p className="mt-4 text-base leading-relaxed text-[#1A2A22]/70">
             A equipe registra leituras pelo celular, você acompanha do
             consultório. ASO vencendo, treinamento atrasado ou dedetização
-            próxima do prazo chegam como notificação antes do problema
-            virar autuação.
+            próxima do prazo chegam como notificação antes do problema virar
+            autuação.
           </p>
           <FeatureBullets
             items={[
@@ -287,9 +287,9 @@ function ForNutritionists() {
             Adicione uma nova fonte de receita recorrente à sua consultoria.
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/80">
-            No ProActive7, cada nutricionista tem sua organização privada —
-            com seus restaurantes, sua marca, seus usuários. Você cobra do
-            seu cliente como achar melhor; a plataforma fica nos bastidores
+            No ProActive7, cada nutricionista tem sua organização privada — com
+            seus restaurantes, sua marca, seus usuários. Você cobra do seu
+            cliente como achar melhor; a plataforma fica nos bastidores
             entregando o trabalho técnico no automático.
           </p>
         </div>
@@ -298,20 +298,17 @@ function ForNutritionists() {
             {
               n: '01',
               title: 'Sua carteira, isolada',
-              body:
-                'Cada unidade que você atende fica visível só para você e para a equipe dela.',
+              body: 'Cada unidade que você atende fica visível só para você e para a equipe dela.',
             },
             {
               n: '02',
               title: 'Pronto para vender',
-              body:
-                'Você cobra o que faz sentido — a plataforma vem com tudo configurado.',
+              body: 'Você cobra o que faz sentido — a plataforma vem com tudo configurado.',
             },
             {
               n: '03',
               title: 'Marca da consultoria',
-              body:
-                'Etiquetas, página pública e relatórios saem com a identidade da sua unidade.',
+              body: 'Etiquetas, página pública e relatórios saem com a identidade da sua unidade.',
             },
           ].map((card) => (
             <div
@@ -505,7 +502,7 @@ function MockupDashboard() {
           </div>
         </div>
         <span className="rounded-full bg-[#E8F1EA] px-2.5 py-1 text-[10px] font-medium text-[#2F5D3F]">
-          ●  Online
+          ● Online
         </span>
       </div>
       <div className="grid grid-cols-3 gap-2.5">
@@ -688,8 +685,8 @@ function MockupAudit() {
         ))}
       </div>
       <div className="mt-3 rounded-lg bg-[#E8F1EA]/70 px-3 py-2 text-[11px] text-[#2F5D3F]">
-        <strong>2 não conformidades</strong> gerarão tarefas com prazo de 7
-        dias para a unidade.
+        <strong>2 não conformidades</strong> gerarão tarefas com prazo de 7 dias
+        para a unidade.
       </div>
     </MockWindow>
   );
@@ -710,13 +707,20 @@ function MockupMonitoring() {
         {[
           { k: 'Câmara fria 01', v: '4 °C', ok: true, sub: 'Marina · 09:02' },
           { k: 'Freezer 02', v: '-18 °C', ok: true, sub: 'João · 08:55' },
-          { k: 'Estufa banho-maria', v: '62 °C', ok: false, sub: 'Limite 65°C' },
+          {
+            k: 'Estufa banho-maria',
+            v: '62 °C',
+            ok: false,
+            sub: 'Limite 65°C',
+          },
           { k: 'Câmara fria 02', v: '5 °C', ok: true, sub: 'Marina · 09:05' },
         ].map((r) => (
           <div
             key={r.k}
             className={`rounded-xl border p-3 ${
-              r.ok ? 'border-[#E8F1EA] bg-[#FAFAF7]' : 'border-[#F2C9B8] bg-[#FBE9E0]/40'
+              r.ok
+                ? 'border-[#E8F1EA] bg-[#FAFAF7]'
+                : 'border-[#F2C9B8] bg-[#FBE9E0]/40'
             }`}
           >
             <div className="text-[10px] uppercase tracking-wider text-[#1A2A22]/55">

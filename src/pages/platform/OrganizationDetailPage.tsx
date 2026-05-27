@@ -39,12 +39,17 @@ export function OrganizationDetailPage() {
   async function handleExport() {
     if (!org) return;
     setExporting(true);
-    const { data, error } = await supabase.functions.invoke('admin-export-org', {
-      body: { organization_id: org.id },
-    });
+    const { data, error } = await supabase.functions.invoke(
+      'admin-export-org',
+      {
+        body: { organization_id: org.id },
+      },
+    );
     setExporting(false);
     if (error || !data?.dump) {
-      toast.error('Erro ao exportar: ' + (error?.message ?? data?.error ?? '?'));
+      toast.error(
+        'Erro ao exportar: ' + (error?.message ?? data?.error ?? '?'),
+      );
       return;
     }
     const blob = new Blob([JSON.stringify(data.dump, null, 2)], {
@@ -61,9 +66,12 @@ export function OrganizationDetailPage() {
 
   async function handleImpersonate(targetId: string, targetName: string) {
     setImpersonating(targetId);
-    const { data, error } = await supabase.functions.invoke('admin-impersonate', {
-      body: { target_user_id: targetId },
-    });
+    const { data, error } = await supabase.functions.invoke(
+      'admin-impersonate',
+      {
+        body: { target_user_id: targetId },
+      },
+    );
     setImpersonating(null);
     if (error || !data?.action_link) {
       toast.error('Erro: ' + (error?.message ?? data?.error ?? 'desconhecido'));
@@ -81,7 +89,11 @@ export function OrganizationDetailPage() {
     }
     setPushing(true);
     const { data, error } = await supabase.functions.invoke('admin-push-org', {
-      body: { organization_id: org.id, title: pushTitle.trim(), body: pushBody.trim() },
+      body: {
+        organization_id: org.id,
+        title: pushTitle.trim(),
+        body: pushBody.trim(),
+      },
     });
     setPushing(false);
     if (error) {
@@ -100,11 +112,7 @@ export function OrganizationDetailPage() {
     async function fetchAll() {
       setLoading(true);
       const [orgRes, companiesRes, usersRes] = await Promise.all([
-        supabase
-          .from('organizations')
-          .select('*')
-          .eq('id', id!)
-          .maybeSingle(),
+        supabase.from('organizations').select('*').eq('id', id!).maybeSingle(),
         supabase
           .from('companies')
           .select('*')
@@ -113,7 +121,9 @@ export function OrganizationDetailPage() {
           .order('name'),
         supabase
           .from('profiles')
-          .select('id, full_name, email, role, active, company_id, companies(name)')
+          .select(
+            'id, full_name, email, role, active, company_id, companies(name)',
+          )
           .eq('organization_id', id!)
           .order('full_name'),
       ]);
@@ -156,7 +166,9 @@ export function OrganizationDetailPage() {
     }
     setOrg({ ...org, status: newStatus });
     toast.success(
-      newStatus === 'active' ? 'Organização reativada.' : 'Organização suspensa.',
+      newStatus === 'active'
+        ? 'Organização reativada.'
+        : 'Organização suspensa.',
     );
   }
 
@@ -395,7 +407,12 @@ export function OrganizationDetailPage() {
                       </td>
                       <td className="px-4 py-3 text-right">
                         <button
-                          onClick={() => void handleImpersonate(u.id, u.full_name ?? u.email ?? 'usuário')}
+                          onClick={() =>
+                            void handleImpersonate(
+                              u.id,
+                              u.full_name ?? u.email ?? 'usuário',
+                            )
+                          }
                           disabled={impersonating === u.id || !u.active}
                           className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2 py-1 text-xs text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
                           title="Abrir sessão como este usuário"

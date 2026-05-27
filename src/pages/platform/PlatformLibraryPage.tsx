@@ -41,12 +41,14 @@ export function PlatformLibraryPage() {
       toast.error('Erro ao carregar: ' + error.message);
       return;
     }
-    const mapped = ((data ?? []) as Array<Record<string, unknown>>).map((d) => ({
-      id: d.id as string,
-      name: d.name as string,
-      company_id: d.company_id as string | null,
-      is_flag: Boolean(d[flagColumn]),
-    }));
+    const mapped = ((data ?? []) as Array<Record<string, unknown>>).map(
+      (d) => ({
+        id: d.id as string,
+        name: d.name as string,
+        company_id: d.company_id as string | null,
+        is_flag: Boolean(d[flagColumn]),
+      }),
+    );
     setRows(mapped);
   }, [table, flagColumn]);
 
@@ -62,7 +64,10 @@ export function PlatformLibraryPage() {
       // catálogo da plataforma).
       update.company_id = null;
     }
-    const { error } = await supabase.from(table).update(update).eq('id', row.id);
+    const { error } = await supabase
+      .from(table)
+      .update(update)
+      .eq('id', row.id);
     setToggling(null);
     if (error) {
       toast.error('Erro ao atualizar: ' + error.message);

@@ -30,15 +30,13 @@ export function AnnouncementBanner() {
 
   useEffect(() => {
     let mounted = true;
-    void supabase
-      .rpc('get_active_announcement')
-      .then(({ data, error }) => {
-        if (!mounted || error || !data || data.length === 0) return;
-        const a = data[0] as Announcement;
-        const dismissed = localStorage.getItem(DISMISSED_KEY);
-        if (dismissed === a.id) return;
-        setAnnouncement(a);
-      });
+    void supabase.rpc('get_active_announcement').then(({ data, error }) => {
+      if (!mounted || error || !data || data.length === 0) return;
+      const a = data[0] as Announcement;
+      const dismissed = localStorage.getItem(DISMISSED_KEY);
+      if (dismissed === a.id) return;
+      setAnnouncement(a);
+    });
     return () => {
       mounted = false;
     };

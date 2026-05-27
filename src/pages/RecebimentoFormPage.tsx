@@ -150,7 +150,11 @@ export function RecebimentoFormPage() {
         if (!rule || !manufactureStr) return it;
         const base = new Date(manufactureStr + 'T00:00:00');
         if (Number.isNaN(base.getTime())) return it;
-        const exp = computeExpiry(base, rule.validity_value, rule.validity_unit);
+        const exp = computeExpiry(
+          base,
+          rule.validity_value,
+          rule.validity_unit,
+        );
         const y = exp.getFullYear();
         const m = String(exp.getMonth() + 1).padStart(2, '0');
         const d = String(exp.getDate()).padStart(2, '0');
@@ -224,7 +228,9 @@ export function RecebimentoFormPage() {
       return;
     }
     const sup = data as Supplier;
-    setSuppliers((prev) => [...prev, sup].sort((a, b) => a.name.localeCompare(b.name)));
+    setSuppliers((prev) =>
+      [...prev, sup].sort((a, b) => a.name.localeCompare(b.name)),
+    );
     setSupplierId(sup.id);
     setNewSupOpen(false);
     setNewSupName('');
@@ -298,7 +304,9 @@ export function RecebimentoFormPage() {
         expiry_date: it.expiry_date || null,
         storage_condition: it.storage_condition || null,
         rejected: it.rejected,
-        rejection_reason: it.rejected ? it.rejection_reason.trim() || null : null,
+        rejection_reason: it.rejected
+          ? it.rejection_reason.trim() || null
+          : null,
       }));
       const { error: itemsErr } = await supabase
         .from('receiving_items')
@@ -553,13 +561,17 @@ export function RecebimentoFormPage() {
                         }
                       >
                         <option value="">—</option>
-                        {(['ambiente', 'refrigerado', 'congelado'] as StorageCondition[]).map(
-                          (c) => (
-                            <option key={c} value={c}>
-                              {STORAGE_CONDITION_LABELS[c]}
-                            </option>
-                          ),
-                        )}
+                        {(
+                          [
+                            'ambiente',
+                            'refrigerado',
+                            'congelado',
+                          ] as StorageCondition[]
+                        ).map((c) => (
+                          <option key={c} value={c}>
+                            {STORAGE_CONDITION_LABELS[c]}
+                          </option>
+                        ))}
                       </Select>
                       <Input
                         id={`mfg-${it.key}`}
@@ -573,8 +585,7 @@ export function RecebimentoFormPage() {
                       <Input
                         id={`exp-${it.key}`}
                         label={
-                          'Validade' +
-                          (product && hasRule ? ' (auto)' : '')
+                          'Validade' + (product && hasRule ? ' (auto)' : '')
                         }
                         type="date"
                         value={it.expiry_date}

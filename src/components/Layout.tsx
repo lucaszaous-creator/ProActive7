@@ -65,40 +65,210 @@ type NavGroupDef = {
 type NavNode = NavItemDef | NavGroupDef;
 
 const ITEM = {
-  inicio: { kind: 'item', to: '/painel', labelKey: 'nav.start', icon: LayoutDashboard } as NavItemDef,
-  carteira: { kind: 'item', to: '/painel', labelKey: 'nav.carteira', icon: Briefcase } as NavItemDef,
-  imprimir: { kind: 'item', to: '/imprimir', labelKey: 'nav.printLabel', icon: Printer } as NavItemDef,
-  validades: { kind: 'item', to: '/validades', labelKey: 'nav.validades', icon: CalendarClock } as NavItemDef,
-  producao: { kind: 'item', to: '/producao', labelKey: 'nav.producao', icon: ChefHat } as NavItemDef,
-  contagem: { kind: 'item', to: '/contagem', labelKey: 'nav.contagem', icon: BarChart3 } as NavItemDef,
-  controlados: { kind: 'item', to: '/controlados', labelKey: 'nav.controlados', icon: ShieldAlert } as NavItemDef,
-  recebimentos: { kind: 'item', to: '/recebimentos', labelKey: 'nav.receivings', icon: PackagePlus } as NavItemDef,
-  estoque: { kind: 'item', to: '/estoque', labelKey: 'nav.stock', icon: Boxes } as NavItemDef,
-  relatorios: { kind: 'item', to: '/relatorios', labelKey: 'nav.reports', icon: BarChart3 } as NavItemDef,
-  produtos: { kind: 'item', to: '/produtos', labelKey: 'nav.products', icon: Package } as NavItemDef,
-  grupos: { kind: 'item', to: '/cadastros/grupos', labelKey: 'nav.groups', icon: Tag } as NavItemDef,
-  funcionarios: { kind: 'item', to: '/manipuladores', labelKey: 'nav.funcionarios', icon: HardHat } as NavItemDef,
-  manipuladores: { kind: 'item', to: '/manipuladores', labelKey: 'nav.manipulators', icon: HardHat } as NavItemDef,
-  fornecedores: { kind: 'item', to: '/fornecedores', labelKey: 'nav.suppliers', icon: Truck } as NavItemDef,
-  fichasTecnicas: { kind: 'item', to: '/fichas-tecnicas', labelKey: 'nav.recipes', icon: ChefHat } as NavItemDef,
-  visitas: { kind: 'item', to: '/visitas', labelKey: 'nav.audits', icon: ShieldCheck } as NavItemDef,
-  ncs: { kind: 'item', to: '/nao-conformidades', labelKey: 'nav.nonConformities', icon: AlertOctagon } as NavItemDef,
-  checklists: { kind: 'item', to: '/checklists', labelKey: 'nav.checklists', icon: ClipboardCheck } as NavItemDef,
-  temperatura: { kind: 'item', to: '/temperatura', labelKey: 'nav.temperature', icon: Thermometer } as NavItemDef,
-  pragas: { kind: 'item', to: '/controle-pragas', labelKey: 'nav.pestControl', icon: Bug } as NavItemDef,
-  documentos: { kind: 'item', to: '/documentos', labelKey: 'nav.documents', icon: FileText } as NavItemDef,
-  fotos: { kind: 'item', to: '/fotos', labelKey: 'nav.photos', icon: Images } as NavItemDef,
-  agenda: { kind: 'item', to: '/agenda', labelKey: 'nav.agenda', icon: CalendarRange } as NavItemDef,
-  empresas: { kind: 'item', to: '/admin/empresas', labelKey: 'nav.companies', icon: Building2 } as NavItemDef,
-  usuarios: { kind: 'item', to: '/admin/usuarios', labelKey: 'nav.users', icon: Users } as NavItemDef,
-  hardware: { kind: 'item', to: '/admin/hardware', labelKey: 'nav.hardware', icon: Printer } as NavItemDef,
-  trilha: { kind: 'item', to: '/admin/trilha', labelKey: 'nav.auditLog', icon: Activity } as NavItemDef,
-  lixeira: { kind: 'item', to: '/admin/lixeira', labelKey: 'nav.trash', icon: Trash2 } as NavItemDef,
-  platformControl: { kind: 'item', to: '/platform/centro', labelKey: 'nav.platformControl', icon: Gauge } as NavItemDef,
-  platformDash: { kind: 'item', to: '/platform/dashboard', labelKey: 'nav.platformDashboard', icon: LineChart } as NavItemDef,
-  orgs: { kind: 'item', to: '/platform/organizacoes', labelKey: 'nav.organizations', icon: Network } as NavItemDef,
-  biblioteca: { kind: 'item', to: '/platform/biblioteca', labelKey: 'nav.library', icon: BookOpen } as NavItemDef,
-  comunicados: { kind: 'item', to: '/platform/comunicados', labelKey: 'nav.announcements', icon: Megaphone } as NavItemDef,
+  inicio: {
+    kind: 'item',
+    to: '/painel',
+    labelKey: 'nav.start',
+    icon: LayoutDashboard,
+  } as NavItemDef,
+  carteira: {
+    kind: 'item',
+    to: '/painel',
+    labelKey: 'nav.carteira',
+    icon: Briefcase,
+  } as NavItemDef,
+  imprimir: {
+    kind: 'item',
+    to: '/imprimir',
+    labelKey: 'nav.printLabel',
+    icon: Printer,
+  } as NavItemDef,
+  validades: {
+    kind: 'item',
+    to: '/validades',
+    labelKey: 'nav.validades',
+    icon: CalendarClock,
+  } as NavItemDef,
+  producao: {
+    kind: 'item',
+    to: '/producao',
+    labelKey: 'nav.producao',
+    icon: ChefHat,
+  } as NavItemDef,
+  contagem: {
+    kind: 'item',
+    to: '/contagem',
+    labelKey: 'nav.contagem',
+    icon: BarChart3,
+  } as NavItemDef,
+  controlados: {
+    kind: 'item',
+    to: '/controlados',
+    labelKey: 'nav.controlados',
+    icon: ShieldAlert,
+  } as NavItemDef,
+  recebimentos: {
+    kind: 'item',
+    to: '/recebimentos',
+    labelKey: 'nav.receivings',
+    icon: PackagePlus,
+  } as NavItemDef,
+  estoque: {
+    kind: 'item',
+    to: '/estoque',
+    labelKey: 'nav.stock',
+    icon: Boxes,
+  } as NavItemDef,
+  relatorios: {
+    kind: 'item',
+    to: '/relatorios',
+    labelKey: 'nav.reports',
+    icon: BarChart3,
+  } as NavItemDef,
+  produtos: {
+    kind: 'item',
+    to: '/produtos',
+    labelKey: 'nav.products',
+    icon: Package,
+  } as NavItemDef,
+  grupos: {
+    kind: 'item',
+    to: '/cadastros/grupos',
+    labelKey: 'nav.groups',
+    icon: Tag,
+  } as NavItemDef,
+  funcionarios: {
+    kind: 'item',
+    to: '/manipuladores',
+    labelKey: 'nav.funcionarios',
+    icon: HardHat,
+  } as NavItemDef,
+  manipuladores: {
+    kind: 'item',
+    to: '/manipuladores',
+    labelKey: 'nav.manipulators',
+    icon: HardHat,
+  } as NavItemDef,
+  fornecedores: {
+    kind: 'item',
+    to: '/fornecedores',
+    labelKey: 'nav.suppliers',
+    icon: Truck,
+  } as NavItemDef,
+  fichasTecnicas: {
+    kind: 'item',
+    to: '/fichas-tecnicas',
+    labelKey: 'nav.recipes',
+    icon: ChefHat,
+  } as NavItemDef,
+  visitas: {
+    kind: 'item',
+    to: '/visitas',
+    labelKey: 'nav.audits',
+    icon: ShieldCheck,
+  } as NavItemDef,
+  ncs: {
+    kind: 'item',
+    to: '/nao-conformidades',
+    labelKey: 'nav.nonConformities',
+    icon: AlertOctagon,
+  } as NavItemDef,
+  checklists: {
+    kind: 'item',
+    to: '/checklists',
+    labelKey: 'nav.checklists',
+    icon: ClipboardCheck,
+  } as NavItemDef,
+  temperatura: {
+    kind: 'item',
+    to: '/temperatura',
+    labelKey: 'nav.temperature',
+    icon: Thermometer,
+  } as NavItemDef,
+  pragas: {
+    kind: 'item',
+    to: '/controle-pragas',
+    labelKey: 'nav.pestControl',
+    icon: Bug,
+  } as NavItemDef,
+  documentos: {
+    kind: 'item',
+    to: '/documentos',
+    labelKey: 'nav.documents',
+    icon: FileText,
+  } as NavItemDef,
+  fotos: {
+    kind: 'item',
+    to: '/fotos',
+    labelKey: 'nav.photos',
+    icon: Images,
+  } as NavItemDef,
+  agenda: {
+    kind: 'item',
+    to: '/agenda',
+    labelKey: 'nav.agenda',
+    icon: CalendarRange,
+  } as NavItemDef,
+  empresas: {
+    kind: 'item',
+    to: '/admin/empresas',
+    labelKey: 'nav.companies',
+    icon: Building2,
+  } as NavItemDef,
+  usuarios: {
+    kind: 'item',
+    to: '/admin/usuarios',
+    labelKey: 'nav.users',
+    icon: Users,
+  } as NavItemDef,
+  hardware: {
+    kind: 'item',
+    to: '/admin/hardware',
+    labelKey: 'nav.hardware',
+    icon: Printer,
+  } as NavItemDef,
+  trilha: {
+    kind: 'item',
+    to: '/admin/trilha',
+    labelKey: 'nav.auditLog',
+    icon: Activity,
+  } as NavItemDef,
+  lixeira: {
+    kind: 'item',
+    to: '/admin/lixeira',
+    labelKey: 'nav.trash',
+    icon: Trash2,
+  } as NavItemDef,
+  platformControl: {
+    kind: 'item',
+    to: '/platform/centro',
+    labelKey: 'nav.platformControl',
+    icon: Gauge,
+  } as NavItemDef,
+  platformDash: {
+    kind: 'item',
+    to: '/platform/dashboard',
+    labelKey: 'nav.platformDashboard',
+    icon: LineChart,
+  } as NavItemDef,
+  orgs: {
+    kind: 'item',
+    to: '/platform/organizacoes',
+    labelKey: 'nav.organizations',
+    icon: Network,
+  } as NavItemDef,
+  biblioteca: {
+    kind: 'item',
+    to: '/platform/biblioteca',
+    labelKey: 'nav.library',
+    icon: BookOpen,
+  } as NavItemDef,
+  comunicados: {
+    kind: 'item',
+    to: '/platform/comunicados',
+    labelKey: 'nav.announcements',
+    icon: Megaphone,
+  } as NavItemDef,
 };
 
 const NAV_PROPERTY: NavNode[] = [
@@ -116,7 +286,13 @@ const NAV_PROPERTY: NavNode[] = [
     labelKey: 'nav.cadastros',
     icon: Package,
     defaultOpen: true,
-    children: [ITEM.produtos, ITEM.grupos, ITEM.funcionarios, ITEM.fornecedores, ITEM.fichasTecnicas],
+    children: [
+      ITEM.produtos,
+      ITEM.grupos,
+      ITEM.funcionarios,
+      ITEM.fornecedores,
+      ITEM.fichasTecnicas,
+    ],
   },
   {
     kind: 'group',
@@ -228,7 +404,13 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
     labelKey: 'nav.cadastros',
     icon: Package,
     defaultOpen: false,
-    children: [ITEM.produtos, ITEM.grupos, ITEM.manipuladores, ITEM.fornecedores, ITEM.fichasTecnicas],
+    children: [
+      ITEM.produtos,
+      ITEM.grupos,
+      ITEM.manipuladores,
+      ITEM.fornecedores,
+      ITEM.fichasTecnicas,
+    ],
   },
   {
     kind: 'group',
@@ -312,7 +494,11 @@ function NavGroup({
       {open && (
         <div className="ml-4 mt-1 border-l border-neutral-200 pl-2 dark:border-neutral-800">
           {group.children.map((child) => (
-            <NavItem key={child.to + child.labelKey} item={child} onClick={onItemClick} />
+            <NavItem
+              key={child.to + child.labelKey}
+              item={child}
+              onClick={onItemClick}
+            />
           ))}
         </div>
       )}

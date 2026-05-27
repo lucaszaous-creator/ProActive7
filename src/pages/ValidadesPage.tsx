@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { CalendarClock, AlertTriangle, Snowflake, ThermometerSnowflake } from 'lucide-react';
+import {
+  CalendarClock,
+  AlertTriangle,
+  Snowflake,
+  ThermometerSnowflake,
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
@@ -18,7 +23,10 @@ import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
-function bucketOf(expiry: Date, now: Date): 'today' | 'tomorrow' | 'week' | 'later' {
+function bucketOf(
+  expiry: Date,
+  now: Date,
+): 'today' | 'tomorrow' | 'week' | 'later' {
   const startToday = new Date(now);
   startToday.setHours(0, 0, 0, 0);
   const startTomorrow = new Date(startToday);
@@ -147,8 +155,8 @@ export function ValidadesPage() {
             Validades
           </h1>
           <p className="text-sm text-neutral-500">
-            Etiquetas vivas, ordenadas por quem vence primeiro. Use para
-            evitar servir vencido e reduzir desperdício.
+            Etiquetas vivas, ordenadas por quem vence primeiro. Use para evitar
+            servir vencido e reduzir desperdício.
           </p>
         </div>
       </div>
@@ -178,7 +186,9 @@ export function ValidadesPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">Nenhuma empresa cadastrada.</p>
+          <p className="text-sm text-neutral-600">
+            Nenhuma empresa cadastrada.
+          </p>
         </Card>
       ) : loading ? (
         <div className="flex justify-center py-16">
@@ -246,7 +256,11 @@ export function ValidadesPage() {
                           ) : (
                             <AlertTriangle size={12} />
                           )}
-                          {STORAGE_CONDITION_LABELS[l.storage_condition as StorageCondition]}
+                          {
+                            STORAGE_CONDITION_LABELS[
+                              l.storage_condition as StorageCondition
+                            ]
+                          }
                           {l.batch ? ` · lote ${l.batch}` : ''}
                         </p>
                         <p className="mt-1 text-xs text-neutral-400">

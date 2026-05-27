@@ -11,7 +11,8 @@ interface Post {
 
 const POSTS: Post[] = [
   {
-    title: 'Um erro comum na cozinha que pode contaminar alimentos sem ninguém perceber',
+    title:
+      'Um erro comum na cozinha que pode contaminar alimentos sem ninguém perceber',
     body: 'Muitos problemas não acontecem por grandes falhas. Acontecem por pequenos hábitos repetidos todos os dias — exatamente nos detalhes que parecem "simples". É por isso que processo, treinamento e organização fazem tanta diferença na operação.',
     tags: ['SegurançaAlimentar', 'FoodServiceBrasil', 'BoasPraticas'],
     date: '4 dias atrás',

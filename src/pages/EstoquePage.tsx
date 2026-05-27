@@ -82,7 +82,9 @@ export function EstoquePage() {
         .eq('company_id', companyId),
       supabase
         .from('products')
-        .select('id, name, category, default_storage_condition, active, allergens, is_seed, created_by, created_at, updated_at, company_id')
+        .select(
+          'id, name, category, default_storage_condition, active, allergens, is_seed, created_by, created_at, updated_at, company_id',
+        )
         .eq('company_id', companyId)
         .eq('active', true)
         .order('name'),
@@ -192,8 +194,7 @@ export function EstoquePage() {
     }
     // saldo atual
     const current = rows.find(
-      (r) =>
-        r.product_id === exitForm.product_id && r.batch === exitForm.batch,
+      (r) => r.product_id === exitForm.product_id && r.batch === exitForm.batch,
     );
     if (current && qty > current.balance) {
       toast.error(
@@ -243,7 +244,10 @@ export function EstoquePage() {
               Movimentações
             </Button>
           </Link>
-          <Button onClick={() => openExit()} disabled={!companyId || rows.length === 0}>
+          <Button
+            onClick={() => openExit()}
+            disabled={!companyId || rows.length === 0}
+          >
             <Minus size={18} />
             Registrar saída
           </Button>
@@ -363,7 +367,8 @@ export function EstoquePage() {
                             {formatDate(r.oldest_expiry)}
                             {days !== null && (
                               <span className="text-xs text-neutral-400">
-                                ({expired ? `vencido há ${-days}d` : `${days}d`})
+                                ({expired ? `vencido há ${-days}d` : `${days}d`}
+                                )
                               </span>
                             )}
                           </span>
@@ -434,7 +439,9 @@ export function EstoquePage() {
               .map((r) => (
                 <option key={r.batch} value={r.batch}>
                   {r.batch} — saldo {r.balance} {r.unit}
-                  {r.oldest_expiry ? ` · vence ${formatDate(r.oldest_expiry)}` : ''}
+                  {r.oldest_expiry
+                    ? ` · vence ${formatDate(r.oldest_expiry)}`
+                    : ''}
                 </option>
               ))}
           </Select>

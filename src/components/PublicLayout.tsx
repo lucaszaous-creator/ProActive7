@@ -40,10 +40,7 @@ export function PublicLayout() {
       {/* Drawer fica FORA do header. O header tem backdrop-blur, que cria um
           containing block para descendentes 'fixed' — colocando o drawer
           aqui ele se posiciona em relacao ao viewport, nao a barra. */}
-      <MobileDrawer
-        open={mobileOpen}
-        onClose={() => setMobileOpen(false)}
-      />
+      <MobileDrawer open={mobileOpen} onClose={() => setMobileOpen(false)} />
 
       <main className="flex-1">
         <Outlet />
@@ -74,7 +71,12 @@ function PublicNav({ onOpenMenu }: { onOpenMenu: () => void }) {
         {/* Desktop nav */}
         <nav className="hidden items-center gap-6 lg:flex">
           {NAV_ITEMS.map((it) => (
-            <NavLink key={it.to} to={it.to} end={it.to === '/'} className={linkCls}>
+            <NavLink
+              key={it.to}
+              to={it.to}
+              end={it.to === '/'}
+              className={linkCls}
+            >
               {it.label}
             </NavLink>
           ))}
@@ -291,7 +293,10 @@ function PublicFooter() {
       </div>
       <div className="border-t border-[#E8F1EA]">
         <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-2 px-5 py-5 text-xs text-[#1A2A22]/50 md:flex-row md:items-center">
-          <span>© {new Date().getFullYear()} ProActive7 · Todos os direitos reservados</span>
+          <span>
+            © {new Date().getFullYear()} ProActive7 · Todos os direitos
+            reservados
+          </span>
           <span>Consultoria nutricional e segurança alimentar</span>
         </div>
       </div>

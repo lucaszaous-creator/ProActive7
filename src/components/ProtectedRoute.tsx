@@ -46,7 +46,15 @@ export function ProtectedRoute({
   platformAdminOnly?: boolean;
   nutritionistOrAdmin?: boolean;
 }) {
-  const { session, profile, loading, profileLoading, isPlatformAdmin, isNutritionist, signOut } = useAuth();
+  const {
+    session,
+    profile,
+    loading,
+    profileLoading,
+    isPlatformAdmin,
+    isNutritionist,
+    signOut,
+  } = useAuth();
 
   if (loading) return <FullPageSpinner />;
   if (!session) return <Navigate to="/login" replace />;
@@ -56,8 +64,10 @@ export function ProtectedRoute({
   if (profileLoading && !profile) return <FullPageSpinner />;
   if (!profile) return <ProfileMissing onSignOut={signOut} />;
   if (!profile.active) return <ProfileInactive onSignOut={signOut} />;
-  if ((masterOnly || platformAdminOnly) && !isPlatformAdmin) return <Navigate to="/painel" replace />;
-  if (nutritionistOrAdmin && !isPlatformAdmin && !isNutritionist) return <Navigate to="/painel" replace />;
+  if ((masterOnly || platformAdminOnly) && !isPlatformAdmin)
+    return <Navigate to="/painel" replace />;
+  if (nutritionistOrAdmin && !isPlatformAdmin && !isNutritionist)
+    return <Navigate to="/painel" replace />;
 
   return <Outlet />;
 }

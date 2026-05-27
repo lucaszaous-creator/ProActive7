@@ -20,7 +20,10 @@ interface ProfileRow {
   active: boolean;
   company_id: string | null;
   organization_id: string | null;
-  companies: { name: string; organizations: { name: string | null } | null } | null;
+  companies: {
+    name: string;
+    organizations: { name: string | null } | null;
+  } | null;
   organizations: { name: string | null } | null;
 }
 
@@ -34,7 +37,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function UsersPage() {
-  const { profile: callerProfile, isPlatformAdmin, isNutritionist } = useAuth();
+  const { profile: callerProfile, isPlatformAdmin } = useAuth();
 
   // Available roles based on caller's own role
   const availableRoles: UserRole[] = isPlatformAdmin
@@ -152,7 +155,9 @@ export function UsersPage() {
       return;
     }
     if (role === 'nutritionist' && !isPlatformAdmin) {
-      toast.error('Apenas administradores da plataforma podem criar nutricionistas.');
+      toast.error(
+        'Apenas administradores da plataforma podem criar nutricionistas.',
+      );
       return;
     }
 
@@ -240,108 +245,108 @@ export function UsersPage() {
         </Card>
       ) : (
         <>
-        <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
-          <Search size={16} className="shrink-0 text-neutral-400" />
-          <input
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar por nome, e-mail, empresa ou organização..."
-            className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400"
-          />
-          {search ? (
-            <button
-              type="button"
-              onClick={() => setSearch('')}
-              aria-label="Limpar busca"
-              className="rounded p-1 text-neutral-400 hover:bg-neutral-100"
-            >
-              <X size={14} />
-            </button>
-          ) : null}
-        </div>
-        <Card className="!p-0">
-          <div className="w-full overflow-x-auto">
-            <table className="w-full min-w-[680px] text-sm">
-              <thead>
-                <tr className="border-b border-neutral-200 text-left text-xs uppercase text-neutral-500">
-                  <th className="px-4 py-3">Nome</th>
-                  <th className="px-4 py-3">E-mail</th>
-                  <th className="px-4 py-3">Perfil</th>
-                  <th className="px-4 py-3">Vínculo</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredUsers.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={6}
-                      className="px-4 py-8 text-center text-sm text-neutral-500"
-                    >
-                      Nenhum usuário encontrado para "{search}".
-                    </td>
-                  </tr>
-                ) : null}
-                {filteredUsers.map((u) => (
-                  <tr
-                    key={u.id}
-                    className="border-b border-neutral-100 last:border-0"
-                  >
-                    <td className="px-4 py-3 font-medium text-neutral-800">
-                      {u.full_name ?? '—'}
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600">
-                      {u.email ?? '—'}
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600">
-                      {ROLE_LABELS[u.role]}
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600">
-                      <UserLink user={u} />
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs ${
-                          u.active
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'bg-neutral-100 text-neutral-500'
-                        }`}
-                      >
-                        {u.active ? 'Ativo' : 'Inativo'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-1">
-                        <button
-                          onClick={() => openEdit(u)}
-                          aria-label="Editar"
-                          className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
-                        >
-                          <Pencil size={16} />
-                        </button>
-                        <button
-                          onClick={() => setDeleting(u)}
-                          aria-label="Excluir"
-                          disabled={u.id === callerProfile?.id}
-                          title={
-                            u.id === callerProfile?.id
-                              ? 'Você não pode excluir o próprio usuário'
-                              : 'Excluir'
-                          }
-                          className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
+            <Search size={16} className="shrink-0 text-neutral-400" />
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por nome, e-mail, empresa ou organização..."
+              className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400"
+            />
+            {search ? (
+              <button
+                type="button"
+                onClick={() => setSearch('')}
+                aria-label="Limpar busca"
+                className="rounded p-1 text-neutral-400 hover:bg-neutral-100"
+              >
+                <X size={14} />
+              </button>
+            ) : null}
           </div>
-        </Card>
+          <Card className="!p-0">
+            <div className="w-full overflow-x-auto">
+              <table className="w-full min-w-[680px] text-sm">
+                <thead>
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase text-neutral-500">
+                    <th className="px-4 py-3">Nome</th>
+                    <th className="px-4 py-3">E-mail</th>
+                    <th className="px-4 py-3">Perfil</th>
+                    <th className="px-4 py-3">Vínculo</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3 text-right">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="px-4 py-8 text-center text-sm text-neutral-500"
+                      >
+                        Nenhum usuário encontrado para "{search}".
+                      </td>
+                    </tr>
+                  ) : null}
+                  {filteredUsers.map((u) => (
+                    <tr
+                      key={u.id}
+                      className="border-b border-neutral-100 last:border-0"
+                    >
+                      <td className="px-4 py-3 font-medium text-neutral-800">
+                        {u.full_name ?? '—'}
+                      </td>
+                      <td className="px-4 py-3 text-neutral-600">
+                        {u.email ?? '—'}
+                      </td>
+                      <td className="px-4 py-3 text-neutral-600">
+                        {ROLE_LABELS[u.role]}
+                      </td>
+                      <td className="px-4 py-3 text-neutral-600">
+                        <UserLink user={u} />
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs ${
+                            u.active
+                              ? 'bg-emerald-50 text-emerald-700'
+                              : 'bg-neutral-100 text-neutral-500'
+                          }`}
+                        >
+                          {u.active ? 'Ativo' : 'Inativo'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex justify-end gap-1">
+                          <button
+                            onClick={() => openEdit(u)}
+                            aria-label="Editar"
+                            className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
+                          >
+                            <Pencil size={16} />
+                          </button>
+                          <button
+                            onClick={() => setDeleting(u)}
+                            aria-label="Excluir"
+                            disabled={u.id === callerProfile?.id}
+                            title={
+                              u.id === callerProfile?.id
+                                ? 'Você não pode excluir o próprio usuário'
+                                : 'Excluir'
+                            }
+                            className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
         </>
       )}
 
@@ -470,9 +475,7 @@ function UserLink({ user }: { user: ProfileRow }) {
       <div className="leading-tight">
         <div className="font-medium text-neutral-800">{empresa}</div>
         {org ? (
-          <div className="mt-0.5 text-xs text-neutral-500">
-            Org · {org}
-          </div>
+          <div className="mt-0.5 text-xs text-neutral-500">Org · {org}</div>
         ) : (
           <div className="mt-0.5 text-xs text-amber-600">
             Sem organização vinculada

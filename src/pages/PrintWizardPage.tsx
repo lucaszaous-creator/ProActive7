@@ -49,7 +49,9 @@ const LABEL_SIZES: LabelSize[] = [
 ];
 
 function applyPageStyle(w: number, h: number) {
-  let el = document.getElementById('print-page-style') as HTMLStyleElement | null;
+  let el = document.getElementById(
+    'print-page-style',
+  ) as HTMLStyleElement | null;
   if (!el) {
     el = document.createElement('style');
     el.id = 'print-page-style';
@@ -110,7 +112,14 @@ export function PrintWizardPage() {
 
   useEffect(() => {
     setLabelId(crypto.randomUUID());
-  }, [productId, condition, manipulationLocal, responsible, quantity, companyId]);
+  }, [
+    productId,
+    condition,
+    manipulationLocal,
+    responsible,
+    quantity,
+    companyId,
+  ]);
 
   const load = useCallback(async () => {
     if (!companyId) {
@@ -346,7 +355,9 @@ export function PrintWizardPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">Nenhuma empresa cadastrada.</p>
+          <p className="text-sm text-neutral-600">
+            Nenhuma empresa cadastrada.
+          </p>
         </Card>
       ) : loading ? (
         <div className="flex justify-center py-16">
@@ -509,7 +520,9 @@ function Step1({
               >
                 <span
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
-                    isSelected ? 'bg-emerald-600 text-white' : 'bg-neutral-100 text-neutral-500'
+                    isSelected
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-neutral-100 text-neutral-500'
                   }`}
                 >
                   <HardHat size={16} />
@@ -519,7 +532,9 @@ function Step1({
                     {m.full_name}
                   </p>
                   {m.role && (
-                    <p className="truncate text-xs text-neutral-500">{m.role}</p>
+                    <p className="truncate text-xs text-neutral-500">
+                      {m.role}
+                    </p>
                   )}
                 </div>
               </button>
@@ -586,8 +601,8 @@ function Step2({
       </div>
       {groups.length === 0 && (
         <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
-          Nenhum grupo cadastrado. Vá em Cadastros → Grupos para organizar
-          os produtos.
+          Nenhum grupo cadastrado. Vá em Cadastros → Grupos para organizar os
+          produtos.
         </p>
       )}
     </Card>
@@ -665,7 +680,9 @@ function Step3({
                       </p>
                     )}
                   </div>
-                  {isSelected && <Check size={16} className="text-emerald-600" />}
+                  {isSelected && (
+                    <Check size={16} className="text-emerald-600" />
+                  )}
                 </button>
               </li>
             );
@@ -710,7 +727,11 @@ function Step4({
   setDisplayQuantity: (s: string) => void;
   sizeId: string;
   setSizeId: (s: string) => void;
-  rule: { storage_condition: StorageCondition; validity_value: number; validity_unit: string } | null;
+  rule: {
+    storage_condition: StorageCondition;
+    validity_value: number;
+    validity_unit: string;
+  } | null;
   expiry: Date | null;
 }) {
   return (
@@ -744,8 +765,8 @@ function Step4({
         </Select>
         {!rule && (
           <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
-            Este produto não tem regra de validade cadastrada. Vá em
-            Cadastros → Produtos.
+            Este produto não tem regra de validade cadastrada. Vá em Cadastros →
+            Produtos.
           </p>
         )}
 
@@ -835,7 +856,11 @@ function Step5({
             <LabelPreview data={labelData} widthMm={size.w} heightMm={size.h} />
           </div>
         </div>
-        <Button onClick={onPrint} disabled={!canPrint} className="w-full sm:w-auto">
+        <Button
+          onClick={onPrint}
+          disabled={!canPrint}
+          className="w-full sm:w-auto"
+        >
           <Printer size={18} />
           Imprimir {quantity > 1 ? `${quantity} etiquetas` : 'etiqueta'}
         </Button>

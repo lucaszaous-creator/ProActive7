@@ -125,7 +125,9 @@ export function ProductsPage() {
       .eq('active', true)
       .order('sort_order')
       .order('name')
-      .then(({ data }) => setGroups((data as { id: string; name: string }[] | null) ?? []));
+      .then(({ data }) =>
+        setGroups((data as { id: string; name: string }[] | null) ?? []),
+      );
   }, []);
 
   function openCreate() {

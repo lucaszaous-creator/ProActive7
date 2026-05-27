@@ -51,14 +51,49 @@ const ACTIONS: {
   icon: LucideIcon;
   tone: 'emerald' | 'blue' | 'amber' | 'red' | 'neutral';
 }[] = [
-  { to: '/platform/organizacoes', label: 'Organizações', icon: Building2, tone: 'emerald' },
+  {
+    to: '/platform/organizacoes',
+    label: 'Organizações',
+    icon: Building2,
+    tone: 'emerald',
+  },
   { to: '/admin/usuarios', label: 'Usuários', icon: Users, tone: 'emerald' },
-  { to: '/platform/comunicados', label: 'Comunicados', icon: Megaphone, tone: 'blue' },
-  { to: '/platform/biblioteca', label: 'Biblioteca global', icon: BookOpen, tone: 'blue' },
-  { to: '/admin/empresas', label: 'Empresas', icon: Building2, tone: 'neutral' },
-  { to: '/admin/hardware', label: 'Hardware / Impressoras', icon: Printer, tone: 'neutral' },
-  { to: '/admin/trilha', label: 'Trilha de auditoria', icon: Activity, tone: 'neutral' },
-  { to: '/admin/lixeira', label: 'Restaurar da lixeira', icon: Trash2, tone: 'amber' },
+  {
+    to: '/platform/comunicados',
+    label: 'Comunicados',
+    icon: Megaphone,
+    tone: 'blue',
+  },
+  {
+    to: '/platform/biblioteca',
+    label: 'Biblioteca global',
+    icon: BookOpen,
+    tone: 'blue',
+  },
+  {
+    to: '/admin/empresas',
+    label: 'Empresas',
+    icon: Building2,
+    tone: 'neutral',
+  },
+  {
+    to: '/admin/hardware',
+    label: 'Hardware / Impressoras',
+    icon: Printer,
+    tone: 'neutral',
+  },
+  {
+    to: '/admin/trilha',
+    label: 'Trilha de auditoria',
+    icon: Activity,
+    tone: 'neutral',
+  },
+  {
+    to: '/admin/lixeira',
+    label: 'Restaurar da lixeira',
+    icon: Trash2,
+    tone: 'amber',
+  },
 ];
 
 const TONE_BG: Record<string, string> = {
@@ -74,7 +109,10 @@ const ISSUE_LEVEL_META: Record<
   { tone: string; icon: LucideIcon }
 > = {
   error: { tone: 'bg-red-50 text-red-700 border-red-200', icon: AlertOctagon },
-  warn: { tone: 'bg-amber-50 text-amber-700 border-amber-200', icon: AlertTriangle },
+  warn: {
+    tone: 'bg-amber-50 text-amber-700 border-amber-200',
+    icon: AlertTriangle,
+  },
   info: { tone: 'bg-blue-50 text-blue-700 border-blue-200', icon: Info },
 };
 
@@ -168,7 +206,9 @@ export function PlatformControlPage() {
             Saúde da plataforma, diagnóstico e atalhos de administrador.
           </p>
         </div>
-        <div className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${healthTone}`}>
+        <div
+          className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${healthTone}`}
+        >
           <HealthIcon size={18} />
           {healthLabel}
         </div>
@@ -247,7 +287,9 @@ export function PlatformControlPage() {
                       <div className="mb-2 flex items-center justify-between gap-2">
                         <div className="flex items-center gap-2">
                           <Icon size={16} />
-                          <span className="text-sm font-semibold">{i.title}</span>
+                          <span className="text-sm font-semibold">
+                            {i.title}
+                          </span>
                         </div>
                         <span className="rounded bg-white/60 px-2 py-0.5 text-xs font-medium">
                           {i.count}
@@ -383,7 +425,11 @@ export function PlatformControlPage() {
                     <p className="mb-2 text-xs text-neutral-500">
                       Reroda todas as verificações deste painel.
                     </p>
-                    <Button size="sm" variant="secondary" onClick={() => void load()}>
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => void load()}
+                    >
                       Recarregar
                     </Button>
                   </div>
@@ -431,7 +477,9 @@ export function PlatformControlPage() {
                         <p className="truncate text-sm text-neutral-800">
                           {e.table}{' '}
                           {e.actor && (
-                            <span className="text-neutral-400">· {e.actor}</span>
+                            <span className="text-neutral-400">
+                              · {e.actor}
+                            </span>
                           )}
                         </p>
                       </div>
@@ -493,8 +541,8 @@ export function PlatformControlPage() {
             onChange={(e) => setPushBody(e.target.value)}
           />
           <p className="text-xs text-neutral-500">
-            Vai para todos os usuários da organização que tenham push
-            habilitado no app.
+            Vai para todos os usuários da organização que tenham push habilitado
+            no app.
           </p>
         </div>
       </Modal>
@@ -520,7 +568,9 @@ function KpiCard({
   return (
     <Card>
       <div className="flex items-center gap-3">
-        <span className={`flex h-10 w-10 items-center justify-center rounded-lg ${toneClasses}`}>
+        <span
+          className={`flex h-10 w-10 items-center justify-center rounded-lg ${toneClasses}`}
+        >
           <Icon size={18} />
         </span>
         <div>

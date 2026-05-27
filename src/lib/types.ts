@@ -1,4 +1,8 @@
-export type UserRole = 'master' | 'platform_admin' | 'nutritionist' | 'property';
+export type UserRole =
+  | 'master'
+  | 'platform_admin'
+  | 'nutritionist'
+  | 'property';
 
 export interface Organization {
   id: string;
@@ -107,11 +111,12 @@ export interface ProductWithShelfLives extends Product {
 
 export type LabelConsumedReason = 'producao' | 'descarte' | 'vencimento';
 
-export const LABEL_CONSUMED_REASON_LABELS: Record<LabelConsumedReason, string> = {
-  producao: 'Uso na produção',
-  descarte: 'Descarte',
-  vencimento: 'Vencimento',
-};
+export const LABEL_CONSUMED_REASON_LABELS: Record<LabelConsumedReason, string> =
+  {
+    producao: 'Uso na produção',
+    descarte: 'Descarte',
+    vencimento: 'Vencimento',
+  };
 
 export interface LabelPrint {
   id: string;
@@ -474,7 +479,14 @@ export const RECEIVING_UNIT_LABELS: Record<ReceivingUnit, string> = {
   cx: 'cx',
 };
 
-export const RECEIVING_UNITS: ReceivingUnit[] = ['kg', 'g', 'un', 'L', 'mL', 'cx'];
+export const RECEIVING_UNITS: ReceivingUnit[] = [
+  'kg',
+  'g',
+  'un',
+  'L',
+  'mL',
+  'cx',
+];
 
 export interface Receiving {
   id: string;
@@ -527,12 +539,13 @@ export const STOCK_MOVEMENT_KIND_LABELS: Record<StockMovementKind, string> = {
   vencimento: 'Vencimento',
 };
 
-export const STOCK_EXIT_REASONS: { value: StockMovementKind; label: string }[] = [
-  { value: 'saida', label: 'Uso na produção / venda' },
-  { value: 'descarte', label: 'Descarte (qualidade)' },
-  { value: 'vencimento', label: 'Vencimento' },
-  { value: 'ajuste', label: 'Ajuste de inventário' },
-];
+export const STOCK_EXIT_REASONS: { value: StockMovementKind; label: string }[] =
+  [
+    { value: 'saida', label: 'Uso na produção / venda' },
+    { value: 'descarte', label: 'Descarte (qualidade)' },
+    { value: 'vencimento', label: 'Vencimento' },
+    { value: 'ajuste', label: 'Ajuste de inventário' },
+  ];
 
 export interface StockMovement {
   id: string;

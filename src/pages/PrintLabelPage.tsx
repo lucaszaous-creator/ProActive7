@@ -202,7 +202,11 @@ export function PrintLabelPage() {
     const qSupplier = searchParams.get('supplier');
     if (qSupplier) setSupplier(qSupplier);
     const qStorage = searchParams.get('storage');
-    if (qStorage === 'ambiente' || qStorage === 'refrigerado' || qStorage === 'congelado') {
+    if (
+      qStorage === 'ambiente' ||
+      qStorage === 'refrigerado' ||
+      qStorage === 'congelado'
+    ) {
       setCondition(qStorage);
     }
     const qExpiry = searchParams.get('expiry');

@@ -93,7 +93,10 @@ export function GruposPage() {
       active,
     };
     const { error } = editing
-      ? await supabase.from('product_groups').update(payload).eq('id', editing.id)
+      ? await supabase
+          .from('product_groups')
+          .update(payload)
+          .eq('id', editing.id)
       : await supabase
           .from('product_groups')
           .insert({ ...payload, organization_id: profile!.organization_id });

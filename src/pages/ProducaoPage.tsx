@@ -118,18 +118,20 @@ export function ProducaoPage() {
             : reason === 'vencimento'
               ? 'vencimento'
               : 'descarte';
-        const { error: stkErr } = await supabase.from('stock_movements').insert({
-          company_id: target.company_id,
-          product_id: target.product_id,
-          batch: target.batch,
-          quantity_delta: -qty,
-          unit,
-          kind,
-          reason: `Baixa de etiqueta — ${LABEL_CONSUMED_REASON_LABELS[reason]}`,
-          reference_type: 'manual',
-          reference_id: target.id,
-          moved_by: profile?.id ?? null,
-        });
+        const { error: stkErr } = await supabase
+          .from('stock_movements')
+          .insert({
+            company_id: target.company_id,
+            product_id: target.product_id,
+            batch: target.batch,
+            quantity_delta: -qty,
+            unit,
+            kind,
+            reason: `Baixa de etiqueta — ${LABEL_CONSUMED_REASON_LABELS[reason]}`,
+            reference_type: 'manual',
+            reference_id: target.id,
+            moved_by: profile?.id ?? null,
+          });
         if (stkErr) {
           toast.error(
             'Etiqueta baixada, mas falha ao gerar movimento de estoque: ' +
@@ -186,7 +188,9 @@ export function ProducaoPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">Nenhuma empresa cadastrada.</p>
+          <p className="text-sm text-neutral-600">
+            Nenhuma empresa cadastrada.
+          </p>
         </Card>
       ) : loading ? (
         <div className="flex justify-center py-16">
@@ -277,13 +281,15 @@ export function ProducaoPage() {
               value={reason}
               onChange={(e) => setReason(e.target.value as LabelConsumedReason)}
             >
-              {(Object.keys(LABEL_CONSUMED_REASON_LABELS) as LabelConsumedReason[]).map(
-                (r) => (
-                  <option key={r} value={r}>
-                    {LABEL_CONSUMED_REASON_LABELS[r]}
-                  </option>
-                ),
-              )}
+              {(
+                Object.keys(
+                  LABEL_CONSUMED_REASON_LABELS,
+                ) as LabelConsumedReason[]
+              ).map((r) => (
+                <option key={r} value={r}>
+                  {LABEL_CONSUMED_REASON_LABELS[r]}
+                </option>
+              ))}
             </Select>
             {target.product_id && target.batch && (
               <label className="flex items-start gap-2 rounded-lg border border-neutral-200 p-3 text-sm text-neutral-700">

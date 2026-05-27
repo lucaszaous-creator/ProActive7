@@ -1,7 +1,13 @@
 import { useState, type FormEvent } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ArrowLeft, Leaf, ShieldCheck, Tag, ClipboardCheck } from 'lucide-react';
+import {
+  ArrowLeft,
+  Leaf,
+  ShieldCheck,
+  Tag,
+  ClipboardCheck,
+} from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
@@ -17,7 +23,8 @@ export function LoginPage() {
 
   if (loading) return <FullPageSpinner />;
   if (session) {
-    const dest = isNutritionist && !profile?.company_id ? '/admin/empresas' : '/painel';
+    const dest =
+      isNutritionist && !profile?.company_id ? '/admin/empresas' : '/painel';
     return <Navigate to={dest} replace />;
   }
 
@@ -28,7 +35,10 @@ export function LoginPage() {
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
     setSubmitting(false);
     if (error) {
       toast.error('Não foi possível entrar. Verifique e-mail e senha.');
@@ -100,10 +110,16 @@ export function LoginPage() {
           <ul className="relative mt-10 space-y-3.5">
             {[
               { icon: Tag, label: 'Etiquetas RDC 216 em segundos' },
-              { icon: ClipboardCheck, label: 'Auditorias com plano de ação automático' },
+              {
+                icon: ClipboardCheck,
+                label: 'Auditorias com plano de ação automático',
+              },
               { icon: ShieldCheck, label: 'Histórico completo por unidade' },
             ].map(({ icon: Icon, label }) => (
-              <li key={label} className="flex items-center gap-3 text-sm text-[#1A2A22]/75">
+              <li
+                key={label}
+                className="flex items-center gap-3 text-sm text-[#1A2A22]/75"
+              >
                 <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#2F5D3F] shadow-sm ring-1 ring-[#E8F1EA]">
                   <Icon className="h-4 w-4" />
                 </span>

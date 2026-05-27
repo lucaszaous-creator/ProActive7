@@ -132,7 +132,9 @@ export function ContagemPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">Nenhuma empresa cadastrada.</p>
+          <p className="text-sm text-neutral-600">
+            Nenhuma empresa cadastrada.
+          </p>
         </Card>
       ) : loading ? (
         <div className="flex justify-center py-16">
