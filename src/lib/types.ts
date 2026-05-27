@@ -1,4 +1,8 @@
-export type UserRole = 'master' | 'platform_admin' | 'nutritionist' | 'property';
+export type UserRole =
+  | 'master'
+  | 'platform_admin'
+  | 'nutritionist'
+  | 'property';
 
 export interface Organization {
   id: string;
@@ -69,11 +73,24 @@ export interface Product {
   company_id: string | null;
   name: string;
   category: string | null;
+  group_id: string | null;
+  is_controlled: boolean;
   default_storage_condition: StorageCondition;
   active: boolean;
   allergens: string[];
   is_seed: boolean;
   created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProductGroup {
+  id: string;
+  organization_id: string;
+  name: string;
+  color: string | null;
+  sort_order: number;
+  active: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -91,6 +108,15 @@ export interface ProductShelfLife {
 export interface ProductWithShelfLives extends Product {
   product_shelf_lives: ProductShelfLife[];
 }
+
+export type LabelConsumedReason = 'producao' | 'descarte' | 'vencimento';
+
+export const LABEL_CONSUMED_REASON_LABELS: Record<LabelConsumedReason, string> =
+  {
+    producao: 'Uso na produção',
+    descarte: 'Descarte',
+    vencimento: 'Vencimento',
+  };
 
 export interface LabelPrint {
   id: string;
@@ -110,6 +136,9 @@ export interface LabelPrint {
   allergens: string[];
   printed_by: string | null;
   printed_at: string;
+  consumed_at: string | null;
+  consumed_by: string | null;
+  consumed_reason: LabelConsumedReason | null;
   created_at: string;
 }
 
@@ -424,4 +453,121 @@ export interface Photo {
   uploaded_by: string | null;
   uploaded_at: string;
   created_at: string;
+}
+
+export interface Supplier {
+  id: string;
+  organization_id: string;
+  name: string;
+  cnpj: string | null;
+  email: string | null;
+  phone: string | null;
+  notes: string | null;
+  active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export type ReceivingUnit = 'kg' | 'g' | 'un' | 'L' | 'mL' | 'cx';
+
+export const RECEIVING_UNIT_LABELS: Record<ReceivingUnit, string> = {
+  kg: 'kg',
+  g: 'g',
+  un: 'un',
+  L: 'L',
+  mL: 'mL',
+  cx: 'cx',
+};
+
+export const RECEIVING_UNITS: ReceivingUnit[] = [
+  'kg',
+  'g',
+  'un',
+  'L',
+  'mL',
+  'cx',
+];
+
+export interface Receiving {
+  id: string;
+  company_id: string;
+  supplier_id: string | null;
+  invoice_nf: string | null;
+  received_at: string;
+  received_by: string | null;
+  notes: string | null;
+  photo_id: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ReceivingItem {
+  id: string;
+  receiving_id: string;
+  product_id: string;
+  batch: string;
+  quantity: number;
+  unit: ReceivingUnit;
+  temp_at_arrival: number | null;
+  manufacturing_date: string | null;
+  expiry_date: string | null;
+  storage_condition: StorageCondition | null;
+  rejected: boolean;
+  rejection_reason: string | null;
+  created_at: string;
+}
+
+export interface ReceivingWithRelations extends Receiving {
+  supplier: { id: string; name: string } | null;
+  receiving_items: (ReceivingItem & {
+    product: { id: string; name: string } | null;
+  })[];
+}
+
+export type StockMovementKind =
+  | 'entrada'
+  | 'saida'
+  | 'ajuste'
+  | 'descarte'
+  | 'vencimento';
+
+export const STOCK_MOVEMENT_KIND_LABELS: Record<StockMovementKind, string> = {
+  entrada: 'Entrada',
+  saida: 'Saída',
+  ajuste: 'Ajuste',
+  descarte: 'Descarte',
+  vencimento: 'Vencimento',
+};
+
+export const STOCK_EXIT_REASONS: { value: StockMovementKind; label: string }[] =
+  [
+    { value: 'saida', label: 'Uso na produção / venda' },
+    { value: 'descarte', label: 'Descarte (qualidade)' },
+    { value: 'vencimento', label: 'Vencimento' },
+    { value: 'ajuste', label: 'Ajuste de inventário' },
+  ];
+
+export interface StockMovement {
+  id: string;
+  company_id: string;
+  product_id: string;
+  batch: string;
+  quantity_delta: number;
+  unit: ReceivingUnit;
+  kind: StockMovementKind;
+  reason: string | null;
+  reference_type: 'receiving_item' | 'manual' | 'production' | null;
+  reference_id: string | null;
+  moved_at: string;
+  moved_by: string | null;
+  created_at: string;
+}
+
+export interface StockBalance {
+  company_id: string;
+  product_id: string;
+  batch: string;
+  balance: number;
+  unit: ReceivingUnit;
+  oldest_expiry: string | null;
 }

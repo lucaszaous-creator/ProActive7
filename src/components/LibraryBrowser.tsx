@@ -22,12 +22,15 @@ interface LibraryBrowserProps {
   onCloned: () => void;
 }
 
-const CONFIG: Record<LibraryKind, {
-  table: string;
-  flag: string;
-  rpc: string;
-  title: string;
-}> = {
+const CONFIG: Record<
+  LibraryKind,
+  {
+    table: string;
+    flag: string;
+    rpc: string;
+    title: string;
+  }
+> = {
   audit: {
     table: 'audit_templates',
     flag: 'is_global',
@@ -80,7 +83,9 @@ export function LibraryBrowser({
           toast.error('Erro: ' + error.message);
           return;
         }
-        const list = ((data ?? []) as Array<Record<string, unknown>>).map((d) => ({
+        const list = (
+          (data ?? []) as unknown as Array<Record<string, unknown>>
+        ).map((d) => ({
           id: d.id as string,
           name: d.name as string,
           details:
@@ -132,8 +137,8 @@ export function LibraryBrowser({
       <div className="space-y-2">
         <p className="text-xs text-neutral-500">
           <Globe size={11} className="mr-1 inline" />
-          Modelos publicados pela plataforma. Clique em "Usar como modelo"
-          para criar uma cópia editável dentro da sua empresa.
+          Modelos publicados pela plataforma. Clique em "Usar como modelo" para
+          criar uma cópia editável dentro da sua empresa.
         </p>
         {loading ? (
           <div className="flex justify-center py-6">

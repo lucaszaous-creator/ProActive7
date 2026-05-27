@@ -55,11 +55,11 @@ function QuemSomos() {
           melhor serviço aos seus clientes.
         </p>
         <p>
-          Nossa metodologia consiste em <em>observar, planejar, capacitar e
-          conscientizar</em> a fim de auditar e avaliar um real parâmetro de
-          evolução dos estabelecimentos em relação às legislações federais,
-          estaduais e municipais vigentes — e à qualidade dos produtos
-          oferecidos.
+          Nossa metodologia consiste em{' '}
+          <em>observar, planejar, capacitar e conscientizar</em> a fim de
+          auditar e avaliar um real parâmetro de evolução dos estabelecimentos
+          em relação às legislações federais, estaduais e municipais vigentes —
+          e à qualidade dos produtos oferecidos.
         </p>
         <p className="rounded-2xl border border-[#E8F1EA] bg-white p-5 text-[#1A2A22]/85">
           <strong className="text-[#2F5D3F]">Atendemos estabelecimentos</strong>{' '}
@@ -84,8 +84,8 @@ function NossaHistoria() {
         </h2>
         <div className="mt-6 space-y-5 text-base leading-relaxed text-[#1A2A22]/75">
           <p>
-            A <strong className="text-[#2F5D3F]">PERSONAL DIET</strong> foi criada
-            em 2013 e em 2020 nasceu a{' '}
+            A <strong className="text-[#2F5D3F]">PERSONAL DIET</strong> foi
+            criada em 2013 e em 2020 nasceu a{' '}
             <strong className="text-[#2F5D3F]">PROACTIVE7</strong>, fundada pela
             nutricionista <strong>Ariane Madureira</strong> na cidade de Macaé.
             A partir da realização de cursos de especialização, pós-graduação e

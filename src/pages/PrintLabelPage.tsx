@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
-import { Printer, Bluetooth, BluetoothOff } from 'lucide-react';
+import { Printer, Bluetooth, BluetoothOff, Wand2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { SITE_URL, usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
@@ -60,6 +61,7 @@ interface LabelSize {
 // nutricionista. Ordem: medio (default), grande, pequeno, etiqueta fina.
 const LABEL_SIZES: LabelSize[] = [
   { id: '60x40', label: '60 x 40 mm', w: 60, h: 40 },
+  { id: '60x60', label: '60 x 60 mm', w: 60, h: 60 },
   { id: '80x60', label: '80 x 60 mm', w: 80, h: 60 },
   { id: '50x30', label: '50 x 30 mm', w: 50, h: 30 },
   { id: '33x22', label: '33 x 22 mm', w: 33, h: 22 },
@@ -80,6 +82,7 @@ function applyPageStyle(w: number, h: number) {
 export function PrintLabelPage() {
   usePageTitle('Imprimir etiqueta');
   const { profile } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     isMaster,
     companies,
@@ -113,6 +116,10 @@ export function PrintLabelPage() {
     null,
   );
   const [savingPrint, setSavingPrint] = useState(false);
+
+  const [prefillFromReceivingId, setPrefillFromReceivingId] = useState<
+    string | null
+  >(null);
 
   const [outputMode, setOutputMode] = useState<'system' | 'bluetooth'>(
     'system',
@@ -175,6 +182,41 @@ export function PrintLabelPage() {
       setManipulators((manipRes.data as Manipulator[] | null) ?? []);
     });
   }, [companyId]);
+
+  const prefillApplied = useRef(false);
+
+  useEffect(() => {
+    if (prefillApplied.current) return;
+    if (products.length === 0) return;
+    const qProduct = searchParams.get('product_id');
+    if (!qProduct) {
+      prefillApplied.current = true;
+      return;
+    }
+    if (!products.some((p) => p.id === qProduct)) return;
+    prefillApplied.current = true;
+
+    setProductId(qProduct);
+    const qBatch = searchParams.get('batch');
+    if (qBatch) setBatch(qBatch);
+    const qSupplier = searchParams.get('supplier');
+    if (qSupplier) setSupplier(qSupplier);
+    const qStorage = searchParams.get('storage');
+    if (
+      qStorage === 'ambiente' ||
+      qStorage === 'refrigerado' ||
+      qStorage === 'congelado'
+    ) {
+      setCondition(qStorage);
+    }
+    const qExpiry = searchParams.get('expiry');
+    if (qExpiry) {
+      // expiry vem como YYYY-MM-DD (do recebimento); converte para o input datetime-local
+      setOriginalExpiryLocal(`${qExpiry}T23:59`);
+    }
+    const qReceiving = searchParams.get('receiving_id');
+    if (qReceiving) setPrefillFromReceivingId(qReceiving);
+  }, [products, searchParams]);
 
   const selectedProduct = products.find((p) => p.id === productId) ?? null;
   const rules = selectedProduct?.product_shelf_lives ?? [];
@@ -346,13 +388,21 @@ export function PrintLabelPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5">
-        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-          Imprimir Etiqueta
-        </h1>
-        <p className="text-sm text-neutral-500">
-          A etiqueta sai no tamanho exato pela impressora térmica.
-        </p>
+      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
+            Imprimir Etiqueta
+          </h1>
+          <p className="text-sm text-neutral-500">
+            A etiqueta sai no tamanho exato pela impressora térmica.
+          </p>
+        </div>
+        <Link to="/imprimir/novo">
+          <Button variant="secondary" size="sm">
+            <Wand2 size={16} />
+            Modo rápido (wizard)
+          </Button>
+        </Link>
       </div>
 
       {noCompany ? (
@@ -369,6 +419,24 @@ export function PrintLabelPage() {
         <div className="grid gap-4 lg:grid-cols-[1fr_auto]">
           <Card>
             <div className="flex flex-col gap-4">
+              {prefillFromReceivingId && (
+                <div className="flex items-center justify-between rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+                  <span>
+                    Preenchido a partir do recebimento #
+                    {prefillFromReceivingId.slice(0, 8)}.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPrefillFromReceivingId(null);
+                      setSearchParams({}, { replace: true });
+                    }}
+                    className="rounded px-2 py-0.5 text-emerald-700 hover:bg-emerald-100"
+                  >
+                    Fechar
+                  </button>
+                </div>
+              )}
               {isMaster && companies.length > 0 && (
                 <Select
                   label="Empresa"

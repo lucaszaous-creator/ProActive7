@@ -1,6 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, Upload, ImageOff, Search, X } from 'lucide-react';
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Upload,
+  ImageOff,
+  Search,
+  X,
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { softDelete } from '@/lib/supabaseHelpers';
 import { useAuth } from '@/context/AuthContext';
@@ -186,10 +194,14 @@ export function CompaniesPage() {
       label_settings: labelSettings,
     };
     const { error } = editing
-      ? await supabase.from('companies').update(basePayload).eq('id', editing.id)
-      : await supabase
+      ? await supabase
           .from('companies')
-          .insert({ ...basePayload, organization_id: profile?.organization_id ?? null });
+          .update(basePayload)
+          .eq('id', editing.id)
+      : await supabase.from('companies').insert({
+          ...basePayload,
+          organization_id: profile?.organization_id ?? null,
+        });
     setSaving(false);
     if (error) {
       toast.error('Erro ao salvar: ' + error.message);
@@ -263,82 +275,82 @@ export function CompaniesPage() {
               </button>
             ) : null}
           </div>
-        <Card className="!p-0">
-          <div className="w-full overflow-x-auto">
-            <table className="w-full min-w-[720px] text-sm">
-              <thead>
-                <tr className="border-b border-neutral-200 text-left text-xs uppercase text-neutral-500">
-                  <th className="px-4 py-3">Empresa</th>
-                  <th className="px-4 py-3">Nutricionista / Organização</th>
-                  <th className="px-4 py-3">CNPJ</th>
-                  <th className="px-4 py-3">Telefone</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredCompanies.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={6}
-                      className="px-4 py-8 text-center text-sm text-neutral-500"
-                    >
-                      Nenhuma empresa encontrada para "{search}".
-                    </td>
+          <Card className="!p-0">
+            <div className="w-full overflow-x-auto">
+              <table className="w-full min-w-[720px] text-sm">
+                <thead>
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase text-neutral-500">
+                    <th className="px-4 py-3">Empresa</th>
+                    <th className="px-4 py-3">Nutricionista / Organização</th>
+                    <th className="px-4 py-3">CNPJ</th>
+                    <th className="px-4 py-3">Telefone</th>
+                    <th className="px-4 py-3">Status</th>
+                    <th className="px-4 py-3 text-right">Ações</th>
                   </tr>
-                ) : null}
-                {filteredCompanies.map((c) => (
-                  <tr
-                    key={c.id}
-                    className="border-b border-neutral-100 last:border-0"
-                  >
-                    <td className="px-4 py-3 font-medium text-neutral-800">
-                      {c.name}
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600">
-                      <CompanyOrgLink row={c} />
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600">
-                      {c.cnpj ?? '—'}
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600">
-                      {c.phone ?? '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs ${
-                          c.active
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'bg-neutral-100 text-neutral-500'
-                        }`}
+                </thead>
+                <tbody>
+                  {filteredCompanies.length === 0 ? (
+                    <tr>
+                      <td
+                        colSpan={6}
+                        className="px-4 py-8 text-center text-sm text-neutral-500"
                       >
-                        {c.active ? 'Ativa' : 'Inativa'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-1">
-                        <button
-                          onClick={() => openEdit(c)}
-                          aria-label="Editar"
-                          className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
+                        Nenhuma empresa encontrada para "{search}".
+                      </td>
+                    </tr>
+                  ) : null}
+                  {filteredCompanies.map((c) => (
+                    <tr
+                      key={c.id}
+                      className="border-b border-neutral-100 last:border-0"
+                    >
+                      <td className="px-4 py-3 font-medium text-neutral-800">
+                        {c.name}
+                      </td>
+                      <td className="px-4 py-3 text-neutral-600">
+                        <CompanyOrgLink row={c} />
+                      </td>
+                      <td className="px-4 py-3 text-neutral-600">
+                        {c.cnpj ?? '—'}
+                      </td>
+                      <td className="px-4 py-3 text-neutral-600">
+                        {c.phone ?? '—'}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs ${
+                            c.active
+                              ? 'bg-emerald-50 text-emerald-700'
+                              : 'bg-neutral-100 text-neutral-500'
+                          }`}
                         >
-                          <Pencil size={16} />
-                        </button>
-                        <button
-                          onClick={() => setDeleting(c)}
-                          aria-label="Excluir"
-                          className="rounded-lg p-2.5 text-red-500 hover:bg-red-50"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
+                          {c.active ? 'Ativa' : 'Inativa'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex justify-end gap-1">
+                          <button
+                            onClick={() => openEdit(c)}
+                            aria-label="Editar"
+                            className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
+                          >
+                            <Pencil size={16} />
+                          </button>
+                          <button
+                            onClick={() => setDeleting(c)}
+                            aria-label="Excluir"
+                            className="rounded-lg p-2.5 text-red-500 hover:bg-red-50"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
         </>
       )}
 
@@ -529,9 +541,7 @@ function CompanyOrgLink({ row }: { row: CompanyRow }) {
         {ownerName ?? 'Sem nutricionista titular'}
       </div>
       {org.name ? (
-        <div className="mt-0.5 text-xs text-neutral-500">
-          {org.name}
-        </div>
+        <div className="mt-0.5 text-xs text-neutral-500">{org.name}</div>
       ) : null}
     </div>
   );

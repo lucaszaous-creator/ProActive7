@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, ClipboardCheck, Play, BookOpen } from 'lucide-react';
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  ClipboardCheck,
+  Play,
+  BookOpen,
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { checkDeleteResult } from '@/lib/supabaseHelpers';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -109,7 +116,9 @@ export function ChecklistsPage() {
     // Admin enxerga também os globais (sem company_id) na lista
     const tplQuery = supabase.from('checklist_templates').select('*');
     const tplRes = await (isPlatformAdmin
-      ? tplQuery.or(`company_id.eq.${companyId},is_global.eq.true`).order('name')
+      ? tplQuery
+          .or(`company_id.eq.${companyId},is_global.eq.true`)
+          .order('name')
       : tplQuery.eq('company_id', companyId).order('name'));
     if (tplRes.error) {
       setLoading(false);

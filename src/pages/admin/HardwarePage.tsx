@@ -21,8 +21,14 @@ interface BuyLink {
 }
 
 const ELGIN_L42DT_BUY_LINKS: BuyLink[] = [
-  { label: 'Elgin (loja oficial)', url: 'https://loja.elgin.com.br/impressora-de-etiquetas-termica-elgin-direta-l42dt/p' },
-  { label: 'Kabum', url: 'https://www.kabum.com.br/produto/481286/impressora-termica-direta-de-etiquetas-elgin-l42dt-203dpi-usb-serial-nao-usa-ribon' },
+  {
+    label: 'Elgin (loja oficial)',
+    url: 'https://loja.elgin.com.br/impressora-de-etiquetas-termica-elgin-direta-l42dt/p',
+  },
+  {
+    label: 'Kabum',
+    url: 'https://www.kabum.com.br/produto/481286/impressora-termica-direta-de-etiquetas-elgin-l42dt-203dpi-usb-serial-nao-usa-ribon',
+  },
   { label: 'Sobraltec', url: 'https://www.sobraltec.com.br/20212' },
 ];
 
@@ -61,8 +67,8 @@ function Header() {
           <p className="mt-1 text-sm leading-relaxed text-[#1A2A22]/70 sm:text-base">
             Combinação de impressora + etiquetas que funciona ponta a ponta no
             ProActive7 — testada para etiquetas de validade em produtos
-            <span className="text-[#2F5D3F]"> congelados, refrigerados</span> e em
-            câmara fria com condensação.
+            <span className="text-[#2F5D3F]"> congelados, refrigerados</span> e
+            em câmara fria com condensação.
           </p>
         </div>
       </div>
@@ -100,7 +106,10 @@ function PrimaryPrinter() {
       <Compatibility
         items={[
           [true, 'Fluxo "Diálogo do sistema" → logo + QR saem na etiqueta'],
-          [true, 'Todos os 4 presets de tamanho do sistema (60×40, 80×60, 50×30, 33×22 mm)'],
+          [
+            true,
+            'Todos os 4 presets de tamanho do sistema (60×40, 80×60, 50×30, 33×22 mm)',
+          ],
           [true, 'Sem ribbon — operação mais simples na cozinha'],
           [false, 'Sem Ethernet — precisa de PC ou tablet conectado por USB'],
           [false, 'Sem Bluetooth — irrelevante (USB é melhor pro nosso fluxo)'],
@@ -126,7 +135,10 @@ function Labels() {
       <SpecsTable
         rows={[
           ['Substrato', 'Polipropileno (PP) — não absorve umidade'],
-          ['Adesivo', 'All-temp ou freezer grade — aplica de −10 °C, mantém de −40 a +70 °C'],
+          [
+            'Adesivo',
+            'All-temp ou freezer grade — aplica de −10 °C, mantém de −40 a +70 °C',
+          ],
           ['Formato', 'Die-cut (pré-cortada) com gap entre etiquetas'],
           ['Tamanho', '60 × 40 mm (default do sistema)'],
           ['Tipo de impressão', 'Térmica direta (sem ribbon)'],
@@ -250,8 +262,9 @@ function MobileAlternative() {
               Limitação do fluxo Bluetooth no ProActive7
             </p>
             <p className="mt-1 text-sm text-[#1A2A22]/75">
-              Pelo protocolo ESC/POS sobre BT, a etiqueta sai <strong>só com texto</strong> — sem o logo da
-              empresa e sem o QR code. Para etiquetas com logo + QR, use a Elgin L42-DT via USB.
+              Pelo protocolo ESC/POS sobre BT, a etiqueta sai{' '}
+              <strong>só com texto</strong> — sem o logo da empresa e sem o QR
+              code. Para etiquetas com logo + QR, use a Elgin L42-DT via USB.
             </p>
           </div>
         </div>
@@ -274,11 +287,13 @@ function DontBuy() {
     },
     {
       label: 'App-Tech 320B',
-      reason: 'Largura máxima de 80 mm — não imprime o preset 80×60 do sistema. Boa pros outros, mas limita.',
+      reason:
+        'Largura máxima de 80 mm — não imprime o preset 80×60 do sistema. Boa pros outros, mas limita.',
     },
     {
       label: 'Brother QL-820NW',
-      reason: 'Usa rolos DK proprietários da Brother — tamanhos não batem com os 4 presets do sistema.',
+      reason:
+        'Usa rolos DK proprietários da Brother — tamanhos não batem com os 4 presets do sistema.',
     },
     {
       label: 'Impressora de cupom Epson TM-T20X',
@@ -300,9 +315,7 @@ function DontBuy() {
           >
             <XCircle className="h-5 w-5 shrink-0 text-[#A8543A]" />
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-[#1A2A22]">
-                {it.label}
-              </p>
+              <p className="text-sm font-semibold text-[#1A2A22]">{it.label}</p>
               <p className="mt-0.5 text-sm text-[#1A2A22]/65">{it.reason}</p>
             </div>
           </li>
@@ -368,10 +381,7 @@ function SpecsTable({ rows }: { rows: [string, string][] }) {
   return (
     <dl className="grid gap-x-6 gap-y-2 rounded-xl border border-[#E8F1EA] bg-[#FAFAF7] p-4 text-sm sm:grid-cols-[max-content_1fr]">
       {rows.map(([k, v]) => (
-        <div
-          key={k}
-          className="contents sm:[&>dt]:py-1 sm:[&>dd]:py-1"
-        >
+        <div key={k} className="contents sm:[&>dt]:py-1 sm:[&>dd]:py-1">
           <dt className="font-medium text-[#1A2A22]/55">{k}</dt>
           <dd className="text-[#1A2A22]">{v}</dd>
         </div>

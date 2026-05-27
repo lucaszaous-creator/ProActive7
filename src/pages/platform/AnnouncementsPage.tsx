@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, AlertTriangle, Info, Wrench } from 'lucide-react';
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  AlertTriangle,
+  Info,
+  Wrench,
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -47,6 +54,9 @@ const SEVERITY_ICON = {
 
 export function AnnouncementsPage() {
   usePageTitle('Comunicados');
+  // Snapshot único de "agora" por sessão da página — lazy initializer
+  // do useState para satisfazer a regra react-hooks/purity.
+  const [renderNow] = useState(() => Date.now());
   const [list, setList] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -177,10 +187,9 @@ export function AnnouncementsPage() {
         <div className="space-y-3">
           {list.map((a) => {
             const Icon = SEVERITY_ICON[a.severity];
-            const now = Date.now();
             const within =
-              new Date(a.starts_at).getTime() <= now &&
-              (!a.ends_at || new Date(a.ends_at).getTime() > now);
+              new Date(a.starts_at).getTime() <= renderNow &&
+              (!a.ends_at || new Date(a.ends_at).getTime() > renderNow);
             const showing = a.active && within;
             return (
               <Card key={a.id}>

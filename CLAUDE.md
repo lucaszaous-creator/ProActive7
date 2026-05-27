@@ -11,12 +11,12 @@ documentos. Frontend React 19 + Tailwind 4 + Vite 6; backend Supabase
 
 ## Hierarquia de roles
 
-| Role | Quem | Escopo | Exemplo |
-|---|---|---|---|
-| `platform_admin` | Dono do SaaS (Lucas) | Global, todas as orgs | Vê tudo, cria orgs, audita |
-| `nutritionist` | Nutricionista RT (Ariane) | 1 organização (várias empresas) | Cadastra empresas, define prazos, audita |
-| `property` | Gerente da unidade (Rafael) | 1 empresa | Imprime etiquetas, registra temperatura, fecha NCs |
-| `master` | **Legado** — tratar como alias de `platform_admin` | — | A consolidar em migration futura |
+| Role             | Quem                                               | Escopo                          | Exemplo                                            |
+| ---------------- | -------------------------------------------------- | ------------------------------- | -------------------------------------------------- |
+| `platform_admin` | Dono do SaaS (Lucas)                               | Global, todas as orgs           | Vê tudo, cria orgs, audita                         |
+| `nutritionist`   | Nutricionista RT (Ariane)                          | 1 organização (várias empresas) | Cadastra empresas, define prazos, audita           |
+| `property`       | Gerente da unidade (Rafael)                        | 1 empresa                       | Imprime etiquetas, registra temperatura, fecha NCs |
+| `master`         | **Legado** — tratar como alias de `platform_admin` | —                               | A consolidar em migration futura                   |
 
 A nutri é a Responsável Técnica perante a ANVISA — **nenhuma automação
 substitui o aval dela**. Layouts de etiqueta, prazos de validade, planos de
@@ -41,13 +41,13 @@ ação para NCs: tudo precisa passar pela nutri.
 
 Embeds aninhados nestes pares **exigem** sintaxe `!nome_do_fkey`:
 
-| Par | FK preferencial |
-|---|---|
-| `profiles ↔ organizations` | `profiles_organization_id_fkey` |
-| `companies → organizations → profiles` (owner) | `organizations_owner_profile_fkey` |
-| `documents ↔ profiles` | use `created_by_fkey` ou `approved_by_fkey` |
-| `non_conformities ↔ profiles` | `opened_by_fkey`, `closed_by_fkey` ou `who_uuid_fkey` |
-| `non_conformities ↔ photos` | `evidence_photo_id_fkey` ou `closing_photo_id_fkey` |
+| Par                                            | FK preferencial                                       |
+| ---------------------------------------------- | ----------------------------------------------------- |
+| `profiles ↔ organizations`                     | `profiles_organization_id_fkey`                       |
+| `companies → organizations → profiles` (owner) | `organizations_owner_profile_fkey`                    |
+| `documents ↔ profiles`                         | use `created_by_fkey` ou `approved_by_fkey`           |
+| `non_conformities ↔ profiles`                  | `opened_by_fkey`, `closed_by_fkey` ou `who_uuid_fkey` |
+| `non_conformities ↔ photos`                    | `evidence_photo_id_fkey` ou `closing_photo_id_fkey`   |
 
 ### Edge Functions (uso de service role)
 
@@ -161,17 +161,19 @@ arquivos novos esperados, tabelas/RPCs no banco, e bloqueios.
 #### Fase 1 — Visibilidade (sem cobrar, sem editar dado de terceiros)
 
 **1.1 Dashboard de SaaS** (item #1)
+
 - Rota: `/platform/dashboard` (já existe `OrganizationsPage`; adicionar
   como página separada protegida por `masterOnly`).
 - Arquivos: `src/pages/platform/PlatformDashboardPage.tsx` +
   `src/lib/platformMetrics.ts` (queries agregadas).
 - Banco: criar view `platform_metrics_v` que retorna por org:
   `org_id, label_count_30d, audit_count_30d, last_login_at, company_count,
-  nc_open_count`. Migration nova `0049_platform_metrics_v.sql` — apenas
+nc_open_count`. Migration nova `0049_platform_metrics_v.sql` — apenas
   SELECT, RLS exige `is_platform_admin()`.
 - Sem dependência externa. Comecar por aqui.
 
 **1.2 Health-check por organização** (item #2)
+
 - Mesma rota, **uma aba** na PlatformDashboardPage ("Saúde das orgs").
 - Reusa `company_compliance_v` (já existe) somando por
   `organization_id`. Cards: compliance médio, NCs >30d em aberto, ASOs
@@ -179,9 +181,10 @@ arquivos novos esperados, tabelas/RPCs no banco, e bloqueios.
 - Reusa `dashboardQueries.ts` como modelo de query.
 
 **1.3 Estatísticas de uso de feature** (item #9)
+
 - Adiciona uma aba na PlatformDashboardPage ("Uso").
 - Banco: nova tabela `feature_events` (`org_id, feature_key, user_id,
-  occurred_at`) + função `log_feature_event(text)` chamada do frontend
+occurred_at`) + função `log_feature_event(text)` chamada do frontend
   em pontos-chave (impressão de etiqueta, abertura de auditoria,
   registro de temp, etc.). Migration `0050_feature_events.sql`.
 - Sem isso, qualquer decisão de roadmap é chute.
@@ -189,6 +192,7 @@ arquivos novos esperados, tabelas/RPCs no banco, e bloqueios.
 #### Fase 2 — Operação / suporte
 
 **2.1 Impersonate** (item #4)
+
 - **Pré-requisito** para suportar a Ariane sem pedir print.
 - Edge Function nova: `admin-impersonate` retorna um JWT de curta
   duração (15 min) assinado para o `user_id` alvo. Service role + JWT
@@ -200,6 +204,7 @@ arquivos novos esperados, tabelas/RPCs no banco, e bloqueios.
   preferências). Sem opt-in, impersonate é bloqueado.
 
 **2.2 Banner global** (item #8)
+
 - Banco: nova tabela `platform_announcements`
   (`id, message, severity, starts_at, ends_at, active`).
 - `AuthContext` lê o anúncio ativo via RPC e expõe `announcement` no
@@ -207,6 +212,7 @@ arquivos novos esperados, tabelas/RPCs no banco, e bloqueios.
   `Layout`. Página de gestão: `/platform/comunicados`.
 
 **2.3 Push manual para uma org** (item #5)
+
 - Edge Function nova `admin-push-org`: aceita `org_id + title + body`,
   busca `push_subscriptions` da org e dispara via Web Push (reusa lib
   já presente em `send-expiry-notifications`).
@@ -215,6 +221,7 @@ arquivos novos esperados, tabelas/RPCs no banco, e bloqueios.
 #### Fase 3 — Conteúdo curado
 
 **3.1 Gestão de templates globais** (item #6)
+
 - Adicionar coluna `is_global boolean default false` em `audit_templates`
   e `checklist_templates`. RLS: globais visíveis para todas as orgs
   como **leitura**; só `platform_admin` cria/edita global.
@@ -222,19 +229,22 @@ arquivos novos esperados, tabelas/RPCs no banco, e bloqueios.
   duplica o template removendo `is_global`.
 
 **3.2 Catálogo seed de produtos** (item #7)
+
 - Mesma ideia da 3.1 aplicada a `products` + `product_shelf_lives`.
 - Coluna `is_seed boolean default false`. Tela `/platform/catalogo`.
 
 #### Fase 4 — Comercial / continuidade
 
 **4.1 Painel de cobrança** (item #3)
+
 - Decisão pendente: **Asaas** (BR-friendly, PIX, boleto) vs **Stripe**.
 - Banco: tabela `subscriptions` (`org_id, plan, status, current_period_end,
-  external_id`). Webhook do gateway atualiza.
+external_id`). Webhook do gateway atualiza.
 - UI: `/platform/cobranca` (lista + ação suspender/reativar).
 - **Não excluir org** por inadimplência — só `status='suspended'`.
 
 **4.2 Backup on-demand** (item #10)
+
 - Edge Function `admin-export-org`: gera ZIP com CSVs de todas as
   tabelas filtradas por `organization_id` + arquivos do storage
   (`branding/`, `employee-docs/`, `pest-docs/` da org).

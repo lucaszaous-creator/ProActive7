@@ -57,6 +57,11 @@ const PrintLabelPage = lazy(() =>
     default: m.PrintLabelPage,
   })),
 );
+const PrintWizardPage = lazy(() =>
+  import('./pages/PrintWizardPage').then((m) => ({
+    default: m.PrintWizardPage,
+  })),
+);
 const PhotosPage = lazy(() =>
   import('./pages/PhotosPage').then((m) => ({ default: m.PhotosPage })),
 );
@@ -107,6 +112,53 @@ const ManipulatorsPage = lazy(() =>
     default: m.ManipulatorsPage,
   })),
 );
+const SuppliersPage = lazy(() =>
+  import('./pages/SuppliersPage').then((m) => ({
+    default: m.SuppliersPage,
+  })),
+);
+const RecebimentosPage = lazy(() =>
+  import('./pages/RecebimentosPage').then((m) => ({
+    default: m.RecebimentosPage,
+  })),
+);
+const RecebimentoFormPage = lazy(() =>
+  import('./pages/RecebimentoFormPage').then((m) => ({
+    default: m.RecebimentoFormPage,
+  })),
+);
+const RecebimentoDetailPage = lazy(() =>
+  import('./pages/RecebimentoDetailPage').then((m) => ({
+    default: m.RecebimentoDetailPage,
+  })),
+);
+const EstoquePage = lazy(() =>
+  import('./pages/EstoquePage').then((m) => ({ default: m.EstoquePage })),
+);
+const EstoqueMovimentacoesPage = lazy(() =>
+  import('./pages/EstoqueMovimentacoesPage').then((m) => ({
+    default: m.EstoqueMovimentacoesPage,
+  })),
+);
+const ValidadesPage = lazy(() =>
+  import('./pages/ValidadesPage').then((m) => ({ default: m.ValidadesPage })),
+);
+const ProducaoPage = lazy(() =>
+  import('./pages/ProducaoPage').then((m) => ({ default: m.ProducaoPage })),
+);
+const ContagemPage = lazy(() =>
+  import('./pages/ContagemPage').then((m) => ({ default: m.ContagemPage })),
+);
+const ControladosPage = lazy(() =>
+  import('./pages/ControladosPage').then((m) => ({
+    default: m.ControladosPage,
+  })),
+);
+const GruposPage = lazy(() =>
+  import('./pages/cadastros/GruposPage').then((m) => ({
+    default: m.GruposPage,
+  })),
+);
 const CompaniesPage = lazy(() =>
   import('./pages/admin/CompaniesPage').then((m) => ({
     default: m.CompaniesPage,
@@ -153,6 +205,11 @@ const OrganizationDetailPage = lazy(() =>
     default: m.OrganizationDetailPage,
   })),
 );
+const PlatformControlPage = lazy(() =>
+  import('./pages/platform/PlatformControlPage').then((m) => ({
+    default: m.PlatformControlPage,
+  })),
+);
 
 export default function App() {
   return (
@@ -181,6 +238,7 @@ export default function App() {
             <Route path="/painel" element={<DashboardPage />} />
             <Route path="/produtos" element={<ProductsPage />} />
             <Route path="/imprimir" element={<PrintLabelPage />} />
+            <Route path="/imprimir/novo" element={<PrintWizardPage />} />
             <Route path="/fotos" element={<PhotosPage />} />
             <Route path="/temperatura" element={<TemperaturePage />} />
             <Route path="/checklists" element={<ChecklistsPage />} />
@@ -196,6 +254,24 @@ export default function App() {
               element={<NonConformitiesPage />}
             />
             <Route path="/manipuladores" element={<ManipulatorsPage />} />
+            <Route path="/recebimentos" element={<RecebimentosPage />} />
+            <Route
+              path="/recebimentos/novo"
+              element={<RecebimentoFormPage />}
+            />
+            <Route
+              path="/recebimentos/:id"
+              element={<RecebimentoDetailPage />}
+            />
+            <Route path="/estoque" element={<EstoquePage />} />
+            <Route
+              path="/estoque/movimentacoes"
+              element={<EstoqueMovimentacoesPage />}
+            />
+            <Route path="/validades" element={<ValidadesPage />} />
+            <Route path="/producao" element={<ProducaoPage />} />
+            <Route path="/contagem" element={<ContagemPage />} />
+            <Route path="/controlados" element={<ControladosPage />} />
           </Route>
         </Route>
 
@@ -205,6 +281,8 @@ export default function App() {
             <Route path="/admin/empresas" element={<CompaniesPage />} />
             <Route path="/admin/usuarios" element={<UsersPage />} />
             <Route path="/admin/hardware" element={<HardwarePage />} />
+            <Route path="/fornecedores" element={<SuppliersPage />} />
+            <Route path="/cadastros/grupos" element={<GruposPage />} />
           </Route>
         </Route>
 
@@ -213,6 +291,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/admin/trilha" element={<AuditLogPage />} />
             <Route path="/admin/lixeira" element={<TrashPage />} />
+            <Route path="/platform/centro" element={<PlatformControlPage />} />
             <Route
               path="/platform/dashboard"
               element={<PlatformDashboardPage />}

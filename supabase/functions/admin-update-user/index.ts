@@ -74,6 +74,7 @@ Deno.serve(async (req) => {
     const fullName: string | undefined = body?.full_name;
     const role: string | undefined = body?.role;
     const companyId: string | null | undefined = body?.company_id;
+    const organizationId: string | null | undefined = body?.organization_id;
     const active: boolean | undefined = body?.active;
     const password: string | undefined = body?.password;
 
@@ -89,6 +90,12 @@ Deno.serve(async (req) => {
     if (normalizedRole === 'property' && companyId === null) {
       return json(
         { error: 'company_id é obrigatório para usuário da empresa' },
+        400,
+      );
+    }
+    if (normalizedRole === 'nutritionist' && organizationId === null) {
+      return json(
+        { error: 'organization_id é obrigatório para nutricionista' },
         400,
       );
     }
@@ -155,6 +162,9 @@ Deno.serve(async (req) => {
     if (normalizedRole !== undefined) profileUpdate.role = normalizedRole;
     if (normalizedRole === 'platform_admin') profileUpdate.company_id = null;
     else if (companyId !== undefined) profileUpdate.company_id = companyId;
+    if (normalizedRole === 'nutritionist' && organizationId !== undefined) {
+      profileUpdate.organization_id = organizationId;
+    }
     if (active !== undefined) profileUpdate.active = active;
 
     if (Object.keys(profileUpdate).length > 0) {

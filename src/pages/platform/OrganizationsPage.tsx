@@ -152,7 +152,9 @@ export function OrganizationsPage() {
       return;
     }
     toast.success(
-      newStatus === 'active' ? 'Organização reativada.' : 'Organização suspensa.',
+      newStatus === 'active'
+        ? 'Organização reativada.'
+        : 'Organização suspensa.',
     );
     void load();
   }
@@ -226,7 +228,9 @@ export function OrganizationsPage() {
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
                         <button
-                          onClick={() => navigate(`/platform/organizacoes/${org.id}`)}
+                          onClick={() =>
+                            navigate(`/platform/organizacoes/${org.id}`)
+                          }
                           aria-label="Ver detalhes"
                           title="Ver detalhes"
                           className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
@@ -310,7 +314,9 @@ export function OrganizationsPage() {
             id="org-status"
             label="Status"
             value={status}
-            onChange={(e) => setStatus(e.target.value as 'active' | 'suspended')}
+            onChange={(e) =>
+              setStatus(e.target.value as 'active' | 'suspended')
+            }
           >
             <option value="active">Ativa</option>
             <option value="suspended">Suspensa</option>

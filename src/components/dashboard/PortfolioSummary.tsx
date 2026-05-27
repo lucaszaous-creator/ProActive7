@@ -178,7 +178,9 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
         </h3>
         <div className="flex shrink-0 items-center gap-2">
           <div className="text-right">
-            <p className={`text-xl font-bold leading-none sm:text-2xl ${textClass}`}>
+            <p
+              className={`text-xl font-bold leading-none sm:text-2xl ${textClass}`}
+            >
               {r.score != null ? `${r.score.toFixed(0)}%` : '—'}
             </p>
             <p className="text-[10px] text-neutral-500 dark:text-neutral-400 sm:text-xs">

@@ -173,7 +173,10 @@ export function PlatformDashboardPage() {
           </p>
         </div>
         <div className="flex gap-1">
-          <TabButton active={tab === 'overview'} onClick={() => setTab('overview')}>
+          <TabButton
+            active={tab === 'overview'}
+            onClick={() => setTab('overview')}
+          >
             Visão geral
           </TabButton>
           <TabButton active={tab === 'health'} onClick={() => setTab('health')}>
@@ -386,7 +389,9 @@ export function PlatformDashboardPage() {
                       key={u.feature_key}
                       className="border-b border-neutral-100 dark:border-neutral-800"
                     >
-                      <td className="py-2 font-mono text-xs">{u.feature_key}</td>
+                      <td className="py-2 font-mono text-xs">
+                        {u.feature_key}
+                      </td>
                       <td className="py-2 text-right">{u.uses_30d}</td>
                       <td className="py-2 text-right">{u.unique_users}</td>
                       <td className="py-2 text-right">{u.unique_orgs}</td>
