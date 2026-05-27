@@ -3,7 +3,6 @@ import { supabase } from './supabase';
 
 const PRODUCT_NAME = 'ProActive7';
 const PRODUCT_TAGLINE = 'Consultoria Nutricional';
-const PRODUCT_URL = 'pro-active7.vercel.app';
 
 export interface PdfHeaderInfo {
   companyName: string;
@@ -77,11 +76,7 @@ export function drawPdfFooter(doc: jsPDF): void {
     doc.setTextColor(120);
     doc.setDrawColor(220);
     doc.line(14, pageHeight - 10, pageWidth - 14, pageHeight - 10);
-    doc.text(
-      `${PRODUCT_NAME} — ${PRODUCT_TAGLINE} · ${PRODUCT_URL}`,
-      14,
-      pageHeight - 6,
-    );
+    doc.text(`${PRODUCT_NAME} — ${PRODUCT_TAGLINE}`, 14, pageHeight - 6);
     doc.text(`Pagina ${i} de ${pageCount}`, pageWidth / 2, pageHeight - 6, {
       align: 'center',
     });
