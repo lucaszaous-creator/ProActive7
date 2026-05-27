@@ -366,22 +366,11 @@ export function AuditDetailPage() {
       y += 14;
     }
 
-    // Tabela por categoria
-    autoTable(pdf, {
-      startY: y,
-      head: [['Categoria', 'Conformes/Peso', '%']],
-      body: categories.map((c) => [
-        c.category,
-        `${c.conformes}/${c.total}`,
-        `${c.scorePercent.toFixed(1)}%`,
-      ]),
-      theme: 'grid',
-      styles: { fontSize: 9 },
-    });
-
-    // Tabela de itens
+    // Tabela de itens (única — score por categoria removido por ser
+    // redundante com o "Score" exibido no topo).
     const responseMap = new Map(responses.map((r) => [r.itemId, r]));
     autoTable(pdf, {
+      startY: y,
       head: [['Cat', 'Item', 'Result', 'Ref legal', 'Observacao']],
       body: items.map((it) => {
         const r = responseMap.get(it.id);
@@ -423,38 +412,38 @@ export function AuditDetailPage() {
       currentY += 5 + split.length * 4;
     }
 
-    // Assinatura — fica na mesma página se couber (~62mm), senão nova página.
+    // Assinatura compacta — ~48mm. Mantém na mesma página da tabela
+    // quando couber; só quebra para nova página em último caso.
     if (sigDataUrl && profile) {
-      const SIG_BLOCK_HEIGHT = 62;
-      const FOOTER_MARGIN = 15;
+      const SIG_BLOCK_HEIGHT = 48;
+      const FOOTER_MARGIN = 14;
       if (currentY + SIG_BLOCK_HEIGHT > pageHeight - FOOTER_MARGIN) {
         pdf.addPage();
         currentY = 20;
       } else {
-        currentY += 10;
+        currentY += 6;
       }
       pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(11);
+      pdf.setFontSize(10);
       pdf.text('Assinatura do Responsavel Tecnico', 14, currentY);
       try {
-        pdf.addImage(sigDataUrl, 'PNG', 14, currentY + 6, 80, 30);
+        // Imagem menor: 60x22mm em vez de 80x30mm
+        pdf.addImage(sigDataUrl, 'PNG', 14, currentY + 3, 60, 22);
       } catch {
         // ignore
       }
       pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(10);
-      const sigInfoY = currentY + 42;
-      pdf.text(
-        `Assinado digitalmente por ${profile.full_name ?? profile.email ?? ''}`,
-        14,
-        sigInfoY,
-      );
-      if (profile.crn) pdf.text(`CRN ${profile.crn}`, 14, sigInfoY + 6);
-      pdf.text(
-        `Data: ${audit.completed_at ? formatDateTime(audit.completed_at) : formatDateTime(new Date().toISOString())}`,
-        14,
-        sigInfoY + (profile.crn ? 12 : 6),
-      );
+      pdf.setFontSize(9);
+      const sigInfoY = currentY + 30;
+      const who = profile.full_name ?? profile.email ?? '';
+      const dataStr = audit.completed_at
+        ? formatDateTime(audit.completed_at)
+        : formatDateTime(new Date().toISOString());
+      // Linha única com nome + CRN + data
+      const sigLine = profile.crn
+        ? `Assinado por ${who} · CRN ${profile.crn} · ${dataStr}`
+        : `Assinado por ${who} · ${dataStr}`;
+      pdf.text(sigLine, 14, sigInfoY);
     }
 
     drawPdfFooter(pdf);
