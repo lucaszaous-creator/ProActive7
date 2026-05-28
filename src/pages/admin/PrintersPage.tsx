@@ -37,7 +37,8 @@ const LABEL_SIZES = [
 export function PrintersPage() {
   usePageTitle('Impressoras térmicas');
   const { profile } = useAuth();
-  const { companyId, companyName } = useCompanyScope();
+  const { companyId, setCompanyId, companyName, companies, showAllCompanies } =
+    useCompanyScope();
   const [agents, setAgents] = useState<PrintAgent[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -104,6 +105,29 @@ export function PrintersPage() {
           <Plus size={16} /> Nova impressora
         </Button>
       </header>
+
+      {showAllCompanies && companies.length > 1 && (
+        <Card>
+          <Select
+            label="Estabelecimento"
+            value={companyId}
+            onChange={(e) => {
+              setCompanyId(e.target.value);
+              setShowForm(false);
+            }}
+          >
+            {companies.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </Select>
+          <p className="mt-1 text-xs text-neutral-500">
+            Cada estabelecimento tem suas próprias impressoras. Escolha a empresa
+            para configurar as impressoras dela.
+          </p>
+        </Card>
+      )}
 
       <Card>
         <details>
