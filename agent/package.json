@@ -6,7 +6,11 @@
   "description": "Agente local de impressão térmica (relay via Supabase) para o ProActive7.",
   "bin": { "proactive7-print-agent": "print-agent.mjs" },
   "scripts": {
-    "start": "node print-agent.mjs"
+    "start": "node print-agent.mjs",
+    "build:win": "pkg print-agent.mjs --targets node22-win-x64 --output dist/ProActive7-Agente.exe"
+  },
+  "devDependencies": {
+    "@yao-pkg/pkg": "^6.20.0"
   },
   "engines": { "node": ">=18" }
 }

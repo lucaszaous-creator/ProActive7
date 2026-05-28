@@ -10,6 +10,7 @@ import {
   AlertTriangle,
   Search,
   RefreshCw,
+  Download,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -155,13 +156,17 @@ export function PrintersPage() {
               sem digitar IP.
             </p>
             <p>
-              Agente:{' '}
-              <code className="rounded bg-neutral-100 px-1">
-                agent/print-agent.mjs
-              </code>{' '}
-              no repositório. Funciona com impressoras de rede (Wi-Fi/Ethernet)
-              via TCP 9100 — ex.: Elgin L42PRO FULL.
+              Baixe o programa abaixo, abra no PC ligado à impressora, e cole o
+              token quando ele pedir. Funciona com impressoras de rede
+              (Wi-Fi/Ethernet) via TCP 9100 — ex.: Elgin L42PRO FULL.
             </p>
+            <a
+              href="/downloads/ProActive7-Agente.exe"
+              download
+              className="mt-1 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+            >
+              <Download size={16} /> Baixar agente (Windows)
+            </a>
           </div>
         </details>
       </Card>
@@ -587,7 +592,19 @@ function TokenReveal({
             <Copy size={14} />
           </Button>
         </div>
-        <Button onClick={onClose}>Já guardei</Button>
+        <p className="text-xs text-amber-800">
+          Agora baixe o agente, abra no PC da impressora e cole este token:
+        </p>
+        <a
+          href="/downloads/ProActive7-Agente.exe"
+          download
+          className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+        >
+          <Download size={16} /> Baixar agente (Windows)
+        </a>
+        <div>
+          <Button onClick={onClose}>Já guardei</Button>
+        </div>
       </div>
     </Card>
   );

@@ -2,67 +2,129 @@
 // =====================================================================
 // ProActive7 — Agente de impressão local (estilo PrintNode, grátis)
 //
-// Roda no PC da cozinha (Windows/Mac/Linux, Node 18+). Faz polling na
-// Edge Function `print-agent` do Supabase, recebe os jobs da fila e manda
-// o ZPL pra impressora térmica via TCP porta 9100 (impressora de rede/Wi-Fi,
-// ex: Elgin L42PRO FULL).
+// Roda no PC da cozinha (Windows/Mac/Linux). Faz polling na Edge Function
+// `print-agent` do Supabase, recebe os jobs da fila e manda o ZPL pra
+// impressora térmica via TCP porta 9100 (impressora de rede/Wi-Fi, ex:
+// Elgin L42PRO FULL).
 //
 // Detecção automática: o agente varre a rede local procurando impressoras
 // (TCP 9100) e reporta a lista pro app. Na tela Cadastros -> Impressoras
-// você abre um popup e clica na impressora encontrada — não precisa saber
-// o IP. Depois disso o agente recebe o IP escolhido automaticamente.
+// você abre um popup e clica na impressora — não precisa saber o IP.
 //
-// Setup:
-//   1. Instale Node 18+ (https://nodejs.org).
-//   2. Copie config.example.json para config.json e preencha:
-//        SUPABASE_URL, SUPABASE_ANON_KEY (chaves públicas do app),
-//        AGENT_TOKEN  (gerado na tela Cadastros -> Impressoras).
-//      (PRINTER_HOST é opcional — normalmente você escolhe pela web.)
-//   3. Rode:  node print-agent.mjs
-//      (ou `npm start`). Deixe rodando — pode pôr no inicializar do Windows.
+// USO MAIS SIMPLES (executável .exe): basta abrir o programa, colar o
+// TOKEN (gerado na tela de Impressoras) quando ele pedir, e deixar rodando.
+// Ele se registra para iniciar junto com o Windows automaticamente.
 // =====================================================================
 
 import net from 'node:net';
 import os from 'node:os';
-import { readFileSync } from 'node:fs';
+import readline from 'node:readline';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+// Chaves PÚBLICAS do projeto (seguras de embutir — são as mesmas do site).
+const DEFAULT_URL = 'https://glvdiicipblsohdgmqaz.supabase.co';
+const DEFAULT_ANON =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsdmRpaWNpcGJsc29oZGdtcWF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzA2MDAsImV4cCI6MjA5NTA0NjYwMH0.-RZ1w7l78auSDe7u5-gcFJumLRusjrF4i28WibbK4EI';
 
-function loadConfig() {
-  // Prioriza variáveis de ambiente; cai pro config.json local.
-  let file = {};
-  try {
-    file = JSON.parse(readFileSync(join(__dirname, 'config.json'), 'utf8'));
-  } catch {
-    /* sem arquivo — usa env */
+// Quando empacotado (.exe), os dados ficam ao lado do executável.
+const isPackaged = !!process.pkg;
+const baseDir = isPackaged
+  ? dirname(process.execPath)
+  : dirname(fileURLToPath(import.meta.url));
+const configPath = join(baseDir, 'proactive7-agente.json');
+
+function readConfigFile() {
+  // Aceita o config.json antigo também, por compatibilidade.
+  for (const name of ['proactive7-agente.json', 'config.json']) {
+    try {
+      return JSON.parse(readFileSync(join(baseDir, name), 'utf8'));
+    } catch {
+      /* tenta o próximo */
+    }
   }
-  const cfg = {
-    supabaseUrl: process.env.SUPABASE_URL || file.SUPABASE_URL,
-    anonKey: process.env.SUPABASE_ANON_KEY || file.SUPABASE_ANON_KEY,
-    token: process.env.AGENT_TOKEN || file.AGENT_TOKEN,
-    // PRINTER_HOST agora é opcional: normalmente vem da escolha na web.
+  return {};
+}
+
+function saveToken(token) {
+  try {
+    writeFileSync(configPath, JSON.stringify({ AGENT_TOKEN: token }, null, 2));
+  } catch (e) {
+    console.error('Não consegui salvar o token:', String(e));
+  }
+}
+
+function ask(question) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
+  return new Promise((resolve) =>
+    rl.question(question, (a) => {
+      rl.close();
+      resolve(a.trim());
+    }),
+  );
+}
+
+// Registra o agente para iniciar com o Windows (só quando é .exe).
+function ensureAutostart() {
+  if (process.platform !== 'win32' || !isPackaged) return;
+  try {
+    spawnSync('reg', [
+      'add',
+      'HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run',
+      '/v',
+      'ProActive7Agente',
+      '/t',
+      'REG_SZ',
+      '/d',
+      `"${process.execPath}"`,
+      '/f',
+    ]);
+  } catch {
+    /* sem permissão — segue mesmo assim */
+  }
+}
+
+async function loadConfig() {
+  const file = readConfigFile();
+  let token = process.env.AGENT_TOKEN || file.AGENT_TOKEN;
+
+  // Sem token: pede ao usuário (modo executável) e salva.
+  if (!token) {
+    console.log('\n=== ProActive7 — Agente de impressão ===');
+    console.log(
+      'Cole o TOKEN da impressora (tela Cadastros -> Impressoras -> cadastrar).',
+    );
+    token = await ask('Token: ');
+    if (!token) {
+      console.error('Token vazio. Feche e abra de novo para tentar.');
+      await ask('Tecle Enter para sair.');
+      process.exit(1);
+    }
+    saveToken(token);
+    ensureAutostart();
+    console.log('Token salvo! Não vou pedir de novo neste computador.\n');
+  }
+
+  return {
+    supabaseUrl: process.env.SUPABASE_URL || file.SUPABASE_URL || DEFAULT_URL,
+    anonKey: process.env.SUPABASE_ANON_KEY || file.SUPABASE_ANON_KEY || DEFAULT_ANON,
+    token,
     printerHost: process.env.PRINTER_HOST || file.PRINTER_HOST || '',
     printerPort: Number(process.env.PRINTER_PORT || file.PRINTER_PORT || 9100),
     pollMs: Number(process.env.POLL_MS || file.POLL_MS || 2000),
-    // De quanto em quanto tempo revarre a rede e reporta (ms).
     scanMs: Number(process.env.SCAN_MS || file.SCAN_MS || 60000),
   };
-  const missing = ['supabaseUrl', 'anonKey', 'token'].filter((k) => !cfg[k]);
-  if (missing.length) {
-    console.error('Config faltando:', missing.join(', '));
-    process.exit(1);
-  }
-  return cfg;
 }
 
-const cfg = loadConfig();
-const fnUrl = `${cfg.supabaseUrl.replace(/\/$/, '')}/functions/v1/print-agent`;
-
-// Impressora atribuída pela web (vem na resposta do poll). Tem prioridade
-// sobre o config.json. Começa com o que estiver no config (se houver).
-let assigned = { host: cfg.printerHost || null, port: cfg.printerPort };
+let cfg;
+let fnUrl;
+// Impressora atribuída pela web (vem na resposta do poll).
+let assigned = { host: null, port: 9100 };
 
 async function callAgent(payload) {
   const res = await fetch(fnUrl, {
@@ -129,7 +191,6 @@ async function discoverPrinters() {
     }
     await Promise.all(checks);
   }
-  // Inclui o host fixo do config, se houver e não tiver aparecido.
   if (cfg.printerHost && !found.some((p) => p.host === cfg.printerHost)) {
     found.push({ host: cfg.printerHost, port: cfg.printerPort });
   }
@@ -172,7 +233,6 @@ function sendToPrinter(zpl) {
 
 async function processJob(job) {
   try {
-    // copies já vem embutido no ZPL via ^PQ; envia o payload uma vez.
     await sendToPrinter(job.zpl);
     await callAgent({ action: 'ack', job_id: job.id, status: 'done' });
     console.log(`[ok] job ${job.id} impresso`);
@@ -191,7 +251,6 @@ let lastOk = false;
 async function loop() {
   try {
     const { jobs, printer } = await callAgent({ action: 'poll' });
-    // A impressora escolhida na web tem prioridade.
     if (printer?.host) assigned = { host: printer.host, port: printer.port || 9100 };
     if (!lastOk) {
       console.log('Conectado ao ProActive7. Aguardando impressões...');
@@ -206,17 +265,28 @@ async function loop() {
   }
 }
 
-console.log('Agente iniciado. Varrendo a rede por impressoras...');
-void scanAndReport();
-setInterval(() => void scanAndReport(), cfg.scanMs);
-loop();
+async function main() {
+  cfg = await loadConfig();
+  fnUrl = `${cfg.supabaseUrl.replace(/\/$/, '')}/functions/v1/print-agent`;
+  assigned = { host: cfg.printerHost || null, port: cfg.printerPort };
+  console.log('Agente iniciado. Varrendo a rede por impressoras...');
+  console.log('Pode minimizar esta janela. Deixe-a aberta para imprimir.');
+  void scanAndReport();
+  setInterval(() => void scanAndReport(), cfg.scanMs);
+  loop();
+}
+
+main().catch(async (e) => {
+  console.error('Erro fatal:', String(e));
+  // No modo .exe a janela fecharia sozinha; segura pra mensagem ser lida.
+  if (isPackaged) await ask('Tecle Enter para sair.');
+  process.exit(1);
+});
 
 // ---------------------------------------------------------------------
 // MODO USB (sem rede): a detecção automática acha impressoras de REDE
-// (porta 9100). Pra impressora USB, substitua sendToPrinter() por um
-// spool cru e informe o IP/host manualmente:
-//   Windows:  `copy /b temp.zpl "\\\\localhost\\NOME_COMPARTILHADO"`
-//             (compartilhe a impressora e use o nome do share).
-//   Linux/Mac: `lp -d NOME_IMPRESSORA -o raw temp.zpl`
-// Grave job.zpl num arquivo temporário e chame o comando acima.
+// (porta 9100). Pra impressora USB, informe o IP/host manualmente no
+// proactive7-agente.json e troque sendToPrinter() por um spool cru:
+//   Windows:  copy /b temp.zpl "\\\\localhost\\NOME_COMPARTILHADO"
+//   Linux/Mac: lp -d NOME_IMPRESSORA -o raw temp.zpl
 // ---------------------------------------------------------------------
