@@ -7,6 +7,13 @@ import { supabase } from './supabase';
 import { buildLabelZpl } from './zpl';
 import type { LabelData } from '@/components/LabelPreview';
 
+/** Impressora encontrada pelo agente na varredura da rede. */
+export interface DiscoveredPrinter {
+  host: string;
+  port: number;
+  name?: string;
+}
+
 export interface PrintAgent {
   id: string;
   company_id: string;
@@ -19,7 +26,21 @@ export interface PrintAgent {
   dpi: number;
   active: boolean;
   last_seen_at: string | null;
+  discovered: DiscoveredPrinter[];
+  discovered_at: string | null;
   created_at: string;
+}
+
+/** Define qual impressora detectada o agente deve usar. */
+export async function setAgentPrinter(
+  agentId: string,
+  printer: DiscoveredPrinter,
+): Promise<void> {
+  const { error } = await supabase
+    .from('print_agents')
+    .update({ printer_host: printer.host, printer_port: printer.port })
+    .eq('id', agentId);
+  if (error) throw error;
 }
 
 export interface PrintJob {

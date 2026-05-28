@@ -2,9 +2,12 @@
 // O agente roda no PC da cozinha e se autentica por um TOKEN (gerado uma
 // vez na tela de impressoras). Usa service role aqui dentro, nunca expõe
 // nada sensível ao agente. Três ações:
-//   action=poll       -> devolve jobs 'queued' do agente e marca 'printing'
-//   action=ack        -> agente confirma resultado (done|error) de um job
-//   action=heartbeat  -> atualiza last_seen_at (Online/Offline na UI)
+//   action=poll            -> devolve jobs 'queued' (marca 'printing') + a
+//                             impressora atribuida ao agente { host, port }
+//   action=ack             -> agente confirma resultado (done|error) de um job
+//   action=heartbeat       -> atualiza last_seen_at (Online/Offline na UI)
+//   action=report_printers -> agente reporta as impressoras que achou na
+//                             rede; a web mostra num popup pra escolher
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const corsHeaders = {
@@ -47,7 +50,7 @@ Deno.serve(async (req) => {
     const tokenHash = await sha256Hex(token);
     const { data: agent } = await admin
       .from('print_agents')
-      .select('id, company_id, active')
+      .select('id, company_id, active, printer_host, printer_port')
       .eq('token_hash', tokenHash)
       .maybeSingle();
 
@@ -60,6 +63,18 @@ Deno.serve(async (req) => {
       .eq('id', agent.id);
 
     if (action === 'heartbeat') {
+      return json({ ok: true }, 200);
+    }
+
+    if (action === 'report_printers') {
+      const printers = Array.isArray(body?.printers) ? body.printers : [];
+      await admin
+        .from('print_agents')
+        .update({
+          discovered: printers,
+          discovered_at: new Date().toISOString(),
+        })
+        .eq('id', agent.id);
       return json({ ok: true }, 200);
     }
 
@@ -101,7 +116,14 @@ Deno.serve(async (req) => {
         );
     }
 
-    return json({ ok: true, jobs: claimed }, 200);
+    return json(
+      {
+        ok: true,
+        jobs: claimed,
+        printer: { host: agent.printer_host, port: agent.printer_port },
+      },
+      200,
+    );
   } catch (e) {
     return json({ error: String(e) }, 500);
   }

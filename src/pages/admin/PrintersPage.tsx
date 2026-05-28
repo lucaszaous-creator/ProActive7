@@ -8,6 +8,8 @@ import {
   CheckCircle2,
   XCircle,
   AlertTriangle,
+  Search,
+  RefreshCw,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -16,7 +18,9 @@ import { useCompanyScope } from '@/lib/useCompanyScope';
 import {
   generateAgentToken,
   isAgentOnline,
+  setAgentPrinter,
   sha256Hex,
+  type DiscoveredPrinter,
   type PrintAgent,
 } from '@/lib/printAgent';
 import { Card } from '@/components/ui/Card';
@@ -24,6 +28,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
+import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 const LABEL_SIZES = [
@@ -47,6 +52,7 @@ export function PrintersPage() {
     token: string;
   } | null>(null);
   const [toDelete, setToDelete] = useState<PrintAgent | null>(null);
+  const [pickFor, setPickFor] = useState<PrintAgent | null>(null);
 
   const load = useCallback(async () => {
     if (!companyId) return;
@@ -136,10 +142,17 @@ export function PrintersPage() {
           </summary>
           <div className="mt-3 space-y-2 text-sm text-neutral-600">
             <p>
-              Cadastre cada impressora aqui. Você recebe um <b>token único</b>{' '}
-              (mostrado uma vez). Instale o <b>agente</b> num PC ligado à
-              impressora (Node 18+), cole o token, e a impressão direta passa a
-              funcionar sem diálogo.
+              <b>1.</b> Dê um nome e cadastre — você recebe um{' '}
+              <b>token único</b> (mostrado uma vez).
+            </p>
+            <p>
+              <b>2.</b> Instale o <b>agente</b> num PC ligado à impressora (Node
+              18+) e cole o token.
+            </p>
+            <p>
+              <b>3.</b> O agente <b>encontra as impressoras da rede sozinho</b>.
+              Volte aqui, clique em “Selecionar impressora” e escolha da lista —
+              sem digitar IP.
             </p>
             <p>
               Agente:{' '}
@@ -188,9 +201,25 @@ export function PrintersPage() {
       ) : (
         <div className="space-y-3">
           {agents.map((a) => (
-            <AgentCard key={a.id} agent={a} onDelete={() => setToDelete(a)} />
+            <AgentCard
+              key={a.id}
+              agent={a}
+              onDelete={() => setToDelete(a)}
+              onDetect={() => setPickFor(a)}
+            />
           ))}
         </div>
+      )}
+
+      {pickFor && (
+        <PrinterPickerModal
+          agent={pickFor}
+          onClose={() => setPickFor(null)}
+          onPicked={() => {
+            setPickFor(null);
+            void load();
+          }}
+        />
       )}
 
       <ConfirmDialog
@@ -198,7 +227,6 @@ export function PrintersPage() {
         title="Remover impressora"
         message={`Tem certeza que deseja remover "${toDelete?.name}"? Todos os jobs pendentes desta impressora serão apagados.`}
         confirmLabel="Remover"
-        variant="danger"
         onConfirm={handleDelete}
         onCancel={() => setToDelete(null)}
       />
@@ -210,11 +238,14 @@ export function PrintersPage() {
 function AgentCard({
   agent,
   onDelete,
+  onDetect,
 }: {
   agent: PrintAgent;
   onDelete: () => void;
+  onDetect: () => void;
 }) {
   const online = isAgentOnline(agent);
+  const hasPrinter = !!agent.printer_host;
   return (
     <Card>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -242,9 +273,11 @@ function AgentCard({
             <div>
               <dt className="inline font-medium">Impressora: </dt>
               <dd className="inline">
-                {agent.printer_host
-                  ? `${agent.printer_host}:${agent.printer_port}`
-                  : 'USB (local)'}
+                {hasPrinter ? (
+                  `${agent.printer_host}:${agent.printer_port}`
+                ) : (
+                  <span className="text-amber-600">não selecionada</span>
+                )}
               </dd>
             </div>
             <div>
@@ -263,12 +296,142 @@ function AgentCard({
               </dd>
             </div>
           </dl>
+          <div className="mt-3">
+            <Button
+              variant={hasPrinter ? 'ghost' : 'primary'}
+              onClick={onDetect}
+            >
+              <Search size={14} />{' '}
+              {hasPrinter ? 'Trocar impressora' : 'Selecionar impressora'}
+            </Button>
+          </div>
         </div>
         <Button variant="ghost" onClick={onDelete} aria-label="Remover">
           <Trash2 size={16} />
         </Button>
       </div>
     </Card>
+  );
+}
+
+/* ---------- Popup: escolher a impressora detectada pelo agente ---------- */
+function PrinterPickerModal({
+  agent,
+  onClose,
+  onPicked,
+}: {
+  agent: PrintAgent;
+  onClose: () => void;
+  onPicked: () => void;
+}) {
+  const [printers, setPrinters] = useState<DiscoveredPrinter[]>(
+    agent.discovered ?? [],
+  );
+  const [online, setOnline] = useState(isAgentOnline(agent));
+  const [discoveredAt, setDiscoveredAt] = useState<string | null>(
+    agent.discovered_at,
+  );
+  const [saving, setSaving] = useState<string | null>(null);
+
+  // Recarrega a lista detectada de tempos em tempos enquanto o popup
+  // estiver aberto (o agente reporta a cada ~60s).
+  const refresh = useCallback(async () => {
+    const { data } = await supabase
+      .from('print_agents')
+      .select('discovered, discovered_at, last_seen_at')
+      .eq('id', agent.id)
+      .single();
+    if (data) {
+      setPrinters((data.discovered as DiscoveredPrinter[]) ?? []);
+      setDiscoveredAt(data.discovered_at as string | null);
+      setOnline(isAgentOnline({ last_seen_at: data.last_seen_at as string }));
+    }
+  }, [agent.id]);
+
+  useEffect(() => {
+    void refresh();
+    const t = setInterval(() => void refresh(), 5000);
+    return () => clearInterval(t);
+  }, [refresh]);
+
+  async function pick(p: DiscoveredPrinter) {
+    setSaving(p.host);
+    try {
+      await setAgentPrinter(agent.id, p);
+      toast.success(`Impressora ${p.host} selecionada.`);
+      onPicked();
+    } catch (e) {
+      toast.error('Erro ao salvar: ' + (e as Error).message);
+      setSaving(null);
+    }
+  }
+
+  return (
+    <Modal
+      open
+      onClose={onClose}
+      title={`Detectar impressora — ${agent.name}`}
+      footer={
+        <Button variant="ghost" onClick={() => void refresh()}>
+          <RefreshCw size={14} /> Procurar de novo
+        </Button>
+      }
+    >
+      {!online && (
+        <div className="mb-3 flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+          <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+          <span>
+            O agente deste computador está <b>offline</b>. Abra o agente no PC
+            ligado à impressora (com o token deste cadastro) para que ele
+            encontre as impressoras da rede.
+          </span>
+        </div>
+      )}
+
+      {printers.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 py-8 text-center">
+          <Spinner className="h-6 w-6" />
+          <p className="text-sm text-neutral-600">
+            Procurando impressoras na rede…
+            <br />
+            <span className="text-xs text-neutral-400">
+              O agente varre a rede a cada minuto. Deixe-o rodando e aguarde.
+            </span>
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <p className="text-xs text-neutral-500">
+            Clique na impressora que você quer usar:
+          </p>
+          {printers.map((p) => (
+            <button
+              key={`${p.host}:${p.port}`}
+              onClick={() => void pick(p)}
+              disabled={!!saving}
+              className="flex w-full items-center gap-3 rounded-lg border border-neutral-200 p-3 text-left hover:border-emerald-400 hover:bg-emerald-50 disabled:opacity-50"
+            >
+              <Printer size={18} className="shrink-0 text-neutral-500" />
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-sm font-medium text-neutral-800">
+                  {p.name ?? 'Impressora de rede'}
+                </div>
+                <div className="text-xs text-neutral-500">
+                  {p.host}:{p.port}
+                </div>
+              </div>
+              {saving === p.host && <Spinner className="h-4 w-4" />}
+            </button>
+          ))}
+          {discoveredAt && (
+            <p className="pt-1 text-right text-[11px] text-neutral-400">
+              Última varredura:{' '}
+              {new Date(discoveredAt).toLocaleTimeString('pt-BR')}
+            </p>
+          )}
+        </div>
+      )}
+    </Modal>
   );
 }
 
@@ -286,8 +449,6 @@ function AgentForm({
 }) {
   const [name, setName] = useState('');
   const [computerName, setComputerName] = useState('');
-  const [printerHost, setPrinterHost] = useState('');
-  const [printerPort, setPrinterPort] = useState(9100);
   const [sizeKey, setSizeKey] = useState('40x40');
   const [dpi, setDpi] = useState(203);
   const [saving, setSaving] = useState(false);
@@ -306,8 +467,9 @@ function AgentForm({
         name: name.trim(),
         computer_name: computerName.trim() || null,
         token_hash: tokenHash,
-        printer_host: printerHost.trim() || null,
-        printer_port: printerPort,
+        // Impressora é escolhida depois, no popup "Selecionar impressora".
+        printer_host: null,
+        printer_port: 9100,
         label_width_mm: w,
         label_height_mm: h,
         dpi,
@@ -333,27 +495,6 @@ function AgentForm({
           placeholder="Elgin L42PRO — Cozinha"
           required
         />
-        <Input
-          label="Nome do computador (informativo)"
-          value={computerName}
-          onChange={(e) => setComputerName(e.target.value)}
-          placeholder="PC-COZINHA"
-        />
-        <div className="grid grid-cols-3 gap-2">
-          <Input
-            label="IP / Host da impressora"
-            value={printerHost}
-            onChange={(e) => setPrinterHost(e.target.value)}
-            placeholder="192.168.0.50"
-            className="col-span-2"
-          />
-          <Input
-            label="Porta"
-            type="number"
-            value={printerPort}
-            onChange={(e) => setPrinterPort(Number(e.target.value) || 9100)}
-          />
-        </div>
         <div className="grid grid-cols-2 gap-2">
           <Select
             label="Tamanho da etiqueta"
@@ -375,10 +516,24 @@ function AgentForm({
             <option value="300">300 dpi</option>
           </Select>
         </div>
+        <details>
+          <summary className="cursor-pointer text-xs text-neutral-500">
+            Opções avançadas
+          </summary>
+          <div className="mt-2">
+            <Input
+              label="Nome do computador (informativo)"
+              value={computerName}
+              onChange={(e) => setComputerName(e.target.value)}
+              placeholder="PC-COZINHA"
+            />
+          </div>
+        </details>
         <p className="flex items-start gap-1 text-xs text-neutral-500">
           <AlertTriangle size={12} className="mt-0.5 shrink-0" />
-          Deixe IP vazio se a impressora é USB; veja a seção “modo USB” no
-          arquivo do agente.
+          Depois de cadastrar, instale o agente no PC da impressora e clique em
+          “Selecionar impressora” para escolher da lista detectada — sem digitar
+          IP.
         </p>
         <div className="flex gap-2">
           <Button type="submit" disabled={saving}>

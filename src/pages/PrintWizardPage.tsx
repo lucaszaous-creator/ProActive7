@@ -1188,6 +1188,7 @@ function DirectPrintBlock({
 
   const selected = agents.find((a) => a.id === agentId) ?? null;
   const online = selected ? isAgentOnline(selected) : false;
+  const noPrinter = !!selected && !selected.printer_host;
 
   async function handleDirectPrint() {
     if (!selected) return;
@@ -1286,7 +1287,7 @@ function DirectPrintBlock({
       </Select>
       <Button
         onClick={handleDirectPrint}
-        disabled={!canPrint || !selected || !online || sending}
+        disabled={!canPrint || !selected || !online || noPrinter || sending}
         className="w-full"
       >
         <Printer size={16} />
@@ -1300,6 +1301,12 @@ function DirectPrintBlock({
         <p className="text-xs text-amber-700">
           Agente offline — abra o programa no PC da cozinha ou use o diálogo
           abaixo.
+        </p>
+      )}
+      {online && noPrinter && (
+        <p className="text-xs text-amber-700">
+          Nenhuma impressora selecionada para este agente. Vá em Cadastros →
+          Impressoras e clique em “Selecionar impressora”.
         </p>
       )}
       {status === 'done' && (
