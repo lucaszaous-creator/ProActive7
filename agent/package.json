@@ -1,0 +1,12 @@
+{
+  "name": "proactive7-print-agent",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Agente local de impressão térmica (relay via Supabase) para o ProActive7.",
+  "bin": { "proactive7-print-agent": "print-agent.mjs" },
+  "scripts": {
+    "start": "node print-agent.mjs"
+  },
+  "engines": { "node": ">=18" }
+}

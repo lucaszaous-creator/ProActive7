@@ -172,6 +172,11 @@ const HardwarePage = lazy(() =>
     default: m.HardwarePage,
   })),
 );
+const PrintersPage = lazy(() =>
+  import('./pages/admin/PrintersPage').then((m) => ({
+    default: m.PrintersPage,
+  })),
+);
 const AuditLogPage = lazy(() =>
   import('./pages/admin/AuditLogPage').then((m) => ({
     default: m.AuditLogPage,
@@ -281,6 +286,7 @@ export default function App() {
             <Route path="/admin/empresas" element={<CompaniesPage />} />
             <Route path="/admin/usuarios" element={<UsersPage />} />
             <Route path="/admin/hardware" element={<HardwarePage />} />
+            <Route path="/admin/impressoras" element={<PrintersPage />} />
           </Route>
         </Route>
 

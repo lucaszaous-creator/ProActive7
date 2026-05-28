@@ -35,6 +35,12 @@ import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { logFeatureEvent } from '@/lib/platformMetrics';
+import {
+  isAgentOnline,
+  queueDirectPrint,
+  subscribePrintJob,
+  type PrintAgent,
+} from '@/lib/printAgent';
 
 interface LabelSize {
   id: string;
@@ -559,6 +565,9 @@ export function PrintWizardPage() {
               quantity={quantity}
               canPrint={canPrint}
               onPrint={handlePrint}
+              companyId={companyId}
+              labelId={labelId}
+              profileId={profile?.id ?? null}
             />
           )}
           {step === 5 && mode === 'batch' && (
@@ -1072,12 +1081,18 @@ function Step5({
   quantity,
   canPrint,
   onPrint,
+  companyId,
+  labelId,
+  profileId,
 }: {
   labelData: LabelData;
   size: LabelSize;
   quantity: number;
   canPrint: boolean;
   onPrint: () => void;
+  companyId: string;
+  labelId: string;
+  profileId: string | null;
 }) {
   return (
     <Card>
@@ -1088,19 +1103,212 @@ function Step5({
             <LabelPreview data={labelData} widthMm={size.w} heightMm={size.h} />
           </div>
         </div>
-        <Button
-          onClick={onPrint}
-          disabled={!canPrint}
-          className="w-full sm:w-auto"
-        >
-          <Printer size={18} />
-          Imprimir {quantity > 1 ? `${quantity} etiquetas` : 'etiqueta'}
-        </Button>
-        <p className="text-xs text-neutral-400">
-          Sai pelo diálogo de impressão do sistema no tamanho exato.
-        </p>
+        <DirectPrintBlock
+          companyId={companyId}
+          labelId={labelId}
+          profileId={profileId}
+          labelData={labelData}
+          widthMm={size.w}
+          heightMm={size.h}
+          copies={quantity}
+          canPrint={canPrint}
+        />
+        <details className="w-full">
+          <summary className="cursor-pointer text-xs text-neutral-500">
+            Sem agente? Usar diálogo do navegador
+          </summary>
+          <div className="mt-3 flex flex-col items-center gap-2">
+            <Button
+              variant="ghost"
+              onClick={onPrint}
+              disabled={!canPrint}
+              className="w-full sm:w-auto"
+            >
+              <Printer size={18} />
+              Imprimir via diálogo do sistema
+            </Button>
+            <p className="text-xs text-neutral-400">
+              Sai pelo diálogo de impressão do navegador no tamanho exato.
+            </p>
+          </div>
+        </details>
       </div>
     </Card>
+  );
+}
+
+function DirectPrintBlock({
+  companyId,
+  labelId,
+  profileId,
+  labelData,
+  widthMm,
+  heightMm,
+  copies,
+  canPrint,
+}: {
+  companyId: string;
+  labelId: string;
+  profileId: string | null;
+  labelData: LabelData;
+  widthMm: number;
+  heightMm: number;
+  copies: number;
+  canPrint: boolean;
+}) {
+  const [agents, setAgents] = useState<PrintAgent[]>([]);
+  const [agentId, setAgentId] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
+  const [status, setStatus] = useState<
+    'idle' | 'queued' | 'printing' | 'done' | 'error'
+  >('idle');
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const { data } = await supabase
+        .from('print_agents')
+        .select('*')
+        .eq('company_id', companyId)
+        .eq('active', true)
+        .order('created_at', { ascending: false });
+      if (cancelled) return;
+      const list = (data as PrintAgent[]) ?? [];
+      setAgents(list);
+      const online = list.find(isAgentOnline);
+      setAgentId(online?.id ?? list[0]?.id ?? '');
+      setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [companyId]);
+
+  const selected = agents.find((a) => a.id === agentId) ?? null;
+  const online = selected ? isAgentOnline(selected) : false;
+
+  async function handleDirectPrint() {
+    if (!selected) return;
+    setSending(true);
+    setErrorMsg(null);
+    setStatus('queued');
+    try {
+      const jobId = await queueDirectPrint({
+        agent: selected,
+        labelData,
+        widthMm,
+        heightMm,
+        copies,
+        companyId,
+        labelId,
+        createdBy: profileId,
+      });
+      const unsub = subscribePrintJob(jobId, (job) => {
+        setStatus(job.status);
+        if (job.status === 'error') setErrorMsg(job.error);
+        if (job.status === 'done' || job.status === 'error') {
+          setSending(false);
+          setTimeout(unsub, 100);
+          if (job.status === 'done') {
+            void logFeatureEvent('label_printed_direct');
+            toast.success('Impresso!');
+          } else {
+            toast.error('Falha: ' + (job.error ?? 'erro'));
+          }
+        }
+      });
+      // Timeout de segurança — se o agente não responder em 60s
+      setTimeout(() => {
+        if (sending) {
+          setSending(false);
+          setStatus('error');
+          setErrorMsg('Agente não respondeu em 60s');
+          unsub();
+        }
+      }, 60_000);
+    } catch (e) {
+      setSending(false);
+      setStatus('error');
+      setErrorMsg(String(e));
+      toast.error('Erro ao enfileirar: ' + String(e));
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex w-full justify-center py-2">
+        <Spinner className="h-5 w-5" />
+      </div>
+    );
+  }
+
+  if (agents.length === 0) {
+    return (
+      <div className="w-full rounded border border-dashed border-neutral-300 bg-neutral-50 p-3 text-xs text-neutral-600">
+        Nenhuma impressora térmica cadastrada. Vá em{' '}
+        <Link to="/admin/impressoras" className="font-medium text-emerald-700">
+          Admin → Impressoras
+        </Link>{' '}
+        para configurar a impressão direta sem diálogo.
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full space-y-2 rounded border border-emerald-200 bg-emerald-50 p-3">
+      <div className="flex items-center justify-between gap-2 text-xs">
+        <span className="font-semibold uppercase text-emerald-800">
+          Impressão direta
+        </span>
+        <span
+          className={
+            online
+              ? 'inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 font-medium text-emerald-700'
+              : 'inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2 py-0.5 font-medium text-neutral-600'
+          }
+        >
+          {online ? 'Online' : 'Offline'}
+        </span>
+      </div>
+      <Select
+        value={agentId}
+        onChange={(e) => setAgentId(e.target.value)}
+        disabled={sending}
+      >
+        {agents.map((a) => (
+          <option key={a.id} value={a.id}>
+            {a.name}
+            {isAgentOnline(a) ? ' • Online' : ' • Offline'}
+          </option>
+        ))}
+      </Select>
+      <Button
+        onClick={handleDirectPrint}
+        disabled={!canPrint || !selected || !online || sending}
+        className="w-full"
+      >
+        <Printer size={16} />
+        {sending
+          ? status === 'printing'
+            ? 'Imprimindo…'
+            : 'Enviando…'
+          : `Imprimir direto ${copies > 1 ? `(${copies})` : ''}`}
+      </Button>
+      {!online && selected && (
+        <p className="text-xs text-amber-700">
+          Agente offline — abra o programa no PC da cozinha ou use o diálogo
+          abaixo.
+        </p>
+      )}
+      {status === 'done' && (
+        <p className="text-xs font-medium text-emerald-700">Impresso!</p>
+      )}
+      {status === 'error' && errorMsg && (
+        <p className="text-xs text-red-700">{errorMsg}</p>
+      )}
+    </div>
   );
 }
 

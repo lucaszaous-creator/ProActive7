@@ -35,6 +35,7 @@ const ptBR = {
     companies: 'Empresas',
     users: 'Usuários',
     hardware: 'Hardware',
+    printers: 'Impressoras',
     auditLog: 'Trilha de auditoria',
     trash: 'Lixeira',
     organizations: 'Organizações',

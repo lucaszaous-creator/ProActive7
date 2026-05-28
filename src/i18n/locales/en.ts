@@ -35,6 +35,7 @@ const en = {
     companies: 'Companies',
     users: 'Users',
     hardware: 'Hardware',
+    printers: 'Printers',
     auditLog: 'Audit log',
     trash: 'Trash',
     organizations: 'Organizations',

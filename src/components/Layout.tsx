@@ -227,6 +227,12 @@ const ITEM = {
     labelKey: 'nav.hardware',
     icon: Printer,
   } as NavItemDef,
+  impressoras: {
+    kind: 'item',
+    to: '/admin/impressoras',
+    labelKey: 'nav.printers',
+    icon: Printer,
+  } as NavItemDef,
   trilha: {
     kind: 'item',
     to: '/admin/trilha',
@@ -346,7 +352,7 @@ const NAV_NUTRITIONIST: NavNode[] = [
     labelKey: 'nav.administracao',
     icon: Settings,
     defaultOpen: false,
-    children: [ITEM.empresas, ITEM.usuarios, ITEM.hardware],
+    children: [ITEM.empresas, ITEM.usuarios, ITEM.impressoras, ITEM.hardware],
   },
 ];
 
@@ -417,7 +423,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
     labelKey: 'nav.administracao',
     icon: Settings,
     defaultOpen: false,
-    children: [ITEM.empresas, ITEM.usuarios, ITEM.hardware],
+    children: [ITEM.empresas, ITEM.usuarios, ITEM.impressoras, ITEM.hardware],
   },
 ];
 
