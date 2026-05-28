@@ -298,6 +298,7 @@ const NAV_PROPERTY: NavNode[] = [
       ITEM.funcionarios,
       ITEM.fornecedores,
       ITEM.fichasTecnicas,
+      ITEM.impressoras,
     ],
   },
   {

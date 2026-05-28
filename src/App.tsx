@@ -286,7 +286,6 @@ export default function App() {
             <Route path="/admin/empresas" element={<CompaniesPage />} />
             <Route path="/admin/usuarios" element={<UsersPage />} />
             <Route path="/admin/hardware" element={<HardwarePage />} />
-            <Route path="/admin/impressoras" element={<PrintersPage />} />
           </Route>
         </Route>
 
@@ -295,6 +294,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/fornecedores" element={<SuppliersPage />} />
             <Route path="/cadastros/grupos" element={<GruposPage />} />
+            <Route path="/admin/impressoras" element={<PrintersPage />} />
           </Route>
         </Route>
 
