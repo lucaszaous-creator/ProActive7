@@ -19,6 +19,8 @@ export interface PrintAgent {
   company_id: string;
   name: string;
   computer_name: string | null;
+  /** Nome da impressora instalada no Windows (via QZ Tray). */
+  printer_name: string | null;
   printer_host: string | null;
   printer_port: number;
   label_width_mm: number;

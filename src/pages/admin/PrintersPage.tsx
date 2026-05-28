@@ -4,32 +4,30 @@ import {
   Printer,
   Plus,
   Trash2,
-  Copy,
-  CheckCircle2,
-  XCircle,
   AlertTriangle,
-  Search,
-  RefreshCw,
   Download,
+  RefreshCw,
+  Plug,
+  PlugZap,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
+import type { PrintAgent } from '@/lib/printAgent';
 import {
-  generateAgentToken,
-  isAgentOnline,
-  setAgentPrinter,
-  sha256Hex,
-  type DiscoveredPrinter,
-  type PrintAgent,
-} from '@/lib/printAgent';
+  QZ_TRAY_DOWNLOAD_URL,
+  connectQz,
+  isQzConnected,
+  listLocalPrinters,
+  printZpl,
+} from '@/lib/qzTray';
+import { buildLabelZpl } from '@/lib/zpl';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
-import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
 const LABEL_SIZES = [
@@ -48,12 +46,12 @@ export function PrintersPage() {
   const [agents, setAgents] = useState<PrintAgent[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [pendingToken, setPendingToken] = useState<{
-    agent: PrintAgent;
-    token: string;
-  } | null>(null);
   const [toDelete, setToDelete] = useState<PrintAgent | null>(null);
-  const [pickFor, setPickFor] = useState<PrintAgent | null>(null);
+
+  // Estado da conexão com o QZ Tray local.
+  const [qzReady, setQzReady] = useState(isQzConnected());
+  const [qzConnecting, setQzConnecting] = useState(false);
+  const [localPrinters, setLocalPrinters] = useState<string[]>([]);
 
   const load = useCallback(async () => {
     if (!companyId) return;
@@ -73,9 +71,27 @@ export function PrintersPage() {
 
   useEffect(() => {
     void load();
-    const t = setInterval(() => void load(), 15_000);
-    return () => clearInterval(t);
   }, [load]);
+
+  async function connectAndList() {
+    setQzConnecting(true);
+    try {
+      await connectQz();
+      const list = await listLocalPrinters();
+      setLocalPrinters(list);
+      setQzReady(true);
+      toast.success(`QZ Tray conectado — ${list.length} impressora(s).`);
+    } catch (e) {
+      const msg = (e as Error)?.message ?? String(e);
+      toast.error(
+        'Não consegui conectar no QZ Tray. Instale-o e abra o programa.',
+      );
+      console.error('QZ Tray:', msg);
+      setQzReady(false);
+    } finally {
+      setQzConnecting(false);
+    }
+  }
 
   async function handleDelete() {
     if (!toDelete) return;
@@ -92,7 +108,9 @@ export function PrintersPage() {
   if (!companyId) {
     return (
       <Card>
-        <p className="text-sm text-neutral-600">Selecione uma empresa primeiro.</p>
+        <p className="text-sm text-neutral-600">
+          Selecione uma empresa primeiro.
+        </p>
       </Card>
     );
   }
@@ -105,10 +123,13 @@ export function PrintersPage() {
             Impressoras térmicas
           </h1>
           <p className="text-sm text-neutral-500">
-            {companyName} — impressão direta sem diálogo, via agente local.
+            {companyName} — impressão direta pelo QZ Tray.
           </p>
         </div>
-        <Button onClick={() => setShowForm((v) => !v)}>
+        <Button
+          onClick={() => setShowForm((v) => !v)}
+          disabled={!qzReady && !showForm}
+        >
           <Plus size={16} /> Nova impressora
         </Button>
       </header>
@@ -129,63 +150,91 @@ export function PrintersPage() {
               </option>
             ))}
           </Select>
-          <p className="mt-1 text-xs text-neutral-500">
-            Cada estabelecimento tem suas próprias impressoras. Escolha a empresa
-            para configurar as impressoras dela.
-          </p>
         </Card>
       )}
 
       <Card>
-        <details>
-          <summary className="cursor-pointer text-sm font-medium text-neutral-700">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-start gap-3">
+            {qzReady ? (
+              <PlugZap size={22} className="mt-1 text-emerald-600" />
+            ) : (
+              <Plug size={22} className="mt-1 text-neutral-400" />
+            )}
+            <div>
+              <h2 className="text-sm font-semibold text-neutral-800">
+                {qzReady ? 'QZ Tray conectado' : 'QZ Tray não conectado'}
+              </h2>
+              <p className="text-xs text-neutral-500">
+                {qzReady
+                  ? `${localPrinters.length} impressora(s) detectada(s) neste computador.`
+                  : 'Instale o QZ Tray no PC ligado à impressora, abra-o, e clique em Conectar.'}
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {!qzReady && (
+              <a
+                href={QZ_TRAY_DOWNLOAD_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
+              >
+                <Download size={16} /> Baixar QZ Tray
+              </a>
+            )}
+            <Button onClick={() => void connectAndList()} disabled={qzConnecting}>
+              {qzConnecting ? (
+                <Spinner className="h-4 w-4" />
+              ) : (
+                <RefreshCw size={16} />
+              )}
+              {qzReady ? 'Atualizar lista' : 'Conectar QZ Tray'}
+            </Button>
+          </div>
+        </div>
+
+        <details className="mt-3">
+          <summary className="cursor-pointer text-xs font-medium text-neutral-600">
             Como funciona?
           </summary>
-          <div className="mt-3 space-y-2 text-sm text-neutral-600">
+          <div className="mt-2 space-y-2 text-xs text-neutral-600">
             <p>
-              <b>1.</b> Dê um nome e cadastre — você recebe um{' '}
-              <b>token único</b> (mostrado uma vez).
+              <b>1.</b> No PC ligado à impressora térmica, baixe e instale o{' '}
+              <a
+                href={QZ_TRAY_DOWNLOAD_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="text-emerald-700 underline"
+              >
+                QZ Tray
+              </a>{' '}
+              (gratuito, instalador oficial e assinado — sem alerta do Defender).
             </p>
             <p>
-              <b>2.</b> Instale o <b>agente</b> num PC ligado à impressora (Node
-              18+) e cole o token.
+              <b>2.</b> Abra o QZ Tray (fica como ícone na barra do Windows).
             </p>
             <p>
-              <b>3.</b> O agente <b>encontra as impressoras da rede sozinho</b>.
-              Volte aqui, clique em “Selecionar impressora” e escolha da lista —
-              sem digitar IP.
+              <b>3.</b> Aqui no app, clique em <b>Conectar QZ Tray</b>. Na
+              primeira vez o QZ vai pedir permissão para o site — clique em{' '}
+              <i>Allow</i> (permitir).
             </p>
             <p>
-              Baixe o programa abaixo, abra no PC ligado à impressora, e cole o
-              token quando ele pedir. Funciona com impressoras de rede
-              (Wi-Fi/Ethernet) via TCP 9100 — ex.: Elgin L42PRO FULL.
+              <b>4.</b> Cadastre cada impressora escolhendo da lista detectada e
+              o tamanho da etiqueta.
             </p>
-            <a
-              href="/downloads/ProActive7-Agente.exe"
-              download
-              className="mt-1 inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-            >
-              <Download size={16} /> Baixar agente (Windows)
-            </a>
           </div>
         </details>
       </Card>
-
-      {pendingToken && (
-        <TokenReveal
-          agent={pendingToken.agent}
-          token={pendingToken.token}
-          onClose={() => setPendingToken(null)}
-        />
-      )}
 
       {showForm && (
         <AgentForm
           companyId={companyId}
           createdBy={profile?.id ?? null}
-          onCreated={(agent, token) => {
+          localPrinters={localPrinters}
+          existingNames={agents.map((a) => a.printer_name).filter(Boolean) as string[]}
+          onCreated={() => {
             setShowForm(false);
-            setPendingToken({ agent, token });
             void load();
           }}
           onCancel={() => setShowForm(false)}
@@ -199,8 +248,10 @@ export function PrintersPage() {
       ) : agents.length === 0 ? (
         <Card>
           <p className="text-sm text-neutral-600">
-            Nenhuma impressora cadastrada. Clique em “Nova impressora” para
-            começar.
+            Nenhuma impressora cadastrada.{' '}
+            {qzReady
+              ? 'Clique em “Nova impressora” para começar.'
+              : 'Conecte o QZ Tray primeiro.'}
           </p>
         </Card>
       ) : (
@@ -209,28 +260,17 @@ export function PrintersPage() {
             <AgentCard
               key={a.id}
               agent={a}
+              qzReady={qzReady}
               onDelete={() => setToDelete(a)}
-              onDetect={() => setPickFor(a)}
             />
           ))}
         </div>
       )}
 
-      {pickFor && (
-        <PrinterPickerModal
-          agent={pickFor}
-          onClose={() => setPickFor(null)}
-          onPicked={() => {
-            setPickFor(null);
-            void load();
-          }}
-        />
-      )}
-
       <ConfirmDialog
         open={!!toDelete}
         title="Remover impressora"
-        message={`Tem certeza que deseja remover "${toDelete?.name}"? Todos os jobs pendentes desta impressora serão apagados.`}
+        message={`Tem certeza que deseja remover "${toDelete?.name}"?`}
         confirmLabel="Remover"
         onConfirm={handleDelete}
         onCancel={() => setToDelete(null)}
@@ -239,18 +279,53 @@ export function PrintersPage() {
   );
 }
 
-/* ---------- Card de cada agente ---------- */
+/* ---------- Card de cada impressora cadastrada ---------- */
 function AgentCard({
   agent,
+  qzReady,
   onDelete,
-  onDetect,
 }: {
   agent: PrintAgent;
+  qzReady: boolean;
   onDelete: () => void;
-  onDetect: () => void;
 }) {
-  const online = isAgentOnline(agent);
-  const hasPrinter = !!agent.printer_host;
+  const [testing, setTesting] = useState(false);
+
+  async function testPrint() {
+    if (!agent.printer_name) {
+      return toast.error('Impressora sem nome do Windows definido.');
+    }
+    setTesting(true);
+    try {
+      const now = new Date();
+      const fmt = (d: Date) =>
+        d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+      const zpl = buildLabelZpl(
+        {
+          companyName: '',
+          productName: 'TESTE DE IMPRESSAO',
+          storageConditionLabel: 'TESTE',
+          manipulationText: fmt(now),
+          expiryText: fmt(new Date(Date.now() + 86_400_000)),
+          responsibleName: agent.name,
+          printId: 'TST-' + Date.now().toString(36).toUpperCase(),
+        },
+        {
+          widthMm: agent.label_width_mm,
+          heightMm: agent.label_height_mm,
+          dpi: agent.dpi,
+          copies: 1,
+        },
+      );
+      await printZpl(agent.printer_name, zpl, 1);
+      toast.success('Etiqueta de teste enviada!');
+    } catch (e) {
+      toast.error('Falha ao imprimir: ' + (e as Error).message);
+    } finally {
+      setTesting(false);
+    }
+  }
+
   return (
     <Card>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
@@ -260,30 +335,11 @@ function AgentCard({
             <h2 className="truncate font-semibold text-neutral-800">
               {agent.name}
             </h2>
-            {online ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
-                <CheckCircle2 size={12} /> Online
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500">
-                <XCircle size={12} /> Offline
-              </span>
-            )}
           </div>
           <dl className="mt-2 grid grid-cols-1 gap-x-4 gap-y-1 text-xs text-neutral-600 sm:grid-cols-2">
             <div>
-              <dt className="inline font-medium">Computador: </dt>
-              <dd className="inline">{agent.computer_name ?? '—'}</dd>
-            </div>
-            <div>
-              <dt className="inline font-medium">Impressora: </dt>
-              <dd className="inline">
-                {hasPrinter ? (
-                  `${agent.printer_host}:${agent.printer_port}`
-                ) : (
-                  <span className="text-amber-600">não selecionada</span>
-                )}
-              </dd>
+              <dt className="inline font-medium">Impressora (Windows): </dt>
+              <dd className="inline">{agent.printer_name ?? '—'}</dd>
             </div>
             <div>
               <dt className="inline font-medium">Etiqueta: </dt>
@@ -292,22 +348,15 @@ function AgentCard({
                 dpi
               </dd>
             </div>
-            <div>
-              <dt className="inline font-medium">Última atividade: </dt>
-              <dd className="inline">
-                {agent.last_seen_at
-                  ? new Date(agent.last_seen_at).toLocaleString('pt-BR')
-                  : '—'}
-              </dd>
-            </div>
           </dl>
           <div className="mt-3">
             <Button
-              variant={hasPrinter ? 'ghost' : 'primary'}
-              onClick={onDetect}
+              variant="secondary"
+              onClick={() => void testPrint()}
+              disabled={!qzReady || testing}
             >
-              <Search size={14} />{' '}
-              {hasPrinter ? 'Trocar impressora' : 'Selecionar impressora'}
+              {testing ? <Spinner className="h-4 w-4" /> : <Printer size={14} />}
+              Imprimir teste
             </Button>
           </div>
         </div>
@@ -319,172 +368,64 @@ function AgentCard({
   );
 }
 
-/* ---------- Popup: escolher a impressora detectada pelo agente ---------- */
-function PrinterPickerModal({
-  agent,
-  onClose,
-  onPicked,
-}: {
-  agent: PrintAgent;
-  onClose: () => void;
-  onPicked: () => void;
-}) {
-  const [printers, setPrinters] = useState<DiscoveredPrinter[]>(
-    agent.discovered ?? [],
-  );
-  const [online, setOnline] = useState(isAgentOnline(agent));
-  const [discoveredAt, setDiscoveredAt] = useState<string | null>(
-    agent.discovered_at,
-  );
-  const [saving, setSaving] = useState<string | null>(null);
-
-  // Recarrega a lista detectada de tempos em tempos enquanto o popup
-  // estiver aberto (o agente reporta a cada ~60s).
-  const refresh = useCallback(async () => {
-    const { data } = await supabase
-      .from('print_agents')
-      .select('discovered, discovered_at, last_seen_at')
-      .eq('id', agent.id)
-      .single();
-    if (data) {
-      setPrinters((data.discovered as DiscoveredPrinter[]) ?? []);
-      setDiscoveredAt(data.discovered_at as string | null);
-      setOnline(isAgentOnline({ last_seen_at: data.last_seen_at as string }));
-    }
-  }, [agent.id]);
-
-  useEffect(() => {
-    void refresh();
-    const t = setInterval(() => void refresh(), 5000);
-    return () => clearInterval(t);
-  }, [refresh]);
-
-  async function pick(p: DiscoveredPrinter) {
-    setSaving(p.host);
-    try {
-      await setAgentPrinter(agent.id, p);
-      toast.success(`Impressora ${p.host} selecionada.`);
-      onPicked();
-    } catch (e) {
-      toast.error('Erro ao salvar: ' + (e as Error).message);
-      setSaving(null);
-    }
-  }
-
-  return (
-    <Modal
-      open
-      onClose={onClose}
-      title={`Detectar impressora — ${agent.name}`}
-      footer={
-        <Button variant="ghost" onClick={() => void refresh()}>
-          <RefreshCw size={14} /> Procurar de novo
-        </Button>
-      }
-    >
-      {!online && (
-        <div className="mb-3 flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
-          <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-          <span>
-            O agente deste computador está <b>offline</b>. Abra o agente no PC
-            ligado à impressora (com o token deste cadastro) para que ele
-            encontre as impressoras da rede.
-          </span>
-        </div>
-      )}
-
-      {printers.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 py-8 text-center">
-          <Spinner className="h-6 w-6" />
-          <p className="text-sm text-neutral-600">
-            Procurando impressoras na rede…
-            <br />
-            <span className="text-xs text-neutral-400">
-              O agente varre a rede a cada minuto. Deixe-o rodando e aguarde.
-            </span>
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          <p className="text-xs text-neutral-500">
-            Clique na impressora que você quer usar:
-          </p>
-          {printers.map((p) => (
-            <button
-              key={`${p.host}:${p.port}`}
-              onClick={() => void pick(p)}
-              disabled={!!saving}
-              className="flex w-full items-center gap-3 rounded-lg border border-neutral-200 p-3 text-left hover:border-emerald-400 hover:bg-emerald-50 disabled:opacity-50"
-            >
-              <Printer size={18} className="shrink-0 text-neutral-500" />
-              <div className="min-w-0 flex-1">
-                <div className="truncate text-sm font-medium text-neutral-800">
-                  {p.name ?? 'Impressora de rede'}
-                </div>
-                <div className="text-xs text-neutral-500">
-                  {p.host}:{p.port}
-                </div>
-              </div>
-              {saving === p.host && <Spinner className="h-4 w-4" />}
-            </button>
-          ))}
-          {discoveredAt && (
-            <p className="pt-1 text-right text-[11px] text-neutral-400">
-              Última varredura:{' '}
-              {new Date(discoveredAt).toLocaleTimeString('pt-BR')}
-            </p>
-          )}
-        </div>
-      )}
-    </Modal>
-  );
-}
-
-/* ---------- Formulário de criação ---------- */
+/* ---------- Formulário: cadastrar uma impressora a partir da lista do QZ ---------- */
 function AgentForm({
   companyId,
   createdBy,
+  localPrinters,
+  existingNames,
   onCreated,
   onCancel,
 }: {
   companyId: string;
   createdBy: string | null;
-  onCreated: (agent: PrintAgent, token: string) => void;
+  localPrinters: string[];
+  existingNames: string[];
+  onCreated: () => void;
   onCancel: () => void;
 }) {
+  const available = localPrinters.filter((p) => !existingNames.includes(p));
+  const [printerName, setPrinterName] = useState(available[0] ?? '');
   const [name, setName] = useState('');
-  const [computerName, setComputerName] = useState('');
   const [sizeKey, setSizeKey] = useState('40x40');
   const [dpi, setDpi] = useState(203);
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim()) return toast.error('Nome obrigatório');
+    if (!printerName) return toast.error('Escolha a impressora do Windows.');
+    if (!name.trim()) return toast.error('Dê um nome de exibição.');
     setSaving(true);
-    const token = generateAgentToken();
-    const tokenHash = await sha256Hex(token);
     const [w, h] = sizeKey.split('x').map(Number);
-    const { data, error } = await supabase
-      .from('print_agents')
-      .insert({
-        company_id: companyId,
-        name: name.trim(),
-        computer_name: computerName.trim() || null,
-        token_hash: tokenHash,
-        // Impressora é escolhida depois, no popup "Selecionar impressora".
-        printer_host: null,
-        printer_port: 9100,
-        label_width_mm: w,
-        label_height_mm: h,
-        dpi,
-        created_by: createdBy,
-      })
-      .select('*')
-      .single();
+    // O QZ Tray não usa token; mantemos a coluna por compat com o schema.
+    const tokenHash = crypto.randomUUID();
+    const { error } = await supabase.from('print_agents').insert({
+      company_id: companyId,
+      name: name.trim(),
+      printer_name: printerName,
+      token_hash: tokenHash,
+      label_width_mm: w,
+      label_height_mm: h,
+      dpi,
+      created_by: createdBy,
+    });
     setSaving(false);
     if (error) return toast.error('Erro ao salvar: ' + error.message);
-    onCreated(data as PrintAgent, token);
+    toast.success('Impressora cadastrada.');
+    onCreated();
+  }
+
+  if (localPrinters.length === 0) {
+    return (
+      <Card>
+        <p className="flex items-start gap-2 text-sm text-amber-700">
+          <AlertTriangle size={16} className="mt-0.5 shrink-0" />
+          Nenhuma impressora detectada no Windows. Verifique se a impressora
+          está instalada (Painel de Controle → Dispositivos e Impressoras) e
+          clique em <b>Atualizar lista</b>.
+        </p>
+      </Card>
+    );
   }
 
   return (
@@ -493,11 +434,28 @@ function AgentForm({
         <h2 className="text-sm font-semibold text-neutral-700">
           Nova impressora
         </h2>
+        <Select
+          label="Impressora do Windows"
+          value={printerName}
+          onChange={(e) => {
+            setPrinterName(e.target.value);
+            if (!name) setName(e.target.value);
+          }}
+        >
+          {available.length === 0 && (
+            <option value="">Todas já cadastradas</option>
+          )}
+          {available.map((p) => (
+            <option key={p} value={p}>
+              {p}
+            </option>
+          ))}
+        </Select>
         <Input
-          label="Nome (como vai aparecer na impressão)"
+          label="Apelido (como vai aparecer no app)"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Elgin L42PRO — Cozinha"
+          placeholder="Cozinha"
           required
         />
         <div className="grid grid-cols-2 gap-2">
@@ -521,27 +479,8 @@ function AgentForm({
             <option value="300">300 dpi</option>
           </Select>
         </div>
-        <details>
-          <summary className="cursor-pointer text-xs text-neutral-500">
-            Opções avançadas
-          </summary>
-          <div className="mt-2">
-            <Input
-              label="Nome do computador (informativo)"
-              value={computerName}
-              onChange={(e) => setComputerName(e.target.value)}
-              placeholder="PC-COZINHA"
-            />
-          </div>
-        </details>
-        <p className="flex items-start gap-1 text-xs text-neutral-500">
-          <AlertTriangle size={12} className="mt-0.5 shrink-0" />
-          Depois de cadastrar, instale o agente no PC da impressora e clique em
-          “Selecionar impressora” para escolher da lista detectada — sem digitar
-          IP.
-        </p>
         <div className="flex gap-2">
-          <Button type="submit" disabled={saving}>
+          <Button type="submit" disabled={saving || !printerName}>
             {saving ? 'Salvando…' : 'Cadastrar'}
           </Button>
           <Button type="button" variant="ghost" onClick={onCancel}>
@@ -549,63 +488,6 @@ function AgentForm({
           </Button>
         </div>
       </form>
-    </Card>
-  );
-}
-
-/* ---------- Token revelado uma única vez ---------- */
-function TokenReveal({
-  agent,
-  token,
-  onClose,
-}: {
-  agent: PrintAgent;
-  token: string;
-  onClose: () => void;
-}) {
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(token);
-      toast.success('Token copiado.');
-    } catch {
-      toast.error('Não consegui copiar — selecione e copie manualmente.');
-    }
-  }
-  return (
-    <Card className="border-amber-300 bg-amber-50">
-      <div className="space-y-3">
-        <div className="flex items-start gap-2">
-          <AlertTriangle size={18} className="mt-0.5 text-amber-600" />
-          <div>
-            <h2 className="text-sm font-semibold text-amber-900">
-              Token de “{agent.name}” — guarde agora
-            </h2>
-            <p className="text-xs text-amber-800">
-              Este token só aparece uma vez. Cole no <code>config.json</code>{' '}
-              do agente. Se perder, exclua e crie outra impressora.
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 rounded border border-amber-300 bg-white p-2">
-          <code className="flex-1 overflow-x-auto text-xs">{token}</code>
-          <Button variant="ghost" onClick={copy} aria-label="Copiar">
-            <Copy size={14} />
-          </Button>
-        </div>
-        <p className="text-xs text-amber-800">
-          Agora baixe o agente, abra no PC da impressora e cole este token:
-        </p>
-        <a
-          href="/downloads/ProActive7-Agente.exe"
-          download
-          className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-        >
-          <Download size={16} /> Baixar agente (Windows)
-        </a>
-        <div>
-          <Button onClick={onClose}>Já guardei</Button>
-        </div>
-      </div>
     </Card>
   );
 }

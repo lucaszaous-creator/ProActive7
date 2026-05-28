@@ -35,12 +35,9 @@ import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { logFeatureEvent } from '@/lib/platformMetrics';
-import {
-  isAgentOnline,
-  queueDirectPrint,
-  subscribePrintJob,
-  type PrintAgent,
-} from '@/lib/printAgent';
+import { type PrintAgent } from '@/lib/printAgent';
+import { connectQz, isQzConnected, printZpl } from '@/lib/qzTray';
+import { buildLabelZpl } from '@/lib/zpl';
 
 interface LabelSize {
   id: string;
@@ -1139,8 +1136,6 @@ function Step5({
 
 function DirectPrintBlock({
   companyId,
-  labelId,
-  profileId,
   labelData,
   widthMm,
   heightMm,
@@ -1160,9 +1155,7 @@ function DirectPrintBlock({
   const [agentId, setAgentId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [status, setStatus] = useState<
-    'idle' | 'queued' | 'printing' | 'done' | 'error'
-  >('idle');
+  const [qzReady, setQzReady] = useState(isQzConnected());
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -1177,8 +1170,7 @@ function DirectPrintBlock({
       if (cancelled) return;
       const list = (data as PrintAgent[]) ?? [];
       setAgents(list);
-      const online = list.find(isAgentOnline);
-      setAgentId(online?.id ?? list[0]?.id ?? '');
+      setAgentId(list[0]?.id ?? '');
       setLoading(false);
     })();
     return () => {
@@ -1186,54 +1178,37 @@ function DirectPrintBlock({
     };
   }, [companyId]);
 
+  // Tenta conectar no QZ Tray local em background ao montar.
+  useEffect(() => {
+    if (qzReady) return;
+    connectQz()
+      .then(() => setQzReady(true))
+      .catch(() => setQzReady(false));
+  }, [qzReady]);
+
   const selected = agents.find((a) => a.id === agentId) ?? null;
-  const online = selected ? isAgentOnline(selected) : false;
-  const noPrinter = !!selected && !selected.printer_host;
+  const noPrinter = !!selected && !selected.printer_name;
 
   async function handleDirectPrint() {
-    if (!selected) return;
+    if (!selected || !selected.printer_name) return;
     setSending(true);
     setErrorMsg(null);
-    setStatus('queued');
     try {
-      const jobId = await queueDirectPrint({
-        agent: selected,
-        labelData,
+      const zpl = buildLabelZpl(labelData, {
         widthMm,
         heightMm,
+        dpi: selected.dpi,
         copies,
-        companyId,
-        labelId,
-        createdBy: profileId,
       });
-      const unsub = subscribePrintJob(jobId, (job) => {
-        setStatus(job.status);
-        if (job.status === 'error') setErrorMsg(job.error);
-        if (job.status === 'done' || job.status === 'error') {
-          setSending(false);
-          setTimeout(unsub, 100);
-          if (job.status === 'done') {
-            void logFeatureEvent('label_printed_direct');
-            toast.success('Impresso!');
-          } else {
-            toast.error('Falha: ' + (job.error ?? 'erro'));
-          }
-        }
-      });
-      // Timeout de segurança — se o agente não responder em 60s
-      setTimeout(() => {
-        if (sending) {
-          setSending(false);
-          setStatus('error');
-          setErrorMsg('Agente não respondeu em 60s');
-          unsub();
-        }
-      }, 60_000);
+      await printZpl(selected.printer_name, zpl, 1);
+      void logFeatureEvent('label_printed_direct');
+      toast.success('Impresso!');
     } catch (e) {
+      const msg = (e as Error)?.message ?? String(e);
+      setErrorMsg(msg);
+      toast.error('Falha ao imprimir: ' + msg);
+    } finally {
       setSending(false);
-      setStatus('error');
-      setErrorMsg(String(e));
-      toast.error('Erro ao enfileirar: ' + String(e));
     }
   }
 
@@ -1250,7 +1225,7 @@ function DirectPrintBlock({
       <div className="w-full rounded border border-dashed border-neutral-300 bg-neutral-50 p-3 text-xs text-neutral-600">
         Nenhuma impressora térmica cadastrada. Vá em{' '}
         <Link to="/admin/impressoras" className="font-medium text-emerald-700">
-          Admin → Impressoras
+          Cadastros → Impressoras
         </Link>{' '}
         para configurar a impressão direta sem diálogo.
       </div>
@@ -1261,16 +1236,16 @@ function DirectPrintBlock({
     <div className="w-full space-y-2 rounded border border-emerald-200 bg-emerald-50 p-3">
       <div className="flex items-center justify-between gap-2 text-xs">
         <span className="font-semibold uppercase text-emerald-800">
-          Impressão direta
+          Impressão direta (QZ Tray)
         </span>
         <span
           className={
-            online
+            qzReady
               ? 'inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 font-medium text-emerald-700'
               : 'inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2 py-0.5 font-medium text-neutral-600'
           }
         >
-          {online ? 'Online' : 'Offline'}
+          {qzReady ? 'Conectado' : 'QZ Tray offline'}
         </span>
       </div>
       <Select
@@ -1281,40 +1256,31 @@ function DirectPrintBlock({
         {agents.map((a) => (
           <option key={a.id} value={a.id}>
             {a.name}
-            {isAgentOnline(a) ? ' • Online' : ' • Offline'}
+            {a.printer_name ? '' : ' — sem impressora'}
           </option>
         ))}
       </Select>
       <Button
         onClick={handleDirectPrint}
-        disabled={!canPrint || !selected || !online || noPrinter || sending}
+        disabled={!canPrint || !selected || !qzReady || noPrinter || sending}
         className="w-full"
       >
         <Printer size={16} />
-        {sending
-          ? status === 'printing'
-            ? 'Imprimindo…'
-            : 'Enviando…'
-          : `Imprimir direto ${copies > 1 ? `(${copies})` : ''}`}
+        {sending ? 'Imprimindo…' : `Imprimir direto ${copies > 1 ? `(${copies})` : ''}`}
       </Button>
-      {!online && selected && (
+      {!qzReady && (
         <p className="text-xs text-amber-700">
-          Agente offline — abra o programa no PC da cozinha ou use o diálogo
-          abaixo.
+          QZ Tray não está rodando neste PC. Abra-o (ícone na barra do Windows)
+          ou use o diálogo abaixo. No celular, use o diálogo abaixo.
         </p>
       )}
-      {online && noPrinter && (
+      {qzReady && noPrinter && (
         <p className="text-xs text-amber-700">
-          Nenhuma impressora selecionada para este agente. Vá em Cadastros →
-          Impressoras e clique em “Selecionar impressora”.
+          Impressora sem nome do Windows. Vá em Cadastros → Impressoras e
+          cadastre escolhendo da lista do QZ Tray.
         </p>
       )}
-      {status === 'done' && (
-        <p className="text-xs font-medium text-emerald-700">Impresso!</p>
-      )}
-      {status === 'error' && errorMsg && (
-        <p className="text-xs text-red-700">{errorMsg}</p>
-      )}
+      {errorMsg && <p className="text-xs text-red-700">{errorMsg}</p>}
     </div>
   );
 }
