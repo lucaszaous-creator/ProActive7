@@ -2,9 +2,10 @@
 // =====================================================================
 // ProActive7 — Agente de impressão local (estilo PrintNode, grátis)
 //
-// Modo executável (.exe Windows) ou script Node. Quando rodado como .exe,
-// pede o TOKEN na primeira vez (gerado na tela Cadastros -> Impressoras),
-// salva ao lado do executável e se registra para iniciar com o Windows.
+// Modo executável (.exe Windows) ou script Node. No Windows, pede o
+// TOKEN numa CAIXA DE DIÁLOGO (não depende do console, que falha em
+// executável empacotado). Salva o token ao lado do .exe e registra o
+// agente para iniciar com o Windows.
 // =====================================================================
 
 import net from 'node:net';
@@ -13,24 +14,23 @@ import { readFileSync, writeFileSync, readSync, appendFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 
-// Chaves PÚBLICAS do projeto (seguras de embutir — são as mesmas do site).
+// Chaves PÚBLICAS do projeto (seguras de embutir — as mesmas do site).
 const DEFAULT_URL = 'https://glvdiicipblsohdgmqaz.supabase.co';
 const DEFAULT_ANON =
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsdmRpaWNpcGJsc29oZGdtcWF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzA2MDAsImV4cCI6MjA5NTA0NjYwMH0.-RZ1w7l78auSDe7u5-gcFJumLRusjrF4i28WibbK4EI';
 
-// Detecta modo "executável" sem depender de process.pkg (que pode não
-// estar definido em build ESM do yao-pkg).
-const isExe =
-  !!process.pkg ||
-  /\.exe$/i.test(process.execPath) &&
-    !/[\\/](node|node\.exe)$/i.test(process.execPath);
+const isWin = process.platform === 'win32';
 const baseDir = dirname(process.execPath);
 const configPath = join(baseDir, 'proactive7-agente.json');
 const logPath = join(baseDir, 'proactive7-agente.log');
 
 function log(msg) {
   const line = `[${new Date().toISOString()}] ${msg}\n`;
-  process.stdout.write(line);
+  try {
+    process.stdout.write(line);
+  } catch {
+    /* console pode não existir no exe */
+  }
   try {
     appendFileSync(logPath, line);
   } catch {
@@ -38,10 +38,42 @@ function log(msg) {
   }
 }
 
-// Pausa síncrona até o usuário apertar Enter (não usa readline — funciona
-// em qualquer contexto de stdin, inclusive empacotado).
-function pauseSync(msg = 'Tecle Enter para sair.') {
-  process.stdout.write(msg + '\n');
+// ---------- Diálogos nativos do Windows (via PowerShell) ----------
+function psRun(script) {
+  const r = spawnSync(
+    'powershell',
+    ['-NoProfile', '-NonInteractive', '-Command', script],
+    { encoding: 'utf8', windowsHide: true },
+  );
+  return (r.stdout || '').replace(/\r?\n$/, '');
+}
+
+function inputBox(prompt, title) {
+  // Caixa de texto com OK/Cancelar; devolve o que o usuário digitou.
+  const p = prompt.replace(/'/g, "''");
+  const t = title.replace(/'/g, "''");
+  return psRun(
+    `Add-Type -AssemblyName Microsoft.VisualBasic;` +
+      `[Microsoft.VisualBasic.Interaction]::InputBox('${p}','${t}','')`,
+  ).trim();
+}
+
+function messageBox(msg, title) {
+  const m = msg.replace(/'/g, "''");
+  const t = title.replace(/'/g, "''");
+  psRun(
+    `Add-Type -AssemblyName System.Windows.Forms;` +
+      `[void][System.Windows.Forms.MessageBox]::Show('${m}','${t}')`,
+  );
+}
+
+// Pausa/erro: no Windows mostra uma janela; senão segura o console.
+function notify(msg, title = 'ProActive7 — Agente') {
+  if (isWin) {
+    messageBox(msg, title);
+    return;
+  }
+  process.stdout.write(`\n${msg}\nTecle Enter para sair.\n`);
   try {
     const buf = Buffer.alloc(1);
     for (;;) {
@@ -49,17 +81,20 @@ function pauseSync(msg = 'Tecle Enter para sair.') {
       if (n === 0 || buf[0] === 0x0a) return;
     }
   } catch {
-    // Sem stdin disponível: segura a janela por 30s pra dar tempo de ler.
-    const end = Date.now() + 30000;
-    while (Date.now() < end) {
-      /* busy wait */
-    }
+    /* sem stdin */
   }
 }
 
-// Lê uma linha do stdin (síncrono). Não usa readline.
-function askSync(question) {
-  process.stdout.write(question);
+// Token: diálogo no Windows; stdin no terminal (modo script).
+function promptToken() {
+  if (isWin) {
+    return inputBox(
+      'Cole aqui o TOKEN da impressora\n' +
+        '(tela Cadastros -> Impressoras -> cadastrar) e clique OK:',
+      'ProActive7 — Agente',
+    );
+  }
+  process.stdout.write('Cole o TOKEN da impressora e tecle Enter:\n> ');
   const out = [];
   const buf = Buffer.alloc(1);
   for (;;) {
@@ -70,10 +105,9 @@ function askSync(question) {
       break;
     }
     if (n === 0) break;
-    const ch = buf[0];
-    if (ch === 0x0a) break; // \n
-    if (ch === 0x0d) continue; // \r (Windows)
-    out.push(ch);
+    if (buf[0] === 0x0a) break;
+    if (buf[0] === 0x0d) continue;
+    out.push(buf[0]);
   }
   return Buffer.from(out).toString('utf8').trim();
 }
@@ -98,9 +132,8 @@ function saveToken(token) {
   }
 }
 
-// Registra o agente para iniciar com o Windows.
 function ensureAutostart() {
-  if (process.platform !== 'win32' || !isExe) return;
+  if (!isWin) return;
   try {
     spawnSync('reg', [
       'add',
@@ -112,10 +145,10 @@ function ensureAutostart() {
       '/d',
       `"${process.execPath}"`,
       '/f',
-    ]);
+    ], { windowsHide: true });
     log('Auto-start configurado.');
   } catch (e) {
-    log('Auto-start falhou (sem permissão?): ' + String(e));
+    log('Auto-start falhou: ' + String(e));
   }
 }
 
@@ -124,20 +157,18 @@ function loadConfig() {
   let token = process.env.AGENT_TOKEN || file.AGENT_TOKEN;
 
   if (!token) {
-    console.log('\n=================================================');
-    console.log('  ProActive7 — Agente de impressao');
-    console.log('=================================================');
-    console.log('Cole o TOKEN da impressora (tela Cadastros ->');
-    console.log('Impressoras -> cadastrar) e tecle Enter.\n');
-    token = askSync('Token: ');
+    token = promptToken();
     if (!token) {
-      log('Token vazio. Feche e abra de novo para tentar.');
-      pauseSync();
-      process.exit(1);
+      notify('Nenhum token informado. Abra o programa de novo para configurar.');
+      process.exit(0);
     }
     saveToken(token);
     ensureAutostart();
-    console.log('\nToken salvo! Nao vou pedir de novo neste computador.');
+    notify(
+      'Token salvo! O agente vai ficar rodando e procurar a impressora na ' +
+        'rede.\n\nVolte ao app, em Impressoras, e clique em "Selecionar ' +
+        'impressora".\n\nPode minimizar a janela preta — só não feche.',
+    );
   }
 
   return {
@@ -290,38 +321,38 @@ async function loop() {
   }
 }
 
-async function main() {
-  log(`Iniciando. execPath=${process.execPath}, isExe=${isExe}, baseDir=${baseDir}`);
+function main() {
+  log(`Iniciando. execPath=${process.execPath}, win=${isWin}, baseDir=${baseDir}`);
   cfg = loadConfig();
   fnUrl = `${cfg.supabaseUrl.replace(/\/$/, '')}/functions/v1/print-agent`;
   assigned = { host: cfg.printerHost || null, port: cfg.printerPort };
-  console.log('\nAgente rodando. Pode minimizar esta janela.');
-  console.log('Mantenha-a aberta — fechar para a impressao.\n');
+  log('Agente rodando. Procurando impressoras...');
   void scanAndReport();
   setInterval(() => void scanAndReport(), cfg.scanMs);
   loop();
 }
 
-// Qualquer crash não tratado: loga e segura a janela.
 process.on('uncaughtException', (e) => {
   log('uncaughtException: ' + (e && e.stack ? e.stack : String(e)));
-  pauseSync();
+  notify('Erro: ' + String(e));
   process.exit(1);
 });
 process.on('unhandledRejection', (e) => {
   log('unhandledRejection: ' + (e && e.stack ? e.stack : String(e)));
-  pauseSync();
+  notify('Erro: ' + String(e));
   process.exit(1);
 });
 
 try {
-  main().catch((e) => {
-    log('Erro fatal: ' + (e && e.stack ? e.stack : String(e)));
-    pauseSync();
-    process.exit(1);
-  });
+  main();
 } catch (e) {
   log('Erro na inicializacao: ' + (e && e.stack ? e.stack : String(e)));
-  pauseSync();
+  notify('Erro ao iniciar: ' + String(e));
   process.exit(1);
 }
+
+// ---------------------------------------------------------------------
+// MODO USB (sem rede): a detecção automática acha impressoras de REDE
+// (porta 9100). Pra impressora USB, informe o IP/host no
+// proactive7-agente.json e troque sendToPrinter() por um spool cru.
+// ---------------------------------------------------------------------
