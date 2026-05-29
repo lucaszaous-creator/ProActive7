@@ -224,6 +224,40 @@ export function PrintersPage() {
         </details>
       </Card>
 
+      <Card className="border-emerald-300 bg-emerald-50">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-base font-semibold text-emerald-900">
+              ⚡ Configurar este PC de uma vez
+            </h2>
+            <p className="mt-1 text-sm text-emerald-800">
+              Baixe e dê 2 cliques. O programa instala o certificado, cria o
+              atalho de auto-start e abre o app — em 30 segundos.
+            </p>
+          </div>
+          <a
+            href="/configurar-pc.bat"
+            download
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+          >
+            <Download size={16} /> Baixar configurador
+          </a>
+        </div>
+        <p className="mt-2 text-xs text-emerald-700">
+          Pré-requisito: ter o QZ Tray instalado (
+          <a
+            href={QZ_TRAY_DOWNLOAD_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="underline"
+          >
+            baixar aqui
+          </a>
+          ) e o Google Chrome no PC. Se Windows avisar "PC protegido", clique em
+          "Mais informações" → "Executar assim mesmo".
+        </p>
+      </Card>
+
       <Card>
         <details>
           <summary className="cursor-pointer text-sm font-semibold text-neutral-800">
