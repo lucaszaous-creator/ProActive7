@@ -9,12 +9,17 @@ import {
   RefreshCw,
   Plug,
   PlugZap,
+  Copy,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
-import type { PrintAgent } from '@/lib/printAgent';
+import {
+  generateAgentToken,
+  sha256Hex,
+  type PrintAgent,
+} from '@/lib/printAgent';
 import {
   QZ_TRAY_DOWNLOAD_URL,
   connectQz,
@@ -54,6 +59,7 @@ export function PrintersPage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [toDelete, setToDelete] = useState<PrintAgent | null>(null);
+  const [revealedToken, setRevealedToken] = useState<string | null>(null);
 
   // Estado da conexão com o QZ Tray local.
   const [qzReady, setQzReady] = useState(isQzConnected());
@@ -289,13 +295,41 @@ export function PrintersPage() {
         </details>
       </Card>
 
+      <Card className="border-violet-400 bg-violet-50">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 className="text-base font-semibold text-violet-900">
+              🤖 Modo invisível (recomendado — sem precisar de aba aberta)
+            </h2>
+            <p className="mt-1 text-sm text-violet-800">
+              Instala um <b>relay como Tarefa Agendada do Windows</b>. Roda em
+              segundo plano sozinho — <b>não precisa</b> de navegador aberto,
+              QZ Tray, nem nada. Polla a fila da nuvem a cada 2s e imprime via
+              API nativa do Windows.
+            </p>
+            <p className="mt-2 text-xs text-violet-700">
+              Para instalar: cadastre a impressora abaixo (clicando em "Nova
+              impressora"), copie o token que aparecer, e baixe o instalador
+              que aparece junto com o token.
+            </p>
+          </div>
+          <a
+            href="/instalar-relay.bat"
+            download
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-violet-700"
+          >
+            <Download size={16} /> Baixar instalador
+          </a>
+        </div>
+      </Card>
+
       {usbSupported && (
         <Card className="border-emerald-400 bg-emerald-50">
           <div className="flex flex-col gap-3">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-base font-semibold text-emerald-900">
-                  ⚡ Conectar impressora USB (recomendado — grátis e silencioso)
+                  ⚡ Alternativa: WebUSB (sem instalar, mas precisa de aba aberta)
                 </h2>
                 <p className="mt-1 text-sm text-emerald-800">
                   Conecta direto pela API nativa do Chrome (WebUSB). Pede
@@ -478,8 +512,9 @@ export function PrintersPage() {
           createdBy={profile?.id ?? null}
           localPrinters={localPrinters}
           existingNames={agents.map((a) => a.printer_name).filter(Boolean) as string[]}
-          onCreated={() => {
+          onCreated={(token) => {
             setShowForm(false);
+            setRevealedToken(token);
             void load();
           }}
           onCancel={() => setShowForm(false)}
@@ -510,6 +545,13 @@ export function PrintersPage() {
             />
           ))}
         </div>
+      )}
+
+      {revealedToken && (
+        <TokenReveal
+          token={revealedToken}
+          onClose={() => setRevealedToken(null)}
+        />
       )}
 
       <ConfirmDialog
@@ -638,7 +680,7 @@ function AgentForm({
   createdBy: string | null;
   localPrinters: string[];
   existingNames: string[];
-  onCreated: () => void;
+  onCreated: (token: string) => void;
   onCancel: () => void;
 }) {
   const available = localPrinters.filter((p) => !existingNames.includes(p));
@@ -654,8 +696,9 @@ function AgentForm({
     if (!name.trim()) return toast.error('Dê um nome de exibição.');
     setSaving(true);
     const [w, h] = sizeKey.split('x').map(Number);
-    // O QZ Tray não usa token; mantemos a coluna por compat com o schema.
-    const tokenHash = crypto.randomUUID();
+    // Gera token real para o relay PowerShell autenticar; guarda só o hash.
+    const token = generateAgentToken();
+    const tokenHash = await sha256Hex(token);
     const { error } = await supabase.from('print_agents').insert({
       company_id: companyId,
       name: name.trim(),
@@ -669,7 +712,7 @@ function AgentForm({
     setSaving(false);
     if (error) return toast.error('Erro ao salvar: ' + error.message);
     toast.success('Impressora cadastrada.');
-    onCreated();
+    onCreated(token);
   }
 
   if (localPrinters.length === 0) {
@@ -759,5 +802,79 @@ function AgentForm({
         </div>
       </form>
     </Card>
+  );
+}
+
+/* ---------- Modal de revelação do token (uma única vez) ---------- */
+function TokenReveal({
+  token,
+  onClose,
+}: {
+  token: string;
+  onClose: () => void;
+}) {
+  async function copyToken() {
+    try {
+      await navigator.clipboard.writeText(token);
+      toast.success('Token copiado.');
+    } catch {
+      toast.error('Não consegui copiar — selecione e copie manualmente.');
+    }
+  }
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-lg space-y-3 rounded-2xl bg-amber-50 p-5 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-start gap-2">
+          <AlertTriangle size={20} className="mt-0.5 text-amber-600" />
+          <div>
+            <h2 className="text-base font-semibold text-amber-900">
+              Token da impressora — guarde AGORA
+            </h2>
+            <p className="text-xs text-amber-800">
+              Este token só aparece uma vez. É usado pelo instalador do modo
+              invisível pra autenticar o relay PowerShell. Se perder, exclua a
+              impressora e cadastre de novo.
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 rounded-lg border border-amber-300 bg-white p-2">
+          <code className="flex-1 overflow-x-auto break-all text-xs">
+            {token}
+          </code>
+          <Button variant="ghost" onClick={copyToken} aria-label="Copiar">
+            <Copy size={14} />
+          </Button>
+        </div>
+        <div className="rounded-lg border border-violet-300 bg-violet-50 p-3 text-xs text-violet-900">
+          <p className="font-semibold">Próximo passo (modo invisível):</p>
+          <ol className="mt-1 list-decimal space-y-1 pl-4">
+            <li>Baixe o instalador:</li>
+            <li>
+              <a
+                href="/instalar-relay.bat"
+                download
+                className="inline-flex items-center gap-1 rounded bg-violet-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-violet-700"
+              >
+                <Download size={12} /> Baixar instalar-relay.bat
+              </a>
+            </li>
+            <li>Rode o .bat no PC ligado à impressora.</li>
+            <li>Cole esse token quando o instalador pedir.</li>
+            <li>
+              Pronto — o relay vira tarefa agendada e inicia com o Windows.
+            </li>
+          </ol>
+        </div>
+        <Button onClick={onClose} className="w-full">
+          Já guardei o token
+        </Button>
+      </div>
+    </div>
   );
 }
