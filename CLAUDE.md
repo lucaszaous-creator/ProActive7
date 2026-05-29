@@ -325,6 +325,11 @@ sessão; os demais ficam como pendência priorizada.
 - [ ] **`admin-update-user` em prod com `verify_jwt:false`** (config diz
   `true`) — drift. Re-deployar com `verify_jwt:true` (ele já trata OPTIONS
   e re-checa auth internamente).
+- [ ] **Impersonate sem trava de consentimento (LGPD)**: o CLAUDE.md §2.1
+  exige que a nutri consinta uma vez ("sem opt-in, bloqueado"), mas
+  `admin-impersonate` não checa nada. Falta: coluna de consentimento na
+  org (default OFF) + checagem server-side + toggle numa tela que a nutri
+  acesse (não existe "preferências da org" pra nutri hoje — decidir a UX).
 
 ### Pendente — dívida técnica / hardening
 
