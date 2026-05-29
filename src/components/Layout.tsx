@@ -42,6 +42,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { AnnouncementBanner } from './AnnouncementBanner';
+import { QzRelay } from './QzRelay';
 import { PwaInstallButton } from './PwaInstallButton';
 import { PushToggle } from './PushToggle';
 import { ThemeToggle } from './ThemeToggle';
@@ -625,6 +626,7 @@ export function Layout() {
         </header>
 
         <AnnouncementBanner />
+        <QzRelay />
 
         <main className="w-full min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6">
           <Outlet />

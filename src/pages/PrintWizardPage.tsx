@@ -35,7 +35,11 @@ import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { logFeatureEvent } from '@/lib/platformMetrics';
-import { type PrintAgent } from '@/lib/printAgent';
+import {
+  queueDirectPrint,
+  subscribePrintJob,
+  type PrintAgent,
+} from '@/lib/printAgent';
 import { connectQz, isQzConnected, printZpl } from '@/lib/qzTray';
 import { buildLabelZpl } from '@/lib/zpl';
 
@@ -1136,6 +1140,8 @@ function Step5({
 
 function DirectPrintBlock({
   companyId,
+  labelId,
+  profileId,
   labelData,
   widthMm,
   heightMm,
@@ -1193,21 +1199,74 @@ function DirectPrintBlock({
     if (!selected || !selected.printer_name) return;
     setSending(true);
     setErrorMsg(null);
+
+    // Caminho 1: este browser tem QZ Tray conectado (PC ligado à impressora)
+    // → imprime direto, sem fila.
+    if (qzReady) {
+      try {
+        const zpl = buildLabelZpl(labelData, {
+          widthMm,
+          heightMm,
+          dpi: selected.dpi,
+          copies,
+        });
+        await printZpl(selected.printer_name, zpl, 1);
+        void logFeatureEvent('label_printed_direct');
+        toast.success('Impresso!');
+      } catch (e) {
+        const msg = (e as Error)?.message ?? String(e);
+        setErrorMsg(msg);
+        toast.error('Falha ao imprimir: ' + msg);
+      } finally {
+        setSending(false);
+      }
+      return;
+    }
+
+    // Caminho 2: celular/tablet sem QZ Tray local → enfileira no Supabase.
+    // O PC com o app aberto (e QZ Tray rodando) age como relay e imprime.
     try {
-      const zpl = buildLabelZpl(labelData, {
+      const jobId = await queueDirectPrint({
+        agent: selected,
+        labelData,
         widthMm,
         heightMm,
-        dpi: selected.dpi,
         copies,
+        companyId,
+        labelId,
+        createdBy: profileId,
       });
-      await printZpl(selected.printer_name, zpl, 1);
-      void logFeatureEvent('label_printed_direct');
-      toast.success('Impresso!');
+      toast.info('Enviado ao PC da cozinha. Aguardando impressão...');
+      const unsub = subscribePrintJob(jobId, (job) => {
+        if (job.status === 'done') {
+          unsub();
+          setSending(false);
+          void logFeatureEvent('label_printed_direct');
+          toast.success('Impresso na cozinha!');
+        } else if (job.status === 'error') {
+          unsub();
+          setSending(false);
+          setErrorMsg(job.error ?? 'Erro desconhecido');
+          toast.error('Falha: ' + (job.error ?? 'erro'));
+        }
+      });
+      // Timeout: se o PC relay não responder em 60s, libera o botão.
+      setTimeout(() => {
+        unsub();
+        setSending((cur) => {
+          if (cur) {
+            setErrorMsg(
+              'O PC da cozinha não respondeu em 60s. Verifique se o app está aberto lá com o QZ Tray rodando.',
+            );
+            toast.error('Sem resposta do PC da cozinha');
+          }
+          return false;
+        });
+      }, 60_000);
     } catch (e) {
       const msg = (e as Error)?.message ?? String(e);
       setErrorMsg(msg);
-      toast.error('Falha ao imprimir: ' + msg);
-    } finally {
+      toast.error('Erro ao enfileirar: ' + msg);
       setSending(false);
     }
   }
@@ -1262,16 +1321,20 @@ function DirectPrintBlock({
       </Select>
       <Button
         onClick={handleDirectPrint}
-        disabled={!canPrint || !selected || !qzReady || noPrinter || sending}
+        disabled={!canPrint || !selected || noPrinter || sending}
         className="w-full"
       >
         <Printer size={16} />
-        {sending ? 'Imprimindo…' : `Imprimir direto ${copies > 1 ? `(${copies})` : ''}`}
+        {sending
+          ? qzReady
+            ? 'Imprimindo…'
+            : 'Enviando à cozinha…'
+          : `Imprimir direto ${copies > 1 ? `(${copies})` : ''}`}
       </Button>
       {!qzReady && (
-        <p className="text-xs text-amber-700">
-          QZ Tray não está rodando neste PC. Abra-o (ícone na barra do Windows)
-          ou use o diálogo abaixo. No celular, use o diálogo abaixo.
+        <p className="text-xs text-neutral-600">
+          Este aparelho não tem QZ Tray. A impressão vai pelo PC da cozinha
+          (precisa estar com o app aberto e o QZ Tray rodando).
         </p>
       )}
       {qzReady && noPrinter && (
