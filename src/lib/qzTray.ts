@@ -36,16 +36,19 @@ let signingSetup = false;
 
 function setupSigning(): void {
   if (signingSetup) return;
+  console.log('[qz] setupSigning: configurando cert + algoritmo SHA256');
   // Diz ao QZ Tray qual o cert "público" da nossa identidade.
   qz.security.setCertificatePromise((resolve: (v: string) => void) => {
+    console.log('[qz] cert pedido pelo QZ Tray — enviando ProActive7');
     resolve(QZ_TRAY_CERT);
   });
-  // SHA-512 (padrão moderno do QZ Tray).
-  qz.security.setSignatureAlgorithm?.('SHA512');
+  // SHA256 (mais compatível em todas as versões do QZ Tray Community).
+  qz.security.setSignatureAlgorithm('SHA256');
   // Pra cada requisição, manda assinar na nossa Edge Function.
   qz.security.setSignaturePromise(
     (toSign: string) =>
       (resolve: (v: string) => void, reject: (e: unknown) => void) => {
+        console.log('[qz] assinando:', toSign.substring(0, 50) + '...');
         const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/sign-qz`;
         fetch(url, {
           method: 'POST',
@@ -54,10 +57,18 @@ function setupSigning(): void {
         })
           .then((r) => r.json())
           .then((r) => {
-            if (r.signature) resolve(r.signature);
-            else reject(new Error(r.error ?? 'sem assinatura'));
+            if (r.signature) {
+              console.log('[qz] sig OK (len=' + r.signature.length + ')');
+              resolve(r.signature);
+            } else {
+              console.error('[qz] sig FAIL:', r);
+              reject(new Error(r.error ?? 'sem assinatura'));
+            }
           })
-          .catch(reject);
+          .catch((e) => {
+            console.error('[qz] fetch sig erro:', e);
+            reject(e);
+          });
       },
   );
   signingSetup = true;
