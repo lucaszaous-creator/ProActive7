@@ -36,12 +36,11 @@ import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { logFeatureEvent } from '@/lib/platformMetrics';
 import {
+  isAgentOnline,
   queueDirectPrint,
   subscribePrintJob,
   type PrintAgent,
 } from '@/lib/printAgent';
-import { connectQz, isQzConnected, printZpl } from '@/lib/qzTray';
-import { buildLabelZpl } from '@/lib/zpl';
 
 interface LabelSize {
   id: string;
@@ -1191,7 +1190,6 @@ function DirectPrintBlock({
   const [agentId, setAgentId] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [qzReady, setQzReady] = useState(isQzConnected());
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   useEffect(() => {
@@ -1214,24 +1212,16 @@ function DirectPrintBlock({
     };
   }, [companyId]);
 
-  // Tenta conectar no QZ Tray local em background ao montar.
-  useEffect(() => {
-    if (qzReady) return;
-    connectQz()
-      .then(() => setQzReady(true))
-      .catch(() => setQzReady(false));
-  }, [qzReady]);
-
   const selected = agents.find((a) => a.id === agentId) ?? null;
   const noPrinter = !!selected && !selected.printer_name;
+  const relayOnline = selected ? isAgentOnline(selected) : false;
 
   async function handleDirectPrint() {
     if (!selected || !selected.printer_name) return;
     setSending(true);
     setErrorMsg(null);
 
-    // PRIMEIRO: registra a etiqueta em label_prints. Faz o QR resolver
-    // assim que a impressora cuspir o papel. Idempotente (upsert).
+    // PRIMEIRO: registra a etiqueta em label_prints (faz o QR resolver).
     try {
       await onPersistLabel();
     } catch (e) {
@@ -1242,32 +1232,8 @@ function DirectPrintBlock({
       return;
     }
 
-    // Caminho 1: este browser tem QZ Tray conectado (PC ligado à impressora)
-    // → imprime direto, sem fila.
-    if (qzReady) {
-      try {
-        const zpl = buildLabelZpl(labelData, {
-          widthMm,
-          heightMm,
-          dpi: selected.dpi,
-          copies,
-        });
-        await printZpl(selected.printer_name, zpl, 1);
-        void logFeatureEvent('label_printed_direct');
-        toast.success('Impresso!');
-        onAfterPrint();
-      } catch (e) {
-        const msg = (e as Error)?.message ?? String(e);
-        setErrorMsg(msg);
-        toast.error('Falha ao imprimir: ' + msg);
-      } finally {
-        setSending(false);
-      }
-      return;
-    }
-
-    // Caminho 2: celular/tablet sem QZ Tray local → enfileira no Supabase.
-    // O PC com o app aberto (e QZ Tray rodando) age como relay e imprime.
+    // Enfileira em print_jobs. O relay PowerShell (no PC da cozinha) pega
+    // o job e imprime na impressora cadastrada da empresa.
     try {
       const jobId = await queueDirectPrint({
         agent: selected,
@@ -1279,13 +1245,13 @@ function DirectPrintBlock({
         labelId,
         createdBy: profileId,
       });
-      toast.info('Enviado ao PC da cozinha. Aguardando impressão...');
+      toast.info('Enviado à impressora. Aguardando...');
       const unsub = subscribePrintJob(jobId, (job) => {
         if (job.status === 'done') {
           unsub();
           setSending(false);
           void logFeatureEvent('label_printed_direct');
-          toast.success('Impresso na cozinha!');
+          toast.success('Impresso!');
           onAfterPrint();
         } else if (job.status === 'error') {
           unsub();
@@ -1294,15 +1260,15 @@ function DirectPrintBlock({
           toast.error('Falha: ' + (job.error ?? 'erro'));
         }
       });
-      // Timeout: se o PC relay não responder em 60s, libera o botão.
+      // Timeout: se o relay não responder em 60s, libera o botão.
       setTimeout(() => {
         unsub();
         setSending((cur) => {
           if (cur) {
             setErrorMsg(
-              'O PC da cozinha não respondeu em 60s. Verifique se o app está aberto lá com o QZ Tray rodando.',
+              'Sem resposta da impressora em 60s. Verifique se o relay está instalado e o PC ligado.',
             );
-            toast.error('Sem resposta do PC da cozinha');
+            toast.error('Sem resposta da impressora');
           }
           return false;
         });
@@ -1330,7 +1296,7 @@ function DirectPrintBlock({
         <Link to="/admin/impressoras" className="font-medium text-emerald-700">
           Cadastros → Impressoras
         </Link>{' '}
-        para configurar a impressão direta sem diálogo.
+        para configurar a impressão direta.
       </div>
     );
   }
@@ -1339,16 +1305,16 @@ function DirectPrintBlock({
     <div className="w-full space-y-2 rounded border border-emerald-200 bg-emerald-50 p-3">
       <div className="flex items-center justify-between gap-2 text-xs">
         <span className="font-semibold uppercase text-emerald-800">
-          Impressão direta (QZ Tray)
+          Impressão direta
         </span>
         <span
           className={
-            qzReady
+            relayOnline
               ? 'inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 font-medium text-emerald-700'
               : 'inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2 py-0.5 font-medium text-neutral-600'
           }
         >
-          {qzReady ? 'Conectado' : 'QZ Tray offline'}
+          {relayOnline ? 'Relay online' : 'Relay offline'}
         </span>
       </div>
       <Select
@@ -1370,21 +1336,20 @@ function DirectPrintBlock({
       >
         <Printer size={16} />
         {sending
-          ? qzReady
-            ? 'Imprimindo…'
-            : 'Enviando à cozinha…'
+          ? 'Enviando…'
           : `Imprimir direto ${copies > 1 ? `(${copies})` : ''}`}
       </Button>
-      {!qzReady && (
-        <p className="text-xs text-neutral-600">
-          Este aparelho não tem QZ Tray. A impressão vai pelo PC da cozinha
-          (precisa estar com o app aberto e o QZ Tray rodando).
+      {!relayOnline && (
+        <p className="text-xs text-amber-700">
+          O relay desta impressora está offline. Verifique se o PC da cozinha
+          está ligado com o relay instalado. (A impressão vai sair assim que
+          ele voltar.)
         </p>
       )}
-      {qzReady && noPrinter && (
+      {noPrinter && (
         <p className="text-xs text-amber-700">
           Impressora sem nome do Windows. Vá em Cadastros → Impressoras e
-          cadastre escolhendo da lista do QZ Tray.
+          cadastre.
         </p>
       )}
       {errorMsg && <p className="text-xs text-red-700">{errorMsg}</p>}

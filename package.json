@@ -52,7 +52,6 @@
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@types/w3c-web-usb": "^1.0.14",
     "@types/web-bluetooth": "^0.0.21",
     "@vitejs/plugin-react": "^5.0.4",
     "eslint": "^10.4.0",

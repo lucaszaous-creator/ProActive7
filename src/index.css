@@ -35,7 +35,6 @@ body {
 /* Areas de impressao (portal direto em <body>, irmas de #root) ficam
    ocultas na visualizacao normal — so aparecem dentro do @media print. */
 #print-label-area,
-#relay-print-area,
 .recipe-print-area {
   display: none;
 }
@@ -57,13 +56,7 @@ body {
     display: none !important;
   }
   body > #print-label-area,
-  body > #relay-print-area,
   body > .recipe-print-area {
     display: block !important;
-  }
-  /* Quando o BrowserPrintRelay esta imprimindo, esconde o portal do
-     wizard pra nao sair duas etiquetas. */
-  body.relay-printing > #print-label-area {
-    display: none !important;
   }
 }

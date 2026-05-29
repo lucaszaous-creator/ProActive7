@@ -120,7 +120,28 @@ function Update-Self($latest) {
 Write-RelayLog "Relay v$RELAY_VERSION iniciado. URL=$url pollMs=$pollMs"
 Send-RemoteLog 'info' "Relay v$RELAY_VERSION iniciado em $env:COMPUTERNAME"
 
+# Reporta as impressoras instaladas no Windows (viram sugestoes no app)
+function Report-Printers {
+    try {
+        $names = @()
+        try {
+            $names = Get-Printer -ErrorAction Stop | Select-Object -ExpandProperty Name
+        } catch {
+            # Fallback p/ Windows sem o modulo PrintManagement
+            $names = Get-WmiObject -Class Win32_Printer | Select-Object -ExpandProperty Name
+        }
+        $list = @()
+        foreach ($n in $names) { $list += @{ name = $n } }
+        Invoke-Agent @{ action = 'report_printers'; printers = $list } | Out-Null
+        Write-RelayLog "Reportei $($list.Count) impressora(s) instalada(s)."
+    } catch {
+        Write-RelayLog "Falha ao reportar impressoras: $($_.Exception.Message)"
+    }
+}
+Report-Printers
+
 $updateCheckCounter = 0
+$printerReportCounter = 0
 
 while ($true) {
     try {
@@ -131,6 +152,13 @@ while ($true) {
         if ($updateCheckCounter -ge 30) {
             $updateCheckCounter = 0
             Update-Self $resp.latest_version
+        }
+
+        # Re-reporta impressoras a cada ~150 ciclos (~5 min)
+        $printerReportCounter++
+        if ($printerReportCounter -ge 150) {
+            $printerReportCounter = 0
+            Report-Printers
         }
 
         $printerName = $resp.printer.name

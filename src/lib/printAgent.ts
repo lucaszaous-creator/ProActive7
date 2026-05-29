@@ -1,17 +1,16 @@
-// Helpers para impressão direta via agente local (estilo PrintNode).
+// Helpers para impressão direta via relay PowerShell (modo invisível).
 // O frontend gera o ZPL com src/lib/zpl.ts e enfileira na tabela
-// public.print_jobs; o agente em agent/print-agent.mjs faz o polling
-// e manda pra impressora. O status do job chega de volta em tempo real
-// pela publication supabase_realtime (subscribePrintJob).
+// public.print_jobs; o relay (relay.ps1, rodando como Tarefa Agendada no
+// PC da cozinha) faz o polling e manda pra impressora via Win32 API.
+// O status do job chega de volta em tempo real pela publication
+// supabase_realtime (subscribePrintJob).
 import { supabase } from './supabase';
 import { buildLabelZpl } from './zpl';
 import type { LabelData } from '@/components/LabelPreview';
 
-/** Impressora encontrada pelo agente na varredura da rede. */
+/** Impressora do Windows reportada pelo relay (Get-Printer). */
 export interface DiscoveredPrinter {
-  host: string;
-  port: number;
-  name?: string;
+  name: string;
 }
 
 export interface PrintAgent {
@@ -19,10 +18,8 @@ export interface PrintAgent {
   company_id: string;
   name: string;
   computer_name: string | null;
-  /** Nome da impressora instalada no Windows (via QZ Tray). */
+  /** Nome exato da impressora instalada no Windows. */
   printer_name: string | null;
-  printer_host: string | null;
-  printer_port: number;
   label_width_mm: number;
   label_height_mm: number;
   dpi: number;
@@ -41,18 +38,6 @@ export interface RelayLog {
   level: 'info' | 'warn' | 'error';
   message: string;
   created_at: string;
-}
-
-/** Define qual impressora detectada o agente deve usar. */
-export async function setAgentPrinter(
-  agentId: string,
-  printer: DiscoveredPrinter,
-): Promise<void> {
-  const { error } = await supabase
-    .from('print_agents')
-    .update({ printer_host: printer.host, printer_port: printer.port })
-    .eq('id', agentId);
-  if (error) throw error;
 }
 
 export interface PrintJob {

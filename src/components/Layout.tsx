@@ -42,9 +42,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { AnnouncementBanner } from './AnnouncementBanner';
-import { BrowserPrintRelay } from './BrowserPrintRelay';
-import { QzRelay } from './QzRelay';
-import { WebUsbRelay } from './WebUsbRelay';
 import { PwaInstallButton } from './PwaInstallButton';
 import { PushToggle } from './PushToggle';
 import { ThemeToggle } from './ThemeToggle';
@@ -628,15 +625,8 @@ export function Layout() {
         </header>
 
         <AnnouncementBanner />
-        {/* Tres relays competem pelos print_jobs (claim atomico). Ordem de
-            preferencia:
-            1) WebUsbRelay  — gratis, silencioso, USB direto pelo Chrome
-            2) QzRelay      — gratis (Community), pode pedir Allow
-            3) BrowserPrintRelay — fallback window.print() para padrao Windows
-            Cada um checa internamente se deve agir. */}
-        <WebUsbRelay />
-        <QzRelay />
-        <BrowserPrintRelay />
+        {/* A impressao agora e' feita pelo relay PowerShell instalado no PC
+            (modo invisivel). O navegador so enfileira em print_jobs. */}
 
         <main className="w-full min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6">
           <Outlet />

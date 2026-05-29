@@ -6,13 +6,10 @@ import {
   Trash2,
   AlertTriangle,
   Download,
-  RefreshCw,
-  Plug,
-  PlugZap,
-  Copy,
   CheckCircle2,
   XCircle,
   FileText,
+  Copy,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -20,25 +17,12 @@ import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import {
   generateAgentToken,
+  isAgentOnline,
+  queueDirectPrint,
   sha256Hex,
   type PrintAgent,
   type RelayLog,
 } from '@/lib/printAgent';
-import {
-  QZ_TRAY_DOWNLOAD_URL,
-  connectQz,
-  isQzConnected,
-  listLocalPrinters,
-  printZpl,
-} from '@/lib/qzTray';
-import {
-  describePrinter,
-  getPairedPrinter,
-  isWebUsbSupported,
-  printRawViaUsb,
-  requestPrinter,
-} from '@/lib/webUsbPrint';
-import { buildLabelZpl } from '@/lib/zpl';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -54,6 +38,12 @@ const LABEL_SIZES = [
   { w: 80, h: 60 },
 ];
 
+const isVirtualPrinter = (name: string | null): boolean =>
+  !!name &&
+  /(pdf|xps|onenote|fax|microsoft (print|document)|send to|document writer)/i.test(
+    name,
+  );
+
 export function PrintersPage() {
   usePageTitle('Impressoras térmicas');
   const { profile } = useAuth();
@@ -65,72 +55,8 @@ export function PrintersPage() {
   const [toDelete, setToDelete] = useState<PrintAgent | null>(null);
   const [revealedToken, setRevealedToken] = useState<string | null>(null);
 
-  // Estado da conexão com o QZ Tray local.
-  const [qzReady, setQzReady] = useState(isQzConnected());
-  const [qzConnecting, setQzConnecting] = useState(false);
-  const [localPrinters, setLocalPrinters] = useState<string[]>([]);
-
-  // WebUSB (recomendado: grátis e silencioso).
-  const [usbName, setUsbName] = useState<string | null>(null);
-  const [usbConnecting, setUsbConnecting] = useState(false);
-  const usbSupported = isWebUsbSupported();
-
-  useEffect(() => {
-    if (!usbSupported) return;
-    void getPairedPrinter().then((p) => {
-      if (p) setUsbName(describePrinter(p));
-    });
-  }, [usbSupported]);
-
-  async function pairUsbPrinter() {
-    setUsbConnecting(true);
-    try {
-      const p = await requestPrinter();
-      if (!p) return; // usuário cancelou
-      setUsbName(describePrinter(p));
-      toast.success('Impressora USB conectada! Sem mais prompts.');
-    } catch (e) {
-      toast.error((e as Error)?.message ?? String(e));
-    } finally {
-      setUsbConnecting(false);
-    }
-  }
-
-  async function testUsbPrint() {
-    setUsbConnecting(true);
-    try {
-      const p = await getPairedPrinter();
-      if (!p) {
-        toast.error('Conecte uma impressora USB primeiro.');
-        return;
-      }
-      const now = new Date();
-      const fmt = (d: Date) =>
-        d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-      const zpl = buildLabelZpl(
-        {
-          companyName: '',
-          productName: 'TESTE WEBUSB',
-          storageConditionLabel: 'TESTE',
-          manipulationText: fmt(now),
-          expiryText: fmt(new Date(Date.now() + 86_400_000)),
-          responsibleName: usbName ?? 'USB',
-          printId: 'USB-' + Date.now().toString(36).toUpperCase(),
-        },
-        { widthMm: 40, heightMm: 40, dpi: 203, copies: 1 },
-      );
-      await printRawViaUsb(p, zpl);
-      toast.success('Teste enviado pra impressora USB!');
-    } catch (e) {
-      toast.error('Falha ao imprimir: ' + ((e as Error)?.message ?? String(e)));
-    } finally {
-      setUsbConnecting(false);
-    }
-  }
-
   const load = useCallback(async () => {
     if (!companyId) return;
-    setLoading(true);
     const { data, error } = await supabase
       .from('print_agents')
       .select('*')
@@ -145,31 +71,12 @@ export function PrintersPage() {
   }, [companyId]);
 
   useEffect(() => {
+    setLoading(true);
     void load();
-    // Recarrega a cada 15s pra atualizar status online/offline do relay.
+    // Atualiza status online/offline do relay ao vivo.
     const t = setInterval(() => void load(), 15_000);
     return () => clearInterval(t);
   }, [load]);
-
-  async function connectAndList() {
-    setQzConnecting(true);
-    try {
-      await connectQz();
-      const list = await listLocalPrinters();
-      setLocalPrinters(list);
-      setQzReady(true);
-      toast.success(`QZ Tray conectado — ${list.length} impressora(s).`);
-    } catch (e) {
-      const msg = (e as Error)?.message ?? String(e);
-      toast.error(
-        'Não consegui conectar no QZ Tray. Instale-o e abra o programa.',
-      );
-      console.error('QZ Tray:', msg);
-      setQzReady(false);
-    } finally {
-      setQzConnecting(false);
-    }
-  }
 
   async function handleDelete() {
     if (!toDelete) return;
@@ -193,6 +100,13 @@ export function PrintersPage() {
     );
   }
 
+  // Nomes de impressoras detectadas pelo relay (Get-Printer), p/ sugestão.
+  const discoveredNames = Array.from(
+    new Set(
+      agents.flatMap((a) => (a.discovered ?? []).map((d) => d.name).filter(Boolean)),
+    ),
+  );
+
   return (
     <div className="mx-auto max-w-4xl space-y-4">
       <header className="flex items-center justify-between gap-2">
@@ -201,13 +115,10 @@ export function PrintersPage() {
             Impressoras térmicas
           </h1>
           <p className="text-sm text-neutral-500">
-            {companyName} — impressão direta pelo QZ Tray.
+            {companyName} — impressão automática via relay no PC.
           </p>
         </div>
-        <Button
-          onClick={() => setShowForm((v) => !v)}
-          disabled={!qzReady && !showForm}
-        >
+        <Button onClick={() => setShowForm((v) => !v)}>
           <Plus size={16} /> Nova impressora
         </Button>
       </header>
@@ -228,287 +139,43 @@ export function PrintersPage() {
               </option>
             ))}
           </Select>
+          <p className="mt-1 text-xs text-neutral-500">
+            Cada estabelecimento tem suas próprias impressoras.
+          </p>
         </Card>
       )}
 
-      <Card>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-3">
-            {qzReady ? (
-              <PlugZap size={22} className="mt-1 text-emerald-600" />
-            ) : (
-              <Plug size={22} className="mt-1 text-neutral-400" />
-            )}
-            <div>
-              <h2 className="text-sm font-semibold text-neutral-800">
-                {qzReady ? 'QZ Tray conectado' : 'QZ Tray não conectado'}
-              </h2>
-              <p className="text-xs text-neutral-500">
-                {qzReady
-                  ? `${localPrinters.length} impressora(s) detectada(s) neste computador.`
-                  : 'Instale o QZ Tray no PC ligado à impressora, abra-o, e clique em Conectar.'}
-              </p>
-            </div>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {!qzReady && (
-              <a
-                href={QZ_TRAY_DOWNLOAD_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-lg border border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50"
-              >
-                <Download size={16} /> Baixar QZ Tray
-              </a>
-            )}
-            <Button onClick={() => void connectAndList()} disabled={qzConnecting}>
-              {qzConnecting ? (
-                <Spinner className="h-4 w-4" />
-              ) : (
-                <RefreshCw size={16} />
-              )}
-              {qzReady ? 'Atualizar lista' : 'Conectar QZ Tray'}
-            </Button>
-          </div>
-        </div>
-
-        <details className="mt-3" open={!qzReady}>
-          <summary className="cursor-pointer text-xs font-medium text-neutral-600">
-            Como funciona? (instalação inicial)
+      <Card className="border-violet-300 bg-violet-50">
+        <details open={agents.length === 0}>
+          <summary className="cursor-pointer text-sm font-semibold text-violet-900">
+            🤖 Como funciona (instalação em 1 PC, uma vez)
           </summary>
-          <div className="mt-2 space-y-2 text-xs text-neutral-600">
+          <div className="mt-3 space-y-2 text-xs text-violet-800">
             <p>
-              <b>1.</b> No PC ligado à impressora térmica, baixe e instale o{' '}
-              <a
-                href={QZ_TRAY_DOWNLOAD_URL}
-                target="_blank"
-                rel="noreferrer"
-                className="text-emerald-700 underline"
-              >
-                QZ Tray
-              </a>{' '}
-              (gratuito, oficial, assinado).
+              A impressão é feita por um pequeno <b>relay</b> que roda em
+              segundo plano no PC ligado à impressora. Não precisa de navegador
+              aberto, nem instalar programa pesado — usa o PowerShell que já vem
+              no Windows.
             </p>
             <p>
-              <b>2.</b> Abra o QZ Tray (ícone na barra do Windows).
+              <b>1.</b> Clique em <b>“Nova impressora”</b>, dê um apelido,
+              informe o nome exato da impressora no Windows e salve.
             </p>
             <p>
-              <b>3.</b> Aqui no app, clique em <b>Conectar QZ Tray</b>.
+              <b>2.</b> Copie o <b>token</b> que aparece e baixe o instalador.
             </p>
             <p>
-              <b>4.</b> Cadastre cada impressora escolhendo da lista detectada.
+              <b>3.</b> Rode o instalador no PC da cozinha, cole o token. Pronto
+              — o relay inicia sozinho com o Windows e imprime tudo que vier do
+              celular, tablet ou PC.
             </p>
-          </div>
-        </details>
-      </Card>
-
-      <Card className="border-violet-400 bg-violet-50">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-base font-semibold text-violet-900">
-              🤖 Modo invisível (recomendado — sem precisar de aba aberta)
-            </h2>
-            <p className="mt-1 text-sm text-violet-800">
-              Instala um <b>relay como Tarefa Agendada do Windows</b>. Roda em
-              segundo plano sozinho — <b>não precisa</b> de navegador aberto,
-              QZ Tray, nem nada. Polla a fila da nuvem a cada 2s e imprime via
-              API nativa do Windows.
-            </p>
-            <p className="mt-2 text-xs text-violet-700">
-              Para instalar: cadastre a impressora abaixo (clicando em "Nova
-              impressora"), copie o token que aparecer, e baixe o instalador
-              que aparece junto com o token.
-            </p>
-          </div>
-          <a
-            href="/instalar-relay.bat"
-            download
-            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-violet-700"
-          >
-            <Download size={16} /> Baixar instalador
-          </a>
-        </div>
-      </Card>
-
-      {usbSupported && (
-        <Card className="border-emerald-400 bg-emerald-50">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-base font-semibold text-emerald-900">
-                  ⚡ Alternativa: WebUSB (sem instalar, mas precisa de aba aberta)
-                </h2>
-                <p className="mt-1 text-sm text-emerald-800">
-                  Conecta direto pela API nativa do Chrome (WebUSB). Pede
-                  permissão <b>uma vez</b>, depois imprime silencioso pra
-                  sempre. Sem instalar nada, sem QZ Tray, sem prompts.
-                </p>
-                {usbName ? (
-                  <div className="mt-2 space-y-1">
-                    <p className="text-sm font-medium text-emerald-900">
-                      ✅ Conectada: {usbName}
-                    </p>
-                    <p className="text-xs font-medium text-emerald-800">
-                      🛰️ Este PC virou o <b>relay da empresa</b>. Celulares e
-                      tablets podem imprimir aqui (esta aba precisa ficar
-                      aberta).
-                    </p>
-                  </div>
-                ) : (
-                  <p className="mt-2 rounded-lg bg-emerald-100 p-2 text-xs text-emerald-800">
-                    💡 <b>Sobre o celular:</b> o celular nunca precisa de
-                    WebUSB. Ele só manda o job pro Supabase. Este PC (com a
-                    impressora conectada e o app aberto) vê a fila e imprime.
-                    Conecta a impressora USB <b>aqui no PC só uma vez</b>.
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button onClick={() => void pairUsbPrinter()} disabled={usbConnecting}>
-                {usbConnecting ? (
-                  <Spinner className="h-4 w-4" />
-                ) : (
-                  <Plug size={16} />
-                )}
-                {usbName ? 'Trocar impressora USB' : 'Conectar impressora USB'}
-              </Button>
-              {usbName && (
-                <Button
-                  variant="secondary"
-                  onClick={() => void testUsbPrint()}
-                  disabled={usbConnecting}
-                >
-                  <Printer size={16} /> Imprimir teste USB
-                </Button>
-              )}
-            </div>
-            <p className="text-xs text-emerald-700">
-              Pré-requisito: impressora térmica conectada via cabo USB no PC,
-              e Chrome (ou Edge) como navegador. Se o Chrome reclamar que não
-              consegue acessar o dispositivo, troque o driver da impressora
-              para WinUSB usando o{' '}
-              <a
-                href="https://zadig.akeo.ie/"
-                target="_blank"
-                rel="noreferrer"
-                className="underline"
-              >
-                Zadig
-              </a>{' '}
-              (1 vez, ~30 segundos).
-            </p>
-          </div>
-        </Card>
-      )}
-
-      <Card className="border-emerald-300 bg-emerald-50">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-base font-semibold text-emerald-900">
-              ⚡ Alternativa: QZ Tray (configurar este PC de uma vez)
-            </h2>
-            <p className="mt-1 text-sm text-emerald-800">
-              Baixe e dê 2 cliques. O programa instala o certificado, cria o
-              atalho de auto-start e abre o app — em 30 segundos.
-            </p>
-          </div>
-          <a
-            href="/configurar-pc.bat"
-            download
-            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
-          >
-            <Download size={16} /> Baixar configurador
-          </a>
-        </div>
-        <p className="mt-2 text-xs text-emerald-700">
-          Pré-requisito: ter o QZ Tray instalado (
-          <a
-            href={QZ_TRAY_DOWNLOAD_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="underline"
-          >
-            baixar aqui
-          </a>
-          ) e o Google Chrome no PC. Se Windows avisar "PC protegido", clique em
-          "Mais informações" → "Executar assim mesmo".
-        </p>
-      </Card>
-
-      <Card>
-        <details>
-          <summary className="cursor-pointer text-sm font-semibold text-neutral-800">
-            🔑 Parar de pedir permissão toda vez (instalar certificado)
-          </summary>
-          <div className="mt-3 space-y-2 text-xs text-neutral-600">
-            <p>
-              Sem o certificado o QZ Tray pede permissão a cada conexão. Com
-              ele, fica liberado pra sempre <b>só neste PC</b>.
-            </p>
-            <p>
-              <b>1.</b> Baixe o certificado:
-            </p>
-            <p>
-              <a
-                href="/qz-override.crt"
-                download="override.crt"
-                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-              >
-                <Download size={14} /> Baixar certificado
-              </a>
-            </p>
-            <p>
-              <b>2.</b> Mova o arquivo <code>override.crt</code> para a pasta:
-            </p>
-            <pre className="overflow-x-auto rounded bg-neutral-100 p-2 font-mono text-[11px]">
-              %USERPROFILE%\.qz\override.crt
-            </pre>
-            <p className="text-neutral-500">
-              (Cole esse caminho na barra de endereços do Windows Explorer. Se a
-              pasta <code>.qz</code> não existir, crie-a.)
-            </p>
-            <p>
-              <b>3.</b> Saia do QZ Tray (clique no ícone → Exit) e abra de novo.
-              Pronto — não pede mais permissão.
-            </p>
-          </div>
-        </details>
-      </Card>
-
-      <Card>
-        <details>
-          <summary className="cursor-pointer text-sm font-semibold text-neutral-800">
-            🚀 Deixar a aba relay aberta sempre (auto-start no Windows)
-          </summary>
-          <div className="mt-3 space-y-2 text-xs text-neutral-600">
-            <p>
-              O celular só imprime se este PC estiver com o app aberto numa aba
-              (a "aba relay"). Pra abrir automaticamente quando o Windows ligar:
-            </p>
-            <p>
-              <b>1.</b> Instale o app como atalho no Windows: no Chrome desta
-              página, clique nos <b>3 pontinhos</b> (canto superior direito) →{' '}
-              <b>Salvar e compartilhar</b> → <b>Criar atalho</b>. Marque{' '}
-              <b>Abrir como janela</b> e dê OK.
-            </p>
-            <p>
-              <b>2.</b> O atalho aparece na Área de Trabalho. Recorte (Ctrl+X)
-              esse atalho.
-            </p>
-            <p>
-              <b>3.</b> Abra a pasta de Inicialização: tecla Windows + R, digite{' '}
-              <code className="rounded bg-neutral-100 px-1">shell:startup</code>{' '}
-              → Enter. Cole o atalho (Ctrl+V) lá dentro.
-            </p>
-            <p>
-              <b>4.</b> Pronto. Quando o PC ligar, o app abre sozinho como
-              janela e fica escutando a fila de impressão.
-            </p>
-            <p className="text-neutral-500">
-              (Marque também "Automatically start" no QZ Tray — botão direito no
-              ícone da barra. Aí tudo sobe junto.)
-            </p>
+            <a
+              href="/instalar-relay.bat"
+              download
+              className="mt-1 inline-flex items-center gap-2 rounded-lg bg-violet-600 px-3 py-2 text-sm font-medium text-white hover:bg-violet-700"
+            >
+              <Download size={14} /> Baixar instalador do relay
+            </a>
           </div>
         </details>
       </Card>
@@ -517,8 +184,7 @@ export function PrintersPage() {
         <AgentForm
           companyId={companyId}
           createdBy={profile?.id ?? null}
-          localPrinters={localPrinters}
-          existingNames={agents.map((a) => a.printer_name).filter(Boolean) as string[]}
+          suggestions={discoveredNames}
           onCreated={(token) => {
             setShowForm(false);
             setRevealedToken(token);
@@ -535,10 +201,8 @@ export function PrintersPage() {
       ) : agents.length === 0 ? (
         <Card>
           <p className="text-sm text-neutral-600">
-            Nenhuma impressora cadastrada.{' '}
-            {qzReady
-              ? 'Clique em “Nova impressora” para começar.'
-              : 'Conecte o QZ Tray primeiro.'}
+            Nenhuma impressora cadastrada. Clique em “Nova impressora” para
+            começar.
           </p>
         </Card>
       ) : (
@@ -547,7 +211,8 @@ export function PrintersPage() {
             <AgentCard
               key={a.id}
               agent={a}
-              qzReady={qzReady}
+              companyId={companyId}
+              createdBy={profile?.id ?? null}
               onDelete={() => setToDelete(a)}
             />
           ))}
@@ -576,23 +241,19 @@ export function PrintersPage() {
 /* ---------- Card de cada impressora cadastrada ---------- */
 function AgentCard({
   agent,
-  qzReady,
+  companyId,
+  createdBy,
   onDelete,
 }: {
   agent: PrintAgent;
-  qzReady: boolean;
+  companyId: string;
+  createdBy: string | null;
   onDelete: () => void;
 }) {
   const [testing, setTesting] = useState(false);
   const [showLogs, setShowLogs] = useState(false);
-  const isVirtual = !!agent.printer_name &&
-    /(pdf|xps|onenote|fax|microsoft (print|document)|send to|document writer)/i.test(
-      agent.printer_name,
-    );
-  // Relay online se reportou heartbeat nos últimos 60s.
-  const relayOnline =
-    !!agent.last_seen_at &&
-    Date.now() - new Date(agent.last_seen_at).getTime() < 60_000;
+  const relayOnline = isAgentOnline(agent);
+  const virtual = isVirtualPrinter(agent.printer_name);
 
   async function testPrint() {
     if (!agent.printer_name) {
@@ -603,8 +264,9 @@ function AgentCard({
       const now = new Date();
       const fmt = (d: Date) =>
         d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
-      const zpl = buildLabelZpl(
-        {
+      await queueDirectPrint({
+        agent,
+        labelData: {
           companyName: '',
           productName: 'TESTE DE IMPRESSAO',
           storageConditionLabel: 'TESTE',
@@ -613,17 +275,15 @@ function AgentCard({
           responsibleName: agent.name,
           printId: 'TST-' + Date.now().toString(36).toUpperCase(),
         },
-        {
-          widthMm: agent.label_width_mm,
-          heightMm: agent.label_height_mm,
-          dpi: agent.dpi,
-          copies: 1,
-        },
-      );
-      await printZpl(agent.printer_name, zpl, 1);
-      toast.success('Etiqueta de teste enviada!');
+        widthMm: agent.label_width_mm,
+        heightMm: agent.label_height_mm,
+        copies: 1,
+        companyId,
+        createdBy,
+      });
+      toast.success('Teste enfileirado! Sai em segundos se o relay estiver online.');
     } catch (e) {
-      toast.error('Falha ao imprimir: ' + (e as Error).message);
+      toast.error('Falha: ' + ((e as Error)?.message ?? String(e)));
     } finally {
       setTesting(false);
     }
@@ -673,22 +333,22 @@ function AgentCard({
               <dd className="inline">{agent.relay_version ?? '—'}</dd>
             </div>
           </dl>
-          {isVirtual && (
+          {virtual && (
             <p className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-800">
               <AlertTriangle size={14} className="mt-0.5 shrink-0" />
-              Esta é uma impressora <b>virtual</b>. ZPL não funciona aqui —
-              etiqueta sai em branco. Apague e cadastre uma <b>térmica</b>
-              (Elgin L42PRO, Zebra, etc).
+              Esta parece uma impressora <b>virtual</b> (PDF/XPS). ZPL não
+              funciona aqui — a etiqueta sai em branco. Use uma térmica real
+              (Elgin, Zebra, etc).
             </p>
           )}
           <div className="mt-3 flex flex-wrap gap-2">
             <Button
               variant="secondary"
               onClick={() => void testPrint()}
-              disabled={!qzReady || testing}
+              disabled={testing || !agent.printer_name}
             >
               {testing ? <Spinner className="h-4 w-4" /> : <Printer size={14} />}
-              Imprimir teste {qzReady ? '' : '(QZ Tray)'}
+              Imprimir teste
             </Button>
             <Button variant="ghost" onClick={() => setShowLogs((v) => !v)}>
               <FileText size={14} /> {showLogs ? 'Ocultar logs' : 'Ver logs'}
@@ -704,42 +364,41 @@ function AgentCard({
   );
 }
 
-/* ---------- Formulário: cadastrar uma impressora a partir da lista do QZ ---------- */
+/* ---------- Formulário: cadastrar uma impressora ---------- */
 function AgentForm({
   companyId,
   createdBy,
-  localPrinters,
-  existingNames,
+  suggestions,
   onCreated,
   onCancel,
 }: {
   companyId: string;
   createdBy: string | null;
-  localPrinters: string[];
-  existingNames: string[];
+  suggestions: string[];
   onCreated: (token: string) => void;
   onCancel: () => void;
 }) {
-  const available = localPrinters.filter((p) => !existingNames.includes(p));
-  const [printerName, setPrinterName] = useState(available[0] ?? '');
   const [name, setName] = useState('');
+  const [printerName, setPrinterName] = useState(suggestions[0] ?? '');
   const [sizeKey, setSizeKey] = useState('40x40');
   const [dpi, setDpi] = useState(203);
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!printerName) return toast.error('Escolha a impressora do Windows.');
-    if (!name.trim()) return toast.error('Dê um nome de exibição.');
+    if (!name.trim()) return toast.error('Dê um apelido pra impressora.');
+    if (!printerName.trim()) {
+      return toast.error('Informe o nome da impressora no Windows.');
+    }
     setSaving(true);
     const [w, h] = sizeKey.split('x').map(Number);
-    // Gera token real para o relay PowerShell autenticar; guarda só o hash.
+    // Gera token real; guarda só o hash. O token cru aparece uma vez.
     const token = generateAgentToken();
     const tokenHash = await sha256Hex(token);
     const { error } = await supabase.from('print_agents').insert({
       company_id: companyId,
       name: name.trim(),
-      printer_name: printerName,
+      printer_name: printerName.trim(),
       token_hash: tokenHash,
       label_width_mm: w,
       label_height_mm: h,
@@ -752,55 +411,12 @@ function AgentForm({
     onCreated(token);
   }
 
-  if (localPrinters.length === 0) {
-    return (
-      <Card>
-        <p className="flex items-start gap-2 text-sm text-amber-700">
-          <AlertTriangle size={16} className="mt-0.5 shrink-0" />
-          Nenhuma impressora detectada no Windows. Verifique se a impressora
-          está instalada (Painel de Controle → Dispositivos e Impressoras) e
-          clique em <b>Atualizar lista</b>.
-        </p>
-      </Card>
-    );
-  }
-
-  const isLikelyVirtual = (name: string): boolean =>
-    /(pdf|xps|onenote|fax|microsoft (print|document)|send to|document writer)/i.test(name);
-  const virtualWarning = isLikelyVirtual(printerName);
-
   return (
     <Card>
       <form onSubmit={handleSubmit} className="space-y-3">
         <h2 className="text-sm font-semibold text-neutral-700">
           Nova impressora
         </h2>
-        <Select
-          label="Impressora do Windows"
-          value={printerName}
-          onChange={(e) => {
-            setPrinterName(e.target.value);
-            if (!name) setName(e.target.value);
-          }}
-        >
-          {available.length === 0 && (
-            <option value="">Todas já cadastradas</option>
-          )}
-          {available.map((p) => (
-            <option key={p} value={p}>
-              {p}
-            </option>
-          ))}
-        </Select>
-        {virtualWarning && (
-          <p className="flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-800">
-            <AlertTriangle size={14} className="mt-0.5 shrink-0" />
-            Esta parece ser uma impressora <b>virtual</b> (PDF, OneNote, XPS).
-            ZPL não funciona em impressora virtual — a etiqueta vai sair em
-            branco. Para etiquetas reais, escolha uma <b>térmica</b> (Elgin
-            L42PRO, Zebra, etc).
-          </p>
-        )}
         <Input
           label="Apelido (como vai aparecer no app)"
           value={name}
@@ -808,6 +424,28 @@ function AgentForm({
           placeholder="Cozinha"
           required
         />
+        <div>
+          <Input
+            label="Nome exato da impressora no Windows"
+            value={printerName}
+            onChange={(e) => setPrinterName(e.target.value)}
+            placeholder="Elgin L42PRO"
+            list="printer-suggestions"
+            required
+          />
+          {suggestions.length > 0 && (
+            <datalist id="printer-suggestions">
+              {suggestions.map((s) => (
+                <option key={s} value={s} />
+              ))}
+            </datalist>
+          )}
+          <p className="mt-1 text-xs text-neutral-500">
+            Copie o nome igual aparece em <b>Configurações → Bluetooth e
+            dispositivos → Impressoras e scanners</b> no PC. Depois que o relay
+            rodar a primeira vez, os nomes detectados viram sugestões aqui.
+          </p>
+        </div>
         <div className="grid grid-cols-2 gap-2">
           <Select
             label="Tamanho da etiqueta"
@@ -830,7 +468,7 @@ function AgentForm({
           </Select>
         </div>
         <div className="flex gap-2">
-          <Button type="submit" disabled={saving || !printerName}>
+          <Button type="submit" disabled={saving}>
             {saving ? 'Salvando…' : 'Cadastrar'}
           </Button>
           <Button type="button" variant="ghost" onClick={onCancel}>
@@ -874,9 +512,8 @@ function TokenReveal({
               Token da impressora — guarde AGORA
             </h2>
             <p className="text-xs text-amber-800">
-              Este token só aparece uma vez. É usado pelo instalador do modo
-              invisível pra autenticar o relay PowerShell. Se perder, exclua a
-              impressora e cadastre de novo.
+              Este token só aparece uma vez. O instalador do relay pede ele pra
+              autenticar. Se perder, exclua a impressora e cadastre de novo.
             </p>
           </div>
         </div>
@@ -889,9 +526,9 @@ function TokenReveal({
           </Button>
         </div>
         <div className="rounded-lg border border-violet-300 bg-violet-50 p-3 text-xs text-violet-900">
-          <p className="font-semibold">Próximo passo (modo invisível):</p>
+          <p className="font-semibold">Próximo passo:</p>
           <ol className="mt-1 list-decimal space-y-1 pl-4">
-            <li>Baixe o instalador:</li>
+            <li>Baixe o instalador e leve pro PC da impressora:</li>
             <li>
               <a
                 href="/instalar-relay.bat"
@@ -901,11 +538,8 @@ function TokenReveal({
                 <Download size={12} /> Baixar instalar-relay.bat
               </a>
             </li>
-            <li>Rode o .bat no PC ligado à impressora.</li>
-            <li>Cole esse token quando o instalador pedir.</li>
-            <li>
-              Pronto — o relay vira tarefa agendada e inicia com o Windows.
-            </li>
+            <li>Rode o .bat e cole esse token quando ele pedir.</li>
+            <li>O relay inicia sozinho e imprime tudo da fila.</li>
           </ol>
         </div>
         <Button onClick={onClose} className="w-full">
@@ -950,8 +584,7 @@ function RelayLogList({ agentId }: { agentId: string }) {
   if (logs.length === 0) {
     return (
       <p className="mt-2 rounded-lg bg-neutral-50 p-2 text-xs text-neutral-500">
-        Nenhum log ainda. O relay registra erros e eventos aqui assim que
-        rodar.
+        Nenhum log ainda. O relay registra erros e eventos aqui assim que rodar.
       </p>
     );
   }

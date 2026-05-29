@@ -3,7 +3,7 @@
     "target": "ES2022",
     "useDefineForClassFields": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
-    "types": ["w3c-web-usb", "web-bluetooth"],
+    "types": ["web-bluetooth"],
     "module": "ESNext",
     "skipLibCheck": true,
 

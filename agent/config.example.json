@@ -1,9 +1,0 @@
-{
-  "SUPABASE_URL": "https://glvdiicipblsohdgmqaz.supabase.co",
-  "SUPABASE_ANON_KEY": "cole-aqui-a-anon-key-publica",
-  "AGENT_TOKEN": "cole-aqui-o-token-gerado-na-tela-de-impressoras",
-  "PRINTER_HOST": "",
-  "PRINTER_PORT": 9100,
-  "POLL_MS": 2000,
-  "SCAN_MS": 60000
-}
