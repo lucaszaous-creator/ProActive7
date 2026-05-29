@@ -103,12 +103,24 @@ export async function queueDirectPrint(
     dpi: input.agent.dpi,
     copies: input.copies,
   });
+  // Só preenche label_id se a linha JÁ existir em label_prints (FK exige).
+  // No fluxo de impressão direta a label_prints geralmente ainda não foi
+  // criada (só é criada na confirmação do diálogo do navegador).
+  let labelId: string | null = null;
+  if (input.labelId) {
+    const { data: exists } = await supabase
+      .from('label_prints')
+      .select('id')
+      .eq('id', input.labelId)
+      .maybeSingle();
+    labelId = exists ? input.labelId : null;
+  }
   const { data, error } = await supabase
     .from('print_jobs')
     .insert({
       company_id: input.companyId,
       agent_id: input.agent.id,
-      label_id: input.labelId ?? null,
+      label_id: labelId,
       zpl,
       copies: input.copies,
       created_by: input.createdBy ?? null,
