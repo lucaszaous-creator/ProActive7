@@ -17,12 +17,14 @@ export interface OrgMetricsRow {
 }
 
 export async function fetchOrgMetrics(): Promise<OrgMetricsRow[]> {
-  const { data, error } = await supabase
-    .from('platform_org_metrics_v')
-    .select('*')
-    .order('organization_name');
+  // Via RPC SECURITY DEFINER gated por is_platform_admin() — o acesso direto
+  // à view foi revogado (era um vazamento cross-tenant para anon/authenticated).
+  const { data, error } = await supabase.rpc('platform_org_metrics');
   if (error) throw error;
-  return (data as OrgMetricsRow[] | null) ?? [];
+  const rows = (data as OrgMetricsRow[] | null) ?? [];
+  return [...rows].sort((a, b) =>
+    a.organization_name.localeCompare(b.organization_name),
+  );
 }
 
 export interface PlatformSummary {
