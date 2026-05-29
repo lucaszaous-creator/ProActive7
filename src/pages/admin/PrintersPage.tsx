@@ -22,6 +22,13 @@ import {
   listLocalPrinters,
   printZpl,
 } from '@/lib/qzTray';
+import {
+  describePrinter,
+  getPairedPrinter,
+  isWebUsbSupported,
+  printRawViaUsb,
+  requestPrinter,
+} from '@/lib/webUsbPrint';
 import { buildLabelZpl } from '@/lib/zpl';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -52,6 +59,64 @@ export function PrintersPage() {
   const [qzReady, setQzReady] = useState(isQzConnected());
   const [qzConnecting, setQzConnecting] = useState(false);
   const [localPrinters, setLocalPrinters] = useState<string[]>([]);
+
+  // WebUSB (recomendado: grátis e silencioso).
+  const [usbName, setUsbName] = useState<string | null>(null);
+  const [usbConnecting, setUsbConnecting] = useState(false);
+  const usbSupported = isWebUsbSupported();
+
+  useEffect(() => {
+    if (!usbSupported) return;
+    void getPairedPrinter().then((p) => {
+      if (p) setUsbName(describePrinter(p));
+    });
+  }, [usbSupported]);
+
+  async function pairUsbPrinter() {
+    setUsbConnecting(true);
+    try {
+      const p = await requestPrinter();
+      if (!p) return; // usuário cancelou
+      setUsbName(describePrinter(p));
+      toast.success('Impressora USB conectada! Sem mais prompts.');
+    } catch (e) {
+      toast.error((e as Error)?.message ?? String(e));
+    } finally {
+      setUsbConnecting(false);
+    }
+  }
+
+  async function testUsbPrint() {
+    setUsbConnecting(true);
+    try {
+      const p = await getPairedPrinter();
+      if (!p) {
+        toast.error('Conecte uma impressora USB primeiro.');
+        return;
+      }
+      const now = new Date();
+      const fmt = (d: Date) =>
+        d.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+      const zpl = buildLabelZpl(
+        {
+          companyName: '',
+          productName: 'TESTE WEBUSB',
+          storageConditionLabel: 'TESTE',
+          manipulationText: fmt(now),
+          expiryText: fmt(new Date(Date.now() + 86_400_000)),
+          responsibleName: usbName ?? 'USB',
+          printId: 'USB-' + Date.now().toString(36).toUpperCase(),
+        },
+        { widthMm: 40, heightMm: 40, dpi: 203, copies: 1 },
+      );
+      await printRawViaUsb(p, zpl);
+      toast.success('Teste enviado pra impressora USB!');
+    } catch (e) {
+      toast.error('Falha ao imprimir: ' + ((e as Error)?.message ?? String(e)));
+    } finally {
+      setUsbConnecting(false);
+    }
+  }
 
   const load = useCallback(async () => {
     if (!companyId) return;
@@ -224,11 +289,69 @@ export function PrintersPage() {
         </details>
       </Card>
 
+      {usbSupported && (
+        <Card className="border-emerald-400 bg-emerald-50">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h2 className="text-base font-semibold text-emerald-900">
+                  ⚡ Conectar impressora USB (recomendado — grátis e silencioso)
+                </h2>
+                <p className="mt-1 text-sm text-emerald-800">
+                  Conecta direto pela API nativa do Chrome (WebUSB). Pede
+                  permissão <b>uma vez</b>, depois imprime silencioso pra
+                  sempre. Sem instalar nada, sem QZ Tray, sem prompts.
+                </p>
+                {usbName && (
+                  <p className="mt-2 text-sm font-medium text-emerald-900">
+                    ✅ Conectada: {usbName}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button onClick={() => void pairUsbPrinter()} disabled={usbConnecting}>
+                {usbConnecting ? (
+                  <Spinner className="h-4 w-4" />
+                ) : (
+                  <Plug size={16} />
+                )}
+                {usbName ? 'Trocar impressora USB' : 'Conectar impressora USB'}
+              </Button>
+              {usbName && (
+                <Button
+                  variant="secondary"
+                  onClick={() => void testUsbPrint()}
+                  disabled={usbConnecting}
+                >
+                  <Printer size={16} /> Imprimir teste USB
+                </Button>
+              )}
+            </div>
+            <p className="text-xs text-emerald-700">
+              Pré-requisito: impressora térmica conectada via cabo USB no PC,
+              e Chrome (ou Edge) como navegador. Se o Chrome reclamar que não
+              consegue acessar o dispositivo, troque o driver da impressora
+              para WinUSB usando o{' '}
+              <a
+                href="https://zadig.akeo.ie/"
+                target="_blank"
+                rel="noreferrer"
+                className="underline"
+              >
+                Zadig
+              </a>{' '}
+              (1 vez, ~30 segundos).
+            </p>
+          </div>
+        </Card>
+      )}
+
       <Card className="border-emerald-300 bg-emerald-50">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-base font-semibold text-emerald-900">
-              ⚡ Configurar este PC de uma vez
+              ⚡ Alternativa: QZ Tray (configurar este PC de uma vez)
             </h2>
             <p className="mt-1 text-sm text-emerald-800">
               Baixe e dê 2 cliques. O programa instala o certificado, cria o
