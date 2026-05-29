@@ -15,6 +15,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { formatDateTime } from '@/lib/dates';
 import { formatAllergenList } from '@/lib/allergens';
+import { isQzConnected } from '@/lib/qzTray';
 import { LabelPreview, type LabelData } from './LabelPreview';
 
 const SITE_URL =
@@ -73,6 +74,10 @@ export function BrowserPrintRelay() {
         // Sem label_id não dá pra renderizar HTML — não somos o relay.
         return;
       }
+      // Se o QZ Tray esta conectado, deixa o QzRelay tratar (multi-tenant
+      // correto: ele mira impressora especifica por nome do cadastro).
+      // BrowserPrintRelay so age como fallback quando nao ha QZ Tray.
+      if (isQzConnected()) return;
 
       // Claim atômico
       const { data: claimed, error: claimErr } = await supabase

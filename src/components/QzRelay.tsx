@@ -75,14 +75,11 @@ export function QzRelay() {
 }
 
 async function handleJob(job: JobRow) {
-  // Só age se o QZ Tray local estiver disponível.
-  if (!isQzConnected()) {
-    try {
-      await connectQz();
-    } catch {
-      return; // este PC não é o relay
-    }
-  }
+  // Só age se o QZ Tray local estiver CONECTADO de fato. Se não estiver,
+  // deixa pro BrowserPrintRelay assumir (caminho fallback). NUNCA tenta
+  // claim antes de saber que vai conseguir imprimir.
+  if (!isQzConnected()) return;
+
   // Claim atômico: marca como 'printing' SE ainda estiver 'queued'.
   const { data: claimed, error: claimErr } = await supabase
     .from('print_jobs')

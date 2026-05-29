@@ -43,6 +43,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { BrowserPrintRelay } from './BrowserPrintRelay';
+import { QzRelay } from './QzRelay';
 import { PwaInstallButton } from './PwaInstallButton';
 import { PushToggle } from './PushToggle';
 import { ThemeToggle } from './ThemeToggle';
@@ -626,6 +627,11 @@ export function Layout() {
         </header>
 
         <AnnouncementBanner />
+        {/* Dois relays competem pelos print_jobs (claim atomico garante
+            que so um vence). QZ Tray e' o primario (mira impressora
+            especifica por nome — multi-tenant correto). BrowserPrintRelay
+            e' fallback (window.print para impressora padrao do Windows). */}
+        <QzRelay />
         <BrowserPrintRelay />
 
         <main className="w-full min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6">
