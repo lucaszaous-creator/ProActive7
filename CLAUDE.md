@@ -293,12 +293,76 @@ external_id`). Webhook do gateway atualiza.
   `masterOnly` em `src/App.tsx`. Toda página de `/admin/*` (escopo
   org) por `nutritionistOrAdmin`.
 
-## Convenções para a próxima sessão de Claude
+## Review de segurança & dívida técnica (2026-05-29)
 
-- **Não criar arquivos `.md`** (incluindo `README` por feature) sem o
-  usuário pedir. O codebase prefere conversar do que documentar.
+Review profundo do projeto. Itens com ✅ já foram resolvidos nesta
+sessão; os demais ficam como pendência priorizada.
+
+### Resolvido
+
+- ✅ **Vazamento cross-tenant da view `platform_org_metrics_v`**: estava
+  com acesso (SELECT+DML) para `anon` e `authenticated`, expondo métricas
+  de todas as orgs (inclusive `auth.users`). Trancado em
+  `0071_platform_metrics_lockdown.sql` — acesso só via RPC
+  `platform_org_metrics()` (SECURITY DEFINER, gated por
+  `is_platform_admin()`). Frontend usa `supabase.rpc(...)`.
+- ✅ **Injeção cross-tenant em `print_jobs`**: INSERT não amarrava
+  `agent_id` à empresa do job. Corrigido em
+  `0070_print_jobs_agent_company_bind.sql`.
+- ✅ **Drift repo↔produção**: migrations `0067`/`0068`/`0069` e a Edge
+  `print-agent` v4 só existiam no banco. Reconstruídos como arquivo.
+
+### Pendente — exige decisão de produto
+
+- [ ] **`get_public_label` expõe PII na etiqueta pública** (`/etiqueta/:id`):
+  retorna CNPJ, endereço, telefone da empresa e **nome do responsável**
+  (dado pessoal). A função no banco sofreu drift (devolve mais que as
+  migrations `0008`/`0012` declaram). Decidir com a RT o que pode ser
+  público; remover o resto e **commitar a definição real como migration**.
+- [ ] **`admin-update-user` permite nutri gerenciar outra nutri** da mesma
+  org (só checa `organization_id`, não `role==='property'`). Restringir o
+  alvo a `property` (ou self).
+- [ ] **`admin-update-user` em prod com `verify_jwt:false`** (config diz
+  `true`) — drift. Re-deployar com `verify_jwt:true` (ele já trata OPTIONS
+  e re-checa auth internamente).
+
+### Pendente — dívida técnica / hardening
+
+- [ ] **`sign-qz` Edge Function órfã** (sobra do QZ Tray, removido):
+  oráculo de assinatura público com chave privada embutida. **Deletar** a
+  função no painel Supabase (não está mais no repo).
+- [ ] **Retenção LGPD**: `manipulator_asos` (dado de saúde) e bucket
+  `employee-docs` (ASOs) **sem expiração**. Estender o padrão de 30 dias
+  das `photos`/`cleanup-photos`.
+- [ ] **Sem `audit_log` em `profiles`**: mudança de `role`/`organization_id`
+  (a mais sensível em multi-tenant) não é registrada. Adicionar trigger
+  `log_changes()`.
+- [ ] **`get_public_label` sem rate limit** (anon) — risco de enumeração.
+- [ ] **Funções trigger/internas executáveis por anon/authenticated**
+  (`cleanup_soft_deleted`, `rls_auto_enable`, `log_changes`,
+  `sync_profile_org_from_company`): `REVOKE EXECUTE` (não tocar nos
+  helpers `is_*`/`current_*`, que a RLS precisa executar).
+- [ ] **Agregação client-side sem `.limit`**: `ReportsPage.tsx` e
+  `platformMetrics.ts` (feature_events 30d) — mover pra view/RPC SQL
+  antes de escalar volume.
+- [ ] **Deleções no Storage ignoram erro** (fotos, ASO, NC, pragas,
+  visitas) → arquivos órfãos. Checar `error` do `.remove()`.
+- [ ] **Realtime/timer vazam no wizard** se sair com job em fila
+  (`PrintWizardPage` DirectPrintBlock) — limpar em `useEffect` cleanup.
+- [ ] **`PrintLabelPage` legado (`/imprimir`) tem `<input>` texto livre**
+  pro responsável sem manipulador — viola "zero digitação na cozinha". O
+  wizard novo já bloqueia com CTA; aplicar o mesmo ou aposentar a rota.
+- [ ] **`master` legado** ainda referenciado em migrations/checks —
+  consolidar em `platform_admin` (já estava no roadmap).
+- [ ] **FKs sem índice** em `print_jobs`/`print_agents`
+  (`created_by`, `label_id`) e índices não usados (`relay_logs`) —
+  avaliar quando houver volume.
+
+## Convenções para a próxima sessão de Claude
 - Em queries Supabase, **sempre** verificar pares de FK ambíguos antes
   de usar embed aninhado.
+- **Não criar arquivos `.md`** (incluindo `README` por feature) sem o
+  usuário pedir. O codebase prefere conversar do que documentar.
 - Para operação que precisa de service role: criar/usar Edge Function,
   nunca chave no frontend.
 - Migrations numeradas sequencialmente em `supabase/migrations/NNNN_*`.
