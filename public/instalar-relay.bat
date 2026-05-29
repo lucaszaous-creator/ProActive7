@@ -65,28 +65,25 @@ if errorlevel 1 (
 )
 echo   OK: config salva em %DEST%\relay-config.json
 
-REM --- 3. Registra tarefa agendada ---
+REM --- 3. Cria o lancador invisivel (VBS) + auto-start no registro do usuario ---
 echo.
-echo [3/4] Registrando tarefa agendada (auto-start no login)...
+echo [3/4] Configurando auto-start (inicia com o Windows)...
 
-schtasks /Query /TN "ProActive7Relay" >nul 2>&1
-if not errorlevel 1 (
-    schtasks /Delete /TN "ProActive7Relay" /F >nul 2>&1
-)
+set "VBS=%DEST%\start-relay.vbs"
 
-schtasks /Create /TN "ProActive7Relay" /SC ONLOGON /F /TR "powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File \"%PS1%\"" >nul
+REM Toda a logica em PowerShell para evitar inferno de aspas no batch.
+REM Cria o .vbs que roda o relay 100%% invisivel e registra na chave Run
+REM do USUARIO (HKCU) -- nao precisa de admin.
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$ps1 = Join-Path $env:APPDATA 'ProActive7\relay.ps1'; $vbsPath = Join-Path $env:APPDATA 'ProActive7\start-relay.vbs'; $inner = 'powershell.exe -NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File ' + [char]34 + [char]34 + $ps1 + [char]34 + [char]34; $vbsLine = 'CreateObject(' + [char]34 + 'Wscript.Shell' + [char]34 + ').Run ' + [char]34 + $inner + [char]34 + ', 0, False'; Set-Content -Path $vbsPath -Value $vbsLine -Encoding ASCII; $runVal = 'wscript.exe ' + [char]34 + $vbsPath + [char]34; Set-ItemProperty -Path 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run' -Name 'ProActive7Relay' -Value $runVal; Write-Host '   OK: auto-start no login do usuario (sem admin)'"
 if errorlevel 1 (
-    echo   AVISO: nao consegui criar a tarefa agendada via schtasks.
-    echo          Tente abrir o instalador como Administrador.
-    pause & exit /b 1
+    echo   AVISO: nao consegui configurar o auto-start. O relay vai iniciar
+    echo          agora, mas pode nao subir sozinho ao ligar o PC.
 )
-echo   OK: tarefa "ProActive7Relay" criada
 
 REM --- 4. Inicia agora ---
 echo.
-echo [4/4] Iniciando o relay agora (sem precisar reiniciar o PC)...
-taskkill /F /FI "WINDOWTITLE eq ProActive7Relay*" >nul 2>&1
-schtasks /Run /TN "ProActive7Relay" >nul 2>&1
+echo [4/4] Iniciando o relay agora (sem reiniciar o PC)...
+start "" wscript.exe "%VBS%"
 echo   OK
 
 echo.
@@ -99,7 +96,8 @@ echo - Inicia sozinho toda vez que o PC ligar
 echo - Imprime do celular sem precisar de navegador
 echo - Log de atividade: %DEST%\relay.log
 echo.
-echo Para PARAR/REMOVER o relay depois:
-echo   schtasks /Delete /TN "ProActive7Relay" /F
+echo Para PARAR/REMOVER o relay depois, rode no CMD:
+echo   reg delete "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v ProActive7Relay /f
+echo   (e finalize o powershell em execucao pelo Gerenciador de Tarefas)
 echo.
 pause
