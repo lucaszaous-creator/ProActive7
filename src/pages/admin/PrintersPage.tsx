@@ -398,6 +398,10 @@ function AgentCard({
   onDelete: () => void;
 }) {
   const [testing, setTesting] = useState(false);
+  const isVirtual = !!agent.printer_name &&
+    /(pdf|xps|onenote|fax|microsoft (print|document)|send to|document writer)/i.test(
+      agent.printer_name,
+    );
 
   async function testPrint() {
     if (!agent.printer_name) {
@@ -457,6 +461,14 @@ function AgentCard({
               </dd>
             </div>
           </dl>
+          {isVirtual && (
+            <p className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-800">
+              <AlertTriangle size={14} className="mt-0.5 shrink-0" />
+              Esta é uma impressora <b>virtual</b>. ZPL não funciona aqui —
+              etiqueta sai em branco. Apague e cadastre uma <b>térmica</b>
+              (Elgin L42PRO, Zebra, etc).
+            </p>
+          )}
           <div className="mt-3">
             <Button
               variant="secondary"
@@ -536,6 +548,10 @@ function AgentForm({
     );
   }
 
+  const isLikelyVirtual = (name: string): boolean =>
+    /(pdf|xps|onenote|fax|microsoft (print|document)|send to|document writer)/i.test(name);
+  const virtualWarning = isLikelyVirtual(printerName);
+
   return (
     <Card>
       <form onSubmit={handleSubmit} className="space-y-3">
@@ -559,6 +575,15 @@ function AgentForm({
             </option>
           ))}
         </Select>
+        {virtualWarning && (
+          <p className="flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-800">
+            <AlertTriangle size={14} className="mt-0.5 shrink-0" />
+            Esta parece ser uma impressora <b>virtual</b> (PDF, OneNote, XPS).
+            ZPL não funciona em impressora virtual — a etiqueta vai sair em
+            branco. Para etiquetas reais, escolha uma <b>térmica</b> (Elgin
+            L42PRO, Zebra, etc).
+          </p>
+        )}
         <Input
           label="Apelido (como vai aparecer no app)"
           value={name}
