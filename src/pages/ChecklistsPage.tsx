@@ -14,6 +14,7 @@ import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDateTime } from '@/lib/dates';
+import { logFeatureEvent } from '@/lib/platformMetrics';
 import {
   CHECKLIST_FREQUENCY_LABELS,
   type ChecklistFrequency,
@@ -280,6 +281,7 @@ export function ChecklistsPage() {
       return;
     }
     toast.success('Checklist registrado.');
+    void logFeatureEvent('checklist_run');
     setRunOpen(false);
     void load();
   }

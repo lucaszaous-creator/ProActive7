@@ -6,6 +6,7 @@ import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDate } from '@/lib/dates';
+import { logFeatureEvent } from '@/lib/platformMetrics';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -188,6 +189,7 @@ export function NonConformitiesPage() {
       return;
     }
     toast.success(editing ? 'NC atualizada.' : 'NC criada.');
+    if (!editing) void logFeatureEvent('nc_opened');
     setModalOpen(false);
     void load();
   }

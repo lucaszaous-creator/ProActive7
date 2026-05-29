@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Plus, Pencil, Thermometer, AlertTriangle } from 'lucide-react';
+import { logFeatureEvent } from '@/lib/platformMetrics';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
@@ -185,6 +186,7 @@ export function TemperaturePage() {
       return;
     }
     toast.success('Leitura registrada.');
+    void logFeatureEvent('temp_logged');
     setTemperature('');
     setNotes('');
     void load();

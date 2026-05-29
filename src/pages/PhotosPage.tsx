@@ -128,7 +128,13 @@ export function PhotosPage() {
       toast.error(err);
       return;
     }
-    await supabase.storage.from(BUCKET).remove([deleting.storage_path]);
+    const { error: storageErr } = await supabase.storage
+      .from(BUCKET)
+      .remove([deleting.storage_path]);
+    if (storageErr) {
+      console.warn('Falha ao remover arquivo do storage:', storageErr.message);
+      toast.warning('Registro excluído, mas o arquivo pode ter ficado no storage.');
+    }
     setDeleteBusy(false);
     toast.success('Foto excluída.');
     setDeleting(null);
