@@ -302,9 +302,23 @@ export function PrintersPage() {
                   permissão <b>uma vez</b>, depois imprime silencioso pra
                   sempre. Sem instalar nada, sem QZ Tray, sem prompts.
                 </p>
-                {usbName && (
-                  <p className="mt-2 text-sm font-medium text-emerald-900">
-                    ✅ Conectada: {usbName}
+                {usbName ? (
+                  <div className="mt-2 space-y-1">
+                    <p className="text-sm font-medium text-emerald-900">
+                      ✅ Conectada: {usbName}
+                    </p>
+                    <p className="text-xs font-medium text-emerald-800">
+                      🛰️ Este PC virou o <b>relay da empresa</b>. Celulares e
+                      tablets podem imprimir aqui (esta aba precisa ficar
+                      aberta).
+                    </p>
+                  </div>
+                ) : (
+                  <p className="mt-2 rounded-lg bg-emerald-100 p-2 text-xs text-emerald-800">
+                    💡 <b>Sobre o celular:</b> o celular nunca precisa de
+                    WebUSB. Ele só manda o job pro Supabase. Este PC (com a
+                    impressora conectada e o app aberto) vê a fila e imprime.
+                    Conecta a impressora USB <b>aqui no PC só uma vez</b>.
                   </p>
                 )}
               </div>
