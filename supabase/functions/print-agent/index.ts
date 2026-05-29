@@ -1,14 +1,15 @@
-// print-agent — endpoint do agente local de impressão (estilo PrintNode).
-// O agente roda no PC da cozinha e se autentica por um TOKEN (gerado uma
-// vez na tela de impressoras). Usa service role aqui dentro, nunca expõe
-// nada sensível ao agente. Três ações:
-//   action=poll            -> devolve jobs 'queued' (marca 'printing') + a
-//                             impressora atribuida ao agente { host, port }
-//   action=ack             -> agente confirma resultado (done|error) de um job
-//   action=heartbeat       -> atualiza last_seen_at (Online/Offline na UI)
-//   action=report_printers -> agente reporta as impressoras que achou na
-//                             rede; a web mostra num popup pra escolher
+// print-agent — endpoint do relay local (PowerShell, modo invisivel).
+//   action=poll            -> jobs 'queued' da empresa + printer_name +
+//                             latest_version (pra auto-update)
+//   action=ack             -> confirma resultado (done|error)
+//   action=heartbeat       -> last_seen_at + relay_version
+//   action=report_printers -> impressoras detectadas
+//   action=log             -> grava em relay_logs (erros centralizados)
 import { createClient } from 'jsr:@supabase/supabase-js@2';
+
+// Versao mais recente do relay.ps1 publicada. O relay compara com a sua
+// e baixa de novo se estiver desatualizado.
+const LATEST_RELAY_VERSION = '2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -46,23 +47,35 @@ Deno.serve(async (req) => {
     const action: string = body?.action ?? 'poll';
     if (!token) return json({ error: 'token obrigatorio' }, 400);
 
-    // Autentica o agente pelo hash do token
     const tokenHash = await sha256Hex(token);
     const { data: agent } = await admin
       .from('print_agents')
-      .select('id, company_id, active, printer_host, printer_port')
+      .select('id, company_id, active, printer_name, printer_host, printer_port')
       .eq('token_hash', tokenHash)
       .maybeSingle();
 
     if (!agent || !agent.active) return json({ error: 'Agente invalido' }, 401);
 
-    // Heartbeat em toda chamada (mantém Online)
-    await admin
-      .from('print_agents')
-      .update({ last_seen_at: new Date().toISOString() })
-      .eq('id', agent.id);
+    // Heartbeat + versao do relay em toda chamada
+    const patch: Record<string, unknown> = { last_seen_at: new Date().toISOString() };
+    if (typeof body?.version === 'string') patch.relay_version = body.version;
+    await admin.from('print_agents').update(patch).eq('id', agent.id);
 
     if (action === 'heartbeat') {
+      return json({ ok: true, latest_version: LATEST_RELAY_VERSION }, 200);
+    }
+
+    if (action === 'log') {
+      const level = ['info', 'warn', 'error'].includes(body?.level) ? body.level : 'info';
+      const message = String(body?.message ?? '').slice(0, 2000);
+      if (message) {
+        await admin.from('relay_logs').insert({
+          agent_id: agent.id,
+          company_id: agent.company_id,
+          level,
+          message,
+        });
+      }
       return json({ ok: true }, 200);
     }
 
@@ -70,10 +83,7 @@ Deno.serve(async (req) => {
       const printers = Array.isArray(body?.printers) ? body.printers : [];
       await admin
         .from('print_agents')
-        .update({
-          discovered: printers,
-          discovered_at: new Date().toISOString(),
-        })
+        .update({ discovered: printers, discovered_at: new Date().toISOString() })
         .eq('id', agent.id);
       return json({ ok: true }, 200);
     }
@@ -92,15 +102,15 @@ Deno.serve(async (req) => {
           printed_at: status === 'done' ? new Date().toISOString() : null,
         })
         .eq('id', jobId)
-        .eq('agent_id', agent.id);
+        .eq('company_id', agent.company_id);
       return json({ ok: true }, 200);
     }
 
-    // action=poll: pega jobs na fila e marca como 'printing' (claim)
+    // action=poll: jobs queued de QUALQUER agente da MESMA empresa
     const { data: jobs } = await admin
       .from('print_jobs')
-      .select('id, zpl, copies')
-      .eq('agent_id', agent.id)
+      .select('id, zpl, copies, agent_id')
+      .eq('company_id', agent.company_id)
       .eq('status', 'queued')
       .order('created_at', { ascending: true })
       .limit(10);
@@ -110,17 +120,19 @@ Deno.serve(async (req) => {
       await admin
         .from('print_jobs')
         .update({ status: 'printing', updated_at: new Date().toISOString() })
-        .in(
-          'id',
-          claimed.map((j) => j.id),
-        );
+        .in('id', claimed.map((j) => j.id));
     }
 
     return json(
       {
         ok: true,
         jobs: claimed,
-        printer: { host: agent.printer_host, port: agent.printer_port },
+        latest_version: LATEST_RELAY_VERSION,
+        printer: {
+          name: agent.printer_name,
+          host: agent.printer_host,
+          port: agent.printer_port,
+        },
       },
       200,
     );
