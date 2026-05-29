@@ -19,7 +19,9 @@ echo.
 echo [1/3] Instalando certificado do QZ Tray...
 set "QZDIR=%USERPROFILE%\.qz"
 if not exist "%QZDIR%" mkdir "%QZDIR%"
-powershell -NoProfile -Command "try { Invoke-WebRequest -UseBasicParsing -Uri 'https://proactive7.com.br/qz-override.crt' -OutFile ($env:USERPROFILE + '\.qz\override.crt'); Write-Host '   OK: certificado salvo em ~/.qz/override.crt' } catch { Write-Host '   ERRO ao baixar:' $_.Exception.Message; exit 1 }"
+set "CERT=%QZDIR%\override.crt"
+
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls13; $urls = @('https://www.proactive7.com.br/qz-override.crt','https://proactive7.com.br/qz-override.crt','https://pro-active7.vercel.app/qz-override.crt'); $dest = $env:USERPROFILE + '\.qz\override.crt'; $ok=$false; foreach ($u in $urls) { try { Invoke-WebRequest -UseBasicParsing -MaximumRedirection 10 -Uri $u -OutFile $dest -ErrorAction Stop; Write-Host ('   OK: certificado salvo (' + $u + ')'); $ok=$true; break } catch { Write-Host ('   tentei ' + $u + ' -> falhou') } }; if (-not $ok) { try { & curl.exe -sSL -o $dest 'https://proactive7.com.br/qz-override.crt'; if ($LASTEXITCODE -eq 0) { Write-Host '   OK: salvo via curl.exe'; $ok=$true } } catch {} }; if (-not $ok) { Write-Host '   ERRO: nenhuma URL funcionou'; exit 1 }"
 if errorlevel 1 (
     echo.
     echo Falhou ao baixar o certificado. Verifique a internet.
@@ -46,7 +48,7 @@ set "STARTUP=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
 set "LNK=%STARTUP%\ProActive7.lnk"
 set "URL=https://proactive7.com.br/painel"
 
-powershell -NoProfile -Command "$s=(New-Object -COM WScript.Shell).CreateShortcut('%LNK%'); $s.TargetPath='%CHROME%'; $s.Arguments='--app=%URL%'; $s.IconLocation='%CHROME%,0'; $s.WorkingDirectory=(Split-Path '%CHROME%'); $s.Save(); Write-Host '   OK: atalho criado em Inicializacao do Windows'"
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=(New-Object -COM WScript.Shell).CreateShortcut('%LNK%'); $s.TargetPath='%CHROME%'; $s.Arguments='--app=%URL%'; $s.IconLocation='%CHROME%,0'; $s.WorkingDirectory=(Split-Path '%CHROME%'); $s.Save(); Write-Host '   OK: atalho criado em Inicializacao do Windows'"
 if errorlevel 1 (
     echo Falhou ao criar atalho.
     pause
