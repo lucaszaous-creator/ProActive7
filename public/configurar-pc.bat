@@ -67,7 +67,7 @@ set "STARTUP=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup"
 set "LNK=%STARTUP%\ProActive7.lnk"
 set "URL=https://proactive7.com.br/painel"
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=(New-Object -COM WScript.Shell).CreateShortcut('%LNK%'); $s.TargetPath='%CHROME%'; $s.Arguments='--app=%URL%'; $s.IconLocation='%CHROME%,0'; $s.WorkingDirectory=(Split-Path '%CHROME%'); $s.Save()" >nul
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$s=(New-Object -COM WScript.Shell).CreateShortcut('%LNK%'); $s.TargetPath='%CHROME%'; $s.Arguments='--app=%URL% --kiosk-printing'; $s.IconLocation='%CHROME%,0'; $s.WorkingDirectory=(Split-Path '%CHROME%'); $s.Save()" >nul
 if errorlevel 1 (
     echo   AVISO: falhou ao criar atalho de auto-start.
 ) else (
@@ -98,7 +98,7 @@ if not "%QZEXE%"=="" (
 )
 
 if not "%CHROME%"=="" (
-    start "" "%CHROME%" --app=%URL%
+    start "" "%CHROME%" --app=%URL% --kiosk-printing
 )
 
 echo.
