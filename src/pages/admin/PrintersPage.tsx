@@ -194,9 +194,9 @@ export function PrintersPage() {
           </div>
         </div>
 
-        <details className="mt-3">
+        <details className="mt-3" open={!qzReady}>
           <summary className="cursor-pointer text-xs font-medium text-neutral-600">
-            Como funciona?
+            Como funciona? (instalação inicial)
           </summary>
           <div className="mt-2 space-y-2 text-xs text-neutral-600">
             <p>
@@ -209,19 +209,93 @@ export function PrintersPage() {
               >
                 QZ Tray
               </a>{' '}
-              (gratuito, instalador oficial e assinado — sem alerta do Defender).
+              (gratuito, oficial, assinado).
             </p>
             <p>
-              <b>2.</b> Abra o QZ Tray (fica como ícone na barra do Windows).
+              <b>2.</b> Abra o QZ Tray (ícone na barra do Windows).
             </p>
             <p>
-              <b>3.</b> Aqui no app, clique em <b>Conectar QZ Tray</b>. Na
-              primeira vez o QZ vai pedir permissão para o site — clique em{' '}
-              <i>Allow</i> (permitir).
+              <b>3.</b> Aqui no app, clique em <b>Conectar QZ Tray</b>.
             </p>
             <p>
-              <b>4.</b> Cadastre cada impressora escolhendo da lista detectada e
-              o tamanho da etiqueta.
+              <b>4.</b> Cadastre cada impressora escolhendo da lista detectada.
+            </p>
+          </div>
+        </details>
+      </Card>
+
+      <Card>
+        <details>
+          <summary className="cursor-pointer text-sm font-semibold text-neutral-800">
+            🔑 Parar de pedir permissão toda vez (instalar certificado)
+          </summary>
+          <div className="mt-3 space-y-2 text-xs text-neutral-600">
+            <p>
+              Sem o certificado o QZ Tray pede permissão a cada conexão. Com
+              ele, fica liberado pra sempre <b>só neste PC</b>.
+            </p>
+            <p>
+              <b>1.</b> Baixe o certificado:
+            </p>
+            <p>
+              <a
+                href="/qz-override.crt"
+                download="override.crt"
+                className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+              >
+                <Download size={14} /> Baixar certificado
+              </a>
+            </p>
+            <p>
+              <b>2.</b> Mova o arquivo <code>override.crt</code> para a pasta:
+            </p>
+            <pre className="overflow-x-auto rounded bg-neutral-100 p-2 font-mono text-[11px]">
+              %USERPROFILE%\.qz\override.crt
+            </pre>
+            <p className="text-neutral-500">
+              (Cole esse caminho na barra de endereços do Windows Explorer. Se a
+              pasta <code>.qz</code> não existir, crie-a.)
+            </p>
+            <p>
+              <b>3.</b> Saia do QZ Tray (clique no ícone → Exit) e abra de novo.
+              Pronto — não pede mais permissão.
+            </p>
+          </div>
+        </details>
+      </Card>
+
+      <Card>
+        <details>
+          <summary className="cursor-pointer text-sm font-semibold text-neutral-800">
+            🚀 Deixar a aba relay aberta sempre (auto-start no Windows)
+          </summary>
+          <div className="mt-3 space-y-2 text-xs text-neutral-600">
+            <p>
+              O celular só imprime se este PC estiver com o app aberto numa aba
+              (a "aba relay"). Pra abrir automaticamente quando o Windows ligar:
+            </p>
+            <p>
+              <b>1.</b> Instale o app como atalho no Windows: no Chrome desta
+              página, clique nos <b>3 pontinhos</b> (canto superior direito) →{' '}
+              <b>Salvar e compartilhar</b> → <b>Criar atalho</b>. Marque{' '}
+              <b>Abrir como janela</b> e dê OK.
+            </p>
+            <p>
+              <b>2.</b> O atalho aparece na Área de Trabalho. Recorte (Ctrl+X)
+              esse atalho.
+            </p>
+            <p>
+              <b>3.</b> Abra a pasta de Inicialização: tecla Windows + R, digite{' '}
+              <code className="rounded bg-neutral-100 px-1">shell:startup</code>{' '}
+              → Enter. Cole o atalho (Ctrl+V) lá dentro.
+            </p>
+            <p>
+              <b>4.</b> Pronto. Quando o PC ligar, o app abre sozinho como
+              janela e fica escutando a fila de impressão.
+            </p>
+            <p className="text-neutral-500">
+              (Marque também "Automatically start" no QZ Tray — botão direito no
+              ícone da barra. Aí tudo sobe junto.)
             </p>
           </div>
         </details>
