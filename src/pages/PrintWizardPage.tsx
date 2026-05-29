@@ -302,40 +302,58 @@ export function PrintWizardPage() {
     setConfirmOpen(true);
   }
 
-  async function confirmPrintedSingle() {
-    if (!selectedProduct || !rule || !expiry || !manipDate) return;
-    setSavingPrint(true);
-    const { error } = await supabase.from('label_prints').insert({
-      id: labelId,
-      company_id: companyId,
-      product_id: selectedProduct.id,
-      product_name_snapshot: selectedProduct.name,
-      storage_condition: condition,
-      manipulation_at: manipDate.toISOString(),
-      expiry_at: expiry.toISOString(),
-      responsible_name: responsible.trim(),
-      quantity,
-      batch: batch.trim() || null,
-      supplier: supplier.trim() || null,
-      display_quantity: displayQuantity.trim() || null,
-      allergens: selectedProduct.allergens ?? [],
-      printed_by: profile?.id ?? null,
-    });
-    setSavingPrint(false);
-    setConfirmOpen(false);
-    if (error) {
-      toast.error('Falha ao registrar a etiqueta: ' + error.message);
-      return;
+  // Idempotente: upsert por id. Pode ser chamada antes da impressão direta
+  // (para o QR funcionar) e depois pelo confirmPrintedSingle sem duplicar.
+  async function persistLabelPrint(): Promise<void> {
+    if (!selectedProduct || !rule || !expiry || !manipDate) {
+      throw new Error('Dados da etiqueta incompletos');
     }
-    toast.success('Etiqueta registrada.');
-    void logFeatureEvent('label_printed_wizard');
-    // reseta para imprimir outra do mesmo manipulador
+    const { error } = await supabase.from('label_prints').upsert(
+      {
+        id: labelId,
+        company_id: companyId,
+        product_id: selectedProduct.id,
+        product_name_snapshot: selectedProduct.name,
+        storage_condition: condition,
+        manipulation_at: manipDate.toISOString(),
+        expiry_at: expiry.toISOString(),
+        responsible_name: responsible.trim(),
+        quantity,
+        batch: batch.trim() || null,
+        supplier: supplier.trim() || null,
+        display_quantity: displayQuantity.trim() || null,
+        allergens: selectedProduct.allergens ?? [],
+        printed_by: profile?.id ?? null,
+      },
+      { onConflict: 'id' },
+    );
+    if (error) throw error;
+  }
+
+  function resetForNextLabel() {
     setStep(2);
     setProductId('');
     setBatch('');
     setSupplier('');
     setDisplayQuantity('');
     setLabelId(crypto.randomUUID());
+  }
+
+  async function confirmPrintedSingle() {
+    if (!selectedProduct || !rule || !expiry || !manipDate) return;
+    setSavingPrint(true);
+    try {
+      await persistLabelPrint();
+      setConfirmOpen(false);
+      toast.success('Etiqueta registrada.');
+      void logFeatureEvent('label_printed_wizard');
+      resetForNextLabel();
+    } catch (e) {
+      setConfirmOpen(false);
+      toast.error('Falha ao registrar a etiqueta: ' + (e as Error).message);
+    } finally {
+      setSavingPrint(false);
+    }
   }
 
   async function confirmPrintedBatch() {
@@ -569,6 +587,8 @@ export function PrintWizardPage() {
               companyId={companyId}
               labelId={labelId}
               profileId={profile?.id ?? null}
+              onPersistLabel={persistLabelPrint}
+              onAfterPrint={resetForNextLabel}
             />
           )}
           {step === 5 && mode === 'batch' && (
@@ -1085,6 +1105,8 @@ function Step5({
   companyId,
   labelId,
   profileId,
+  onPersistLabel,
+  onAfterPrint,
 }: {
   labelData: LabelData;
   size: LabelSize;
@@ -1094,6 +1116,8 @@ function Step5({
   companyId: string;
   labelId: string;
   profileId: string | null;
+  onPersistLabel: () => Promise<void>;
+  onAfterPrint: () => void;
 }) {
   return (
     <Card>
@@ -1113,6 +1137,8 @@ function Step5({
           heightMm={size.h}
           copies={quantity}
           canPrint={canPrint}
+          onPersistLabel={onPersistLabel}
+          onAfterPrint={onAfterPrint}
         />
         <details className="w-full">
           <summary className="cursor-pointer text-xs text-neutral-500">
@@ -1147,6 +1173,8 @@ function DirectPrintBlock({
   heightMm,
   copies,
   canPrint,
+  onPersistLabel,
+  onAfterPrint,
 }: {
   companyId: string;
   labelId: string;
@@ -1156,6 +1184,8 @@ function DirectPrintBlock({
   heightMm: number;
   copies: number;
   canPrint: boolean;
+  onPersistLabel: () => Promise<void>;
+  onAfterPrint: () => void;
 }) {
   const [agents, setAgents] = useState<PrintAgent[]>([]);
   const [agentId, setAgentId] = useState<string>('');
@@ -1200,6 +1230,18 @@ function DirectPrintBlock({
     setSending(true);
     setErrorMsg(null);
 
+    // PRIMEIRO: registra a etiqueta em label_prints. Faz o QR resolver
+    // assim que a impressora cuspir o papel. Idempotente (upsert).
+    try {
+      await onPersistLabel();
+    } catch (e) {
+      const msg = (e as Error)?.message ?? String(e);
+      setErrorMsg(msg);
+      toast.error('Falha ao registrar etiqueta: ' + msg);
+      setSending(false);
+      return;
+    }
+
     // Caminho 1: este browser tem QZ Tray conectado (PC ligado à impressora)
     // → imprime direto, sem fila.
     if (qzReady) {
@@ -1213,6 +1255,7 @@ function DirectPrintBlock({
         await printZpl(selected.printer_name, zpl, 1);
         void logFeatureEvent('label_printed_direct');
         toast.success('Impresso!');
+        onAfterPrint();
       } catch (e) {
         const msg = (e as Error)?.message ?? String(e);
         setErrorMsg(msg);
@@ -1243,6 +1286,7 @@ function DirectPrintBlock({
           setSending(false);
           void logFeatureEvent('label_printed_direct');
           toast.success('Impresso na cozinha!');
+          onAfterPrint();
         } else if (job.status === 'error') {
           unsub();
           setSending(false);
