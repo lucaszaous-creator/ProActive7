@@ -10,6 +10,9 @@ import {
   Plug,
   PlugZap,
   Copy,
+  CheckCircle2,
+  XCircle,
+  FileText,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -19,6 +22,7 @@ import {
   generateAgentToken,
   sha256Hex,
   type PrintAgent,
+  type RelayLog,
 } from '@/lib/printAgent';
 import {
   QZ_TRAY_DOWNLOAD_URL,
@@ -142,6 +146,9 @@ export function PrintersPage() {
 
   useEffect(() => {
     void load();
+    // Recarrega a cada 15s pra atualizar status online/offline do relay.
+    const t = setInterval(() => void load(), 15_000);
+    return () => clearInterval(t);
   }, [load]);
 
   async function connectAndList() {
@@ -577,10 +584,15 @@ function AgentCard({
   onDelete: () => void;
 }) {
   const [testing, setTesting] = useState(false);
+  const [showLogs, setShowLogs] = useState(false);
   const isVirtual = !!agent.printer_name &&
     /(pdf|xps|onenote|fax|microsoft (print|document)|send to|document writer)/i.test(
       agent.printer_name,
     );
+  // Relay online se reportou heartbeat nos últimos 60s.
+  const relayOnline =
+    !!agent.last_seen_at &&
+    Date.now() - new Date(agent.last_seen_at).getTime() < 60_000;
 
   async function testPrint() {
     if (!agent.printer_name) {
@@ -621,11 +633,20 @@ function AgentCard({
     <Card>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Printer size={18} className="text-neutral-500" />
             <h2 className="truncate font-semibold text-neutral-800">
               {agent.name}
             </h2>
+            {relayOnline ? (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+                <CheckCircle2 size={12} /> Relay online
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500">
+                <XCircle size={12} /> Relay offline
+              </span>
+            )}
           </div>
           <dl className="mt-2 grid grid-cols-1 gap-x-4 gap-y-1 text-xs text-neutral-600 sm:grid-cols-2">
             <div>
@@ -639,6 +660,18 @@ function AgentCard({
                 dpi
               </dd>
             </div>
+            <div>
+              <dt className="inline font-medium">Última atividade: </dt>
+              <dd className="inline">
+                {agent.last_seen_at
+                  ? new Date(agent.last_seen_at).toLocaleString('pt-BR')
+                  : 'nunca'}
+              </dd>
+            </div>
+            <div>
+              <dt className="inline font-medium">Versão do relay: </dt>
+              <dd className="inline">{agent.relay_version ?? '—'}</dd>
+            </div>
           </dl>
           {isVirtual && (
             <p className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-800">
@@ -648,16 +681,20 @@ function AgentCard({
               (Elgin L42PRO, Zebra, etc).
             </p>
           )}
-          <div className="mt-3">
+          <div className="mt-3 flex flex-wrap gap-2">
             <Button
               variant="secondary"
               onClick={() => void testPrint()}
               disabled={!qzReady || testing}
             >
               {testing ? <Spinner className="h-4 w-4" /> : <Printer size={14} />}
-              Imprimir teste
+              Imprimir teste {qzReady ? '' : '(QZ Tray)'}
+            </Button>
+            <Button variant="ghost" onClick={() => setShowLogs((v) => !v)}>
+              <FileText size={14} /> {showLogs ? 'Ocultar logs' : 'Ver logs'}
             </Button>
           </div>
+          {showLogs && <RelayLogList agentId={agent.id} />}
         </div>
         <Button variant="ghost" onClick={onDelete} aria-label="Remover">
           <Trash2 size={16} />
@@ -875,6 +912,81 @@ function TokenReveal({
           Já guardei o token
         </Button>
       </div>
+    </div>
+  );
+}
+
+/* ---------- Lista de logs do relay (erros centralizados) ---------- */
+function RelayLogList({ agentId }: { agentId: string }) {
+  const [logs, setLogs] = useState<RelayLog[] | null>(null);
+
+  const load = useCallback(async () => {
+    const { data, error } = await supabase
+      .from('relay_logs')
+      .select('*')
+      .eq('agent_id', agentId)
+      .order('created_at', { ascending: false })
+      .limit(30);
+    if (error) {
+      toast.error('Erro ao carregar logs: ' + error.message);
+      setLogs([]);
+      return;
+    }
+    setLogs((data as RelayLog[]) ?? []);
+  }, [agentId]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  if (logs === null) {
+    return (
+      <div className="mt-2 flex justify-center py-3">
+        <Spinner className="h-4 w-4" />
+      </div>
+    );
+  }
+
+  if (logs.length === 0) {
+    return (
+      <p className="mt-2 rounded-lg bg-neutral-50 p-2 text-xs text-neutral-500">
+        Nenhum log ainda. O relay registra erros e eventos aqui assim que
+        rodar.
+      </p>
+    );
+  }
+
+  const color = (lvl: string) =>
+    lvl === 'error'
+      ? 'text-red-700'
+      : lvl === 'warn'
+        ? 'text-amber-700'
+        : 'text-neutral-600';
+
+  return (
+    <div className="mt-2 max-h-56 space-y-1 overflow-y-auto rounded-lg bg-neutral-50 p-2">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-medium text-neutral-500">
+          Últimos {logs.length} eventos
+        </span>
+        <button
+          onClick={() => void load()}
+          className="text-xs text-emerald-700 hover:underline"
+        >
+          Atualizar
+        </button>
+      </div>
+      {logs.map((l) => (
+        <div key={l.id} className="text-[11px] leading-tight">
+          <span className="text-neutral-400">
+            {new Date(l.created_at).toLocaleString('pt-BR')}{' '}
+          </span>
+          <span className={`font-medium uppercase ${color(l.level)}`}>
+            [{l.level}]
+          </span>{' '}
+          <span className="text-neutral-700">{l.message}</span>
+        </div>
+      ))}
     </div>
   );
 }

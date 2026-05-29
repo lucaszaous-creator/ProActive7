@@ -1,7 +1,11 @@
-# ProActive7 - Print Relay (modo invisivel)
-# Roda como tarefa agendada do Windows ao login do usuario, em background.
-# Polla a fila do Supabase e manda ZPL pra impressora via Win32 API.
-# Log: %APPDATA%\ProActive7\relay.log
+# ProActive7 - Print Relay (modo invisivel) v2
+# Roda como Tarefa Agendada do Windows ao login do usuario, em background.
+# - Polla a fila do Supabase e imprime via Win32 API (winspool.drv)
+# - Auto-update: baixa nova versao do relay.ps1 quando o servidor avisa
+# - Logs centralizados: erros vao pro Supabase (relay_logs) + arquivo local
+# Log local: %APPDATA%\ProActive7\relay.log
+
+$RELAY_VERSION = '2'
 
 $ErrorActionPreference = 'Continue'
 $ProgressPreference = 'SilentlyContinue'
@@ -9,6 +13,7 @@ $ProgressPreference = 'SilentlyContinue'
 $configDir = Join-Path $env:APPDATA 'ProActive7'
 $configPath = Join-Path $configDir 'relay-config.json'
 $logPath = Join-Path $configDir 'relay.log'
+$selfPath = Join-Path $configDir 'relay.ps1'
 
 function Write-RelayLog($msg) {
     $line = "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] $msg"
@@ -23,18 +28,17 @@ if (-not (Test-Path $configPath)) {
 $cfg = Get-Content $configPath -Raw | ConvertFrom-Json
 $baseUrl = $cfg.supabaseUrl.TrimEnd('/')
 $url = "$baseUrl/functions/v1/print-agent"
+$relayUrl = "$baseUrl/../relay.ps1"  # nao usado; download via dominio publico
 $token = $cfg.token
 $anon = $cfg.anonKey
 $pollMs = if ($cfg.pollMs) { [int]$cfg.pollMs } else { 2000 }
 
-# Força TLS 1.2 (algumas versões do Windows vem com TLS 1.0)
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 -bor [Net.SecurityProtocolType]::Tls13
 
-# Win32 API para impressao crua (raw) em qualquer impressora do Windows
+# Win32 API para impressao crua (raw)
 Add-Type -TypeDefinition @"
 using System;
 using System.Runtime.InteropServices;
-
 public class RawPrint {
     [DllImport("winspool.Drv", SetLastError=true, CharSet=CharSet.Unicode)]
     public static extern bool OpenPrinter(string szPrinter, out IntPtr hPrinter, IntPtr pd);
@@ -50,14 +54,12 @@ public class RawPrint {
     public static extern bool EndPagePrinter(IntPtr hPrinter);
     [DllImport("winspool.Drv", SetLastError=true)]
     public static extern bool WritePrinter(IntPtr hPrinter, IntPtr pBytes, int dwCount, out int dwWritten);
-
     [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
     public struct DOCINFO {
         [MarshalAs(UnmanagedType.LPStr)] public string pDocName;
         [MarshalAs(UnmanagedType.LPStr)] public string pOutputFile;
         [MarshalAs(UnmanagedType.LPStr)] public string pDataType;
     }
-
     public static bool Send(string printerName, byte[] bytes) {
         IntPtr h; int written;
         if (!OpenPrinter(printerName, out h, IntPtr.Zero)) return false;
@@ -78,6 +80,8 @@ public class RawPrint {
 "@
 
 function Invoke-Agent($payload) {
+    $payload.token = $token
+    $payload.version = $RELAY_VERSION
     $body = $payload | ConvertTo-Json -Compress -Depth 5
     $headers = @{
         'Content-Type' = 'application/json'
@@ -87,17 +91,55 @@ function Invoke-Agent($payload) {
     return Invoke-RestMethod -Method Post -Uri $url -Headers $headers -Body $body -ErrorAction Stop
 }
 
-Write-RelayLog "Relay iniciado. URL=$url pollMs=$pollMs"
+function Send-RemoteLog($level, $msg) {
+    try { Invoke-Agent @{ action = 'log'; level = $level; message = $msg } | Out-Null } catch {}
+}
+
+# Auto-update: baixa nova versao do relay.ps1 e reinicia a tarefa
+function Update-Self($latest) {
+    if ([string]::IsNullOrEmpty($latest)) { return }
+    if ($latest -eq $RELAY_VERSION) { return }
+    Write-RelayLog "Nova versao disponivel: $latest (atual $RELAY_VERSION). Atualizando..."
+    $downloadUrl = 'https://proactive7.com.br/relay.ps1'
+    try {
+        $tmp = Join-Path $configDir 'relay.ps1.new'
+        Invoke-WebRequest -UseBasicParsing -MaximumRedirection 10 -Uri $downloadUrl -OutFile $tmp -ErrorAction Stop
+        if ((Get-Item $tmp).Length -gt 1000) {
+            Move-Item -Force $tmp $selfPath
+            Write-RelayLog "Relay atualizado. Reiniciando processo."
+            Send-RemoteLog 'info' "Relay auto-atualizado para versao $latest"
+            # Reinicia a si mesmo e encerra o atual
+            Start-Process powershell -ArgumentList @('-NoProfile','-WindowStyle','Hidden','-ExecutionPolicy','Bypass','-File',"`"$selfPath`"") -WindowStyle Hidden
+            exit 0
+        }
+    } catch {
+        Write-RelayLog "Falha no auto-update: $($_.Exception.Message)"
+    }
+}
+
+Write-RelayLog "Relay v$RELAY_VERSION iniciado. URL=$url pollMs=$pollMs"
+Send-RemoteLog 'info' "Relay v$RELAY_VERSION iniciado em $env:COMPUTERNAME"
+
+$updateCheckCounter = 0
 
 while ($true) {
     try {
-        $resp = Invoke-Agent @{ token = $token; action = 'poll' }
+        $resp = Invoke-Agent @{ action = 'poll' }
+
+        # Auto-update: checa a cada ~30 ciclos (~1 min)
+        $updateCheckCounter++
+        if ($updateCheckCounter -ge 30) {
+            $updateCheckCounter = 0
+            Update-Self $resp.latest_version
+        }
+
         $printerName = $resp.printer.name
         if ($resp.jobs -and $resp.jobs.Count -gt 0) {
             if (-not $printerName) {
-                Write-RelayLog "Impressora sem printer_name no cadastro — abortando jobs."
+                Write-RelayLog "Sem printer_name no cadastro. Abortando jobs."
+                Send-RemoteLog 'error' "Impressora sem nome do Windows no cadastro"
                 foreach ($job in $resp.jobs) {
-                    Invoke-Agent @{ token = $token; action = 'ack'; job_id = $job.id; status = 'error'; error = 'Impressora sem nome do Windows no cadastro' } | Out-Null
+                    Invoke-Agent @{ action='ack'; job_id=$job.id; status='error'; error='Impressora sem nome do Windows no cadastro' } | Out-Null
                 }
             } else {
                 foreach ($job in $resp.jobs) {
@@ -107,21 +149,22 @@ while ($true) {
                         $copies = if ($job.copies) { [int]$job.copies } else { 1 }
                         $ok = $true
                         for ($i = 0; $i -lt $copies; $i++) {
-                            if (-not [RawPrint]::Send($printerName, $bytes)) {
-                                $ok = $false; break
-                            }
+                            if (-not [RawPrint]::Send($printerName, $bytes)) { $ok = $false; break }
                         }
                         if ($ok) {
-                            Invoke-Agent @{ token = $token; action = 'ack'; job_id = $job.id; status = 'done' } | Out-Null
+                            Invoke-Agent @{ action='ack'; job_id=$job.id; status='done' } | Out-Null
                             Write-RelayLog "OK job $($job.id)"
                         } else {
-                            Invoke-Agent @{ token = $token; action = 'ack'; job_id = $job.id; status = 'error'; error = 'Falha no WritePrinter (verifique se a impressora esta ligada)' } | Out-Null
-                            Write-RelayLog "ERRO job $($job.id): WritePrinter falhou"
+                            $err = "Falha no WritePrinter (impressora '$printerName' ligada/conectada?)"
+                            Invoke-Agent @{ action='ack'; job_id=$job.id; status='error'; error=$err } | Out-Null
+                            Write-RelayLog "ERRO job $($job.id): $err"
+                            Send-RemoteLog 'error' $err
                         }
                     } catch {
                         $msg = $_.Exception.Message
-                        Invoke-Agent @{ token = $token; action = 'ack'; job_id = $job.id; status = 'error'; error = $msg } | Out-Null
+                        Invoke-Agent @{ action='ack'; job_id=$job.id; status='error'; error=$msg } | Out-Null
                         Write-RelayLog "ERRO job $($job.id): $msg"
+                        Send-RemoteLog 'error' "Job falhou: $msg"
                     }
                 }
             }

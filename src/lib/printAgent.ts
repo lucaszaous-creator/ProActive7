@@ -28,8 +28,18 @@ export interface PrintAgent {
   dpi: number;
   active: boolean;
   last_seen_at: string | null;
+  relay_version: string | null;
   discovered: DiscoveredPrinter[];
   discovered_at: string | null;
+  created_at: string;
+}
+
+export interface RelayLog {
+  id: string;
+  agent_id: string;
+  company_id: string;
+  level: 'info' | 'warn' | 'error';
+  message: string;
   created_at: string;
 }
 
