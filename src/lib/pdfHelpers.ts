@@ -1,10 +1,17 @@
 import { jsPDF } from 'jspdf';
 import { supabase } from './supabase';
+import {
+  BRAND,
+  PRINT_RGB,
+  scoreTier,
+  tierLabel,
+  tierRgb,
+} from './printTheme';
 
-const PRODUCT_NAME = 'ProActive7';
-const PRODUCT_TAGLINE = 'Consultoria Nutricional';
+const M = 14; // margem lateral (mm)
 
 export interface PdfHeaderInfo {
+  documentTitle: string; // ex: "Relatório de Visita Técnica"
   companyName: string;
   companyCnpj?: string | null;
   companyAddress?: string | null;
@@ -14,76 +21,229 @@ export interface PdfHeaderInfo {
   rtCrn?: string | null;
   rtEmail?: string | null;
   rtPhone?: string | null;
-}
-
-export function drawPdfHeader(doc: jsPDF, info: PdfHeaderInfo): number {
-  const pageWidth = doc.internal.pageSize.getWidth();
-  let y = 12;
-
-  if (info.companyLogoDataUrl) {
-    try {
-      doc.addImage(info.companyLogoDataUrl, 'PNG', 14, y, 18, 18);
-    } catch {
-      // ignore image errors
-    }
-  }
-
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(14);
-  doc.text(info.companyName, 36, y + 6);
-
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  const lines: string[] = [];
-  if (info.companyCnpj) lines.push(`CNPJ: ${info.companyCnpj}`);
-  if (info.companyAddress) lines.push(info.companyAddress);
-  if (info.companyPhone) lines.push(`Tel: ${info.companyPhone}`);
-  lines.forEach((line, i) => doc.text(line, 36, y + 12 + i * 4));
-
-  // RT info no canto direito
-  if (info.rtName) {
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.text('Responsavel Tecnico', pageWidth - 14, y + 6, { align: 'right' });
-    doc.setFont('helvetica', 'normal');
-    doc.text(info.rtName, pageWidth - 14, y + 11, { align: 'right' });
-    if (info.rtCrn)
-      doc.text(`CRN ${info.rtCrn}`, pageWidth - 14, y + 15, { align: 'right' });
-    if (info.rtEmail)
-      doc.text(info.rtEmail, pageWidth - 14, y + 19, { align: 'right' });
-  }
-
-  y = 34;
-  doc.setDrawColor(180);
-  doc.line(14, y, pageWidth - 14, y);
-  return y + 4;
+  documentId?: string | null; // rastreabilidade (ex: id curto da visita)
 }
 
 /**
- * Desenha o rodape de marca em TODAS as paginas do documento.
- * Deve ser chamado depois de toda a renderizacao (autoTable etc).
+ * Cabeçalho premium: faixa emerald no topo com marca + título do documento
+ * à esquerda e responsável técnico à direita; abaixo, bloco da empresa.
+ * Retorna o Y onde o conteúdo deve começar.
  */
-export function drawPdfFooter(doc: jsPDF): void {
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
-  const pageCount = doc.getNumberOfPages();
-  const generatedAt = new Date().toLocaleDateString('pt-BR');
+export function drawPdfHeader(doc: jsPDF, info: PdfHeaderInfo): number {
+  const pw = doc.internal.pageSize.getWidth();
+  const bandH = 30;
 
-  for (let i = 1; i <= pageCount; i++) {
-    doc.setPage(i);
+  // Faixa da marca
+  doc.setFillColor(...PRINT_RGB.brandDeep);
+  doc.rect(0, 0, pw, bandH, 'F');
+  // Acento mais claro na base da faixa
+  doc.setFillColor(...PRINT_RGB.brand);
+  doc.rect(0, bandH - 1.2, pw, 1.2, 'F');
+
+  // Marca
+  doc.setTextColor(...PRINT_RGB.white);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.text(BRAND.name, M, 13);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(180, 220, 205);
+  doc.text(BRAND.tagline.toUpperCase(), M, 18);
+
+  // Título do documento (na faixa, à esquerda, abaixo da marca)
+  doc.setTextColor(...PRINT_RGB.white);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(10.5);
+  doc.text(info.documentTitle, M, 26);
+
+  // RT à direita (dentro da faixa)
+  if (info.rtName) {
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(7);
-    doc.setTextColor(120);
-    doc.setDrawColor(220);
-    doc.line(14, pageHeight - 10, pageWidth - 14, pageHeight - 10);
-    doc.text(`${PRODUCT_NAME} — ${PRODUCT_TAGLINE}`, 14, pageHeight - 6);
-    doc.text(`Pagina ${i} de ${pageCount}`, pageWidth / 2, pageHeight - 6, {
-      align: 'center',
-    });
-    doc.text(generatedAt, pageWidth - 14, pageHeight - 6, { align: 'right' });
-    doc.setTextColor(0);
+    doc.setTextColor(180, 220, 205);
+    doc.text('RESPONSÁVEL TÉCNICO', pw - M, 11, { align: 'right' });
+    doc.setTextColor(...PRINT_RGB.white);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(9.5);
+    doc.text(info.rtName, pw - M, 16, { align: 'right' });
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(200, 230, 218);
+    const rtSub = [info.rtCrn ? `CRN ${info.rtCrn}` : '', info.rtEmail ?? '']
+      .filter(Boolean)
+      .join('  ·  ');
+    if (rtSub) doc.text(rtSub, pw - M, 20.5, { align: 'right' });
+  }
+
+  // Bloco da empresa (abaixo da faixa)
+  let y = bandH + 7;
+  if (info.companyLogoDataUrl) {
+    try {
+      doc.addImage(info.companyLogoDataUrl, 'PNG', M, y - 1, 14, 14);
+    } catch {
+      /* ignore */
+    }
+  }
+  const tx = info.companyLogoDataUrl ? M + 18 : M;
+  doc.setTextColor(...PRINT_RGB.ink);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12.5);
+  doc.text(info.companyName || '—', tx, y + 3);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8);
+  doc.setTextColor(...PRINT_RGB.muted);
+  const meta = [
+    info.companyCnpj ? `CNPJ ${info.companyCnpj}` : '',
+    info.companyAddress ?? '',
+    info.companyPhone ? `Tel ${info.companyPhone}` : '',
+  ].filter(Boolean);
+  if (meta.length) doc.text(meta.join('   ·   '), tx, y + 8);
+
+  // Emissão / id no canto direito do bloco
+  doc.setFontSize(7.5);
+  doc.setTextColor(...PRINT_RGB.faint);
+  const emitted = `Emitido em ${new Date().toLocaleString('pt-BR')}`;
+  doc.text(emitted, pw - M, y + 3, { align: 'right' });
+  if (info.documentId) {
+    doc.text(`Doc #${info.documentId}`, pw - M, y + 7.5, { align: 'right' });
+  }
+
+  y += 14;
+  doc.setDrawColor(...PRINT_RGB.hair);
+  doc.setLineWidth(0.3);
+  doc.line(M, y, pw - M, y);
+  doc.setTextColor(...PRINT_RGB.ink);
+  return y + 7;
+}
+
+/** Título de seção: rótulo em caixa-alta emerald + filete. */
+export function drawSectionTitle(doc: jsPDF, text: string, y: number): number {
+  const pw = doc.internal.pageSize.getWidth();
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9.5);
+  doc.setTextColor(...PRINT_RGB.brandDark);
+  doc.text(text.toUpperCase(), M, y);
+  doc.setDrawColor(...PRINT_RGB.hair);
+  doc.setLineWidth(0.3);
+  doc.line(M, y + 2, pw - M, y + 2);
+  doc.setTextColor(...PRINT_RGB.ink);
+  return y + 8;
+}
+
+/**
+ * Hero de score: bloco arredondado colorido por tier, número grande à
+ * esquerda e selo do tier. Desenha em (M, y) ocupando a largura útil.
+ */
+export function drawScoreHero(doc: jsPDF, score: number | null, y: number): number {
+  const pw = doc.internal.pageSize.getWidth();
+  const w = pw - M * 2;
+  const h = 22;
+  const tier = scoreTier(score);
+  const c = tierRgb(tier);
+
+  // Card suave
+  doc.setFillColor(248, 250, 252); // slate-50
+  doc.setDrawColor(...PRINT_RGB.hair);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(M, y, w, h, 2.5, 2.5, 'FD');
+
+  // Faixa colorida à esquerda
+  doc.setFillColor(...c);
+  doc.roundedRect(M, y, 3, h, 1.5, 1.5, 'F');
+  doc.rect(M + 1.5, y, 1.5, h, 'F');
+
+  // Número
+  doc.setTextColor(...c);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(28);
+  doc.text(score == null ? '—' : String(Math.round(score)), M + 9, y + 15);
+  doc.setFontSize(9);
+  doc.setTextColor(...PRINT_RGB.muted);
+  doc.text('/100', M + 9 + (score == null ? 8 : 18), y + 15);
+
+  // Rótulo
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.setTextColor(...PRINT_RGB.muted);
+  doc.text('SCORE DE CONFORMIDADE', M + 9, y + 6);
+
+  // Selo do tier à direita
+  const badge = tierLabel(tier);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  const bw = doc.getTextWidth(badge) + 10;
+  doc.setFillColor(...c);
+  doc.roundedRect(pw - M - bw - 6, y + h / 2 - 4.5, bw, 9, 4.5, 4.5, 'F');
+  doc.setTextColor(...PRINT_RGB.white);
+  doc.text(badge, pw - M - bw - 6 + bw / 2, y + h / 2 + 0.8, {
+    align: 'center',
+  });
+
+  doc.setTextColor(...PRINT_RGB.ink);
+  return y + h + 8;
+}
+
+/** Linha de mini-cards de indicadores (label em cima, valor grande). */
+export function drawKpiRow(
+  doc: jsPDF,
+  items: { label: string; value: string; tone?: 'green' | 'amber' | 'red' | 'ink' }[],
+  y: number,
+): number {
+  const pw = doc.internal.pageSize.getWidth();
+  const gap = 4;
+  const w = (pw - M * 2 - gap * (items.length - 1)) / items.length;
+  const h = 16;
+  items.forEach((it, i) => {
+    const x = M + i * (w + gap);
+    doc.setFillColor(...PRINT_RGB.white);
+    doc.setDrawColor(...PRINT_RGB.hair);
+    doc.setLineWidth(0.3);
+    doc.roundedRect(x, y, w, h, 2, 2, 'FD');
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.8);
+    doc.setTextColor(...PRINT_RGB.muted);
+    doc.text(it.label.toUpperCase(), x + 3, y + 5);
+    const tone =
+      it.tone === 'green'
+        ? PRINT_RGB.green
+        : it.tone === 'amber'
+          ? PRINT_RGB.amber
+          : it.tone === 'red'
+            ? PRINT_RGB.red
+            : PRINT_RGB.ink;
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(13);
+    doc.setTextColor(tone[0], tone[1], tone[2]);
+    doc.text(it.value, x + 3, y + 12.5);
+  });
+  doc.setTextColor(...PRINT_RGB.ink);
+  return y + h + 8;
+}
+
+/** Rodapé de marca em todas as páginas. */
+export function drawPdfFooter(doc: jsPDF): void {
+  const pw = doc.internal.pageSize.getWidth();
+  const ph = doc.internal.pageSize.getHeight();
+  const pages = doc.getNumberOfPages();
+  for (let i = 1; i <= pages; i++) {
+    doc.setPage(i);
+    doc.setDrawColor(...PRINT_RGB.hair);
+    doc.setLineWidth(0.3);
+    doc.line(M, ph - 10, pw - M, ph - 10);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7);
+    doc.setTextColor(...PRINT_RGB.brandDark);
+    doc.text(BRAND.name, M, ph - 6);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...PRINT_RGB.faint);
+    doc.text(BRAND.tagline, M + doc.getTextWidth(BRAND.name) + 3, ph - 6);
+    doc.text(`Página ${i} de ${pages}`, pw - M, ph - 6, { align: 'right' });
+    doc.setTextColor(0, 0, 0);
   }
 }
+
+/** Para o tier de score usado no PDF (reexport p/ conveniência). */
+export { scoreTier as pdfScoreTier };
 
 function blobToDataUrl(blob: Blob): Promise<string> {
   return new Promise<string>((resolve, reject) => {
@@ -94,7 +254,7 @@ function blobToDataUrl(blob: Blob): Promise<string> {
   });
 }
 
-/** Carrega uma imagem remota (URL publica) como DataURL para inserir no PDF. */
+/** Carrega uma imagem remota (URL publica) como DataURL para o PDF. */
 export async function urlToDataUrl(url: string): Promise<string | null> {
   try {
     const resp = await fetch(url);
@@ -106,11 +266,7 @@ export async function urlToDataUrl(url: string): Promise<string | null> {
   }
 }
 
-/**
- * Baixa um objeto de bucket privado do Supabase Storage (auth session)
- * e converte para DataURL. Use para buckets privados como `signatures`
- * ou `employee-docs` — `urlToDataUrl(getPublicUrl(...))` falha com 403.
- */
+/** Baixa objeto de bucket privado (auth) e converte para DataURL. */
 export async function storageObjectToDataUrl(
   bucket: string,
   path: string,
@@ -124,7 +280,7 @@ export async function storageObjectToDataUrl(
   }
 }
 
-/** Quebra markdown simples em linhas para `doc.text`. Ignora `**` e `#`. */
+/** Quebra markdown simples em texto plano para `doc.text`. */
 export function plainTextFromMarkdown(md: string): string {
   return md
     .replace(/^#{1,6}\s+/gm, '')

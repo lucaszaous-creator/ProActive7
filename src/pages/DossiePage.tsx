@@ -9,15 +9,43 @@
 // Acesso: usuário autenticado da empresa (nutri/admin/property).
 import { useCallback, useEffect, useState } from 'react';
 import { Printer } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import { usePageTitle } from '@/lib/usePageTitle';
+import { usePageTitle, BRAND_NAME, BRAND_TAGLINE, SITE_URL } from '@/lib/usePageTitle';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDate, formatDateTime } from '@/lib/dates';
 import { calculateComplianceScore } from '@/lib/complianceScore';
+import { scoreTier, tierLabel, tierHex, PRINT_HEX } from '@/lib/printTheme';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
+
+/** Estilo de impressão premium do dossiê (eleva todas as seções/tabelas). */
+const DOSSIE_STYLES = `
+.dossie-doc { color: ${PRINT_HEX.body}; }
+.dossie-doc h3 {
+  font-size: 10.5px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: ${PRINT_HEX.brandDark};
+  padding-bottom: 4px; margin-bottom: 6px;
+  border-bottom: 1.5px solid ${PRINT_HEX.hair};
+}
+.dossie-doc table { width: 100%; border-collapse: collapse; }
+.dossie-doc thead tr { background: ${PRINT_HEX.brandDeep}; }
+.dossie-doc thead th {
+  color: #fff; font-size: 9px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .03em; text-align: left; padding: 5px 6px;
+}
+.dossie-doc tbody td {
+  font-size: 9.5px; padding: 4px 6px; color: ${PRINT_HEX.body};
+  border-bottom: 1px solid ${PRINT_HEX.hair};
+}
+.dossie-doc tbody tr:nth-child(even) { background: #f8fafc; }
+.dossie-doc section { break-inside: avoid; }
+@media print {
+  .dossie-doc thead tr { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+`;
 
 interface Company {
   name: string;
@@ -84,6 +112,7 @@ interface DocRow {
 export function DossiePage() {
   usePageTitle('Dossiê de Conformidade');
   const { companyId, selectedCompany } = useCompanyScope();
+  const [emittedAt] = useState(() => new Date());
   const [loading, setLoading] = useState(true);
   const [company, setCompany] = useState<Company | null>(null);
   const [compliance, setCompliance] = useState<ComplianceRow | null>(null);
@@ -200,6 +229,7 @@ export function DossiePage() {
   for (const a of asos) {
     if (!asoByManip.has(a.manipulator_id)) asoByManip.set(a.manipulator_id, a);
   }
+  const emittedMs = emittedAt.getTime();
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -218,64 +248,137 @@ export function DossiePage() {
         </Button>
       </div>
 
-      <article className="space-y-4 bg-white p-4 sm:p-6 print:p-0 print:text-[10pt]">
-        {/* Cabeçalho */}
-        <section className="border-b border-neutral-300 pb-3">
-          <h2 className="text-lg font-bold text-neutral-800">
-            {company?.name ?? selectedCompany?.name ?? 'Empresa'}
-          </h2>
-          <dl className="mt-1 grid grid-cols-1 gap-x-4 gap-y-0.5 text-xs text-neutral-600 sm:grid-cols-2">
-            {company?.cnpj && (
-              <div>
-                <dt className="inline font-medium">CNPJ: </dt>
-                <dd className="inline">{company.cnpj}</dd>
-              </div>
-            )}
-            {company?.phone && (
-              <div>
-                <dt className="inline font-medium">Telefone: </dt>
-                <dd className="inline">{company.phone}</dd>
-              </div>
-            )}
-            {company?.address && (
-              <div className="sm:col-span-2">
-                <dt className="inline font-medium">Endereço: </dt>
-                <dd className="inline">{company.address}</dd>
-              </div>
-            )}
-            <div className="sm:col-span-2">
-              <dt className="inline font-medium">Emitido em: </dt>
-              <dd className="inline">{formatDateTime(new Date())}</dd>
-            </div>
-          </dl>
-        </section>
+      <style>{DOSSIE_STYLES}</style>
+      <article className="dossie-doc space-y-5 overflow-hidden rounded-2xl border border-neutral-200 bg-white print:rounded-none print:border-0">
+        {/* Faixa da marca */}
+        <div
+          className="flex items-center justify-between gap-3 px-5 py-3 text-white sm:px-7"
+          style={{
+            background: PRINT_HEX.brandDeep,
+            WebkitPrintColorAdjust: 'exact',
+            printColorAdjust: 'exact',
+          }}
+        >
+          <div>
+            <p className="text-base font-bold leading-none">{BRAND_NAME}</p>
+            <p
+              className="mt-1 text-[9px] font-medium uppercase tracking-wider"
+              style={{ color: '#a7f3d0' }}
+            >
+              {BRAND_TAGLINE}
+            </p>
+          </div>
+          <div className="text-right">
+            <p
+              className="text-[9px] font-semibold uppercase tracking-wider"
+              style={{ color: '#a7f3d0' }}
+            >
+              Dossiê de Conformidade
+            </p>
+            <p className="text-[10px]" style={{ color: '#d1fae5' }}>
+              RDC 216 · ANVISA
+            </p>
+          </div>
+        </div>
 
-        {/* Score */}
-        {score && (
-          <section>
-            <h3 className="text-sm font-semibold uppercase text-neutral-700">
-              Score de Conformidade
-            </h3>
-            <div className="mt-2 flex items-end gap-4">
-              <span className="text-4xl font-bold text-neutral-900">
-                {Math.round(score.total)}
-              </span>
-              <span className="pb-1 text-xs text-neutral-500">de 100</span>
+        <div className="space-y-5 px-5 pb-5 sm:px-7 sm:pb-7">
+          {/* Cabeçalho da empresa */}
+          <section className="flex items-start justify-between gap-4 border-b border-neutral-200 pb-4">
+            <div className="min-w-0">
+              <h2 className="text-lg font-bold text-neutral-900">
+                {company?.name ?? selectedCompany?.name ?? 'Empresa'}
+              </h2>
+              <p className="mt-1 text-xs text-neutral-500">
+                {[
+                  company?.cnpj ? `CNPJ ${company.cnpj}` : '',
+                  company?.phone ? `Tel ${company.phone}` : '',
+                ]
+                  .filter(Boolean)
+                  .join('  ·  ')}
+              </p>
+              {company?.address && (
+                <p className="text-xs text-neutral-500">{company.address}</p>
+              )}
+              <p className="mt-1 text-[11px] text-neutral-400">
+                Emitido em {formatDateTime(emittedAt)}
+              </p>
             </div>
-            <dl className="mt-2 grid grid-cols-2 gap-x-4 gap-y-0.5 text-xs text-neutral-600 sm:grid-cols-4">
-              <ScoreLine label="NCs" value={`${score.ncPart}/25`} />
-              <ScoreLine label="Checklists" value={`${score.checklistPart}/20`} />
-              <ScoreLine label="Visita técnica" value={`${score.auditPart}/20`} />
-              <ScoreLine label="Temperatura" value={`${score.tempPart}/10`} />
-              <ScoreLine label="Documentos" value={`${score.docsPart}/10`} />
-              <ScoreLine
-                label="Manipuladores"
-                value={`${score.manipulatorsPart}/10`}
-              />
-              <ScoreLine label="Pragas" value={`${score.pestPart}/5`} />
-            </dl>
+            {/* QR verificável → selo público */}
+            <div className="shrink-0 text-center">
+              <div className="rounded-lg border border-neutral-200 p-1">
+                <QRCodeSVG
+                  value={`${SITE_URL}/selo/${companyId}`}
+                  size={64}
+                  level="M"
+                />
+              </div>
+              <p className="mt-1 text-[8px] uppercase tracking-wide text-neutral-400">
+                Verificar
+              </p>
+            </div>
           </section>
-        )}
+
+          {/* Hero de score */}
+          {score &&
+            (() => {
+              const t = scoreTier(score.total);
+              const c = tierHex(t);
+              return (
+                <section
+                  className="flex items-center justify-between gap-4 rounded-xl border p-4"
+                  style={{
+                    borderColor: c.fg,
+                    background: c.bg,
+                    WebkitPrintColorAdjust: 'exact',
+                    printColorAdjust: 'exact',
+                  }}
+                >
+                  <div className="flex items-end gap-3">
+                    <span
+                      className="text-5xl font-black leading-none"
+                      style={{ color: c.fg }}
+                    >
+                      {Math.round(score.total)}
+                    </span>
+                    <div className="pb-1">
+                      <p className="text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                        Score de Conformidade
+                      </p>
+                      <p className="text-xs text-neutral-500">de 100 pontos</p>
+                    </div>
+                  </div>
+                  <span
+                    className="rounded-full px-4 py-1.5 text-sm font-bold text-white"
+                    style={{
+                      background: c.fg,
+                      WebkitPrintColorAdjust: 'exact',
+                      printColorAdjust: 'exact',
+                    }}
+                  >
+                    {tierLabel(t)}
+                  </span>
+                </section>
+              );
+            })()}
+
+          {/* Breakdown do score */}
+          {score && (
+            <section>
+              <h3>Composição do score</h3>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+                <ScoreLine label="Não-conformidades" value={`${score.ncPart}/25`} />
+                <ScoreLine label="Checklists" value={`${score.checklistPart}/20`} />
+                <ScoreLine label="Visita técnica" value={`${score.auditPart}/20`} />
+                <ScoreLine label="Temperatura" value={`${score.tempPart}/10`} />
+                <ScoreLine label="Documentos" value={`${score.docsPart}/10`} />
+                <ScoreLine
+                  label="Manipuladores"
+                  value={`${score.manipulatorsPart}/10`}
+                />
+                <ScoreLine label="Controle de pragas" value={`${score.pestPart}/5`} />
+              </div>
+            </section>
+          )}
 
         {/* Manipuladores e ASOs */}
         <section>
@@ -300,7 +403,7 @@ export function DossiePage() {
                 {manips.map((m) => {
                   const aso = asoByManip.get(m.id);
                   const expired =
-                    aso && new Date(aso.expires_at).getTime() < Date.now();
+                    aso && new Date(aso.expires_at).getTime() < emittedMs;
                   return (
                     <tr key={m.id} className="border-b border-neutral-100">
                       <td className="px-1 py-1">{m.name}</td>
@@ -442,10 +545,14 @@ export function DossiePage() {
           </section>
         )}
 
-        <footer className="border-t border-neutral-300 pt-2 text-center text-[10px] text-neutral-400">
-          Dossiê gerado automaticamente pelo ProActive7 · Os dados refletem o
-          estado dos registros no momento da emissão.
-        </footer>
+          <footer className="flex items-center justify-between gap-2 border-t border-neutral-200 pt-3 text-[10px] text-neutral-400">
+            <span>
+              <b style={{ color: PRINT_HEX.brandDark }}>{BRAND_NAME}</b> ·{' '}
+              {BRAND_TAGLINE}
+            </span>
+            <span>Gerado automaticamente — reflete os registros na emissão.</span>
+          </footer>
+        </div>
       </article>
     </div>
   );
@@ -453,9 +560,11 @@ export function DossiePage() {
 
 function ScoreLine({ label, value }: { label: string; value: string }) {
   return (
-    <div>
-      <dt className="inline font-medium">{label}: </dt>
-      <dd className="inline">{value}</dd>
+    <div className="rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2">
+      <p className="text-[9px] font-medium uppercase tracking-wide text-neutral-400">
+        {label}
+      </p>
+      <p className="text-sm font-bold text-neutral-800">{value}</p>
     </div>
   );
 }

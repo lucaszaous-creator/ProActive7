@@ -70,6 +70,7 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
 
   const fsXs = `${Math.max(1.4, heightMm * 0.04).toFixed(2)}mm`;
   const fsSm = `${Math.max(1.6, heightMm * 0.045).toFixed(2)}mm`;
+  const fsMd = `${Math.max(2.0, heightMm * 0.058).toFixed(2)}mm`;
   const fsLg = `${Math.max(2.8, heightMm * 0.075).toFixed(2)}mm`;
 
   const compact = heightMm <= 40;
@@ -94,22 +95,35 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
         {data.productName || '—'}
       </p>
 
-      <div style={{ borderTop: '0.25mm solid #000' }} />
+      <div style={{ borderTop: '0.4mm solid #000' }} />
 
-      <p
-        className="font-bold uppercase"
-        style={{ fontSize: fsSm, color: '#000' }}
-      >
-        {data.storageConditionLabel}
+      {/* Condição em chip invertido (preto sólido imprime bem em térmica) */}
+      <div className="flex items-center justify-between gap-[1mm]">
+        <span
+          className="font-bold uppercase"
+          style={{
+            fontSize: fsSm,
+            color: '#fff',
+            background: '#000',
+            padding: '0.3mm 1.2mm',
+            borderRadius: '0.6mm',
+            letterSpacing: '0.02em',
+          }}
+        >
+          {data.storageConditionLabel}
+        </span>
         {data.displayQuantity ? (
-          <span className="ml-2" style={{ color: '#000' }}>
-            — {data.displayQuantity}
+          <span
+            className="font-bold uppercase"
+            style={{ fontSize: fsSm, color: '#000' }}
+          >
+            {data.displayQuantity}
           </span>
         ) : null}
-      </p>
+      </div>
 
       <div
-        className="mt-[1mm] flex flex-col gap-[0.4mm]"
+        className="mt-[0.8mm] flex flex-col gap-[0.4mm]"
         style={{ fontSize: fsSm, lineHeight: 1.2, color: '#000' }}
       >
         {!compact && data.originalExpiryText ? (
@@ -124,7 +138,31 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
           value={data.manipulationText}
           fontSize={fsSm}
         />
-        <Row label="VALIDADE:" value={data.expiryText} fontSize={fsSm} />
+      </div>
+
+      {/* VALIDADE em destaque — campo mais crítico da etiqueta */}
+      <div
+        className="mt-[0.6mm] flex items-baseline justify-between gap-[1mm]"
+        style={{ borderTop: '0.4mm solid #000', paddingTop: '0.6mm' }}
+      >
+        <span
+          className="font-bold uppercase"
+          style={{ fontSize: fsSm, color: '#000' }}
+        >
+          VALIDADE
+        </span>
+        <span
+          className="font-bold"
+          style={{
+            fontSize: fsMd,
+            lineHeight: 1,
+            color: '#000',
+            overflowWrap: 'anywhere',
+            textAlign: 'right',
+          }}
+        >
+          {data.expiryText || '—'}
+        </span>
       </div>
 
       <div className="flex-1" />
@@ -172,11 +210,22 @@ export function LabelPreview({ data, widthMm, heightMm }: LabelPreviewProps) {
               {formatAllergenList(data.allergens)}
             </p>
           ) : null}
-          {data.printId ? (
-            <p className="font-bold" style={{ color: '#000' }}>
-              #{data.printId}
-            </p>
-          ) : null}
+          <p
+            className="flex items-center justify-between gap-1"
+            style={{ color: '#000' }}
+          >
+            {data.printId ? (
+              <span className="font-bold">#{data.printId}</span>
+            ) : (
+              <span />
+            )}
+            <span
+              className="font-bold uppercase"
+              style={{ letterSpacing: '0.04em', opacity: 0.55 }}
+            >
+              ProActive7
+            </span>
+          </p>
         </div>
         {showQr && data.qrUrl ? (
           <div

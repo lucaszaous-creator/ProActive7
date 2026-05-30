@@ -226,6 +226,7 @@ export function DocumentsPage() {
       : null;
     const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
     let y = drawPdfHeader(pdf, {
+      documentTitle: doc.title,
       companyName: selectedCompany?.name ?? '',
       companyCnpj: selectedCompany?.cnpj,
       companyAddress: selectedCompany?.address,
@@ -235,12 +236,8 @@ export function DocumentsPage() {
       rtCrn: profile?.crn,
       rtEmail: profile?.email,
       rtPhone: profile?.phone,
+      documentId: doc.id?.slice(0, 8)?.toUpperCase(),
     });
-
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(13);
-    pdf.text(doc.title, 14, y);
-    y += 6;
 
     pdf.setFont('helvetica', 'normal');
     pdf.setFontSize(9);

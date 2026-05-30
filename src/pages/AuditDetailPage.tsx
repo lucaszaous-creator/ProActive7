@@ -34,9 +34,13 @@ import { logFeatureEvent } from '@/lib/platformMetrics';
 import {
   drawPdfFooter,
   drawPdfHeader,
+  drawSectionTitle,
+  drawScoreHero,
+  drawKpiRow,
   storageObjectToDataUrl,
   urlToDataUrl,
 } from '@/lib/pdfHelpers';
+import { PRINT_RGB } from '@/lib/printTheme';
 
 const RESULT_OPTIONS: {
   value: AuditResult;
@@ -322,6 +326,7 @@ export function AuditDetailPage() {
 
     const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
     let y = drawPdfHeader(pdf, {
+      documentTitle: 'Relatório de Visita Técnica',
       companyName: selectedCompany?.name ?? '',
       companyCnpj: selectedCompany?.cnpj,
       companyAddress: selectedCompany?.address,
@@ -331,64 +336,100 @@ export function AuditDetailPage() {
       rtCrn: profile?.crn,
       rtEmail: profile?.email,
       rtPhone: profile?.phone,
+      documentId: audit.id.slice(0, 8).toUpperCase(),
     });
 
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(13);
-    pdf.text('Relatorio de Visita Tecnica', 14, y);
-    y += 7;
+    // Hero de score
+    y = drawScoreHero(pdf, score, y);
 
+    // Metadados da visita
     pdf.setFont('helvetica', 'normal');
-    pdf.setFontSize(10);
-    pdf.text(`Modelo: ${template.name}`, 14, y);
-    y += 5;
-    if (audit.scheduled_at) {
-      pdf.text(`Agendada: ${formatDateTime(audit.scheduled_at)}`, 14, y);
-      y += 5;
-    }
-    if (audit.completed_at) {
-      pdf.text(`Finalizada: ${formatDateTime(audit.completed_at)}`, 14, y);
-      y += 5;
-    }
+    pdf.setFontSize(9);
+    pdf.setTextColor(...PRINT_RGB.body);
+    const metaLine = [
+      `Modelo: ${template.name}`,
+      audit.scheduled_at ? `Agendada: ${formatDateTime(audit.scheduled_at)}` : '',
+      audit.completed_at ? `Finalizada: ${formatDateTime(audit.completed_at)}` : '',
+    ]
+      .filter(Boolean)
+      .join('     ·     ');
+    pdf.text(metaLine, 14, y);
+    pdf.setTextColor(...PRINT_RGB.ink);
+    y += 8;
 
-    if (score != null) {
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(20);
-      const scoreColor =
-        score >= 85
-          ? [16, 185, 129]
-          : score >= 70
-            ? [245, 158, 11]
-            : [220, 38, 38];
-      pdf.setTextColor(scoreColor[0], scoreColor[1], scoreColor[2]);
-      pdf.text(`Score: ${score.toFixed(1)}%`, 14, y + 7);
-      pdf.setTextColor(0);
-      y += 14;
-    }
-
-    // Tabela de itens (única — score por categoria removido por ser
-    // redundante com o "Score" exibido no topo).
+    // KPIs de conformidade
     const responseMap = new Map(responses.map((r) => [r.itemId, r]));
+    const norm = (s: string) => s.toLowerCase();
+    let conforme = 0;
+    let naoConforme = 0;
+    let na = 0;
+    for (const it of items) {
+      const r = responseMap.get(it.id)?.result;
+      if (!r) continue;
+      const rn = norm(r);
+      if (rn.includes('conforme') && !rn.includes('não') && !rn.includes('nao'))
+        conforme++;
+      else if (rn.includes('não') || rn.includes('nao') || rn.includes('nc'))
+        naoConforme++;
+      else na++;
+    }
+    y = drawKpiRow(
+      pdf,
+      [
+        { label: 'Itens avaliados', value: String(items.length), tone: 'ink' },
+        { label: 'Conformes', value: String(conforme), tone: 'green' },
+        { label: 'Não conformes', value: String(naoConforme), tone: 'red' },
+        { label: 'N/A', value: String(na), tone: 'ink' },
+      ],
+      y,
+    );
+
+    // Itens avaliados
+    y = drawSectionTitle(pdf, 'Itens avaliados', y);
     autoTable(pdf, {
       startY: y,
-      head: [['Cat', 'Item', 'Result', 'Ref legal', 'Observacao']],
+      head: [['Categoria', 'Item', 'Resultado', 'Ref. legal', 'Observação']],
       body: items.map((it) => {
         const r = responseMap.get(it.id);
         return [
           it.category,
           it.text,
-          r?.result ?? '-',
+          r?.result ?? '—',
           it.legal_ref ?? '',
           r?.note ?? '',
         ];
       }),
-      theme: 'striped',
-      styles: { fontSize: 8, cellPadding: 1.5 },
-      columnStyles: {
-        0: { cellWidth: 22 },
-        2: { cellWidth: 14, halign: 'center' },
-        3: { cellWidth: 26 },
+      theme: 'grid',
+      headStyles: {
+        fillColor: [...PRINT_RGB.brandDeep],
+        textColor: [255, 255, 255],
+        fontSize: 8,
+        fontStyle: 'bold',
+        cellPadding: 2,
       },
+      styles: {
+        fontSize: 8,
+        cellPadding: 1.8,
+        textColor: [...PRINT_RGB.body],
+        lineColor: [...PRINT_RGB.hair],
+        lineWidth: 0.2,
+      },
+      alternateRowStyles: { fillColor: [248, 250, 252] },
+      columnStyles: {
+        0: { cellWidth: 24 },
+        2: { cellWidth: 18, halign: 'center', fontStyle: 'bold' },
+        3: { cellWidth: 24 },
+      },
+      didParseCell: (data) => {
+        if (data.section === 'body' && data.column.index === 2) {
+          const v = norm(String(data.cell.raw ?? ''));
+          if (v.includes('não') || v.includes('nao') || v === 'nc')
+            data.cell.styles.textColor = [...PRINT_RGB.red];
+          else if (v.includes('conforme'))
+            data.cell.styles.textColor = [...PRINT_RGB.green];
+        }
+      },
+      margin: { left: 14, right: 14 },
     });
 
     const pageHeight = pdf.internal.pageSize.getHeight();
@@ -400,50 +441,58 @@ export function AuditDetailPage() {
       currentY += 8;
       if (currentY > pageHeight - 30) {
         pdf.addPage();
-        currentY = 14;
+        currentY = 16;
       }
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(10);
-      pdf.text('Observacoes gerais:', 14, currentY);
+      currentY = drawSectionTitle(pdf, 'Observações gerais', currentY);
       pdf.setFont('helvetica', 'normal');
-      const split = pdf.splitTextToSize(notes, 180);
-      pdf.text(split, 14, currentY + 5);
-      // ~4mm por linha
-      currentY += 5 + split.length * 4;
+      pdf.setFontSize(9.5);
+      pdf.setTextColor(...PRINT_RGB.body);
+      const split = pdf.splitTextToSize(notes, 182);
+      pdf.text(split, 14, currentY);
+      pdf.setTextColor(...PRINT_RGB.ink);
+      currentY += split.length * 4.4;
     }
 
-    // Assinatura compacta — ~48mm. Mantém na mesma página da tabela
-    // quando couber; só quebra para nova página em último caso.
+    // Assinatura — bloco com filete e nome/CRN/data.
     if (sigDataUrl && profile) {
-      const SIG_BLOCK_HEIGHT = 48;
+      const SIG_BLOCK_HEIGHT = 50;
       const FOOTER_MARGIN = 14;
       if (currentY + SIG_BLOCK_HEIGHT > pageHeight - FOOTER_MARGIN) {
         pdf.addPage();
         currentY = 20;
       } else {
-        currentY += 6;
+        currentY += 8;
       }
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(10);
-      pdf.text('Assinatura do Responsavel Tecnico', 14, currentY);
+      currentY = drawSectionTitle(
+        pdf,
+        'Assinatura do Responsável Técnico',
+        currentY,
+      );
       try {
-        // Imagem menor: 60x22mm em vez de 80x30mm
-        pdf.addImage(sigDataUrl, 'PNG', 14, currentY + 3, 60, 22);
+        pdf.addImage(sigDataUrl, 'PNG', 14, currentY, 58, 22);
       } catch {
-        // ignore
+        /* ignore */
       }
-      pdf.setFont('helvetica', 'normal');
+      // Linha de assinatura
+      pdf.setDrawColor(...PRINT_RGB.faint);
+      pdf.setLineWidth(0.3);
+      pdf.line(14, currentY + 24, 86, currentY + 24);
+      pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(9);
-      const sigInfoY = currentY + 30;
+      pdf.setTextColor(...PRINT_RGB.ink);
       const who = profile.full_name ?? profile.email ?? '';
+      pdf.text(who, 14, currentY + 28);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8);
+      pdf.setTextColor(...PRINT_RGB.muted);
       const dataStr = audit.completed_at
         ? formatDateTime(audit.completed_at)
         : formatDateTime(new Date().toISOString());
-      // Linha única com nome + CRN + data
-      const sigLine = profile.crn
-        ? `Assinado por ${who} · CRN ${profile.crn} · ${dataStr}`
-        : `Assinado por ${who} · ${dataStr}`;
-      pdf.text(sigLine, 14, sigInfoY);
+      const sub = [profile.crn ? `CRN ${profile.crn}` : '', dataStr]
+        .filter(Boolean)
+        .join('  ·  ');
+      pdf.text(sub, 14, currentY + 32);
+      pdf.setTextColor(...PRINT_RGB.ink);
     }
 
     drawPdfFooter(pdf);
