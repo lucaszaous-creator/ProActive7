@@ -8,15 +8,26 @@ import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
 
-interface LabelRow {
-  storage_condition: StorageCondition;
-  printed_at: string;
-  quantity: number;
-  product_id: string | null;
-  printed_by: string | null;
-  product: { category: string | null } | null;
-  printer: { full_name: string | null; email: string | null } | null;
+/** Linha agregada vinda da RPC label_report (agregação feita no SQL). */
+interface ReportRow {
+  dimension: 'total' | 'category' | 'user' | 'condition';
+  label: string;
+  value: number;
 }
+
+interface ReportData {
+  byCategory: { label: string; value: number }[];
+  byUser: { label: string; value: number }[];
+  byCondition: { label: string; value: number }[];
+  total: number;
+}
+
+const EMPTY_DATA: ReportData = {
+  byCategory: [],
+  byUser: [],
+  byCondition: [],
+  total: 0,
+};
 
 const PERIODS = [
   { id: '7', label: 'Últimos 7 dias' },
@@ -24,37 +35,30 @@ const PERIODS = [
   { id: '90', label: 'Últimos 90 dias' },
 ] as const;
 
-function aggregate(rows: LabelRow[]): {
-  byCategory: { label: string; value: number }[];
-  byUser: { label: string; value: number }[];
-  byCondition: { label: string; value: number }[];
-  total: number;
-} {
-  const cat = new Map<string, number>();
-  const user = new Map<string, number>();
-  const cond = new Map<string, number>();
+/** Converte as linhas da RPC nos buckets ordenados que a UI consome. */
+function toReportData(rows: ReportRow[]): ReportData {
+  const byCategory: { label: string; value: number }[] = [];
+  const byUser: { label: string; value: number }[] = [];
+  const byCondition: { label: string; value: number }[] = [];
   let total = 0;
   for (const r of rows) {
-    const q = r.quantity;
-    total += q;
-    const catKey = r.product?.category ?? 'Sem categoria';
-    cat.set(catKey, (cat.get(catKey) ?? 0) + q);
-    const userKey =
-      r.printer?.full_name ?? r.printer?.email ?? 'Não identificado';
-    user.set(userKey, (user.get(userKey) ?? 0) + q);
-    const condKey = STORAGE_CONDITION_LABELS[r.storage_condition];
-    cond.set(condKey, (cond.get(condKey) ?? 0) + q);
+    if (r.dimension === 'total') {
+      total = r.value;
+    } else if (r.dimension === 'category') {
+      byCategory.push({ label: r.label, value: r.value });
+    } else if (r.dimension === 'user') {
+      byUser.push({ label: r.label, value: r.value });
+    } else if (r.dimension === 'condition') {
+      const key =
+        STORAGE_CONDITION_LABELS[r.label as StorageCondition] ?? r.label;
+      byCondition.push({ label: key, value: r.value });
+    }
   }
-  const sort = (m: Map<string, number>) =>
-    [...m.entries()]
-      .map(([label, value]) => ({ label, value }))
-      .sort((a, b) => b.value - a.value);
-  return {
-    byCategory: sort(cat),
-    byUser: sort(user),
-    byCondition: sort(cond),
-    total,
-  };
+  const sort = (a: { value: number }, b: { value: number }) => b.value - a.value;
+  byCategory.sort(sort);
+  byUser.sort(sort);
+  byCondition.sort(sort);
+  return { byCategory, byUser, byCondition, total };
 }
 
 function Bar({
@@ -87,12 +91,12 @@ export function ReportsPage() {
   usePageTitle('Relatorios');
   const { isMaster, companies, companyId, setCompanyId } = useCompanyScope();
   const [period, setPeriod] = useState<(typeof PERIODS)[number]['id']>('30');
-  const [rows, setRows] = useState<LabelRow[]>([]);
+  const [data, setData] = useState<ReportData>(EMPTY_DATA);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     if (!companyId) {
-      setRows([]);
+      setData(EMPTY_DATA);
       setLoading(false);
       return;
     }
@@ -100,30 +104,33 @@ export function ReportsPage() {
     const since = new Date(
       Date.now() - Number(period) * 24 * 60 * 60 * 1000,
     ).toISOString();
-    const { data, error } = await supabase
-      .from('label_prints')
-      .select(
-        'storage_condition, printed_at, quantity, product_id, printed_by, product:products(category), printer:profiles!label_prints_printed_by_fkey(full_name, email)',
-      )
-      .eq('company_id', companyId)
-      .gte('printed_at', since);
+    // Agregação feita no SQL (RPC) — devolve só os buckets, não milhares
+    // de linhas. Escala bem com volume.
+    const { data: rpcRows, error } = await supabase.rpc('label_report', {
+      p_company_id: companyId,
+      p_since: since,
+    });
     setLoading(false);
     if (error) {
       toast.error('Erro ao carregar relatório: ' + error.message);
       return;
     }
-    setRows((data as unknown as LabelRow[] | null) ?? []);
+    setData(toReportData((rpcRows as ReportRow[] | null) ?? []));
   }, [companyId, period]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  const data = aggregate(rows);
   const maxCat = Math.max(0, ...data.byCategory.map((r) => r.value));
   const maxUser = Math.max(0, ...data.byUser.map((r) => r.value));
   const maxCond = Math.max(0, ...data.byCondition.map((r) => r.value));
   const noCompany = isMaster && companies.length === 0;
+  const hasData =
+    data.total > 0 ||
+    data.byCategory.length > 0 ||
+    data.byUser.length > 0 ||
+    data.byCondition.length > 0;
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -179,7 +186,7 @@ export function ReportsPage() {
         <div className="flex justify-center py-16">
           <Spinner className="h-8 w-8" />
         </div>
-      ) : rows.length === 0 ? (
+      ) : !hasData ? (
         <Card>
           <p className="text-sm text-neutral-600">
             Nenhuma etiqueta impressa neste período.
