@@ -19,6 +19,8 @@ const ptBR = {
     pestControl: 'Controle de pragas',
     reports: 'Relatórios',
     receivings: 'Recebimentos',
+    traceability: 'Rastreabilidade',
+    dossier: 'Dossiê ANVISA',
     stock: 'Estoque',
     suppliers: 'Fornecedores',
     validades: 'Validades',

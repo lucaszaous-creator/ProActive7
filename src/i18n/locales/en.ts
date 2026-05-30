@@ -19,6 +19,8 @@ const en = {
     pestControl: 'Pest control',
     reports: 'Reports',
     receivings: 'Receivings',
+    traceability: 'Traceability',
+    dossier: 'ANVISA Dossier',
     stock: 'Stock',
     suppliers: 'Suppliers',
     validades: 'Validities',

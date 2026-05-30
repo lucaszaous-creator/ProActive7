@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
+  Crosshair,
   Package,
   Printer,
   Images,
@@ -112,6 +113,18 @@ const ITEM = {
     to: '/recebimentos',
     labelKey: 'nav.receivings',
     icon: PackagePlus,
+  } as NavItemDef,
+  rastreabilidade: {
+    kind: 'item',
+    to: '/rastreabilidade',
+    labelKey: 'nav.traceability',
+    icon: Crosshair,
+  } as NavItemDef,
+  dossie: {
+    kind: 'item',
+    to: '/dossie',
+    labelKey: 'nav.dossier',
+    icon: FileText,
   } as NavItemDef,
   estoque: {
     kind: 'item',
@@ -285,6 +298,7 @@ const NAV_PROPERTY: NavNode[] = [
   ITEM.contagem,
   ITEM.controlados,
   ITEM.recebimentos,
+  ITEM.rastreabilidade,
   ITEM.estoque,
   ITEM.relatorios,
   {
@@ -315,6 +329,7 @@ const NAV_PROPERTY: NavNode[] = [
       ITEM.documentos,
       ITEM.fotos,
       ITEM.agenda,
+      ITEM.dossie,
     ],
   },
 ];
@@ -386,6 +401,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
       ITEM.contagem,
       ITEM.controlados,
       ITEM.recebimentos,
+  ITEM.rastreabilidade,
       ITEM.estoque,
       ITEM.relatorios,
     ],
@@ -404,6 +420,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
       ITEM.documentos,
       ITEM.fotos,
       ITEM.agenda,
+      ITEM.dossie,
     ],
   },
   {

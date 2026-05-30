@@ -8,6 +8,7 @@ import {
   ImageOff,
   Search,
   X,
+  ShieldCheck,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { softDelete } from '@/lib/supabaseHelpers';
@@ -329,6 +330,24 @@ export function CompaniesPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-1">
+                          <button
+                            onClick={() => {
+                              const url = `${window.location.origin}/selo/${c.id}`;
+                              void navigator.clipboard
+                                .writeText(url)
+                                .then(() =>
+                                  toast.success(
+                                    'Link do selo público copiado.',
+                                  ),
+                                )
+                                .catch(() => toast.error('Falha ao copiar.'));
+                            }}
+                            aria-label="Copiar link do selo público"
+                            title="Copiar link do selo público de conformidade"
+                            className="rounded-lg p-2.5 text-emerald-600 hover:bg-emerald-50"
+                          >
+                            <ShieldCheck size={16} />
+                          </button>
                           <button
                             onClick={() => openEdit(c)}
                             aria-label="Editar"

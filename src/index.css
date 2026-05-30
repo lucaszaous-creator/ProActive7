@@ -59,4 +59,19 @@ body {
   body > .recipe-print-area {
     display: block !important;
   }
+  /* Modo dossie: a pagina inteira (#root) e' impressa, escondendo a
+     navegacao e cabecalho do Layout. Ativado com a classe `dossie-print`
+     no body, setada pelo componente DossiePage. */
+  body.dossie-print > #root {
+    display: block !important;
+  }
+  body.dossie-print aside,
+  body.dossie-print > #root > div > header {
+    display: none !important;
+  }
+  body.dossie-print > #root,
+  body.dossie-print > #root > div,
+  body.dossie-print > #root > div > div {
+    background: white !important;
+  }
 }

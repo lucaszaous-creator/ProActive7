@@ -46,6 +46,11 @@ const PublicLabelPage = lazy(() =>
     default: m.PublicLabelPage,
   })),
 );
+const PublicSealPage = lazy(() =>
+  import('./pages/PublicSealPage').then((m) => ({
+    default: m.PublicSealPage,
+  })),
+);
 const DashboardPage = lazy(() =>
   import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage })),
 );
@@ -115,6 +120,16 @@ const ManipulatorsPage = lazy(() =>
 const SuppliersPage = lazy(() =>
   import('./pages/SuppliersPage').then((m) => ({
     default: m.SuppliersPage,
+  })),
+);
+const RastreabilidadePage = lazy(() =>
+  import('./pages/RastreabilidadePage').then((m) => ({
+    default: m.RastreabilidadePage,
+  })),
+);
+const DossiePage = lazy(() =>
+  import('./pages/DossiePage').then((m) => ({
+    default: m.DossiePage,
   })),
 );
 const RecebimentosPage = lazy(() =>
@@ -237,6 +252,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
         <Route path="/etiqueta/:id" element={<PublicLabelPage />} />
+        <Route path="/selo/:id" element={<PublicSealPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route element={<Layout />}>
@@ -260,6 +276,8 @@ export default function App() {
             />
             <Route path="/manipuladores" element={<ManipulatorsPage />} />
             <Route path="/recebimentos" element={<RecebimentosPage />} />
+            <Route path="/rastreabilidade" element={<RastreabilidadePage />} />
+            <Route path="/dossie" element={<DossiePage />} />
             <Route
               path="/recebimentos/novo"
               element={<RecebimentoFormPage />}

@@ -103,6 +103,29 @@ Implicações práticas para qualquer feature nova:
 6. **Não vender dados agregados** (média de NCs por região, etc.) sem
    anonimização forte e consentimento das orgs.
 
+## Restrições financeiras (importante para escolhas de stack)
+
+O projeto é **100% gratuito** no momento — não há caixa para pagar
+serviços de terceiros. Toda nova feature precisa rodar dentro do que
+já está pago/contratado:
+
+- **Supabase (free tier)** + **Vercel (free tier)** apenas.
+- **Sem APIs pagas**: WhatsApp Business API, Twilio, SendGrid, Stripe,
+  Asaas, OpenAI, Anthropic, AWS, etc. são proibidos por enquanto.
+- **Sem code signing** (~US$ 500/ano) → por isso a impressão usa
+  PowerShell em Tarefa Agendada em vez de `.exe` assinado.
+- **Sem certificado público (QZ Tray Enterprise, PrintNode)** → o relay
+  é nosso `relay.ps1`.
+- **Sem hardware (IoT, sensores BLE/Wi-Fi)** que dependa de gateway
+  pago. Bluetooth direto do navegador (já existe em
+  `lib/bluetoothPrinter.ts`) tudo bem porque é grátis.
+- **Sem libs de pagamento** (jspdf é OK porque é open source, mas
+  preferir CSS print quando possível).
+
+Quando for sugerir feature, **diga claramente se o custo é zero** ou se
+exige algo pago — neste segundo caso, ofereça alternativa free ou
+adicione ao roadmap "para quando houver caixa".
+
 ## Segurança
 
 - **RLS sempre.** Toda tabela nova nasce com `enable row level security` +
