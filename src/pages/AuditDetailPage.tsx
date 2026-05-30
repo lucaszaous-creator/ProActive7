@@ -13,6 +13,7 @@ import {
   PenLine,
   Eraser,
   Save,
+  Lock,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
@@ -518,6 +519,13 @@ export function AuditDetailPage() {
   }
 
   const isCompleted = audit.status === 'completed';
+  // Só a RT (nutricionista) e o platform_admin avaliam a visita — competência
+  // técnica perante a ANVISA. `isMaster` aqui = master/platform_admin/nutri
+  // (ver AuthContext); o `property` NÃO avalia. RLS reforça no banco.
+  const canEvaluate = isMaster;
+  // Controles de avaliação ficam travados quando a visita está concluída
+  // OU quando o usuário não tem competência para avaliar.
+  const locked = isCompleted || !canEvaluate;
   const responseMap = new Map(responses.map((r) => [r.itemId, r]));
 
   return (
@@ -583,6 +591,19 @@ export function AuditDetailPage() {
         </div>
       </div>
 
+      {!canEvaluate ? (
+        <Card className="mb-4 border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40">
+          <p className="flex items-start gap-2 text-sm text-amber-800 dark:text-amber-200">
+            <Lock size={16} className="mt-0.5 shrink-0" />
+            <span>
+              <b>Acesso de leitura.</b> A avaliação da visita técnica é
+              responsabilidade do nutricionista (RT) da empresa — apenas ele
+              pode preencher e finalizar. Você pode acompanhar o resultado.
+            </span>
+          </p>
+        </Card>
+      ) : null}
+
       {categories.length > 0 ? (
         <Card className="mb-4">
           <p className="mb-2 text-sm font-semibold text-neutral-700 dark:text-neutral-300">
@@ -637,7 +658,7 @@ export function AuditDetailPage() {
                             <button
                               key={opt.value}
                               type="button"
-                              disabled={isCompleted}
+                              disabled={locked}
                               onClick={() => setResult(it.id, opt.value)}
                               className={`inline-flex h-11 w-14 items-center justify-center gap-1 rounded-lg border text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
                                 active ? opt.activeClasses : opt.classes
@@ -653,7 +674,7 @@ export function AuditDetailPage() {
                     {r?.result === 'NC' || r?.note ? (
                       <textarea
                         value={r?.note ?? ''}
-                        disabled={isCompleted}
+                        disabled={locked}
                         onChange={(e) => setNote(it.id, e.target.value)}
                         placeholder="Observacao / plano de acao..."
                         rows={2}
@@ -677,7 +698,7 @@ export function AuditDetailPage() {
           <textarea
             id="notes"
             value={notes}
-            disabled={isCompleted}
+            disabled={locked}
             onChange={(e) => setNotes(e.target.value)}
             rows={4}
             className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-emerald-500 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
