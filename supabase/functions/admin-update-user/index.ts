@@ -1,7 +1,8 @@
 // admin-update-user — edita perfil, ativa/desativa e redefine senha de um
-// usuario. Apenas o usuario master pode invocar. Usa a service role key.
-// JWT verificado dentro da função (verify_jwt:false no platform pra não
-// interceptar OPTIONS preflight do browser).
+// usuario. platform_admin/master gerenciam qualquer um; nutritionist só
+// gerencia usuarios `property` (ou a si mesmo) da propria organizacao.
+// verify_jwt:true no platform (o gateway valida o JWT); a funcao tambem
+// trata OPTIONS e re-checa a auth/role internamente.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const corsHeaders = {
@@ -110,7 +111,7 @@ Deno.serve(async (req) => {
       }
       const { data: targetProfile } = await admin
         .from('profiles')
-        .select('organization_id')
+        .select('organization_id, role')
         .eq('id', userId)
         .maybeSingle();
       if (
@@ -119,6 +120,14 @@ Deno.serve(async (req) => {
       ) {
         return json(
           { error: 'Usuário não pertence à sua organização' },
+          403,
+        );
+      }
+      // Nutri só gerencia usuarios `property` da org — ou a si mesma.
+      // Bloqueia editar/resetar senha de outra nutri ou admin da org.
+      if (targetProfile.role !== 'property' && userId !== user.id) {
+        return json(
+          { error: 'Nutricionista só pode gerenciar usuários da empresa' },
           403,
         );
       }

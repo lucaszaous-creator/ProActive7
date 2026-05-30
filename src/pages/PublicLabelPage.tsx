@@ -17,7 +17,6 @@ interface PublicLabel {
   storage_condition: StorageCondition;
   manipulation_at: string;
   expiry_at: string;
-  responsible_name: string;
   batch: string | null;
   supplier: string | null;
   fabricated_at: string | null;
@@ -26,9 +25,6 @@ interface PublicLabel {
   allergens: string[];
   company_name: string;
   company_logo_path: string | null;
-  company_cnpj: string | null;
-  company_address: string | null;
-  company_phone: string | null;
 }
 
 /** Adiciona/atualiza <meta name="..."> ou <meta property="..."> no head. */
@@ -163,7 +159,6 @@ export function PublicLabelPage() {
             <Row label="Manipulação">
               {formatDateTime(label.manipulation_at)}
             </Row>
-            <Row label="Responsável">{label.responsible_name}</Row>
             {label.supplier ? (
               <Row label="Fornecedor / marca">{label.supplier}</Row>
             ) : null}
@@ -174,14 +169,6 @@ export function PublicLabelPage() {
               </Row>
             ) : null}
           </dl>
-
-          {label.company_address || label.company_cnpj ? (
-            <div className="mt-4 border-t border-neutral-200 pt-3 text-xs text-neutral-500">
-              {label.company_address ? <p>{label.company_address}</p> : null}
-              {label.company_cnpj ? <p>CNPJ {label.company_cnpj}</p> : null}
-              {label.company_phone ? <p>Tel {label.company_phone}</p> : null}
-            </div>
-          ) : null}
 
           {label.allergens && label.allergens.length > 0 ? (
             <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm">
