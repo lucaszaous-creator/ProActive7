@@ -335,19 +335,28 @@ sessão; os demais ficam como pendência priorizada.
 - ✅ **Drift repo↔produção**: migrations `0067`/`0068`/`0069` e a Edge
   `print-agent` v4 só existiam no banco. Reconstruídos como arquivo.
 
+### Resolvido — pentest externo (role `anon`)
+
+Pentest simulando atacante anônimo (`SET ROLE anon` = o que o PostgREST
+faz sem JWT). RLS segurou todos os SELECT/INSERT/UPDATE/DELETE; storage
+privado, `auth.users` e Realtime OK. Buracos encontrados e fechados:
+
+- ✅ **`cleanup_soft_deleted()` callable por anon** (DELETA dados):
+  `REVOKE EXECUTE` em `0073_pentest_hardening.sql`.
+- ✅ **`log_feature_event('x')` por anon** (spam/DoS da `feature_events`):
+  função reescrita p/ no-op quando `auth.uid()` é null; `REVOKE` de anon.
+- ✅ **`rls_auto_enable`/`log_changes`/`sync_profile_org_from_company`**
+  (trigger/event functions expostas em `/rpc`): `REVOKE EXECUTE`. `0073`.
+- ✅ **`get_public_label` vazava PII** (CNPJ, endereço, telefone, nome do
+  responsável): `0074_public_label_remove_pii.sql` removeu os campos e
+  consertou o drift. `PublicLabelPage` não renderiza mais PII.
+- ✅ **`sign-qz` (oráculo de assinatura aberto)**: redeploy inerte (sem
+  chave, responde 410, `verify_jwt:true`). Deletar no painel quando der.
+- ✅ **`admin-update-user`**: redeploy `verify_jwt:true`; nutri agora só
+  gerencia `property` (ou self) — antes resetava senha de outra nutri.
+
 ### Pendente — exige decisão de produto
 
-- [ ] **`get_public_label` expõe PII na etiqueta pública** (`/etiqueta/:id`):
-  retorna CNPJ, endereço, telefone da empresa e **nome do responsável**
-  (dado pessoal). A função no banco sofreu drift (devolve mais que as
-  migrations `0008`/`0012` declaram). Decidir com a RT o que pode ser
-  público; remover o resto e **commitar a definição real como migration**.
-- [ ] **`admin-update-user` permite nutri gerenciar outra nutri** da mesma
-  org (só checa `organization_id`, não `role==='property'`). Restringir o
-  alvo a `property` (ou self).
-- [ ] **`admin-update-user` em prod com `verify_jwt:false`** (config diz
-  `true`) — drift. Re-deployar com `verify_jwt:true` (ele já trata OPTIONS
-  e re-checa auth internamente).
 - [ ] **Impersonate sem trava de consentimento (LGPD)**: o CLAUDE.md §2.1
   exige que a nutri consinta uma vez ("sem opt-in, bloqueado"), mas
   `admin-impersonate` não checa nada. Falta: coluna de consentimento na
@@ -356,9 +365,8 @@ sessão; os demais ficam como pendência priorizada.
 
 ### Pendente — dívida técnica / hardening
 
-- [ ] **`sign-qz` Edge Function órfã** (sobra do QZ Tray, removido):
-  oráculo de assinatura público com chave privada embutida. **Deletar** a
-  função no painel Supabase (não está mais no repo).
+- [ ] **`sign-qz` Edge Function**: já neutralizada (inerte, 410), mas
+  ainda existe no painel. **Deletar** quando conveniente.
 - [ ] **Retenção LGPD**: `manipulator_asos` (dado de saúde) e bucket
   `employee-docs` (ASOs) **sem expiração**. Estender o padrão de 30 dias
   das `photos`/`cleanup-photos`.
