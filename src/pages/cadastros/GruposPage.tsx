@@ -27,6 +27,7 @@ export function GruposPage() {
   const { profile, isPlatformAdmin, isNutritionist } = useAuth();
   const canEdit = isPlatformAdmin || isNutritionist;
   const [groups, setGroups] = useState<ProductGroup[]>([]);
+  const [counts, setCounts] = useState<Map<string, number>>(new Map());
   const [loading, setLoading] = useState(true);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -53,6 +54,17 @@ export function GruposPage() {
       return;
     }
     setGroups((data as ProductGroup[] | null) ?? []);
+
+    // Contagem de produtos ativos por grupo (RLS limita ao escopo do usuário).
+    const { data: prods } = await supabase
+      .from('products')
+      .select('group_id')
+      .eq('active', true);
+    const tally = new Map<string, number>();
+    for (const p of (prods as { group_id: string | null }[] | null) ?? []) {
+      if (p.group_id) tally.set(p.group_id, (tally.get(p.group_id) ?? 0) + 1);
+    }
+    setCounts(tally);
   }, []);
 
   useEffect(() => {
@@ -159,51 +171,58 @@ export function GruposPage() {
           </p>
         </Card>
       ) : (
-        <Card>
-          <ul className="divide-y divide-neutral-100">
-            {groups.map((g) => (
-              <li key={g.id} className="flex items-center gap-3 py-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {groups.map((g) => {
+            const count = counts.get(g.id) ?? 0;
+            return (
+              <div
+                key={g.id}
+                className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700"
+              >
                 <span
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-white"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white"
                   style={{ backgroundColor: g.color ?? '#6b7280' }}
                 >
-                  <Tag size={16} />
+                  <Tag size={18} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-neutral-800">
+                  <p className="flex items-center gap-2 truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                     {g.name}
                     {!g.active && (
-                      <span className="ml-2 rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-normal text-neutral-500">
+                      <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-normal text-neutral-500 dark:bg-slate-800">
                         inativo
                       </span>
                     )}
                   </p>
                   <p className="text-xs text-neutral-500">
-                    Ordem {g.sort_order}
+                    {count} produto{count === 1 ? '' : 's'} · ordem{' '}
+                    {g.sort_order}
                   </p>
                 </div>
                 {canEdit && (
-                  <>
+                  <div className="flex shrink-0 gap-1">
                     <button
                       onClick={() => openEdit(g)}
                       aria-label="Editar"
-                      className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
+                      title="Editar"
+                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-slate-800"
                     >
                       <Pencil size={16} />
                     </button>
                     <button
                       onClick={() => setDeleting(g)}
                       aria-label="Excluir"
-                      className="rounded-lg p-2.5 text-red-500 hover:bg-red-50"
+                      title="Excluir"
+                      className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
                     >
                       <Trash2 size={16} />
                     </button>
-                  </>
+                  </div>
                 )}
-              </li>
-            ))}
-          </ul>
-        </Card>
+              </div>
+            );
+          })}
+        </div>
       )}
 
       <Modal
@@ -234,7 +253,9 @@ export function GruposPage() {
             placeholder="Ex.: Carnes"
           />
           <div>
-            <p className="mb-2 text-sm font-medium text-neutral-700">Cor</p>
+            <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              Cor
+            </p>
             <div className="flex flex-wrap gap-2">
               {DEFAULT_COLORS.map((c) => (
                 <button
@@ -258,7 +279,7 @@ export function GruposPage() {
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
           />
-          <label className="flex items-center gap-2 text-sm text-neutral-700">
+          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
             <input
               type="checkbox"
               checked={active}

@@ -1,6 +1,16 @@
-import { useCallback, useEffect, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, Search, FileUp } from 'lucide-react';
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  Search,
+  FileUp,
+  Layers,
+  ShieldAlert,
+  AlertTriangle,
+  PackageSearch,
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { softDelete } from '@/lib/supabaseHelpers';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -28,6 +38,23 @@ import { BookOpen } from 'lucide-react';
 
 const CONDITIONS: StorageCondition[] = ['ambiente', 'refrigerado', 'congelado'];
 
+const CONDITION_PILL: Record<StorageCondition, string> = {
+  ambiente:
+    'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+  refrigerado: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300',
+  congelado:
+    'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',
+};
+
+interface GroupOption {
+  id: string;
+  name: string;
+  color: string | null;
+}
+
+const GROUP_ALL = 'all';
+const GROUP_NONE = 'none';
+
 interface ShelfForm {
   value: string;
   unit: ValidityUnit;
@@ -53,14 +80,151 @@ function shelfMapFrom(rows: ProductShelfLife[]): ShelfFormMap {
   return map;
 }
 
-function shelfSummary(rows: ProductShelfLife[]): string {
-  if (rows.length === 0) return 'Sem regras de validade';
-  return rows
-    .map(
-      (r) =>
-        `${STORAGE_CONDITION_LABELS[r.storage_condition]}: ${r.validity_value} ${VALIDITY_UNIT_LABELS[r.validity_unit]}`,
-    )
-    .join(' · ');
+function GroupChip({
+  label,
+  count,
+  color,
+  active,
+  onClick,
+  icon,
+}: {
+  label: string;
+  count: number;
+  color?: string | null;
+  active: boolean;
+  onClick: () => void;
+  icon?: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition ${
+        active
+          ? 'border-emerald-500 bg-emerald-50 font-medium text-emerald-700 dark:border-emerald-600 dark:bg-emerald-950 dark:text-emerald-300'
+          : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-slate-800'
+      }`}
+    >
+      {icon ?? (
+        <span
+          className="h-2.5 w-2.5 rounded-full"
+          style={{ backgroundColor: color ?? '#a3a3a3' }}
+        />
+      )}
+      <span>{label}</span>
+      <span
+        className={`text-xs ${active ? 'text-emerald-600 dark:text-emerald-400' : 'text-neutral-400'}`}
+      >
+        {count}
+      </span>
+    </button>
+  );
+}
+
+function ProductCard({
+  product,
+  group,
+  onEdit,
+  onDelete,
+}: {
+  product: ProductWithShelfLives;
+  group?: GroupOption;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  const rules = product.product_shelf_lives ?? [];
+  const allergenCount = product.allergens?.length ?? 0;
+  return (
+    <div className="flex flex-col gap-2.5 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h3 className="truncate font-medium text-neutral-800 dark:text-neutral-100">
+            {product.name}
+          </h3>
+          {product.category ? (
+            <p className="truncate text-xs text-neutral-500">
+              {product.category}
+            </p>
+          ) : null}
+        </div>
+        <div className="flex shrink-0 gap-1">
+          <button
+            onClick={onEdit}
+            aria-label="Editar"
+            title="Editar"
+            className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-slate-800"
+          >
+            <Pencil size={16} />
+          </button>
+          <button
+            onClick={onDelete}
+            aria-label="Excluir"
+            title="Excluir"
+            className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-1.5">
+        {group ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600 dark:bg-slate-800 dark:text-neutral-300">
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: group.color ?? '#a3a3a3' }}
+            />
+            {group.name}
+          </span>
+        ) : null}
+        {product.is_seed ? (
+          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+            Seed
+          </span>
+        ) : null}
+        {product.is_controlled ? (
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+            <ShieldAlert size={11} /> Controlado
+          </span>
+        ) : null}
+        {!product.active ? (
+          <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-500 dark:bg-slate-800">
+            Inativo
+          </span>
+        ) : null}
+      </div>
+
+      <div className="mt-auto flex flex-wrap gap-1.5 pt-1">
+        {rules.length === 0 ? (
+          <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+            <AlertTriangle size={12} /> Sem regra de validade
+          </span>
+        ) : (
+          CONDITIONS.filter((c) =>
+            rules.some((r) => r.storage_condition === c),
+          ).map((c) => {
+            const r = rules.find((x) => x.storage_condition === c)!;
+            return (
+              <span
+                key={c}
+                className={`rounded-md px-2 py-0.5 text-xs font-medium ${CONDITION_PILL[c]}`}
+              >
+                {STORAGE_CONDITION_LABELS[c]}: {r.validity_value}{' '}
+                {VALIDITY_UNIT_LABELS[r.validity_unit]}
+              </span>
+            );
+          })
+        )}
+      </div>
+
+      {allergenCount > 0 ? (
+        <p className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
+          <AlertTriangle size={12} className="text-amber-500" />
+          Contém {allergenCount} alérgeno{allergenCount > 1 ? 's' : ''}
+        </p>
+      ) : null}
+    </div>
+  );
 }
 
 export function ProductsPage() {
@@ -69,7 +233,7 @@ export function ProductsPage() {
   const { isMaster, companies, companyId, setCompanyId } = useCompanyScope();
 
   const [products, setProducts] = useState<ProductWithShelfLives[]>([]);
-  const [groups, setGroups] = useState<{ id: string; name: string }[]>([]);
+  const [groups, setGroups] = useState<GroupOption[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -91,6 +255,7 @@ export function ProductsPage() {
   const [deleteBusy, setDeleteBusy] = useState(false);
 
   const [search, setSearch] = useState('');
+  const [groupFilter, setGroupFilter] = useState<string>(GROUP_ALL);
   const [showInactive, setShowInactive] = useState(false);
   const [csvOpen, setCsvOpen] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
@@ -121,13 +286,11 @@ export function ProductsPage() {
   useEffect(() => {
     supabase
       .from('product_groups')
-      .select('id, name')
+      .select('id, name, color')
       .eq('active', true)
       .order('sort_order')
       .order('name')
-      .then(({ data }) =>
-        setGroups((data as { id: string; name: string }[] | null) ?? []),
-      );
+      .then(({ data }) => setGroups((data as GroupOption[] | null) ?? []));
   }, []);
 
   function openCreate() {
@@ -271,15 +434,44 @@ export function ProductsPage() {
 
   const noCompany = isMaster && companies.length === 0;
 
+  const groupMap = useMemo(() => {
+    const m = new Map<string, GroupOption>();
+    for (const g of groups) m.set(g.id, g);
+    return m;
+  }, [groups]);
+
   const searchTerm = search.trim().toLowerCase();
-  const filtered = products.filter((p) => {
-    if (!showInactive && !p.active) return false;
-    if (!searchTerm) return true;
-    return (
-      p.name.toLowerCase().includes(searchTerm) ||
-      (p.category ?? '').toLowerCase().includes(searchTerm)
-    );
-  });
+
+  // Busca + status (sem o filtro de grupo) — base para contar por grupo.
+  const baseFiltered = useMemo(
+    () =>
+      products.filter((p) => {
+        if (!showInactive && !p.active) return false;
+        if (!searchTerm) return true;
+        return (
+          p.name.toLowerCase().includes(searchTerm) ||
+          (p.category ?? '').toLowerCase().includes(searchTerm)
+        );
+      }),
+    [products, showInactive, searchTerm],
+  );
+
+  const groupCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    let none = 0;
+    for (const p of baseFiltered) {
+      if (p.group_id) counts.set(p.group_id, (counts.get(p.group_id) ?? 0) + 1);
+      else none += 1;
+    }
+    return { counts, none, all: baseFiltered.length };
+  }, [baseFiltered]);
+
+  const filtered = useMemo(() => {
+    if (groupFilter === GROUP_ALL) return baseFiltered;
+    if (groupFilter === GROUP_NONE)
+      return baseFiltered.filter((p) => !p.group_id);
+    return baseFiltered.filter((p) => p.group_id === groupFilter);
+  }, [baseFiltered, groupFilter]);
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -370,10 +562,10 @@ export function ProductsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar por nome ou categoria"
-                className="w-full rounded-lg border border-neutral-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                className="w-full rounded-lg border border-neutral-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
               />
             </div>
-            <label className="flex items-center gap-2 text-sm text-neutral-700">
+            <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
               <input
                 type="checkbox"
                 checked={showInactive}
@@ -383,86 +575,65 @@ export function ProductsPage() {
               Mostrar inativos
             </label>
           </div>
+
+          {/* Filtro por grupo — chips coloridos para localizar rápido */}
+          {groups.length > 0 && (
+            <div className="mb-4 flex flex-wrap gap-2">
+              <GroupChip
+                label="Todos"
+                count={groupCounts.all}
+                active={groupFilter === GROUP_ALL}
+                onClick={() => setGroupFilter(GROUP_ALL)}
+                icon={<Layers size={14} />}
+              />
+              {groups.map((g) => {
+                const count = groupCounts.counts.get(g.id) ?? 0;
+                return (
+                  <GroupChip
+                    key={g.id}
+                    label={g.name}
+                    count={count}
+                    color={g.color}
+                    active={groupFilter === g.id}
+                    onClick={() => setGroupFilter(g.id)}
+                  />
+                );
+              })}
+              {groupCounts.none > 0 && (
+                <GroupChip
+                  label="Sem grupo"
+                  count={groupCounts.none}
+                  active={groupFilter === GROUP_NONE}
+                  onClick={() => setGroupFilter(GROUP_NONE)}
+                />
+              )}
+            </div>
+          )}
+
+          {/* Grid de cards responsivo */}
+          {filtered.length === 0 ? (
+            <Card>
+              <div className="flex flex-col items-center gap-2 py-8 text-center">
+                <PackageSearch size={28} className="text-neutral-400" />
+                <p className="text-sm text-neutral-600 dark:text-neutral-300">
+                  Nenhum produto corresponde ao filtro.
+                </p>
+              </div>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {filtered.map((p) => (
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  group={p.group_id ? groupMap.get(p.group_id) : undefined}
+                  onEdit={() => openEdit(p)}
+                  onDelete={() => setDeleting(p)}
+                />
+              ))}
+            </div>
+          )}
         </>
-      )}
-      {!noCompany && !loading && products.length > 0 && (
-        <Card className="!p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[640px] text-sm">
-              <thead>
-                <tr className="border-b border-neutral-200 text-left text-xs uppercase text-neutral-500">
-                  <th className="px-4 py-3">Produto</th>
-                  <th className="px-4 py-3">Categoria</th>
-                  <th className="px-4 py-3">Regras de validade</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3 text-right">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="px-4 py-8 text-center text-sm text-neutral-500"
-                    >
-                      Nenhum produto corresponde ao filtro.
-                    </td>
-                  </tr>
-                ) : null}
-                {filtered.map((p) => (
-                  <tr
-                    key={p.id}
-                    className="border-b border-neutral-100 last:border-0"
-                  >
-                    <td className="px-4 py-3 font-medium text-neutral-800">
-                      {p.name}
-                      {p.is_seed ? (
-                        <span className="ml-2 inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
-                          Seed
-                        </span>
-                      ) : null}
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600">
-                      {p.category ?? '—'}
-                    </td>
-                    <td className="px-4 py-3 text-neutral-600">
-                      {shelfSummary(p.product_shelf_lives ?? [])}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs ${
-                          p.active
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'bg-neutral-100 text-neutral-500'
-                        }`}
-                      >
-                        {p.active ? 'Ativo' : 'Inativo'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-1">
-                        <button
-                          onClick={() => openEdit(p)}
-                          aria-label="Editar"
-                          className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
-                        >
-                          <Pencil size={16} />
-                        </button>
-                        <button
-                          onClick={() => setDeleting(p)}
-                          aria-label="Excluir"
-                          className="rounded-lg p-2.5 text-red-500 hover:bg-red-50"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Card>
       )}
 
       <Modal
