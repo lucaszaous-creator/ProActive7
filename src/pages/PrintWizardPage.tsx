@@ -14,6 +14,7 @@ import {
   Settings2,
   Layers,
   X,
+  AlertTriangle,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle, SITE_URL } from '@/lib/usePageTitle';
@@ -86,6 +87,57 @@ const STEP_META: Record<Step, { titleKey: string; icon: typeof HardHat }> = {
   4: { titleKey: 'Informações', icon: Settings2 },
   5: { titleKey: 'Imprimir', icon: Printer },
 };
+
+const CONDITION_PILL: Record<StorageCondition, string> = {
+  ambiente: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+  refrigerado: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300',
+  congelado:
+    'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',
+};
+
+const PILL_ORDER: StorageCondition[] = [
+  'ambiente',
+  'refrigerado',
+  'congelado',
+];
+
+// Pílulas compactas de validade por condição (mesma linguagem visual da
+// tela de Produtos), pra cozinheira reconhecer o produto pelo prazo.
+function ShelfPills({ product }: { product: ProductWithShelfLives }) {
+  const rules = product.product_shelf_lives ?? [];
+  if (rules.length === 0) {
+    return (
+      <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+        <AlertTriangle size={11} /> Sem validade
+      </span>
+    );
+  }
+  return (
+    <span className="flex flex-wrap gap-1">
+      {PILL_ORDER.filter((c) =>
+        rules.some((r) => r.storage_condition === c),
+      ).map((c) => {
+        const r = rules.find((x) => x.storage_condition === c)!;
+        return (
+          <span
+            key={c}
+            className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${CONDITION_PILL[c]}`}
+          >
+            {STORAGE_CONDITION_LABELS[c]} {r.validity_value}
+            {r.validity_unit === 'hours' ? 'h' : 'd'}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+function initials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 // Resolve a regra de validade de um produto pra modo lote (sem perguntar
 // condição ao usuário): usa default_storage_condition; se não houver
@@ -222,6 +274,20 @@ export function PrintWizardPage() {
     }
     return list;
   }, [products, groupId, productSearch]);
+
+  const groupMap = useMemo(() => {
+    const m = new Map<string, ProductGroup>();
+    for (const g of groups) m.set(g.id, g);
+    return m;
+  }, [groups]);
+
+  const groupProductCounts = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of products) {
+      if (p.group_id) m.set(p.group_id, (m.get(p.group_id) ?? 0) + 1);
+    }
+    return m;
+  }, [products]);
 
   // Quando seleciona produto, ajusta condição default
   useEffect(() => {
@@ -412,34 +478,72 @@ export function PrintWizardPage() {
     <div className="mx-auto max-w-2xl">
       {/* Header com progresso */}
       <div className="mb-4">
-        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
+        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl dark:text-neutral-100">
           Imprimir etiqueta
         </h1>
         <p className="text-sm text-neutral-500">
-          Siga os passos — nenhum campo precisa ser digitado.
+          Passo {step} de 5 · nenhum campo precisa ser digitado.
         </p>
       </div>
 
-      {/* Stepper visual */}
-      <div className="mb-4 flex items-center gap-1">
-        {([1, 2, 3, 4, 5] as Step[]).map((s) => {
+      {/* Stepper visual com linha de progresso */}
+      <div className="mb-5 flex items-start">
+        {([1, 2, 3, 4, 5] as Step[]).map((s, i) => {
           const meta = STEP_META[s];
           const Icon = meta.icon;
           const isActive = s === step;
           const isDone = s < step;
+          const canGoBack = isDone;
           return (
-            <div
-              key={s}
-              className={`flex flex-1 flex-col items-center gap-1 rounded-lg p-2 text-xs ${
-                isActive
-                  ? 'bg-emerald-50 text-emerald-700'
-                  : isDone
-                    ? 'text-emerald-600'
-                    : 'text-neutral-400'
-              }`}
-            >
-              {isDone ? <Check size={16} /> : <Icon size={16} />}
-              <span className="hidden sm:inline">{meta.titleKey}</span>
+            <div key={s} className="flex flex-1 flex-col items-center">
+              <div className="flex w-full items-center">
+                {/* conector esquerdo */}
+                <div
+                  className={`h-0.5 flex-1 ${
+                    i === 0
+                      ? 'opacity-0'
+                      : isDone || isActive
+                        ? 'bg-emerald-500'
+                        : 'bg-neutral-200 dark:bg-neutral-700'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => canGoBack && setStep(s)}
+                  disabled={!canGoBack}
+                  aria-label={meta.titleKey}
+                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 transition ${
+                    isActive
+                      ? 'border-emerald-500 bg-emerald-500 text-white'
+                      : isDone
+                        ? 'border-emerald-500 bg-white text-emerald-600 hover:bg-emerald-50 dark:bg-slate-900'
+                        : 'border-neutral-200 bg-white text-neutral-400 dark:border-neutral-700 dark:bg-slate-900'
+                  } ${canGoBack ? 'cursor-pointer' : 'cursor-default'}`}
+                >
+                  {isDone ? <Check size={16} /> : <Icon size={16} />}
+                </button>
+                {/* conector direito */}
+                <div
+                  className={`h-0.5 flex-1 ${
+                    i === 4
+                      ? 'opacity-0'
+                      : isDone
+                        ? 'bg-emerald-500'
+                        : 'bg-neutral-200 dark:bg-neutral-700'
+                  }`}
+                />
+              </div>
+              <span
+                className={`mt-1.5 hidden text-xs sm:inline ${
+                  isActive
+                    ? 'font-medium text-emerald-700 dark:text-emerald-400'
+                    : isDone
+                      ? 'text-emerald-600'
+                      : 'text-neutral-400'
+                }`}
+              >
+                {meta.titleKey}
+              </span>
             </div>
           );
         })}
@@ -486,6 +590,8 @@ export function PrintWizardPage() {
           {step === 2 && (
             <Step2
               groups={groups}
+              counts={groupProductCounts}
+              totalProducts={products.length}
               groupId={groupId}
               setGroupId={(id) => {
                 setGroupId(id);
@@ -496,6 +602,7 @@ export function PrintWizardPage() {
           {step === 3 && mode === 'single' && (
             <Step3
               products={filteredProducts}
+              groupMap={groupMap}
               productId={productId}
               setProductId={(id) => {
                 setProductId(id);
@@ -738,13 +845,13 @@ function Step1({
 }) {
   return (
     <Card>
-      <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+      <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
         Quem está manipulando?
       </h2>
       {manipulators.length === 0 ? (
-        <div className="flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        <div className="flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
           <p className="font-medium">Nenhum funcionário cadastrado.</p>
-          <p className="text-amber-800">
+          <p className="text-amber-800 dark:text-amber-300">
             Para imprimir uma etiqueta, cadastre os manipuladores em Cadastros →
             Funcionários. O nome do responsável é registrado automaticamente ao
             escolher na lista — nada digitado à mão.
@@ -764,23 +871,23 @@ function Step1({
               <button
                 key={m.id}
                 onClick={() => setResponsible(m.full_name)}
-                className={`flex items-center gap-3 rounded-lg border p-3 text-left transition ${
+                className={`flex items-center gap-3 rounded-xl border p-3 text-left transition ${
                   isSelected
-                    ? 'border-emerald-500 bg-emerald-50'
-                    : 'border-neutral-200 bg-white hover:border-neutral-300'
+                    ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950'
+                    : 'border-neutral-200 bg-white hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700'
                 }`}
               >
                 <span
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
                     isSelected
                       ? 'bg-emerald-600 text-white'
-                      : 'bg-neutral-100 text-neutral-500'
+                      : 'bg-neutral-100 text-neutral-600 dark:bg-slate-800 dark:text-neutral-300'
                   }`}
                 >
-                  <HardHat size={16} />
+                  {initials(m.full_name)}
                 </span>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-neutral-800">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                     {m.full_name}
                   </p>
                   {m.role && (
@@ -789,6 +896,9 @@ function Step1({
                     </p>
                   )}
                 </div>
+                {isSelected && (
+                  <Check size={18} className="shrink-0 text-emerald-600" />
+                )}
               </button>
             );
           })}
@@ -800,59 +910,72 @@ function Step1({
 
 function Step2({
   groups,
+  counts,
+  totalProducts,
   groupId,
   setGroupId,
 }: {
   groups: ProductGroup[];
+  counts: Map<string, number>;
+  totalProducts: number;
   groupId: string | 'all';
   setGroupId: (id: string | 'all') => void;
 }) {
   return (
     <Card>
-      <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+      <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
         Qual grupo de produto?
       </h2>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         <button
           onClick={() => setGroupId('all')}
-          className={`flex flex-col items-center gap-2 rounded-lg border p-4 transition ${
+          className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition ${
             groupId === 'all'
-              ? 'border-emerald-500 bg-emerald-50'
-              : 'border-neutral-200 bg-white hover:border-neutral-300'
+              ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950'
+              : 'border-neutral-200 bg-white hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700'
           }`}
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-200 text-neutral-700">
-            <Tag size={18} />
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-200 text-neutral-700 dark:bg-slate-700 dark:text-neutral-200">
+            <Layers size={18} />
           </span>
-          <span className="text-sm font-medium text-neutral-800">Todos</span>
+          <span className="text-sm font-medium text-neutral-800 dark:text-neutral-100">
+            Todos
+          </span>
+          <span className="text-xs text-neutral-400">
+            {totalProducts} produtos
+          </span>
         </button>
         {groups.map((g) => {
           const isSelected = groupId === g.id;
+          const count = counts.get(g.id) ?? 0;
           return (
             <button
               key={g.id}
               onClick={() => setGroupId(g.id)}
-              className={`flex flex-col items-center gap-2 rounded-lg border p-4 transition ${
+              className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition ${
                 isSelected
-                  ? 'border-emerald-500 bg-emerald-50'
-                  : 'border-neutral-200 bg-white hover:border-neutral-300'
+                  ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950'
+                  : 'border-neutral-200 bg-white hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700'
               }`}
             >
               <span
-                className="flex h-10 w-10 items-center justify-center rounded-full text-white"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-white"
                 style={{ backgroundColor: g.color ?? '#6b7280' }}
               >
                 <Tag size={18} />
               </span>
-              <span className="text-center text-sm font-medium text-neutral-800">
+              <span className="text-center text-sm font-medium text-neutral-800 dark:text-neutral-100">
                 {g.name}
+              </span>
+              <span className="text-xs text-neutral-400">
+                {count} {count === 1 ? 'produto' : 'produtos'}
               </span>
             </button>
           );
         })}
       </div>
       {groups.length === 0 && (
-        <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+        <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950 dark:text-amber-300">
           Nenhum grupo cadastrado. Vá em Cadastros → Grupos para organizar os
           produtos.
         </p>
@@ -863,6 +986,7 @@ function Step2({
 
 function Step3({
   products,
+  groupMap,
   productId,
   setProductId,
   search,
@@ -871,6 +995,7 @@ function Step3({
   onSwitchToBatch,
 }: {
   products: ProductWithShelfLives[];
+  groupMap: Map<string, ProductGroup>;
   productId: string;
   setProductId: (id: string) => void;
   search: string;
@@ -881,14 +1006,16 @@ function Step3({
   return (
     <Card>
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-neutral-700">Produto</h2>
-        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500">
+        <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+          Produto
+        </h2>
+        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500 dark:bg-slate-800 dark:text-neutral-300">
           {groupName}
         </span>
       </div>
       <button
         onClick={onSwitchToBatch}
-        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-emerald-300 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100"
+        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-emerald-300 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 dark:hover:bg-emerald-900"
       >
         <Layers size={16} />
         Imprimir vários produtos
@@ -903,46 +1030,56 @@ function Step3({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar produto"
-          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:text-sm dark:bg-slate-800"
+          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:text-sm dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
         />
       </div>
       {products.length === 0 ? (
-        <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+        <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950 dark:text-amber-300">
           Nenhum produto encontrado neste grupo.
         </p>
       ) : (
-        <ul className="divide-y divide-neutral-100">
+        <ul className="flex flex-col gap-2">
           {products.map((p) => {
             const isSelected = productId === p.id;
+            const group = p.group_id ? groupMap.get(p.group_id) : undefined;
             return (
               <li key={p.id}>
                 <button
                   onClick={() => setProductId(p.id)}
-                  className={`flex w-full items-center gap-3 py-3 text-left transition ${
-                    isSelected ? 'bg-emerald-50' : 'hover:bg-neutral-50'
+                  className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${
+                    isSelected
+                      ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950'
+                      : 'border-neutral-200 bg-white hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700'
                   }`}
                 >
                   <span
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                       isSelected
                         ? 'bg-emerald-600 text-white'
-                        : 'bg-neutral-100 text-neutral-500'
+                        : 'bg-neutral-100 text-neutral-500 dark:bg-slate-800 dark:text-neutral-300'
                     }`}
                   >
                     <Package size={16} />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-neutral-800">
-                      {p.name}
-                    </p>
-                    {p.category && (
-                      <p className="truncate text-xs text-neutral-500">
-                        {p.category}
+                    <div className="flex items-center gap-2">
+                      <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                        {p.name}
                       </p>
-                    )}
+                      {group && (
+                        <span
+                          className="h-2 w-2 shrink-0 rounded-full"
+                          style={{ backgroundColor: group.color ?? '#a3a3a3' }}
+                          title={group.name}
+                        />
+                      )}
+                    </div>
+                    <div className="mt-1">
+                      <ShelfPills product={p} />
+                    </div>
                   </div>
                   {isSelected && (
-                    <Check size={16} className="text-emerald-600" />
+                    <Check size={18} className="shrink-0 text-emerald-600" />
                   )}
                 </button>
               </li>
@@ -997,12 +1134,16 @@ function Step4({
 }) {
   return (
     <Card>
-      <div className="mb-3 flex items-center gap-3 rounded-lg bg-neutral-50 p-3">
-        <Package size={18} className="text-neutral-500" />
-        <div>
-          <p className="text-sm font-medium text-neutral-800">{product.name}</p>
+      <div className="mb-3 flex items-center gap-3 rounded-xl bg-neutral-50 p-3 dark:bg-slate-800">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+          <Package size={18} />
+        </span>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+            {product.name}
+          </p>
           {expiry && (
-            <p className="text-xs text-emerald-600">
+            <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
               Vence {formatDateTime(expiry)}
             </p>
           )}
@@ -1025,7 +1166,7 @@ function Step4({
           ))}
         </Select>
         {!rule && (
-          <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+          <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950 dark:text-amber-300">
             Este produto não tem regra de validade cadastrada. Vá em Cadastros →
             Produtos.
           </p>
@@ -1071,7 +1212,7 @@ function Step4({
           placeholder='Ex.: "500 g"'
         />
 
-        <details className="rounded-lg border border-neutral-200 bg-neutral-50 p-3">
+        <details className="rounded-lg border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-slate-800">
           <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-neutral-500">
             Lote / fornecedor (opcional)
           </summary>
@@ -1121,12 +1262,19 @@ function Step5({
   return (
     <Card>
       <div className="flex flex-col items-center gap-3">
-        <p className="text-sm font-medium text-neutral-700">Prévia</p>
-        <div className="w-full max-w-full overflow-x-auto">
-          <div className="mx-auto w-fit">
+        <div className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
+          <Check size={16} className="text-emerald-600" />
+          Confira a etiqueta
+        </div>
+        <div className="w-full max-w-full overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-800 dark:bg-slate-800">
+          <div className="mx-auto w-fit rounded-md bg-white shadow-sm ring-1 ring-neutral-200">
             <LabelPreview data={labelData} widthMm={size.w} heightMm={size.h} />
           </div>
         </div>
+        <p className="text-xs text-neutral-400">
+          {size.label} · {quantity}{' '}
+          {quantity === 1 ? 'cópia' : 'cópias'}
+        </p>
         <DirectPrintBlock
           companyId={companyId}
           labelId={labelId}
@@ -1291,9 +1439,9 @@ function DirectPrintBlock({
 
   if (agents.length === 0) {
     return (
-      <div className="w-full rounded border border-dashed border-neutral-300 bg-neutral-50 p-3 text-xs text-neutral-600">
+      <div className="w-full rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-3 text-xs text-neutral-600 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-300">
         Nenhuma impressora térmica cadastrada. Vá em{' '}
-        <Link to="/admin/impressoras" className="font-medium text-emerald-700">
+        <Link to="/admin/impressoras" className="font-medium text-emerald-700 dark:text-emerald-400">
           Cadastros → Impressoras
         </Link>{' '}
         para configurar a impressão direta.
@@ -1302,16 +1450,16 @@ function DirectPrintBlock({
   }
 
   return (
-    <div className="w-full space-y-2 rounded border border-emerald-200 bg-emerald-50 p-3">
+    <div className="w-full space-y-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900 dark:bg-emerald-950">
       <div className="flex items-center justify-between gap-2 text-xs">
-        <span className="font-semibold uppercase text-emerald-800">
+        <span className="font-semibold uppercase text-emerald-800 dark:text-emerald-300">
           Impressão direta
         </span>
         <span
           className={
             relayOnline
-              ? 'inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 font-medium text-emerald-700'
-              : 'inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2 py-0.5 font-medium text-neutral-600'
+              ? 'inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 font-medium text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200'
+              : 'inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2 py-0.5 font-medium text-neutral-600 dark:bg-slate-700 dark:text-neutral-300'
           }
         >
           {relayOnline ? 'Relay online' : 'Relay offline'}
@@ -1340,19 +1488,21 @@ function DirectPrintBlock({
           : `Imprimir direto ${copies > 1 ? `(${copies})` : ''}`}
       </Button>
       {!relayOnline && (
-        <p className="text-xs text-amber-700">
+        <p className="text-xs text-amber-700 dark:text-amber-400">
           O relay desta impressora está offline. Verifique se o PC da cozinha
           está ligado com o relay instalado. (A impressão vai sair assim que
           ele voltar.)
         </p>
       )}
       {noPrinter && (
-        <p className="text-xs text-amber-700">
+        <p className="text-xs text-amber-700 dark:text-amber-400">
           Impressora sem nome do Windows. Vá em Cadastros → Impressoras e
           cadastre.
         </p>
       )}
-      {errorMsg && <p className="text-xs text-red-700">{errorMsg}</p>}
+      {errorMsg && (
+        <p className="text-xs text-red-700 dark:text-red-400">{errorMsg}</p>
+      )}
     </div>
   );
 }
@@ -1408,23 +1558,23 @@ function Step3Batch({
   return (
     <Card>
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-neutral-700">
+        <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
           Produtos do lote
         </h2>
-        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500">
+        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500 dark:bg-slate-800 dark:text-neutral-300">
           {groupName}
         </span>
       </div>
       <button
         onClick={onSwitchToSingle}
-        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-50"
+        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-slate-800"
       >
         <X size={16} />
         Voltar para um produto só
       </button>
 
       {batchItems.length > 0 && (
-        <div className="mb-3 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+        <div className="mb-3 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
           {batchItems.length}{' '}
           {batchItems.length === 1
             ? 'produto selecionado'
@@ -1442,26 +1592,28 @@ function Step3Batch({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar produto"
-          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:text-sm dark:bg-slate-800"
+          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:text-sm dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
         />
       </div>
 
       {products.length === 0 ? (
-        <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+        <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950 dark:text-amber-300">
           Nenhum produto encontrado neste grupo.
         </p>
       ) : (
-        <ul className="divide-y divide-neutral-100">
+        <ul className="flex flex-col gap-1">
           {products.map((p) => {
             const item = itemByProduct.get(p.id);
             const isSelected = Boolean(item);
             const rule = resolveBatchRule(p);
             const hasNoRule = !rule;
             return (
-              <li key={p.id} className="py-2">
+              <li key={p.id} className="py-1">
                 <label
                   className={`flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 ${
-                    isSelected ? 'bg-emerald-50' : 'hover:bg-neutral-50'
+                    isSelected
+                      ? 'bg-emerald-50 dark:bg-emerald-950'
+                      : 'hover:bg-neutral-50 dark:hover:bg-slate-800'
                   }`}
                 >
                   <input
@@ -1472,11 +1624,11 @@ function Step3Batch({
                     className="h-5 w-5 shrink-0 accent-emerald-600 disabled:opacity-50"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-neutral-800">
+                    <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                       {p.name}
                     </p>
                     {hasNoRule ? (
-                      <p className="truncate text-xs text-red-500">
+                      <p className="truncate text-xs text-red-500 dark:text-red-400">
                         Sem regra de validade — cadastre em Produtos
                       </p>
                     ) : (
@@ -1555,7 +1707,7 @@ function Step4Batch({
 }) {
   return (
     <Card>
-      <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+      <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
         Informações compartilhadas
       </h2>
       <p className="mb-3 text-xs text-neutral-500">
@@ -1589,7 +1741,7 @@ function Step4Batch({
           {batchItems.length === 1 ? 'produto' : 'produtos'} ·{' '}
           {batchItems.reduce((s, it) => s + it.quantity, 0)} etiquetas)
         </h3>
-        <ul className="divide-y divide-neutral-100 rounded-lg border border-neutral-200">
+        <ul className="divide-y divide-neutral-100 rounded-lg border border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
           {batchItems.map((it) => {
             const prod = products.find((p) => p.id === it.product_id);
             if (!prod || !manipDate) return null;
@@ -1607,7 +1759,7 @@ function Step4Batch({
                 className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-neutral-800">
+                  <p className="truncate font-medium text-neutral-800 dark:text-neutral-100">
                     {prod.name}
                   </p>
                   <p className="text-xs text-neutral-500">
@@ -1673,12 +1825,12 @@ function Step5Batch({
   return (
     <Card>
       <div className="flex flex-col items-center gap-3">
-        <p className="text-sm font-medium text-neutral-700">
+        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
           Prévia da primeira etiqueta
         </p>
         {firstProd && firstRule && firstExpiry && manipDate && first && (
-          <div className="w-full max-w-full overflow-x-auto">
-            <div className="mx-auto w-fit">
+          <div className="w-full max-w-full overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-800 dark:bg-slate-800">
+            <div className="mx-auto w-fit rounded-md bg-white shadow-sm ring-1 ring-neutral-200">
               <LabelPreview
                 data={{
                   companyName,
@@ -1709,7 +1861,7 @@ function Step5Batch({
             </div>
           </div>
         )}
-        <div className="text-center text-sm text-neutral-600">
+        <div className="text-center text-sm text-neutral-600 dark:text-neutral-300">
           Vai imprimir <strong>{totalLabels}</strong>{' '}
           {totalLabels === 1 ? 'etiqueta' : 'etiquetas'} de{' '}
           <strong>{batchItems.length}</strong>{' '}
