@@ -7,7 +7,7 @@ import {
 } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
-import type { Profile } from '@/lib/types';
+import type { OrgSubscription, Profile } from '@/lib/types';
 
 interface AuthState {
   session: Session | null;
@@ -23,7 +23,14 @@ interface AuthState {
   isMaster: boolean;
   isPlatformAdmin: boolean;
   isNutritionist: boolean;
+  /** Assinatura da org do usuário (null para platform_admin ou até carregar). */
+  subscription: OrgSubscription | null;
+  /** true se o módulo está liberado no plano (platform_admin sempre true). */
+  hasModule: (key: string) => boolean;
+  /** false só quando a assinatura da org está suspensa. */
+  subscriptionActive: boolean;
   refreshProfile: () => Promise<void>;
+  refreshSubscription: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -34,6 +41,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(false);
+  const [subscription, setSubscription] = useState<OrgSubscription | null>(null);
+
+  async function loadSubscription(loadedProfile: Profile | null) {
+    // platform_admin não pertence a uma org-cliente — nunca é gateado.
+    if (
+      !loadedProfile ||
+      loadedProfile.role === 'platform_admin' ||
+      loadedProfile.role === 'master' ||
+      !loadedProfile.organization_id
+    ) {
+      setSubscription(null);
+      return;
+    }
+    const { data, error } = await supabase.rpc('my_subscription');
+    if (error) {
+      // Fail-open: erro de rede não pode trancar a cozinha fora do sistema.
+      console.error('Erro ao carregar assinatura:', error.message);
+      setSubscription(null);
+      return;
+    }
+    const row = (data as OrgSubscription[] | null)?.[0] ?? null;
+    setSubscription(row);
+  }
 
   async function loadProfile(userId: string) {
     setProfileLoading(true);
@@ -46,9 +76,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) {
       console.error('Erro ao carregar perfil:', error.message);
       setProfile(null);
+      setSubscription(null);
       return;
     }
-    setProfile((data as Profile | null) ?? null);
+    const loaded = (data as Profile | null) ?? null;
+    setProfile(loaded);
+    await loadSubscription(loaded);
   }
 
   useEffect(() => {
@@ -86,6 +119,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           void loadProfile(newSession.user.id);
         } else {
           setProfile(null);
+          setSubscription(null);
         }
       },
     );
@@ -105,8 +139,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isPlatformAdmin:
       profile?.role === 'master' || profile?.role === 'platform_admin',
     isNutritionist: profile?.role === 'nutritionist',
+    subscription,
+    hasModule: (key: string) => {
+      // platform_admin/master: tudo liberado.
+      if (profile?.role === 'platform_admin' || profile?.role === 'master')
+        return true;
+      // Sem assinatura carregada (loading / fail-open): não bloqueia.
+      if (!subscription) return true;
+      return subscription.allowed_modules.includes(key);
+    },
+    subscriptionActive: !subscription || subscription.status === 'active',
     refreshProfile: async () => {
       if (session?.user) await loadProfile(session.user.id);
+    },
+    refreshSubscription: async () => {
+      await loadSubscription(profile);
     },
     signOut: async () => {
       await supabase.auth.signOut();

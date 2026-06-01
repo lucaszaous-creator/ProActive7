@@ -243,7 +243,16 @@ Status atualizado:
 
 1. ✅ **Dashboard de SaaS** — `/platform/dashboard` (3 abas)
 2. ✅ **Health-check por organização** — aba "Saúde das orgs"
-3. ⏳ **Painel de cobrança** — pendente, requer escolha de gateway (Asaas/Stripe)
+3. ✅ **Controle de assinatura (interno, sem gateway)** — migration `0077`:
+   tabela `plans` (key, company_limit, allowed_modules[], price_cents) +
+   `plan_key`/`trial_ends_at`/`plan_renews_at` em `organizations` + guard
+   `guard_organizations_update()` (nutri não altera plano/status) + RPC
+   `my_subscription()`. Front: `/platform/planos` (CRUD), controles na
+   `OrganizationDetailPage`, `/admin/assinatura` (autosserviço da nutri),
+   gating de módulos via `src/lib/modules.ts` + `SubscriptionGate` +
+   `AuthContext.hasModule/subscriptionActive`. Cobrança real (gateway BR)
+   fica para quando houver caixa. ⏳ falta enforcement automático do limite
+   de empresas (hoje só exibe "acima do limite").
 4. ✅ **Impersonate** — Edge `admin-impersonate` + botão "Entrar como" na lista de usuários da org
 5. ✅ **Push manual para uma org** — Edge `admin-push-org` + botão "Notificar" na OrganizationDetailPage
 6. ✅ **Templates globais** — `/platform/biblioteca` para publicar; botão "Biblioteca" em `ChecklistsPage` e `AuditsPage` para clonar

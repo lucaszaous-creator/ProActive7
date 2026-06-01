@@ -45,6 +45,8 @@ const en = {
     platformDashboard: 'SaaS Dashboard',
     announcements: 'Announcements',
     library: 'Global library',
+    plans: 'Plans',
+    subscription: 'My subscription',
   },
   layout: {
     master: 'Master user',

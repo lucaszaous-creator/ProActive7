@@ -14,6 +14,9 @@ export interface Organization {
   contact_email: string | null;
   contact_phone: string | null;
   owner_user_id: string | null;
+  plan_key: string | null;
+  trial_ends_at: string | null;
+  plan_renews_at: string | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
@@ -66,6 +69,31 @@ export interface Profile {
   phone: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface Plan {
+  key: string;
+  name: string;
+  company_limit: number | null;
+  allowed_modules: string[];
+  price_cents: number;
+  active: boolean;
+  sort_order: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface OrgSubscription {
+  organization_id: string;
+  organization_name: string;
+  status: 'active' | 'suspended';
+  plan_key: string | null;
+  plan_name: string | null;
+  allowed_modules: string[];
+  company_limit: number | null;
+  company_count: number;
+  trial_ends_at: string | null;
+  plan_renews_at: string | null;
 }
 
 export interface Product {

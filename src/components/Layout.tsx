@@ -38,10 +38,13 @@ import {
   Stethoscope,
   Settings,
   Gauge,
+  CreditCard,
   LucideIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
+import { moduleForPath } from '@/lib/modules';
+import { SubscriptionGate } from './SubscriptionGate';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { PwaInstallButton } from './PwaInstallButton';
 import { PushToggle } from './PushToggle';
@@ -288,6 +291,18 @@ const ITEM = {
     labelKey: 'nav.announcements',
     icon: Megaphone,
   } as NavItemDef,
+  planos: {
+    kind: 'item',
+    to: '/platform/planos',
+    labelKey: 'nav.plans',
+    icon: CreditCard,
+  } as NavItemDef,
+  assinatura: {
+    kind: 'item',
+    to: '/admin/assinatura',
+    labelKey: 'nav.subscription',
+    icon: CreditCard,
+  } as NavItemDef,
 };
 
 const NAV_PROPERTY: NavNode[] = [
@@ -368,7 +383,13 @@ const NAV_NUTRITIONIST: NavNode[] = [
     labelKey: 'nav.administracao',
     icon: Settings,
     defaultOpen: false,
-    children: [ITEM.empresas, ITEM.usuarios, ITEM.impressoras, ITEM.hardware],
+    children: [
+      ITEM.empresas,
+      ITEM.usuarios,
+      ITEM.assinatura,
+      ITEM.impressoras,
+      ITEM.hardware,
+    ],
   },
 ];
 
@@ -382,6 +403,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
       ITEM.platformControl,
       ITEM.platformDash,
       ITEM.orgs,
+      ITEM.planos,
       ITEM.biblioteca,
       ITEM.comunicados,
       ITEM.trilha,
@@ -530,11 +552,35 @@ function NavGroup({
   );
 }
 
+// Remove do menu os itens cujo módulo não está liberado no plano da org.
+// (hasModule já devolve true para platform_admin, então é no-op pra ele.)
+function filterTreeByModules(
+  tree: NavNode[],
+  hasModule: (key: string) => boolean,
+): NavNode[] {
+  const keep = (item: NavItemDef) => {
+    const mod = moduleForPath(item.to);
+    return !mod || hasModule(mod);
+  };
+  return tree
+    .map((node) =>
+      node.kind === 'item'
+        ? node
+        : { ...node, children: node.children.filter(keep) },
+    )
+    .filter((node) =>
+      node.kind === 'item' ? keep(node) : node.children.length > 0,
+    );
+}
+
 function useActiveTree(): NavNode[] {
-  const { isPlatformAdmin, isNutritionist } = useAuth();
-  if (isPlatformAdmin) return NAV_PLATFORM_ADMIN;
-  if (isNutritionist) return NAV_NUTRITIONIST;
-  return NAV_PROPERTY;
+  const { isPlatformAdmin, isNutritionist, hasModule } = useAuth();
+  const base = isPlatformAdmin
+    ? NAV_PLATFORM_ADMIN
+    : isNutritionist
+      ? NAV_NUTRITIONIST
+      : NAV_PROPERTY;
+  return filterTreeByModules(base, hasModule);
 }
 
 export function Layout() {
@@ -646,7 +692,9 @@ export function Layout() {
             (modo invisivel). O navegador so enfileira em print_jobs. */}
 
         <main className="w-full min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6">
-          <Outlet />
+          <SubscriptionGate>
+            <Outlet />
+          </SubscriptionGate>
         </main>
       </div>
     </div>

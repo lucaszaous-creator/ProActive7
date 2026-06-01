@@ -45,6 +45,8 @@ const ptBR = {
     platformDashboard: 'Dashboard SaaS',
     announcements: 'Comunicados',
     library: 'Biblioteca global',
+    plans: 'Planos',
+    subscription: 'Minha assinatura',
   },
   layout: {
     master: 'Usuário master',

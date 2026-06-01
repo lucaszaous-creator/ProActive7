@@ -3,10 +3,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { ArrowLeft, LogIn, Send, Download } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import type { Organization, Company } from '@/lib/types';
+import type { Organization, Company, Plan } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
 
@@ -27,6 +28,8 @@ export function OrganizationDetailPage() {
   const [org, setOrg] = useState<Organization | null>(null);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [users, setUsers] = useState<OrgProfile[]>([]);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [savingPlan, setSavingPlan] = useState(false);
   const [loading, setLoading] = useState(true);
   const [togglingStatus, setTogglingStatus] = useState(false);
   const [impersonating, setImpersonating] = useState<string | null>(null);
@@ -111,7 +114,7 @@ export function OrganizationDetailPage() {
 
     async function fetchAll() {
       setLoading(true);
-      const [orgRes, companiesRes, usersRes] = await Promise.all([
+      const [orgRes, companiesRes, usersRes, plansRes] = await Promise.all([
         supabase.from('organizations').select('*').eq('id', id!).maybeSingle(),
         supabase
           .from('companies')
@@ -126,6 +129,7 @@ export function OrganizationDetailPage() {
           )
           .eq('organization_id', id!)
           .order('full_name'),
+        supabase.from('plans').select('*').order('sort_order'),
       ]);
       setLoading(false);
 
@@ -134,6 +138,7 @@ export function OrganizationDetailPage() {
         return;
       }
       setOrg((orgRes.data as Organization | null) ?? null);
+      setPlans((plansRes.data as Plan[] | null) ?? []);
 
       if (companiesRes.error) {
         toast.error('Erro ao carregar empresas: ' + companiesRes.error.message);
@@ -170,6 +175,22 @@ export function OrganizationDetailPage() {
         ? 'Organização reativada.'
         : 'Organização suspensa.',
     );
+  }
+
+  async function handleChangePlan(planKey: string) {
+    if (!org) return;
+    setSavingPlan(true);
+    const { error } = await supabase
+      .from('organizations')
+      .update({ plan_key: planKey || null })
+      .eq('id', org.id);
+    setSavingPlan(false);
+    if (error) {
+      toast.error('Erro ao atualizar plano: ' + error.message);
+      return;
+    }
+    setOrg({ ...org, plan_key: planKey || null });
+    toast.success('Plano atualizado.');
   }
 
   if (loading) {
@@ -288,6 +309,57 @@ export function OrganizationDetailPage() {
           </div>
         </dl>
       </Card>
+
+      {/* Assinatura */}
+      {(() => {
+        const currentPlan = plans.find((p) => p.key === org.plan_key) ?? null;
+        const activeCompanies = companies.filter((c) => c.active).length;
+        const limit = currentPlan?.company_limit ?? null;
+        const overLimit = limit !== null && activeCompanies > limit;
+        return (
+          <Card>
+            <h2 className="mb-3 text-base font-semibold text-neutral-800 dark:text-neutral-100">
+              Assinatura
+            </h2>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <Select
+                  label="Plano"
+                  value={org.plan_key ?? ''}
+                  onChange={(e) => void handleChangePlan(e.target.value)}
+                  disabled={savingPlan}
+                >
+                  <option value="">Sem plano</option>
+                  {plans.map((p) => (
+                    <option key={p.key} value={p.key}>
+                      {p.name}
+                    </option>
+                  ))}
+                </Select>
+                {currentPlan && (
+                  <p className="mt-1 text-xs text-neutral-500">
+                    {currentPlan.allowed_modules.length} módulos liberados.
+                  </p>
+                )}
+              </div>
+              <div className="flex flex-col justify-center rounded-lg bg-neutral-50 px-3 py-2 dark:bg-slate-800">
+                <p className="text-xs font-medium uppercase text-neutral-500">
+                  Empresas ativas
+                </p>
+                <p className="text-sm text-neutral-800 dark:text-neutral-100">
+                  {activeCompanies}
+                  {limit !== null ? ` / ${limit}` : ' / ilimitado'}
+                  {overLimit && (
+                    <span className="ml-2 text-xs font-medium text-amber-600 dark:text-amber-400">
+                      acima do limite
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+          </Card>
+        );
+      })()}
 
       {/* Companies */}
       <div>

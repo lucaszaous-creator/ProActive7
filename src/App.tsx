@@ -225,6 +225,16 @@ const OrganizationDetailPage = lazy(() =>
     default: m.OrganizationDetailPage,
   })),
 );
+const PlatformPlansPage = lazy(() =>
+  import('./pages/platform/PlatformPlansPage').then((m) => ({
+    default: m.PlatformPlansPage,
+  })),
+);
+const SubscriptionPage = lazy(() =>
+  import('./pages/SubscriptionPage').then((m) => ({
+    default: m.SubscriptionPage,
+  })),
+);
 const PlatformControlPage = lazy(() =>
   import('./pages/platform/PlatformControlPage').then((m) => ({
     default: m.PlatformControlPage,
@@ -303,6 +313,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/admin/empresas" element={<CompaniesPage />} />
             <Route path="/admin/usuarios" element={<UsersPage />} />
+            <Route path="/admin/assinatura" element={<SubscriptionPage />} />
             <Route path="/admin/hardware" element={<HardwarePage />} />
           </Route>
         </Route>
@@ -342,6 +353,7 @@ export default function App() {
               path="/platform/organizacoes/:id"
               element={<OrganizationDetailPage />}
             />
+            <Route path="/platform/planos" element={<PlatformPlansPage />} />
           </Route>
         </Route>
 
