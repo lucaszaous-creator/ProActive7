@@ -158,6 +158,52 @@ adicione ao roadmap "para quando houver caixa".
       e-mail) — reusar `send-expiry-notifications` como template.
 - [ ] **Documentar pares de FK ambíguos** no README do `supabase/`.
 
+### Features propostas — review pré-lançamento (2026-06-01)
+
+Priorizadas por retorno × custo (tudo abaixo é **custo zero**, free tier,
+salvo onde indicado). Ordem de execução sugerida:
+
+1. [ ] **Relatório de conformidade em PDF (assinável pela RT)** — entregável
+   mensal por empresa: score, NCs abertas/fechadas, temperaturas fora de
+   faixa, ASOs vencendo, com espaço para assinatura da nutri. CSS print ou
+   `jspdf`. É o documento que justifica o honorário da RT perante ANVISA /
+   cliente. **Maior prioridade pós-lançamento.**
+2. [ ] **Histórico do compliance score (série temporal)** — tabela
+   `compliance_snapshots` + cron (template `send-expiry-notifications`).
+   Mostra a curva real subindo/caindo (§3 "não esconder score ruim").
+3. [ ] **Lembrete de ASO vencendo** — subir de "curto prazo" para
+   prioridade: ASO vencido = NC imediata + risco legal pro cliente. Web
+   Push (já existe) + e-mail.
+4. [ ] **Alerta de churn/inatividade para o admin** — "orgs sem etiqueta há
+   14d" / "nutri sem login há 30d". Reusa `feature_events` + `last_login_at`
+   da view de métricas. Retenção mais barata pra SaaS de 1 pessoa.
+5. [ ] **Wizard de onboarding na 1ª empresa** — puxa catálogo seed +
+   templates globais (itens #6/#7 já prontos) automaticamente. Evita
+   produto vazio = churn no dia 1.
+
+**NÃO construir no MVP** (prematuro): cobrança/planos, white-label,
+marketplace de templates, app do fiscal, IA de causa-raiz. Validar uso e
+renovação antes.
+
+**Vale pagar quando houver caixa:** notificação por **WhatsApp** (a cozinha
+vive no Zap; taxa de leitura > push). WhatsApp Business API é pago →
+roadmap "para quando houver caixa", fora do MVP.
+
+### Pendências do review de lançamento (bloqueante/alto)
+
+- [ ] **Impersonate sem consentimento + magic link reutilizável** — esconder
+   botão "Entrar como" até implementar trava (coluna `allow_impersonation`
+   na org + checagem server-side + sessão curta + visibilidade pra nutri no
+   `audit_log`). Viola CLAUDE.md §2.1.
+- [ ] **`admin-export-org` não exporta arquivos do Storage** (ASO, fotos,
+   branding) — tooltip "exporta tudo" é enganoso. Incluir arquivos ou
+   corrigir o texto.
+- [ ] **`audit_log` ausente em `profiles`** — adicionar trigger `log_changes()`
+   (mudança de `role`/`organization_id` é a mais sensível em multi-tenant).
+- [ ] **`fetchFeatureUsage` agrega no cliente sem `.limit`** — contagem fica
+   silenciosamente errada acima de 1000 eventos (PostgREST corta). Virar RPC/
+   view SQL.
+
 ### Médio prazo (1–3 meses)
 
 - [ ] **Cobrança / planos** (Asaas ou Stripe BR). Plano por nº de
