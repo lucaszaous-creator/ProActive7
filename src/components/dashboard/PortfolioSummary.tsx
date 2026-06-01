@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 import {
   AlertOctagon,
   Bug,
@@ -7,6 +8,7 @@ import {
   CheckCircle2,
   ClipboardCheck,
   FileText,
+  FileDown,
   HardHat,
   Search,
   Thermometer,
@@ -15,6 +17,8 @@ import {
 import { formatDate } from '@/lib/dates';
 import type { EnrichedCompany } from '@/lib/dashboardQueries';
 import type { ScoreTier } from '@/lib/complianceScore';
+import { generateComplianceReportPdf } from '@/lib/complianceReport';
+import { useAuth } from '@/context/AuthContext';
 import { Card } from '@/components/ui/Card';
 import { SkeletonCard } from './Skeleton';
 
@@ -162,6 +166,8 @@ export function PortfolioSummary({
 }
 
 function CompanyCard({ r }: { r: EnrichedCompany }) {
+  const { profile } = useAuth();
+  const [generating, setGenerating] = useState(false);
   const tier = r.tier;
   const bgClass = tier
     ? TIER_BG[tier]
@@ -169,6 +175,23 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
   const textClass = tier
     ? TIER_TEXT[tier]
     : 'text-neutral-500 dark:text-neutral-400';
+
+  async function handleReport() {
+    setGenerating(true);
+    try {
+      await generateComplianceReportPdf(r, {
+        name: profile?.full_name,
+        crn: profile?.crn,
+        email: profile?.email,
+        phone: profile?.phone,
+      });
+    } catch (e) {
+      toast.error('Erro ao gerar relatório: ' + (e as Error).message);
+    } finally {
+      setGenerating(false);
+    }
+  }
+
   return (
     <div className={`rounded-xl border p-3 sm:p-5 ${bgClass}`}>
       {/* Linha 1 mobile: titulo + score na mesma linha. Desktop volta a layout horizontal. */}
@@ -187,6 +210,17 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
               score
             </p>
           </div>
+          <button
+            type="button"
+            onClick={handleReport}
+            disabled={generating}
+            aria-label="Baixar relatório de conformidade (PDF)"
+            title="Relatório de conformidade (PDF) para assinatura da RT"
+            className="rounded-lg p-1.5 text-neutral-600 hover:bg-white/60 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-black/30 sm:p-2"
+          >
+            <FileDown size={16} className="sm:hidden" />
+            <FileDown size={18} className="hidden sm:inline" />
+          </button>
           <Link
             to={`/visitas?company=${r.company_id}`}
             aria-label="Ver detalhes"

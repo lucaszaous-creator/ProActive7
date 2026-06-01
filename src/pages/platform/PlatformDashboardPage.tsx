@@ -23,7 +23,45 @@ import {
   type FeatureUsageRow,
 } from '@/lib/platformMetrics';
 
-type Tab = 'overview' | 'health' | 'usage';
+type Tab = 'overview' | 'health' | 'usage' | 'churn';
+
+const DAY_MS = 1000 * 60 * 60 * 24;
+
+interface ChurnRow {
+  org: OrgMetricsRow;
+  daysSinceLogin: number | null; // null = nunca logou
+  reasons: string[];
+  risk: number; // maior = mais crítico, pra ordenar
+}
+
+// Orgs em risco de churn: sem login há >14d OU sem nenhuma etiqueta em 30d.
+// Reusa platform_org_metrics (last_login_at + labels_30d) — sem migration.
+function computeChurn(orgs: OrgMetricsRow[]): ChurnRow[] {
+  const now = Date.now();
+  const out: ChurnRow[] = [];
+  for (const o of orgs) {
+    if (o.status === 'suspended') continue;
+    const days =
+      o.last_login_at == null
+        ? null
+        : Math.floor((now - new Date(o.last_login_at).getTime()) / DAY_MS);
+    const reasons: string[] = [];
+    let risk = 0;
+    if (days == null) {
+      reasons.push('Nunca fez login');
+      risk += 100;
+    } else if (days > 14) {
+      reasons.push(`Sem login há ${days} dias`);
+      risk += days;
+    }
+    if (o.labels_30d === 0) {
+      reasons.push('Nenhuma etiqueta em 30 dias');
+      risk += 30;
+    }
+    if (reasons.length > 0) out.push({ org: o, daysSinceLogin: days, reasons, risk });
+  }
+  return out.sort((a, b) => b.risk - a.risk);
+}
 
 function formatRelative(iso: string | null): string {
   if (!iso) return 'nunca';
@@ -152,6 +190,7 @@ export function PlatformDashboardPage() {
       }),
     [orgs],
   );
+  const churnRows = useMemo(() => computeChurn(orgs), [orgs]);
 
   if (loading) {
     return (
@@ -184,6 +223,9 @@ export function PlatformDashboardPage() {
           </TabButton>
           <TabButton active={tab === 'usage'} onClick={() => setTab('usage')}>
             Uso de features
+          </TabButton>
+          <TabButton active={tab === 'churn'} onClick={() => setTab('churn')}>
+            Risco de churn
           </TabButton>
         </div>
       </div>
@@ -409,6 +451,73 @@ export function PlatformDashboardPage() {
             </code>{' '}
             de <code>src/lib/platformMetrics.ts</code>.
           </p>
+        </Card>
+      ) : null}
+
+      {tab === 'churn' ? (
+        <Card>
+          <h2 className="mb-1 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+            Risco de churn
+          </h2>
+          <p className="mb-3 text-xs text-neutral-500">
+            Organizações sem login há mais de 14 dias ou sem nenhuma etiqueta
+            nos últimos 30 dias. As mais críticas aparecem primeiro.
+          </p>
+          {churnRows.length === 0 ? (
+            <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+              Nenhuma organização em risco no momento.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:border-neutral-700">
+                    <th className="py-2">Organização</th>
+                    <th className="py-2">Sinais de risco</th>
+                    <th className="py-2 text-right">Etiquetas 30d</th>
+                    <th className="py-2 text-right">Último login</th>
+                    <th className="py-2"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {churnRows.map(({ org, reasons }) => (
+                    <tr
+                      key={org.organization_id}
+                      className="border-b border-neutral-100 dark:border-neutral-800"
+                    >
+                      <td className="py-2 font-medium text-neutral-800 dark:text-neutral-100">
+                        {org.organization_name}
+                      </td>
+                      <td className="py-2">
+                        <div className="flex flex-wrap gap-1">
+                          {reasons.map((rsn) => (
+                            <span
+                              key={rsn}
+                              className="rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                            >
+                              {rsn}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+                      <td className="py-2 text-right">{org.labels_30d}</td>
+                      <td className="py-2 text-right text-neutral-500">
+                        {formatRelative(org.last_login_at)}
+                      </td>
+                      <td className="py-2 text-right">
+                        <Link
+                          to={`/platform/organizacoes/${org.organization_id}`}
+                          className="text-xs font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+                        >
+                          Abrir
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </Card>
       ) : null}
     </div>
