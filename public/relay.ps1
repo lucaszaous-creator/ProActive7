@@ -1,11 +1,11 @@
-# ProActive7 - Print Relay (modo invisivel) v2
+# ProActive7 - Print Relay (modo invisivel) v4
 # Roda como Tarefa Agendada do Windows ao login do usuario, em background.
 # - Polla a fila do Supabase e imprime via Win32 API (winspool.drv)
 # - Auto-update: baixa nova versao do relay.ps1 quando o servidor avisa
 # - Logs centralizados: erros vao pro Supabase (relay_logs) + arquivo local
 # Log local: %APPDATA%\ProActive7\relay.log
 
-$RELAY_VERSION = '3'
+$RELAY_VERSION = '4'
 
 $ErrorActionPreference = 'Continue'
 $ProgressPreference = 'SilentlyContinue'
@@ -80,6 +80,21 @@ public class RawPrint {
     }
 }
 "@
+
+# Envia para a impressora com retry em falha TRANSITORIA (sem papel, USB
+# piscou, spooler momentaneamente ocupado). Tenta ate $maxTries com intervalo
+# crescente (2s, 4s) antes de desistir. So marca erro se TODAS falharem.
+function Send-WithRetry($printerName, $bytes, $maxTries = 3) {
+    for ($try = 1; $try -le $maxTries; $try++) {
+        if ([RawPrint]::Send($printerName, $bytes)) { return $true }
+        if ($try -lt $maxTries) {
+            $wait = $try * 2
+            Write-RelayLog "Falha ao imprimir em '$printerName' (tentativa $try/$maxTries). Verifique papel/conexao. Nova tentativa em ${wait}s..."
+            Start-Sleep -Seconds $wait
+        }
+    }
+    return $false
+}
 
 function Invoke-Agent($payload) {
     $payload.token = $token
@@ -194,13 +209,13 @@ while ($true) {
                         $copies = if ($job.copies) { [int]$job.copies } else { 1 }
                         $ok = $true
                         for ($i = 0; $i -lt $copies; $i++) {
-                            if (-not [RawPrint]::Send($printerName, $bytes)) { $ok = $false; break }
+                            if (-not (Send-WithRetry $printerName $bytes)) { $ok = $false; break }
                         }
                         if ($ok) {
                             Invoke-Agent @{ action='ack'; job_id=$job.id; status='done' } | Out-Null
                             Write-RelayLog "OK job $($job.id)"
                         } else {
-                            $err = "Falha no WritePrinter (impressora '$printerName' ligada/conectada?)"
+                            $err = "Falha ao imprimir apos 3 tentativas — verifique papel e conexao da impressora '$printerName'"
                             Invoke-Agent @{ action='ack'; job_id=$job.id; status='error'; error=$err } | Out-Null
                             Write-RelayLog "ERRO job $($job.id): $err"
                             Send-RemoteLog 'error' $err
