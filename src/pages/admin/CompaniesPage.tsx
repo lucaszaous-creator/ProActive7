@@ -29,7 +29,7 @@ interface CompanyRow extends Company {
 }
 
 export function CompaniesPage() {
-  const { profile } = useAuth();
+  const { profile, subscription, isPlatformAdmin } = useAuth();
   const [companies, setCompanies] = useState<CompanyRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -69,6 +69,14 @@ export function CompaniesPage() {
       return haystack.includes(q);
     });
   }, [companies, search]);
+
+  const activeCompanyCount = useMemo(
+    () => companies.filter((c) => c.active).length,
+    [companies],
+  );
+  const companyLimit = subscription?.company_limit ?? null;
+  const atLimit =
+    !isPlatformAdmin && companyLimit != null && activeCompanyCount >= companyLimit;
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -238,11 +246,39 @@ export function CompaniesPage() {
             Propriedades / clientes que usam o sistema.
           </p>
         </div>
-        <Button onClick={openCreate}>
+        <Button
+          onClick={openCreate}
+          disabled={
+            !isPlatformAdmin &&
+            subscription?.company_limit != null &&
+            activeCompanyCount >= subscription.company_limit
+          }
+        >
           <Plus size={18} />
           Nova empresa
         </Button>
       </div>
+
+      {!isPlatformAdmin && companyLimit != null ? (
+        <div
+          className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm ${
+            atLimit
+              ? 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200'
+              : 'border-neutral-200 bg-neutral-50 text-neutral-600 dark:border-neutral-800 dark:bg-slate-800 dark:text-neutral-300'
+          }`}
+        >
+          <span>
+            Empresas do plano: <strong>{activeCompanyCount}</strong> /{' '}
+            {companyLimit}
+          </span>
+          {atLimit ? (
+            <span className="text-xs">
+              Limite atingido — faça upgrade em Minha assinatura para adicionar
+              mais.
+            </span>
+          ) : null}
+        </div>
+      ) : null}
 
       {loading ? (
         <div className="flex justify-center py-16">

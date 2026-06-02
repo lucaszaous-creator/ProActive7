@@ -73,41 +73,22 @@ export interface FeatureUsageRow {
 }
 
 export async function fetchFeatureUsage(): Promise<FeatureUsageRow[]> {
-  const since = new Date();
-  since.setDate(since.getDate() - 30);
-  const { data, error } = await supabase
-    .from('feature_events')
-    .select('feature_key, user_id, organization_id')
-    .gte('occurred_at', since.toISOString());
+  // Agregação feita no SQL (RPC). Antes era no cliente sem .limit, e o
+  // PostgREST cortava em 1000 linhas — a contagem ficava subnotificada.
+  const { data, error } = await supabase.rpc('feature_usage_30d');
   if (error) throw error;
   const rows = (data ?? []) as Array<{
     feature_key: string;
-    user_id: string | null;
-    organization_id: string | null;
+    uses_30d: number | string;
+    unique_users: number | string;
+    unique_orgs: number | string;
   }>;
-  const map = new Map<
-    string,
-    { uses: number; users: Set<string>; orgs: Set<string> }
-  >();
-  for (const r of rows) {
-    const m = map.get(r.feature_key) ?? {
-      uses: 0,
-      users: new Set(),
-      orgs: new Set(),
-    };
-    m.uses += 1;
-    if (r.user_id) m.users.add(r.user_id);
-    if (r.organization_id) m.orgs.add(r.organization_id);
-    map.set(r.feature_key, m);
-  }
-  return Array.from(map.entries())
-    .map(([feature_key, m]) => ({
-      feature_key,
-      uses_30d: m.uses,
-      unique_users: m.users.size,
-      unique_orgs: m.orgs.size,
-    }))
-    .sort((a, b) => b.uses_30d - a.uses_30d);
+  return rows.map((r) => ({
+    feature_key: r.feature_key,
+    uses_30d: Number(r.uses_30d),
+    unique_users: Number(r.unique_users),
+    unique_orgs: Number(r.unique_orgs),
+  }));
 }
 
 export async function logFeatureEvent(featureKey: string): Promise<void> {
