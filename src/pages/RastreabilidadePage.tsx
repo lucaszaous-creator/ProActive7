@@ -111,7 +111,9 @@ export function RastreabilidadePage() {
   if (!companyId) {
     return (
       <Card>
-        <p className="text-sm text-neutral-600">Selecione uma empresa primeiro.</p>
+        <p className="text-sm text-neutral-600">
+          Selecione uma empresa primeiro.
+        </p>
       </Card>
     );
   }
@@ -123,8 +125,8 @@ export function RastreabilidadePage() {
           Rastreabilidade
         </h1>
         <p className="text-sm text-neutral-500">
-          {companyName} — recall em 1 clique. Digite o lote pra ver tudo que
-          o envolve.
+          {companyName} — recall em 1 clique. Digite o lote pra ver tudo que o
+          envolve.
         </p>
       </header>
 
@@ -158,7 +160,11 @@ export function RastreabilidadePage() {
               <Stat label="Recebimentos" value={summary.recTotal} />
               <Stat label="Etiquetas (total)" value={summary.labelsTotal} />
               <Stat label="Ativas" value={summary.active} tone="emerald" />
-              <Stat label="Consumidas" value={summary.consumed} tone="neutral" />
+              <Stat
+                label="Consumidas"
+                value={summary.consumed}
+                tone="neutral"
+              />
               <Stat label="Vencidas" value={summary.expired} tone="red" />
             </div>
             {summary.labelsTotal === 0 && summary.recTotal === 0 && (
@@ -192,7 +198,9 @@ export function RastreabilidadePage() {
                             ? formatDateTime(new Date(r.receiving.received_at))
                             : '—'}
                         </td>
-                        <td className="px-2 py-1.5">{r.product?.name ?? '—'}</td>
+                        <td className="px-2 py-1.5">
+                          {r.product?.name ?? '—'}
+                        </td>
                         <td className="px-2 py-1.5">
                           {r.receiving?.supplier?.name ?? '—'}
                         </td>
@@ -229,14 +237,15 @@ export function RastreabilidadePage() {
                       const now = Date.now();
                       const isConsumed = !!l.consumed_at;
                       const isExpired =
-                        !isConsumed &&
-                        new Date(l.expiry_at).getTime() < now;
+                        !isConsumed && new Date(l.expiry_at).getTime() < now;
                       return (
                         <tr key={l.id} className="border-b border-neutral-100">
                           <td className="px-2 py-1.5">
                             {formatDateTime(new Date(l.printed_at))}
                           </td>
-                          <td className="px-2 py-1.5">{l.product_name_snapshot}</td>
+                          <td className="px-2 py-1.5">
+                            {l.product_name_snapshot}
+                          </td>
                           <td className="px-2 py-1.5">
                             {formatDateTime(new Date(l.manipulation_at))}
                           </td>
@@ -291,7 +300,9 @@ function Stat({
   return (
     <div className={`rounded-lg p-3 text-center ${colors}`}>
       <div className="text-2xl font-bold">{value}</div>
-      <div className="text-[11px] font-medium uppercase opacity-80">{label}</div>
+      <div className="text-[11px] font-medium uppercase opacity-80">
+        {label}
+      </div>
     </div>
   );
 }

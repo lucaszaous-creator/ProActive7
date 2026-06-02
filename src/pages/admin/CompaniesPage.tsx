@@ -76,7 +76,9 @@ export function CompaniesPage() {
   );
   const companyLimit = subscription?.company_limit ?? null;
   const atLimit =
-    !isPlatformAdmin && companyLimit != null && activeCompanyCount >= companyLimit;
+    !isPlatformAdmin &&
+    companyLimit != null &&
+    activeCompanyCount >= companyLimit;
 
   const load = useCallback(async () => {
     setLoading(true);

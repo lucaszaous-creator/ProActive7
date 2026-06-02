@@ -133,7 +133,9 @@ export function PhotosPage() {
       .remove([deleting.storage_path]);
     if (storageErr) {
       console.warn('Falha ao remover arquivo do storage:', storageErr.message);
-      toast.warning('Registro excluído, mas o arquivo pode ter ficado no storage.');
+      toast.warning(
+        'Registro excluído, mas o arquivo pode ter ficado no storage.',
+      );
     }
     setDeleteBusy(false);
     toast.success('Foto excluída.');

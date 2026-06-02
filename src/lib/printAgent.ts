@@ -72,7 +72,9 @@ export interface PrintJob {
 }
 
 /** Online se reportou heartbeat nos últimos 60s. */
-export function isAgentOnline(agent: Pick<PrintAgent, 'last_seen_at'>): boolean {
+export function isAgentOnline(
+  agent: Pick<PrintAgent, 'last_seen_at'>,
+): boolean {
   if (!agent.last_seen_at) return false;
   const last = new Date(agent.last_seen_at).getTime();
   return Date.now() - last < 60_000;

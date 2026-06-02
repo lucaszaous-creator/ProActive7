@@ -58,7 +58,8 @@ function computeChurn(orgs: OrgMetricsRow[]): ChurnRow[] {
       reasons.push('Nenhuma etiqueta em 30 dias');
       risk += 30;
     }
-    if (reasons.length > 0) out.push({ org: o, daysSinceLogin: days, reasons, risk });
+    if (reasons.length > 0)
+      out.push({ org: o, daysSinceLogin: days, reasons, risk });
   }
   return out.sort((a, b) => b.risk - a.risk);
 }

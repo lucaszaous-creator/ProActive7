@@ -54,7 +54,8 @@ function toReportData(rows: ReportRow[]): ReportData {
       byCondition.push({ label: key, value: r.value });
     }
   }
-  const sort = (a: { value: number }, b: { value: number }) => b.value - a.value;
+  const sort = (a: { value: number }, b: { value: number }) =>
+    b.value - a.value;
   byCategory.sort(sort);
   byUser.sort(sort);
   byCondition.sort(sort);

@@ -12,7 +12,12 @@ import { Printer } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import { usePageTitle, BRAND_NAME, BRAND_TAGLINE, SITE_URL } from '@/lib/usePageTitle';
+import {
+  usePageTitle,
+  BRAND_NAME,
+  BRAND_TAGLINE,
+  SITE_URL,
+} from '@/lib/usePageTitle';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDate, formatDateTime } from '@/lib/dates';
 import { calculateComplianceScore } from '@/lib/complianceScore';
@@ -157,7 +162,9 @@ export function DossiePage() {
             .limit(50),
           supabase
             .from('audits')
-            .select('id, scheduled_at, completed_at, status, score, template:audit_templates(name)')
+            .select(
+              'id, scheduled_at, completed_at, status, score, template:audit_templates(name)',
+            )
             .eq('company_id', companyId)
             .order('completed_at', { ascending: false, nullsFirst: false })
             .limit(10),
@@ -195,7 +202,9 @@ export function DossiePage() {
   if (!companyId) {
     return (
       <Card>
-        <p className="text-sm text-neutral-600">Selecione uma empresa primeiro.</p>
+        <p className="text-sm text-neutral-600">
+          Selecione uma empresa primeiro.
+        </p>
       </Card>
     );
   }
@@ -366,191 +375,211 @@ export function DossiePage() {
             <section>
               <h3>Composição do score</h3>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                <ScoreLine label="Não-conformidades" value={`${score.ncPart}/25`} />
-                <ScoreLine label="Checklists" value={`${score.checklistPart}/20`} />
-                <ScoreLine label="Visita técnica" value={`${score.auditPart}/20`} />
+                <ScoreLine
+                  label="Não-conformidades"
+                  value={`${score.ncPart}/25`}
+                />
+                <ScoreLine
+                  label="Checklists"
+                  value={`${score.checklistPart}/20`}
+                />
+                <ScoreLine
+                  label="Visita técnica"
+                  value={`${score.auditPart}/20`}
+                />
                 <ScoreLine label="Temperatura" value={`${score.tempPart}/10`} />
                 <ScoreLine label="Documentos" value={`${score.docsPart}/10`} />
                 <ScoreLine
                   label="Manipuladores"
                   value={`${score.manipulatorsPart}/10`}
                 />
-                <ScoreLine label="Controle de pragas" value={`${score.pestPart}/5`} />
+                <ScoreLine
+                  label="Controle de pragas"
+                  value={`${score.pestPart}/5`}
+                />
               </div>
             </section>
           )}
 
-        {/* Manipuladores e ASOs */}
-        <section>
-          <h3 className="text-sm font-semibold uppercase text-neutral-700">
-            Manipuladores ({manips.length}) e ASOs
-          </h3>
-          {manips.length === 0 ? (
-            <p className="mt-1 text-xs text-neutral-500">
-              Nenhum manipulador ativo cadastrado.
-            </p>
-          ) : (
-            <table className="mt-2 w-full text-xs">
-              <thead className="border-b border-neutral-300 text-neutral-500">
-                <tr>
-                  <th className="px-1 py-1 text-left">Nome</th>
-                  <th className="px-1 py-1 text-left">Função</th>
-                  <th className="px-1 py-1 text-left">Validade ASO</th>
-                  <th className="px-1 py-1 text-left">Médico</th>
-                </tr>
-              </thead>
-              <tbody>
-                {manips.map((m) => {
-                  const aso = asoByManip.get(m.id);
-                  const expired =
-                    aso && new Date(aso.expires_at).getTime() < emittedMs;
-                  return (
-                    <tr key={m.id} className="border-b border-neutral-100">
-                      <td className="px-1 py-1">{m.name}</td>
-                      <td className="px-1 py-1">{m.role ?? '—'}</td>
-                      <td className={`px-1 py-1 ${expired ? 'text-red-700' : ''}`}>
-                        {aso ? formatDate(new Date(aso.expires_at)) : 'SEM ASO'}
-                        {expired ? ' (vencido)' : ''}
+          {/* Manipuladores e ASOs */}
+          <section>
+            <h3 className="text-sm font-semibold uppercase text-neutral-700">
+              Manipuladores ({manips.length}) e ASOs
+            </h3>
+            {manips.length === 0 ? (
+              <p className="mt-1 text-xs text-neutral-500">
+                Nenhum manipulador ativo cadastrado.
+              </p>
+            ) : (
+              <table className="mt-2 w-full text-xs">
+                <thead className="border-b border-neutral-300 text-neutral-500">
+                  <tr>
+                    <th className="px-1 py-1 text-left">Nome</th>
+                    <th className="px-1 py-1 text-left">Função</th>
+                    <th className="px-1 py-1 text-left">Validade ASO</th>
+                    <th className="px-1 py-1 text-left">Médico</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {manips.map((m) => {
+                    const aso = asoByManip.get(m.id);
+                    const expired =
+                      aso && new Date(aso.expires_at).getTime() < emittedMs;
+                    return (
+                      <tr key={m.id} className="border-b border-neutral-100">
+                        <td className="px-1 py-1">{m.name}</td>
+                        <td className="px-1 py-1">{m.role ?? '—'}</td>
+                        <td
+                          className={`px-1 py-1 ${expired ? 'text-red-700' : ''}`}
+                        >
+                          {aso
+                            ? formatDate(new Date(aso.expires_at))
+                            : 'SEM ASO'}
+                          {expired ? ' (vencido)' : ''}
+                        </td>
+                        <td className="px-1 py-1">{aso?.doctor_name ?? '—'}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            )}
+          </section>
+
+          {/* Não-conformidades abertas */}
+          <section>
+            <h3 className="text-sm font-semibold uppercase text-neutral-700">
+              Não-conformidades em aberto ({ncs.length})
+            </h3>
+            {ncs.length === 0 ? (
+              <p className="mt-1 text-xs text-emerald-700">
+                Nenhuma NC em aberto.
+              </p>
+            ) : (
+              <table className="mt-2 w-full text-xs">
+                <thead className="border-b border-neutral-300 text-neutral-500">
+                  <tr>
+                    <th className="px-1 py-1 text-left">Aberta em</th>
+                    <th className="px-1 py-1 text-left">Severidade</th>
+                    <th className="px-1 py-1 text-left">Descrição</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {ncs.map((n) => (
+                    <tr key={n.id} className="border-b border-neutral-100">
+                      <td className="px-1 py-1">
+                        {formatDate(new Date(n.opened_at))}
                       </td>
-                      <td className="px-1 py-1">{aso?.doctor_name ?? '—'}</td>
+                      <td className="px-1 py-1">{n.severity}</td>
+                      <td className="px-1 py-1">{n.title}</td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          )}
-        </section>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </section>
 
-        {/* Não-conformidades abertas */}
-        <section>
-          <h3 className="text-sm font-semibold uppercase text-neutral-700">
-            Não-conformidades em aberto ({ncs.length})
-          </h3>
-          {ncs.length === 0 ? (
-            <p className="mt-1 text-xs text-emerald-700">Nenhuma NC em aberto.</p>
-          ) : (
-            <table className="mt-2 w-full text-xs">
-              <thead className="border-b border-neutral-300 text-neutral-500">
-                <tr>
-                  <th className="px-1 py-1 text-left">Aberta em</th>
-                  <th className="px-1 py-1 text-left">Severidade</th>
-                  <th className="px-1 py-1 text-left">Descrição</th>
-                </tr>
-              </thead>
-              <tbody>
-                {ncs.map((n) => (
-                  <tr key={n.id} className="border-b border-neutral-100">
-                    <td className="px-1 py-1">{formatDate(new Date(n.opened_at))}</td>
-                    <td className="px-1 py-1">{n.severity}</td>
-                    <td className="px-1 py-1">{n.title}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </section>
-
-        {/* Visitas técnicas */}
-        <section>
-          <h3 className="text-sm font-semibold uppercase text-neutral-700">
-            Últimas visitas técnicas ({audits.length})
-          </h3>
-          {audits.length === 0 ? (
-            <p className="mt-1 text-xs text-neutral-500">
-              Nenhuma visita técnica registrada.
-            </p>
-          ) : (
-            <table className="mt-2 w-full text-xs">
-              <thead className="border-b border-neutral-300 text-neutral-500">
-                <tr>
-                  <th className="px-1 py-1 text-left">Modelo</th>
-                  <th className="px-1 py-1 text-left">Status</th>
-                  <th className="px-1 py-1 text-left">Concluída</th>
-                  <th className="px-1 py-1 text-right">Score</th>
-                </tr>
-              </thead>
-              <tbody>
-                {audits.map((a) => (
-                  <tr key={a.id} className="border-b border-neutral-100">
-                    <td className="px-1 py-1">{a.template?.name ?? '—'}</td>
-                    <td className="px-1 py-1">{a.status}</td>
-                    <td className="px-1 py-1">
-                      {a.completed_at
-                        ? formatDateTime(new Date(a.completed_at))
-                        : '—'}
-                    </td>
-                    <td className="px-1 py-1 text-right">
-                      {a.score ?? '—'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </section>
-
-        {/* Documentos publicados */}
-        <section>
-          <h3 className="text-sm font-semibold uppercase text-neutral-700">
-            Documentos publicados ({docs.length})
-          </h3>
-          {docs.length === 0 ? (
-            <p className="mt-1 text-xs text-amber-700">
-              Nenhum documento publicado.
-            </p>
-          ) : (
-            <ul className="mt-2 grid grid-cols-1 gap-x-4 gap-y-0.5 text-xs text-neutral-700 sm:grid-cols-2">
-              {docs.map((d) => (
-                <li key={d.id}>
-                  <b>[{d.type}]</b> {d.title}
-                  {d.version ? ` · v${d.version}` : ''}
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        {/* Temperatura */}
-        {compliance && (
+          {/* Visitas técnicas */}
           <section>
             <h3 className="text-sm font-semibold uppercase text-neutral-700">
-              Temperatura (últimos 7 dias)
+              Últimas visitas técnicas ({audits.length})
             </h3>
-            <p className="mt-1 text-xs text-neutral-600">
-              {compliance.temp_readings_7d ?? 0} leituras ·{' '}
-              {compliance.temp_out_of_range_7d ?? 0} fora da faixa
-            </p>
+            {audits.length === 0 ? (
+              <p className="mt-1 text-xs text-neutral-500">
+                Nenhuma visita técnica registrada.
+              </p>
+            ) : (
+              <table className="mt-2 w-full text-xs">
+                <thead className="border-b border-neutral-300 text-neutral-500">
+                  <tr>
+                    <th className="px-1 py-1 text-left">Modelo</th>
+                    <th className="px-1 py-1 text-left">Status</th>
+                    <th className="px-1 py-1 text-left">Concluída</th>
+                    <th className="px-1 py-1 text-right">Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {audits.map((a) => (
+                    <tr key={a.id} className="border-b border-neutral-100">
+                      <td className="px-1 py-1">{a.template?.name ?? '—'}</td>
+                      <td className="px-1 py-1">{a.status}</td>
+                      <td className="px-1 py-1">
+                        {a.completed_at
+                          ? formatDateTime(new Date(a.completed_at))
+                          : '—'}
+                      </td>
+                      <td className="px-1 py-1 text-right">{a.score ?? '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </section>
-        )}
 
-        {/* Pragas */}
-        {compliance && (
+          {/* Documentos publicados */}
           <section>
             <h3 className="text-sm font-semibold uppercase text-neutral-700">
-              Controle de pragas
+              Documentos publicados ({docs.length})
             </h3>
-            <p className="mt-1 text-xs text-neutral-600">
-              {compliance.has_pest_service_active
-                ? 'Serviço ativo'
-                : compliance.has_pest_service_registered
-                  ? 'Sem serviço ativo (registrado mas vencido)'
-                  : 'Nenhum serviço registrado'}
-              {compliance.last_pest_at
-                ? ` · último em ${formatDate(new Date(compliance.last_pest_at))}`
-                : ''}
-              {compliance.next_pest_due_at
-                ? ` · próximo em ${formatDate(new Date(compliance.next_pest_due_at))}`
-                : ''}
-            </p>
+            {docs.length === 0 ? (
+              <p className="mt-1 text-xs text-amber-700">
+                Nenhum documento publicado.
+              </p>
+            ) : (
+              <ul className="mt-2 grid grid-cols-1 gap-x-4 gap-y-0.5 text-xs text-neutral-700 sm:grid-cols-2">
+                {docs.map((d) => (
+                  <li key={d.id}>
+                    <b>[{d.type}]</b> {d.title}
+                    {d.version ? ` · v${d.version}` : ''}
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
-        )}
+
+          {/* Temperatura */}
+          {compliance && (
+            <section>
+              <h3 className="text-sm font-semibold uppercase text-neutral-700">
+                Temperatura (últimos 7 dias)
+              </h3>
+              <p className="mt-1 text-xs text-neutral-600">
+                {compliance.temp_readings_7d ?? 0} leituras ·{' '}
+                {compliance.temp_out_of_range_7d ?? 0} fora da faixa
+              </p>
+            </section>
+          )}
+
+          {/* Pragas */}
+          {compliance && (
+            <section>
+              <h3 className="text-sm font-semibold uppercase text-neutral-700">
+                Controle de pragas
+              </h3>
+              <p className="mt-1 text-xs text-neutral-600">
+                {compliance.has_pest_service_active
+                  ? 'Serviço ativo'
+                  : compliance.has_pest_service_registered
+                    ? 'Sem serviço ativo (registrado mas vencido)'
+                    : 'Nenhum serviço registrado'}
+                {compliance.last_pest_at
+                  ? ` · último em ${formatDate(new Date(compliance.last_pest_at))}`
+                  : ''}
+                {compliance.next_pest_due_at
+                  ? ` · próximo em ${formatDate(new Date(compliance.next_pest_due_at))}`
+                  : ''}
+              </p>
+            </section>
+          )}
 
           <footer className="flex items-center justify-between gap-2 border-t border-neutral-200 pt-3 text-[10px] text-neutral-400">
             <span>
               <b style={{ color: PRINT_HEX.brandDark }}>{BRAND_NAME}</b> ·{' '}
               {BRAND_TAGLINE}
             </span>
-            <span>Gerado automaticamente — reflete os registros na emissão.</span>
+            <span>
+              Gerado automaticamente — reflete os registros na emissão.
+            </span>
           </footer>
         </div>
       </article>

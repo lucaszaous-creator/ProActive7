@@ -337,7 +337,10 @@ export function SistemaPage() {
           </div>
 
           {/* Mock do painel flutuante */}
-          <div className="relative" style={{ animation: 'pa7-float 6s ease-in-out infinite' }}>
+          <div
+            className="relative"
+            style={{ animation: 'pa7-float 6s ease-in-out infinite' }}
+          >
             <MockDashboard />
           </div>
         </div>
@@ -362,8 +365,8 @@ export function SistemaPage() {
             Tudo que a RDC exige, num lugar só
           </h2>
           <p className="mt-3 text-[#1A2A22]/65">
-            Nove módulos que trabalham juntos para manter a cozinha auditável
-            o ano inteiro.
+            Nove módulos que trabalham juntos para manter a cozinha auditável o
+            ano inteiro.
           </p>
         </Reveal>
 
@@ -449,7 +452,10 @@ export function SistemaPage() {
             <Reveal>
               <MockDashboard wide />
             </Reveal>
-            <Reveal delay={120} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1">
+            <Reveal
+              delay={120}
+              className="grid gap-6 sm:grid-cols-2 lg:grid-cols-1"
+            >
               <MockLabel />
               <MockUsage />
             </Reveal>
@@ -520,16 +526,18 @@ export function SistemaPage() {
                 cozinha já tem.
               </p>
               <div className="mt-6 flex flex-wrap gap-2">
-                {['ZPL · Elgin / Zebra', 'Bluetooth 58/80 mm', 'Diálogo do navegador'].map(
-                  (t) => (
-                    <span
-                      key={t}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[#234731] ring-1 ring-[#BBE7C6]"
-                    >
-                      <Globe className="h-3.5 w-3.5" /> {t}
-                    </span>
-                  ),
-                )}
+                {[
+                  'ZPL · Elgin / Zebra',
+                  'Bluetooth 58/80 mm',
+                  'Diálogo do navegador',
+                ].map((t) => (
+                  <span
+                    key={t}
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[#234731] ring-1 ring-[#BBE7C6]"
+                  >
+                    <Globe className="h-3.5 w-3.5" /> {t}
+                  </span>
+                ))}
               </div>
             </Reveal>
 
@@ -593,7 +601,10 @@ export function SistemaPage() {
       </section>
 
       {/* PLANOS */}
-      <section id="planos" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-20">
+      <section
+        id="planos"
+        className="mx-auto max-w-6xl scroll-mt-20 px-5 py-20"
+      >
         <Reveal className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-[#1A2A22]">
             Planos que crescem com você
@@ -610,7 +621,8 @@ export function SistemaPage() {
         ) : (
           <div className="mt-12 grid gap-6 md:grid-cols-3">
             {plans.map((p, i) => {
-              const featured = p.key === 'profissional' || (plans.length === 3 && i === 1);
+              const featured =
+                p.key === 'profissional' || (plans.length === 3 && i === 1);
               const price = priceLabel(p.price_cents);
               const mods = p.allowed_modules
                 .map((k) => MODULE_LABEL[k])
@@ -820,7 +832,14 @@ function DonutScore({ score }: { score: number }) {
   const off = c * (1 - score / 100);
   return (
     <svg viewBox="0 0 64 64" className="h-16 w-16">
-      <circle cx="32" cy="32" r={r} fill="none" stroke="#E8F1EA" strokeWidth="7" />
+      <circle
+        cx="32"
+        cy="32"
+        r={r}
+        fill="none"
+        stroke="#E8F1EA"
+        strokeWidth="7"
+      />
       <circle
         cx="32"
         cy="32"
@@ -892,7 +911,9 @@ function MockDashboard({ wide = false }: { wide?: boolean }) {
           ))}
         </div>
 
-        <div className={`mt-4 grid gap-4 ${wide ? 'sm:grid-cols-[auto_1fr]' : ''}`}>
+        <div
+          className={`mt-4 grid gap-4 ${wide ? 'sm:grid-cols-[auto_1fr]' : ''}`}
+        >
           <div className="flex items-center gap-3 rounded-xl bg-[#F2F7F3] p-3">
             <DonutScore score={75} />
             <div>

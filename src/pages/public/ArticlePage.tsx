@@ -1,21 +1,25 @@
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { ArrowLeft, Hash } from 'lucide-react';
-import { findArticle, type Article } from '@/content/articles';
+import { fetchPublicArticle, type ArticleFull } from '@/lib/articlesApi';
 import { useDynamicMeta } from '@/lib/usePageMeta';
 import { SITE_URL } from '@/lib/usePageTitle';
+import { Spinner } from '@/components/ui/Spinner';
 import { NotFoundPage } from './NotFoundPage';
 
-function buildArticleJsonLd(article: Article, url: string) {
+function buildArticleJsonLd(article: ArticleFull, url: string) {
   return [
     {
       '@context': 'https://schema.org',
       '@type': 'Article',
       headline: article.title,
       description: article.description,
-      datePublished: article.date,
-      dateModified: article.date,
+      datePublished: article.published_at,
+      dateModified: article.published_at,
       inLanguage: 'pt-BR',
       mainEntityOfPage: url,
+      image: article.cover_image ?? undefined,
       author: { '@id': `${SITE_URL}/#ariane` },
       publisher: { '@id': `${SITE_URL}/#organization` },
       keywords: article.tags.join(', '),
@@ -44,28 +48,50 @@ function buildArticleJsonLd(article: Article, url: string) {
 
 export function ArticlePage() {
   const { slug } = useParams<{ slug: string }>();
-  const article = slug ? findArticle(slug) : undefined;
+  const [article, setArticle] = useState<ArticleFull | null>(null);
+  const [loading, setLoading] = useState(true);
   const path = `/novidades/${slug ?? ''}`;
   const url = `${SITE_URL}${path}`;
 
-  // Hooks antes de qualquer retorno condicional.
+  useEffect(() => {
+    let active = true;
+    setLoading(true);
+    fetchPublicArticle(slug ?? '')
+      .then((a) => active && setArticle(a))
+      .catch(() => active && setArticle(null))
+      .finally(() => active && setLoading(false));
+    return () => {
+      active = false;
+    };
+  }, [slug]);
+
   useDynamicMeta(
     article
       ? {
           title: `${article.title} | ProActive7`,
           description: article.description,
           path,
+          image: article.cover_image ?? undefined,
           jsonLd: buildArticleJsonLd(article, url),
         }
       : null,
   );
 
+  if (loading) {
+    return (
+      <div className="flex min-h-[50vh] items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  }
+
   if (!article) return <NotFoundPage />;
 
-  const dateLabel = new Date(`${article.date}T12:00:00`).toLocaleDateString(
-    'pt-BR',
-    { day: '2-digit', month: 'long', year: 'numeric' },
-  );
+  const dateLabel = new Date(article.published_at).toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  });
 
   return (
     <article className="mx-auto max-w-3xl px-5 py-14">
@@ -84,49 +110,61 @@ export function ArticlePage() {
         <p className="mt-3 text-sm text-[#1A2A22]/55">{dateLabel}</p>
       </header>
 
-      <div className="mt-8 space-y-5">
-        {article.body.map((block, i) => {
-          if (block.type === 'h2') {
-            return (
-              <h2
-                key={i}
-                className="pt-2 text-xl font-semibold tracking-tight text-[#1A2A22]"
-              >
-                {block.text}
+      <div className="mt-8 space-y-5 text-base leading-relaxed text-[#1A2A22]/80">
+        <ReactMarkdown
+          components={{
+            h2: ({ children }) => (
+              <h2 className="pt-2 text-xl font-semibold tracking-tight text-[#1A2A22]">
+                {children}
               </h2>
-            );
-          }
-          if (block.type === 'ul') {
-            return (
-              <ul
-                key={i}
-                className="list-disc space-y-2 pl-5 text-base leading-relaxed text-[#1A2A22]/80"
+            ),
+            h3: ({ children }) => (
+              <h3 className="pt-1 text-lg font-semibold text-[#1A2A22]">
+                {children}
+              </h3>
+            ),
+            p: ({ children }) => <p>{children}</p>,
+            ul: ({ children }) => (
+              <ul className="list-disc space-y-2 pl-5">{children}</ul>
+            ),
+            ol: ({ children }) => (
+              <ol className="list-decimal space-y-2 pl-5">{children}</ol>
+            ),
+            li: ({ children }) => <li>{children}</li>,
+            strong: ({ children }) => (
+              <strong className="font-semibold text-[#1A2A22]">
+                {children}
+              </strong>
+            ),
+            a: ({ href, children }) => (
+              <a
+                href={href}
+                className="text-[#2F5D3F] underline"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                {block.items?.map((it, j) => (
-                  <li key={j}>{it}</li>
-                ))}
-              </ul>
-            );
-          }
-          return (
-            <p key={i} className="text-base leading-relaxed text-[#1A2A22]/80">
-              {block.text}
-            </p>
-          );
-        })}
+                {children}
+              </a>
+            ),
+          }}
+        >
+          {article.body}
+        </ReactMarkdown>
       </div>
 
-      <div className="mt-10 flex flex-wrap gap-2 border-t border-[#E8F1EA] pt-6">
-        {article.tags.map((tag) => (
-          <span
-            key={tag}
-            className="inline-flex items-center gap-1 rounded-full bg-[#E8F1EA] px-3 py-1 text-xs font-medium text-[#2F5D3F]"
-          >
-            <Hash className="h-3 w-3" />
-            {tag}
-          </span>
-        ))}
-      </div>
+      {article.tags.length > 0 && (
+        <div className="mt-10 flex flex-wrap gap-2 border-t border-[#E8F1EA] pt-6">
+          {article.tags.map((tag) => (
+            <span
+              key={tag}
+              className="inline-flex items-center gap-1 rounded-full bg-[#E8F1EA] px-3 py-1 text-xs font-medium text-[#2F5D3F]"
+            >
+              <Hash className="h-3 w-3" />
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
     </article>
   );
 }

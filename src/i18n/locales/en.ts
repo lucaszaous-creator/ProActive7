@@ -47,6 +47,7 @@ const en = {
     library: 'Global library',
     plans: 'Plans',
     subscription: 'My subscription',
+    siteArticles: 'Site articles',
   },
   layout: {
     master: 'Master user',

@@ -368,7 +368,9 @@ export function OrganizationDetailPage() {
                     : 'bg-neutral-100 text-neutral-500 dark:bg-slate-800'
                 }`}
               >
-                {org.allow_impersonation ? 'Autorizado pela nutri' : 'Não autorizado'}
+                {org.allow_impersonation
+                  ? 'Autorizado pela nutri'
+                  : 'Não autorizado'}
               </span>
             </div>
           </Card>
