@@ -1,8 +1,8 @@
 import { Droplet, Heart, Scale, Leaf, Compass } from 'lucide-react';
-import { usePageTitle } from '@/lib/usePageTitle';
+import { usePageMeta } from '@/lib/usePageMeta';
 
 export function PerfilPage() {
-  usePageTitle('Perfil — ProActive7');
+  usePageMeta('/perfil');
   return (
     <div>
       <Hero />

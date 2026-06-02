@@ -1,0 +1,231 @@
+{
+  "siteUrl": "https://pro-active7.vercel.app",
+  "brand": "ProActive7",
+  "locale": "pt_BR",
+  "defaultImage": "https://pro-active7.vercel.app/og-image.png",
+  "logo": "https://pro-active7.vercel.app/proactive7-logo.svg",
+  "organizationJsonLd": {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://pro-active7.vercel.app/#organization",
+        "name": "ProActive7 — Consultoria Nutricional e Segurança Alimentar",
+        "url": "https://pro-active7.vercel.app/",
+        "logo": "https://pro-active7.vercel.app/proactive7-logo.svg",
+        "image": "https://pro-active7.vercel.app/og-image.png",
+        "email": "contato@proactive7.com.br",
+        "telephone": "+55-22-99766-2669",
+        "sameAs": ["https://www.instagram.com/proactive.7/"]
+      },
+      {
+        "@type": ["ProfessionalService", "LocalBusiness"],
+        "@id": "https://pro-active7.vercel.app/#service",
+        "name": "ProActive7 — Consultoria Nutricional e Segurança Alimentar",
+        "description": "Consultoria nutricional e gestão de segurança alimentar (ANVISA RDC 216) para serviços de alimentação em Macaé/RJ: implantação de boas práticas, POPs, controle de manipuladores, etiquetas de validade, auditorias e compliance.",
+        "url": "https://pro-active7.vercel.app/",
+        "image": "https://pro-active7.vercel.app/og-image.png",
+        "priceRange": "$$",
+        "telephone": "+55-22-99766-2669",
+        "email": "contato@proactive7.com.br",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "Rua Dr. Luiz Belegard, 407 — sala 704",
+          "addressLocality": "Macaé",
+          "addressRegion": "RJ",
+          "addressCountry": "BR"
+        },
+        "areaServed": [
+          { "@type": "City", "name": "Macaé" },
+          { "@type": "State", "name": "Rio de Janeiro" }
+        ],
+        "knowsAbout": [
+          "ANVISA RDC 216",
+          "ANVISA RDC 275",
+          "Segurança alimentar",
+          "Boas Práticas de Fabricação",
+          "Procedimento Operacional Padrão (POP)",
+          "Controle de manipuladores de alimentos",
+          "Etiquetas de validade",
+          "Auditoria sanitária",
+          "Manual de Boas Práticas"
+        ],
+        "parentOrganization": {
+          "@id": "https://pro-active7.vercel.app/#organization"
+        },
+        "founder": { "@id": "https://pro-active7.vercel.app/#ariane" },
+        "provider": { "@id": "https://pro-active7.vercel.app/#ariane" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://pro-active7.vercel.app/#ariane",
+        "name": "Ariane Madureira",
+        "jobTitle": "Nutricionista — Responsável Técnica (RT)",
+        "worksFor": { "@id": "https://pro-active7.vercel.app/#organization" }
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://pro-active7.vercel.app/#website",
+        "url": "https://pro-active7.vercel.app/",
+        "name": "ProActive7",
+        "inLanguage": "pt-BR",
+        "publisher": { "@id": "https://pro-active7.vercel.app/#organization" }
+      }
+    ]
+  },
+  "pages": {
+    "/": {
+      "title": "Consultoria Nutricional e Segurança Alimentar em Macaé | ProActive7",
+      "description": "Consultoria nutricional e segurança alimentar para restaurantes e cozinhas em Macaé/RJ. Compliance ANVISA RDC 216, POPs, etiquetas de validade, controle de manipuladores e auditorias.",
+      "keywords": [
+        "consultoria nutricional macaé",
+        "segurança alimentar",
+        "ANVISA RDC 216",
+        "nutricionista responsável técnica",
+        "boas práticas cozinha"
+      ],
+      "changefreq": "monthly",
+      "priority": "1.0"
+    },
+    "/perfil": {
+      "title": "Ariane Madureira — Nutricionista RT em Macaé | ProActive7",
+      "description": "Conheça Ariane Madureira, nutricionista Responsável Técnica em Macaé/RJ. Consultoria em segurança alimentar e boas práticas para serviços de alimentação.",
+      "keywords": [
+        "nutricionista macaé",
+        "responsável técnica",
+        "Ariane Madureira",
+        "consultoria segurança alimentar"
+      ],
+      "changefreq": "yearly",
+      "priority": "0.7"
+    },
+    "/servicos": {
+      "title": "Serviços de Consultoria em Segurança Alimentar | ProActive7",
+      "description": "Implantação de boas práticas ANVISA RDC 216, POPs, manual de boas práticas, treinamento de manipuladores, auditorias e etiquetas de validade para serviços de alimentação.",
+      "keywords": [
+        "consultoria ANVISA RDC 216",
+        "manual de boas práticas",
+        "POP cozinha",
+        "treinamento de manipuladores",
+        "auditoria sanitária"
+      ],
+      "changefreq": "monthly",
+      "priority": "0.9",
+      "extraJsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "name": "Consultoria em Segurança Alimentar e Boas Práticas (ANVISA RDC 216)",
+          "serviceType": "Consultoria nutricional e responsabilidade técnica",
+          "provider": { "@id": "https://pro-active7.vercel.app/#service" },
+          "areaServed": [
+            { "@type": "City", "name": "Macaé" },
+            { "@type": "State", "name": "Rio de Janeiro" }
+          ],
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Serviços ProActive7",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Implantação de Boas Práticas (ANVISA RDC 216)"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Elaboração de POPs e Manual de Boas Práticas"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Treinamento de manipuladores de alimentos"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Auditorias e visitas técnicas periódicas"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Responsabilidade Técnica (RT) perante a ANVISA"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "/sistema": {
+      "title": "Sistema de Etiquetas de Validade e Compliance ANVISA | ProActive7",
+      "description": "Software para cozinhas: etiquetas de validade térmicas, controle de temperatura, POPs, auditorias RDC 216 e gestão de não conformidades. Zero digitação na cozinha.",
+      "keywords": [
+        "sistema de etiquetas de validade",
+        "software compliance ANVISA",
+        "controle de temperatura cozinha",
+        "gestão de não conformidades"
+      ],
+      "changefreq": "monthly",
+      "priority": "0.9",
+      "extraJsonLd": [
+        {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "ProActive7",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web",
+          "description": "Plataforma para serviços de alimentação: etiquetas de validade, controle de temperatura de equipamentos, POPs, auditorias RDC 216, controle de pragas, manipuladores e não conformidades.",
+          "url": "https://pro-active7.vercel.app/sistema",
+          "publisher": {
+            "@id": "https://pro-active7.vercel.app/#organization"
+          },
+          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" }
+        }
+      ]
+    },
+    "/novidades": {
+      "title": "Novidades e Conteúdo sobre Segurança Alimentar | ProActive7",
+      "description": "Atualizações sobre ANVISA RDC 216, boas práticas em cozinhas, segurança alimentar e gestão de serviços de alimentação pela ProActive7.",
+      "keywords": [
+        "novidades segurança alimentar",
+        "ANVISA RDC 216",
+        "boas práticas cozinha"
+      ],
+      "changefreq": "weekly",
+      "priority": "0.6"
+    },
+    "/contato": {
+      "title": "Contato — Consultoria Nutricional em Macaé | ProActive7",
+      "description": "Fale com a ProActive7 em Macaé/RJ. Consultoria nutricional e segurança alimentar para restaurantes, cozinhas industriais e serviços de alimentação. WhatsApp e e-mail.",
+      "keywords": [
+        "contato nutricionista macaé",
+        "consultoria segurança alimentar macaé",
+        "ProActive7 contato"
+      ],
+      "changefreq": "yearly",
+      "priority": "0.6"
+    },
+    "/cursos": {
+      "title": "Cursos e Treinamentos — Em breve | ProActive7",
+      "description": "Cursos e treinamentos em segurança alimentar e boas práticas — em breve na ProActive7.",
+      "keywords": ["cursos segurança alimentar", "treinamento boas práticas"],
+      "noindex": true
+    },
+    "/clientes": {
+      "title": "Clientes — Em breve | ProActive7",
+      "description": "Cases e clientes atendidos pela ProActive7 — em breve.",
+      "keywords": ["clientes ProActive7"],
+      "noindex": true
+    }
+  }
+}

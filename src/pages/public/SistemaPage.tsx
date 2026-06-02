@@ -30,7 +30,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { usePageTitle } from '@/lib/usePageTitle';
+import { usePageMeta } from '@/lib/usePageMeta';
 import { MODULE_LABEL } from '@/lib/modules';
 
 const GREEN = '#2F5D3F';
@@ -278,7 +278,7 @@ function priceLabel(cents: number): { value: string; suffix: string } {
 }
 
 export function SistemaPage() {
-  usePageTitle('Sistema');
+  usePageMeta('/sistema');
   const [plans, setPlans] = useState<PublicPlan[]>([]);
 
   useEffect(() => {
