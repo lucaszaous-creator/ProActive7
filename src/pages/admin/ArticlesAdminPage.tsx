@@ -15,7 +15,6 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { InstagramAdminSection } from './InstagramAdminSection';
 
 const textareaCls =
   'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-neutral-700 dark:bg-slate-800';
@@ -319,8 +318,6 @@ export function ArticlesAdminPage() {
         onCancel={() => setConfirmDelete(null)}
         confirmLabel="Remover"
       />
-
-      <InstagramAdminSection />
     </div>
   );
 }
