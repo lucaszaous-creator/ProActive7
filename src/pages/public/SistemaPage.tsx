@@ -19,6 +19,15 @@ import {
   Clock,
   TrendingUp,
   MessageCircle,
+  SlidersHorizontal,
+  ChefHat,
+  PenLine,
+  Lock,
+  Bluetooth,
+  Globe,
+  ClipboardCheck,
+  HelpCircle,
+  ChevronDown,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -129,6 +138,135 @@ const STATS = [
   { value: '0', label: 'digitação na cozinha' },
   { value: '30s', label: 'para emitir uma etiqueta' },
   { value: '100%', label: 'conforme RDC 216' },
+];
+
+const STEPS: { icon: typeof Printer; title: string; desc: string }[] = [
+  {
+    icon: SlidersHorizontal,
+    title: 'A nutricionista configura',
+    desc: 'Cadastra empresas, produtos com prazos da RDC, equipe e checklists. Uma vez só — depois é manutenção leve.',
+  },
+  {
+    icon: ChefHat,
+    title: 'A cozinha opera sem digitar',
+    desc: 'Imprime etiquetas, registra temperatura e recebimento escolhendo de listas prontas. Erro de digitação deixa de existir.',
+  },
+  {
+    icon: PenLine,
+    title: 'A RT acompanha e assina',
+    desc: 'Score de conformidade em tempo real, não-conformidades no radar e relatório em PDF assinável para a ANVISA.',
+  },
+];
+
+const PERSONAS: {
+  icon: typeof Printer;
+  role: string;
+  who: string;
+  points: string[];
+}[] = [
+  {
+    icon: ShieldCheck,
+    role: 'Nutricionista (RT)',
+    who: 'Responsável técnica',
+    points: [
+      'Visão de carteira com várias cozinhas',
+      'Define prazos de validade e checklists',
+      'Assina relatórios e planos de ação',
+    ],
+  },
+  {
+    icon: ChefHat,
+    role: 'Gerente da unidade',
+    who: 'No chão da cozinha',
+    points: [
+      'Imprime etiquetas em segundos',
+      'Registra temperatura e recebimento',
+      'Trata e fecha não-conformidades',
+    ],
+  },
+  {
+    icon: Building2,
+    role: 'Rede / multi-unidade',
+    who: 'Visão consolidada',
+    points: [
+      'Compara o score entre cozinhas',
+      'Escopo isolado por empresa',
+      'Relatórios gerenciais num lugar só',
+    ],
+  },
+];
+
+const PRINTING: { icon: typeof Printer; title: string; desc: string }[] = [
+  {
+    icon: Printer,
+    title: 'Impressão térmica direta',
+    desc: 'Um agente leve no PC imprime sem o operador digitar nada — etiqueta sai com um clique.',
+  },
+  {
+    icon: Tag,
+    title: '4 tamanhos de etiqueta',
+    desc: 'Presets de 33×22 a 80×60 mm, prontos para os rolos térmicos mais comuns.',
+  },
+  {
+    icon: Bluetooth,
+    title: 'Bluetooth e navegador',
+    desc: 'Impressoras térmicas ZPL (Elgin, Zebra) e mini-impressoras Bluetooth 58/80 mm.',
+  },
+  {
+    icon: QrCode,
+    title: 'QR rastreável',
+    desc: 'Cada etiqueta carrega um QR com verificação pública de validade e lote.',
+  },
+];
+
+const COMPLIANCE: { icon: typeof Printer; title: string; desc: string }[] = [
+  {
+    icon: ClipboardCheck,
+    title: 'RDC 216 / 275 / 259',
+    desc: 'Checklists e layout de etiqueta seguem as resoluções da ANVISA, com score por empresa.',
+  },
+  {
+    icon: Lock,
+    title: 'LGPD por padrão',
+    desc: 'Fotos com retenção curta (30 dias) e dados de saúde do manipulador protegidos.',
+  },
+  {
+    icon: Building2,
+    title: 'Isolamento multi-tenant',
+    desc: 'Cada organização vê apenas os próprios dados — segurança garantida no banco (RLS).',
+  },
+  {
+    icon: FileText,
+    title: 'Trilha de auditoria',
+    desc: 'Mudanças críticas ficam registradas e o dossiê sai pronto para a fiscalização.',
+  },
+];
+
+const FAQ: { q: string; a: string }[] = [
+  {
+    q: 'Preciso de internet na cozinha?',
+    a: 'Sim, o sistema é web e roda no navegador do celular, tablet ou PC. A impressão de etiquetas usa um agente leve instalado no computador, que conversa com a impressora térmica local.',
+  },
+  {
+    q: 'Funciona com a minha impressora?',
+    a: 'Sim para impressoras térmicas que falam ZPL (Elgin, Zebra e compatíveis) e para mini-impressoras Bluetooth de 58/80 mm. Também dá para imprimir pelo diálogo do navegador em impressoras comuns.',
+  },
+  {
+    q: 'O sistema decide sozinho se uma NC pode ser fechada?',
+    a: 'Não. A automação organiza e sugere, mas a decisão técnica é sempre da nutricionista responsável técnica. A RT é quem assina — nenhuma automação substitui isso.',
+  },
+  {
+    q: 'Meus dados estão seguros?',
+    a: 'Cada organização enxerga apenas os próprios dados, com isolamento garantido no banco. Fotos têm retenção curta e dados sensíveis seguem a LGPD.',
+  },
+  {
+    q: 'O operador precisa digitar alguma coisa?',
+    a: 'Não. Produto, grupo, manipulador, fornecedor e validade vêm de cadastros prontos — tudo é escolhido de lista. Zero digitação no chão da cozinha.',
+  },
+  {
+    q: 'Quanto custa?',
+    a: 'Veja os planos logo abaixo. Para redes com várias unidades, fale com a gente para um plano sob medida.',
+  },
 ];
 
 function priceLabel(cents: number): { value: string; suffix: string } {
@@ -251,6 +389,49 @@ export function SistemaPage() {
         </div>
       </section>
 
+      {/* COMO FUNCIONA */}
+      <section className="border-y border-[#E8F1EA] bg-white py-20">
+        <div className="mx-auto max-w-6xl px-5">
+          <Reveal className="mx-auto max-w-2xl text-center">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#2F5D3F]">
+              Como funciona
+            </span>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#1A2A22]">
+              Três passos, do cadastro à assinatura
+            </h2>
+            <p className="mt-3 text-[#1A2A22]/65">
+              Configura uma vez, a cozinha opera no automático e a RT mantém
+              tudo auditável.
+            </p>
+          </Reveal>
+
+          <div className="relative mt-14 grid gap-8 md:grid-cols-3">
+            <div className="absolute left-0 right-0 top-7 hidden h-px bg-gradient-to-r from-transparent via-[#BBE7C6] to-transparent md:block" />
+            {STEPS.map((s, i) => {
+              const Icon = s.icon;
+              return (
+                <Reveal key={s.title} delay={i * 110} className="relative">
+                  <div className="flex flex-col items-center text-center">
+                    <span className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2F5D3F] text-white shadow-lg shadow-[#2F5D3F]/20">
+                      <Icon className="h-6 w-6" />
+                      <span className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#BBE7C6] text-xs font-bold text-[#234731] ring-2 ring-white">
+                        {i + 1}
+                      </span>
+                    </span>
+                    <h3 className="mt-5 font-semibold text-[#1A2A22]">
+                      {s.title}
+                    </h3>
+                    <p className="mt-2 max-w-xs text-sm leading-relaxed text-[#1A2A22]/65">
+                      {s.desc}
+                    </p>
+                  </div>
+                </Reveal>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* TELAS DO SISTEMA */}
       <section className="bg-[#F2F7F3] py-20">
         <div className="mx-auto max-w-6xl px-5">
@@ -273,6 +454,141 @@ export function SistemaPage() {
               <MockUsage />
             </Reveal>
           </div>
+        </div>
+      </section>
+
+      {/* PARA CADA PAPEL */}
+      <section className="mx-auto max-w-6xl px-5 py-20">
+        <Reveal className="mx-auto max-w-2xl text-center">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#2F5D3F]">
+            Feito para cada papel
+          </span>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#1A2A22]">
+            Da gestão técnica ao chão da cozinha
+          </h2>
+          <p className="mt-3 text-[#1A2A22]/65">
+            Cada pessoa vê só o que precisa, com a permissão certa.
+          </p>
+        </Reveal>
+
+        <div className="mt-12 grid gap-6 md:grid-cols-3">
+          {PERSONAS.map((p, i) => {
+            const Icon = p.icon;
+            return (
+              <Reveal key={p.role} delay={i * 90}>
+                <div className="flex h-full flex-col rounded-2xl border border-[#E8F1EA] bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-[#2F5D3F]/5">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E8F1EA] text-[#2F5D3F]">
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <div>
+                      <h3 className="font-semibold leading-tight text-[#1A2A22]">
+                        {p.role}
+                      </h3>
+                      <p className="text-xs text-[#1A2A22]/55">{p.who}</p>
+                    </div>
+                  </div>
+                  <ul className="mt-5 space-y-2.5 text-sm">
+                    {p.points.map((pt) => (
+                      <li key={pt} className="flex items-start gap-2">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#2F5D3F]" />
+                        <span className="text-[#1A2A22]/75">{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* IMPRESSÃO */}
+      <section className="bg-[#F2F7F3] py-20">
+        <div className="mx-auto max-w-6xl px-5">
+          <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr]">
+            <Reveal>
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#2F5D3F]">
+                Impressão sem complicação
+              </span>
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#1A2A22]">
+                A etiqueta certa, num clique
+              </h2>
+              <p className="mt-3 text-[#1A2A22]/65">
+                Validade calculada pela RDC, layout conforme a ANVISA e nada
+                para o operador digitar. Compatível com a impressora que a
+                cozinha já tem.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {['ZPL · Elgin / Zebra', 'Bluetooth 58/80 mm', 'Diálogo do navegador'].map(
+                  (t) => (
+                    <span
+                      key={t}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[#234731] ring-1 ring-[#BBE7C6]"
+                    >
+                      <Globe className="h-3.5 w-3.5" /> {t}
+                    </span>
+                  ),
+                )}
+              </div>
+            </Reveal>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              {PRINTING.map((f, i) => {
+                const Icon = f.icon;
+                return (
+                  <Reveal key={f.title} delay={(i % 2) * 90}>
+                    <div className="h-full rounded-2xl border border-[#E8F1EA] bg-white p-5">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E8F1EA] text-[#2F5D3F]">
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <h3 className="mt-3 text-sm font-semibold text-[#1A2A22]">
+                        {f.title}
+                      </h3>
+                      <p className="mt-1 text-xs leading-relaxed text-[#1A2A22]/65">
+                        {f.desc}
+                      </p>
+                    </div>
+                  </Reveal>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CONFORMIDADE & SEGURANÇA */}
+      <section className="mx-auto max-w-6xl px-5 py-20">
+        <Reveal className="mx-auto max-w-2xl text-center">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#2F5D3F]">
+            Conformidade & segurança
+          </span>
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#1A2A22]">
+            Pronto para a fiscalização — e para a LGPD
+          </h2>
+          <p className="mt-3 text-[#1A2A22]/65">
+            Não esconde score ruim, não decide pela RT e protege os dados de
+            quem está na cozinha.
+          </p>
+        </Reveal>
+
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {COMPLIANCE.map((f, i) => {
+            const Icon = f.icon;
+            return (
+              <Reveal key={f.title} delay={(i % 4) * 70}>
+                <div className="flex h-full flex-col rounded-2xl bg-[#234731] p-6 text-white">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-[#BBE7C6] ring-1 ring-white/15">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <h3 className="mt-4 font-semibold">{f.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-white/70">
+                    {f.desc}
+                  </p>
+                </div>
+              </Reveal>
+            );
+          })}
         </div>
       </section>
 
@@ -365,6 +681,28 @@ export function SistemaPage() {
         </p>
       </section>
 
+      {/* FAQ */}
+      <section className="bg-[#F2F7F3] py-20">
+        <div className="mx-auto max-w-3xl px-5">
+          <Reveal className="text-center">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#2F5D3F]">
+              <HelpCircle className="h-4 w-4" /> Perguntas frequentes
+            </span>
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#1A2A22]">
+              Ainda na dúvida?
+            </h2>
+          </Reveal>
+
+          <div className="mt-10 space-y-3">
+            {FAQ.map((item, i) => (
+              <Reveal key={item.q} delay={(i % 3) * 60}>
+                <FaqItem q={item.q} a={item.a} />
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA FINAL */}
       <section className="px-5 pb-20">
         <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-[#2F5D3F] px-6 py-14 text-center text-white sm:px-12">
@@ -423,6 +761,38 @@ function PlanLine({
         {children}
       </span>
     </li>
+  );
+}
+
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="overflow-hidden rounded-2xl border border-[#E8F1EA] bg-white">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
+      >
+        <span className="text-sm font-semibold text-[#1A2A22]">{q}</span>
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-[#2F5D3F] transition-transform duration-300 ${
+            open ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+      <div
+        className={`grid transition-all duration-300 ease-out ${
+          open ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        }`}
+      >
+        <div className="overflow-hidden">
+          <p className="px-5 pb-4 text-sm leading-relaxed text-[#1A2A22]/70">
+            {a}
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
