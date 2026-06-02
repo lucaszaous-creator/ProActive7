@@ -76,7 +76,9 @@ function buildBreadcrumbJsonLd(path, crumb) {
 
 function buildHead(path, page) {
   const canonical = `${siteUrl}${path === '/' ? '/' : path}`;
-  const robots = page.noindex ? 'noindex,nofollow' : 'index,follow';
+  const robots = page.noindex
+    ? 'noindex,nofollow'
+    : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1';
   const image = page.image ?? defaultImage;
   const t = escapeHtml(page.title);
   const d = escapeHtml(page.description);

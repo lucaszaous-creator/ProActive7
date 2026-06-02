@@ -113,7 +113,9 @@ export function usePageMeta(path: string): void {
     upsertMeta(
       'name',
       'robots',
-      page.noindex ? 'noindex,nofollow' : 'index,follow',
+      page.noindex
+        ? 'noindex,nofollow'
+        : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1',
     );
     if (page.keywords?.length) {
       upsertMeta('name', 'keywords', page.keywords.join(', '));
