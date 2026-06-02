@@ -15,6 +15,11 @@ const ServicosPage = lazy(() =>
     default: m.ServicosPage,
   })),
 );
+const SistemaPage = lazy(() =>
+  import('./pages/public/SistemaPage').then((m) => ({
+    default: m.SistemaPage,
+  })),
+);
 const CursosPublicPage = lazy(() =>
   import('./pages/public/ComingSoonPage').then((m) => ({
     default: m.CursosPage,
@@ -250,14 +255,13 @@ export default function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/perfil" element={<PerfilPage />} />
           <Route path="/servicos" element={<ServicosPage />} />
+          <Route path="/sistema" element={<SistemaPage />} />
           <Route path="/cursos" element={<CursosPublicPage />} />
           <Route path="/clientes" element={<ClientesPublicPage />} />
           <Route path="/novidades" element={<NovidadesPage />} />
           <Route path="/contato" element={<ContatoPage />} />
         </Route>
 
-        {/* Compat: o site antigo usava /sistema para o login */}
-        <Route path="/sistema" element={<Navigate to="/login" replace />} />
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/redefinir-senha" element={<ResetPasswordPage />} />

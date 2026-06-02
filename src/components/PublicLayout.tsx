@@ -18,6 +18,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Início' },
   { to: '/perfil', label: 'Perfil' },
   { to: '/servicos', label: 'Serviços' },
+  { to: '/sistema', label: 'Sistema' },
   { to: '/cursos', label: 'Cursos' },
   { to: '/clientes', label: 'Clientes' },
   { to: '/novidades', label: 'Novidades' },
