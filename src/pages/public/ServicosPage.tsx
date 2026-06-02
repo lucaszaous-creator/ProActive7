@@ -10,8 +10,15 @@ import {
   BookOpen,
   ArrowRight,
 } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
+import seoConfig from '@/lib/seo.config.json';
+
+const FAQ = (seoConfig.pages['/servicos'].faq ?? []) as {
+  q: string;
+  a: string;
+}[];
 
 interface Servico {
   icon: LucideIcon;
@@ -68,8 +75,40 @@ export function ServicosPage() {
     <div>
       <Hero />
       <Grid />
+      <Faq />
       <CTA />
     </div>
+  );
+}
+
+function Faq() {
+  if (!FAQ.length) return null;
+  return (
+    <section className="border-t border-[#E8F1EA] bg-white">
+      <div className="mx-auto max-w-3xl px-5 py-16">
+        <div className="text-center">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#6FA68A]/40 bg-white px-3 py-1 text-xs font-medium text-[#2F5D3F]">
+            Perguntas frequentes
+          </span>
+          <h2 className="mt-4 text-2xl font-semibold tracking-tight md:text-3xl">
+            Dúvidas comuns sobre consultoria e ANVISA
+          </h2>
+        </div>
+        <div className="mt-8 divide-y divide-[#E8F1EA] overflow-hidden rounded-2xl border border-[#E8F1EA]">
+          {FAQ.map(({ q, a }) => (
+            <details key={q} className="group bg-white open:bg-[#FAFAF7]">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-left text-base font-medium text-[#1A2A22] [&::-webkit-details-marker]:hidden">
+                {q}
+                <Plus className="h-5 w-5 shrink-0 text-[#2F5D3F] transition-transform group-open:rotate-45" />
+              </summary>
+              <p className="px-6 pb-5 text-sm leading-relaxed text-[#1A2A22]/70">
+                {a}
+              </p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 

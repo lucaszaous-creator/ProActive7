@@ -12,13 +12,30 @@ import { BRAND_NAME } from './usePageTitle';
  * Fonte única de verdade: src/lib/seo.config.json.
  */
 
+type FaqItem = { q: string; a: string };
+
 type PageSeo = {
   title: string;
   description: string;
   keywords?: string[];
   noindex?: boolean;
+  image?: string;
   extraJsonLd?: unknown[];
+  faq?: FaqItem[];
 };
+
+/** Monta o JSON-LD FAQPage a partir do array de perguntas da rota. */
+export function buildFaqJsonLd(faq: FaqItem[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  };
+}
 
 const SITE_URL: string = seoConfig.siteUrl;
 const DEFAULT_IMAGE: string = seoConfig.defaultImage;
@@ -62,6 +79,7 @@ export function usePageMeta(path: string): void {
     const previousTitle = document.title;
     const fullTitle = `${page.title}`;
     const canonical = `${SITE_URL}${path === '/' ? '/' : path}`;
+    const image = page.image ?? DEFAULT_IMAGE;
 
     document.title = fullTitle;
     upsertMeta('name', 'description', page.description);
@@ -79,7 +97,7 @@ export function usePageMeta(path: string): void {
     upsertMeta('property', 'og:title', page.title);
     upsertMeta('property', 'og:description', page.description);
     upsertMeta('property', 'og:url', canonical);
-    upsertMeta('property', 'og:image', DEFAULT_IMAGE);
+    upsertMeta('property', 'og:image', image);
     upsertMeta('property', 'og:type', 'website');
     upsertMeta('property', 'og:site_name', BRAND_NAME);
     upsertMeta('property', 'og:locale', seoConfig.locale);
@@ -88,10 +106,11 @@ export function usePageMeta(path: string): void {
     upsertMeta('name', 'twitter:card', 'summary_large_image');
     upsertMeta('name', 'twitter:title', page.title);
     upsertMeta('name', 'twitter:description', page.description);
-    upsertMeta('name', 'twitter:image', DEFAULT_IMAGE);
+    upsertMeta('name', 'twitter:image', image);
 
-    // JSON-LD: organização (sitewide) + específicos da página.
+    // JSON-LD: organização (sitewide) + FAQ + específicos da página.
     const blocks: unknown[] = [seoConfig.organizationJsonLd];
+    if (page.faq?.length) blocks.push(buildFaqJsonLd(page.faq));
     if (page.extraJsonLd?.length) blocks.push(...page.extraJsonLd);
     const scripts = blocks.map((block) => {
       const s = document.createElement('script');
