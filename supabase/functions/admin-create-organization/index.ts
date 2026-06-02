@@ -78,6 +78,9 @@ Deno.serve(async (req) => {
     const nutritionistEmail: string | undefined = body?.nutritionist_email;
     const nutritionistPassword: string | undefined = body?.nutritionist_password;
     const nutritionistName: string | null = body?.nutritionist_name ?? null;
+    const planKey: string | null = body?.plan_key ?? null;
+    const trialEndsAt: string | null = body?.trial_ends_at ?? null;
+    const planRenewsAt: string | null = body?.plan_renews_at ?? null;
 
     if (!orgName || !nutritionistEmail || !nutritionistPassword) {
       return json(
@@ -114,6 +117,9 @@ Deno.serve(async (req) => {
         status: 'active',
         contact_email: contactEmail,
         contact_phone: contactPhone,
+        plan_key: planKey,
+        trial_ends_at: trialEndsAt,
+        plan_renews_at: planRenewsAt,
       })
       .select('id')
       .single();

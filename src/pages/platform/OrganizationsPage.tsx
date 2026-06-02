@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Plus, Pencil, Eye } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import type { Organization } from '@/lib/types';
+import type { Organization, Plan } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -33,6 +33,21 @@ export function OrganizationsPage() {
   const [nutritionistPassword, setNutritionistPassword] = useState('');
   const [nutritionistName, setNutritionistName] = useState('');
 
+  // Create-only: plano contratado + vigência
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [planKey, setPlanKey] = useState('');
+  const [trialEndsAt, setTrialEndsAt] = useState('');
+  const [planRenewsAt, setPlanRenewsAt] = useState('');
+
+  useEffect(() => {
+    void supabase
+      .from('plans')
+      .select('*')
+      .eq('active', true)
+      .order('sort_order')
+      .then(({ data }) => setPlans((data as Plan[] | null) ?? []));
+  }, []);
+
   const load = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase
@@ -61,6 +76,9 @@ export function OrganizationsPage() {
     setNutritionistEmail('');
     setNutritionistPassword('');
     setNutritionistName('');
+    setPlanKey('');
+    setTrialEndsAt('');
+    setPlanRenewsAt('');
     setModalOpen(true);
   }
 
@@ -126,6 +144,9 @@ export function OrganizationsPage() {
             nutritionist_email: nutritionistEmail.trim(),
             nutritionist_password: nutritionistPassword,
             nutritionist_name: nutritionistName.trim() || null,
+            plan_key: planKey || null,
+            trial_ends_at: trialEndsAt || null,
+            plan_renews_at: planRenewsAt || null,
           },
         },
       );
@@ -350,6 +371,52 @@ export function OrganizationsPage() {
                 value={nutritionistName}
                 onChange={(e) => setNutritionistName(e.target.value)}
               />
+            </div>
+          )}
+
+          {!editing && (
+            <div className="flex flex-col gap-4 border-t border-neutral-200 pt-4">
+              <p className="text-sm font-medium text-neutral-700">
+                Plano contratado
+              </p>
+              <Select
+                id="org-plan"
+                label="Plano"
+                value={planKey}
+                onChange={(e) => setPlanKey(e.target.value)}
+              >
+                <option value="">Sem plano (define depois)</option>
+                {plans.map((p) => (
+                  <option key={p.key} value={p.key}>
+                    {p.name}
+                    {p.company_limit === null
+                      ? ' · empresas ilimitadas'
+                      : ` · até ${p.company_limit} empresa${p.company_limit === 1 ? '' : 's'}`}
+                  </option>
+                ))}
+              </Select>
+              {!planKey && (
+                <p className="-mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+                  Sem plano, a nutricionista verá apenas os módulos básicos até
+                  você atribuir um plano na tela da organização.
+                </p>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  id="org-trial"
+                  label="Fim do trial (opcional)"
+                  type="date"
+                  value={trialEndsAt}
+                  onChange={(e) => setTrialEndsAt(e.target.value)}
+                />
+                <Input
+                  id="org-renews"
+                  label="Renovação (opcional)"
+                  type="date"
+                  value={planRenewsAt}
+                  onChange={(e) => setPlanRenewsAt(e.target.value)}
+                />
+              </div>
             </div>
           )}
         </div>
