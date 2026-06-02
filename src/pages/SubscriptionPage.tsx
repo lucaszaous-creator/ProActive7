@@ -1,5 +1,8 @@
-import { Check, Lock, Building2, CreditCard } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Check, Lock, Building2, CreditCard, ShieldCheck } from 'lucide-react';
+import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { MODULES } from '@/lib/modules';
 import { Card } from '@/components/ui/Card';
@@ -153,6 +156,92 @@ export function SubscriptionPage() {
           suporte do ProActive7.
         </p>
       </Card>
+
+      <SupportAccessCard orgId={sub.organization_id} />
     </div>
+  );
+}
+
+// Consentimento LGPD: a nutri (RT) autoriza ou revoga o acesso de suporte
+// (impersonate). Default OFF — sem isso, a Edge admin-impersonate bloqueia.
+function SupportAccessCard({ orgId }: { orgId: string }) {
+  const [allow, setAllow] = useState<boolean | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    void supabase
+      .from('organizations')
+      .select('allow_impersonation')
+      .eq('id', orgId)
+      .maybeSingle()
+      .then(({ data }) =>
+        setAllow(
+          (data as { allow_impersonation: boolean } | null)
+            ?.allow_impersonation ?? false,
+        ),
+      );
+  }, [orgId]);
+
+  async function toggle() {
+    if (allow === null) return;
+    const next = !allow;
+    setSaving(true);
+    const { error } = await supabase
+      .from('organizations')
+      .update({ allow_impersonation: next })
+      .eq('id', orgId);
+    setSaving(false);
+    if (error) {
+      toast.error('Erro ao atualizar: ' + error.message);
+      return;
+    }
+    setAllow(next);
+    toast.success(
+      next ? 'Acesso de suporte autorizado.' : 'Acesso de suporte revogado.',
+    );
+  }
+
+  return (
+    <Card className="mt-4">
+      <div className="flex items-start gap-3">
+        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-500 dark:bg-slate-800 dark:text-neutral-300">
+          <ShieldCheck size={18} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+            Acesso de suporte (entrar como)
+          </h2>
+          <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+            Quando autorizado, a equipe ProActive7 pode entrar na sua conta para
+            diagnosticar problemas. Fica <strong>desligado por padrão</strong> e
+            você pode revogar a qualquer momento. Cada acesso é registrado.
+          </p>
+          <div className="mt-3 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => void toggle()}
+              disabled={allow === null || saving}
+              aria-pressed={allow === true}
+              className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition disabled:opacity-50 ${
+                allow ? 'bg-emerald-600' : 'bg-neutral-300 dark:bg-neutral-700'
+              }`}
+            >
+              <span
+                className={`inline-block h-5 w-5 transform rounded-full bg-white transition ${
+                  allow ? 'translate-x-5' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
+            <span className="text-sm text-neutral-700 dark:text-neutral-200">
+              {allow === null
+                ? 'Carregando…'
+                : allow
+                  ? 'Autorizado'
+                  : 'Não autorizado'}
+            </span>
+          </div>
+        </div>
+      </div>
+    </Card>
   );
 }

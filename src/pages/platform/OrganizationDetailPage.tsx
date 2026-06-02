@@ -357,6 +357,20 @@ export function OrganizationDetailPage() {
                 </p>
               </div>
             </div>
+            <div className="mt-3 flex items-center gap-2 text-xs">
+              <span className="font-medium uppercase text-neutral-500">
+                Acesso de suporte (impersonate):
+              </span>
+              <span
+                className={`rounded-full px-2 py-0.5 font-medium ${
+                  org.allow_impersonation
+                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                    : 'bg-neutral-100 text-neutral-500 dark:bg-slate-800'
+                }`}
+              >
+                {org.allow_impersonation ? 'Autorizado pela nutri' : 'Não autorizado'}
+              </span>
+            </div>
           </Card>
         );
       })()}
@@ -485,9 +499,17 @@ export function OrganizationDetailPage() {
                               u.full_name ?? u.email ?? 'usuário',
                             )
                           }
-                          disabled={impersonating === u.id || !u.active}
+                          disabled={
+                            impersonating === u.id ||
+                            !u.active ||
+                            !org.allow_impersonation
+                          }
                           className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2 py-1 text-xs text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
-                          title="Abrir sessão como este usuário"
+                          title={
+                            org.allow_impersonation
+                              ? 'Abrir sessão como este usuário'
+                              : 'A organização não autorizou o acesso de suporte (LGPD). A nutri precisa habilitar em Minha assinatura.'
+                          }
                         >
                           <LogIn size={12} />
                           {impersonating === u.id ? '...' : 'Entrar como'}

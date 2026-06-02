@@ -17,6 +17,7 @@ export interface Organization {
   plan_key: string | null;
   trial_ends_at: string | null;
   plan_renews_at: string | null;
+  allow_impersonation: boolean;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
