@@ -88,6 +88,7 @@
       "priority": "1.0"
     },
     "/perfil": {
+      "image": "https://www.proactive7.com.br/og/perfil.png",
       "title": "Ariane Madureira — Nutricionista RT em Macaé | ProActive7",
       "description": "Conheça Ariane Madureira, nutricionista Responsável Técnica em Macaé/RJ. Consultoria em segurança alimentar e boas práticas para serviços de alimentação.",
       "keywords": [
@@ -100,6 +101,7 @@
       "priority": "0.7"
     },
     "/servicos": {
+      "image": "https://www.proactive7.com.br/og/servicos.png",
       "title": "Serviços de Consultoria em Segurança Alimentar | ProActive7",
       "description": "Implantação de boas práticas ANVISA RDC 216, POPs, manual de boas práticas, treinamento de manipuladores, auditorias e etiquetas de validade para serviços de alimentação.",
       "keywords": [
@@ -164,9 +166,36 @@
             ]
           }
         }
+      ],
+      "faq": [
+        {
+          "q": "O que faz uma nutricionista Responsável Técnica (RT)?",
+          "a": "A nutricionista RT responde tecnicamente pelo seu estabelecimento perante a ANVISA e a Vigilância Sanitária. Ela implanta e acompanha as boas práticas de manipulação, assina o Manual de Boas Práticas e os POPs e orienta a equipe para manter a operação dentro da legislação."
+        },
+        {
+          "q": "O que é a RDC 216 da ANVISA?",
+          "a": "A RDC 216/2004 é a resolução da ANVISA que define as Boas Práticas para serviços de alimentação em todo o Brasil. Ela estabelece regras de higiene, controle de temperatura, manipuladores, documentação e rastreabilidade que restaurantes, cozinhas e similares precisam seguir."
+        },
+        {
+          "q": "Quais estabelecimentos precisam de consultoria em segurança alimentar?",
+          "a": "Restaurantes, cozinhas industriais, hotéis, padarias, mercados, escolas, hortifrútis e operações on-shore e off-shore — qualquer estabelecimento que manipule, produza ou forneça alimentos e precise atender à ANVISA e à Vigilância Sanitária."
+        },
+        {
+          "q": "A ProActive7 atende em Macaé e região?",
+          "a": "Sim. Atendemos Macaé/RJ e região, com visitas técnicas presenciais, treinamentos in-company e acompanhamento periódico das boas práticas de manipulação de alimentos."
+        },
+        {
+          "q": "Vocês ajudam com o Manual de Boas Práticas e os POPs?",
+          "a": "Sim. Elaboramos o Manual de Boas Práticas personalizado para o seu ramo e os POPs (Procedimentos Operacionais Padronizados) que orientam o manipulador no dia a dia, conforme exigido pela RDC 216."
+        },
+        {
+          "q": "Como funciona a etiqueta de validade exigida pela ANVISA?",
+          "a": "Todo produto manipulado e armazenado deve ser identificado com etiqueta contendo, no mínimo, a data de manipulação e a validade. Nosso sistema gera essas etiquetas automaticamente, com os prazos definidos pela nutricionista RT, evitando erros de digitação na cozinha."
+        }
       ]
     },
     "/sistema": {
+      "image": "https://www.proactive7.com.br/og/sistema.png",
       "title": "Sistema de Etiquetas de Validade e Compliance ANVISA | ProActive7",
       "description": "Software para cozinhas: etiquetas de validade térmicas, controle de temperatura, POPs, auditorias RDC 216 e gestão de não conformidades. Zero digitação na cozinha.",
       "keywords": [
@@ -194,6 +223,7 @@
       ]
     },
     "/novidades": {
+      "image": "https://www.proactive7.com.br/og/novidades.png",
       "title": "Novidades e Conteúdo sobre Segurança Alimentar | ProActive7",
       "description": "Atualizações sobre ANVISA RDC 216, boas práticas em cozinhas, segurança alimentar e gestão de serviços de alimentação pela ProActive7.",
       "keywords": [
@@ -205,6 +235,7 @@
       "priority": "0.6"
     },
     "/contato": {
+      "image": "https://www.proactive7.com.br/og/contato.png",
       "title": "Contato — Consultoria Nutricional em Macaé | ProActive7",
       "description": "Fale com a ProActive7 em Macaé/RJ. Consultoria nutricional e segurança alimentar para restaurantes, cozinhas industriais e serviços de alimentação. WhatsApp e e-mail.",
       "keywords": [
@@ -216,12 +247,14 @@
       "priority": "0.6"
     },
     "/cursos": {
+      "image": "https://www.proactive7.com.br/og/cursos.png",
       "title": "Cursos e Treinamentos — Em breve | ProActive7",
       "description": "Cursos e treinamentos em segurança alimentar e boas práticas — em breve na ProActive7.",
       "keywords": ["cursos segurança alimentar", "treinamento boas práticas"],
       "noindex": true
     },
     "/clientes": {
+      "image": "https://www.proactive7.com.br/og/clientes.png",
       "title": "Clientes — Em breve | ProActive7",
       "description": "Cases e clientes atendidos pela ProActive7 — em breve.",
       "keywords": ["clientes ProActive7"],
