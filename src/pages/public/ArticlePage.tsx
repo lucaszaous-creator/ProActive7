@@ -136,16 +136,21 @@ export function ArticlePage() {
                 {children}
               </strong>
             ),
-            a: ({ href, children }) => (
-              <a
-                href={href}
-                className="text-[#2F5D3F] underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {children}
-              </a>
-            ),
+            a: ({ href, children }) => {
+              // Defesa em profundidade contra javascript:/data: URIs.
+              const safe = href && /^(https?:|mailto:|\/)/i.test(href);
+              if (!safe) return <span>{children}</span>;
+              return (
+                <a
+                  href={href}
+                  className="text-[#2F5D3F] underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {children}
+                </a>
+              );
+            },
           }}
         >
           {article.body}
