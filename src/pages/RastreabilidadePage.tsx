@@ -50,6 +50,9 @@ interface LabelRow {
 export function RastreabilidadePage() {
   usePageTitle('Rastreabilidade');
   const { companyId, companyName } = useCompanyScope();
+  // Snapshot único de "agora" por sessão da página — lazy initializer do
+  // useState para satisfazer a regra react-hooks/purity (sem Date.now no render).
+  const [renderNow] = useState(() => Date.now());
   const [batch, setBatch] = useState('');
   const [searching, setSearching] = useState(false);
   const [searched, setSearched] = useState(false);
@@ -97,7 +100,7 @@ export function RastreabilidadePage() {
   }, [batch, companyId]);
 
   const summary = useMemo(() => {
-    const now = Date.now();
+    const now = renderNow;
     const labelsTotal = labels.length;
     const consumed = labels.filter((l) => l.consumed_at).length;
     const expired = labels.filter(
@@ -106,7 +109,7 @@ export function RastreabilidadePage() {
     const active = labelsTotal - consumed - expired;
     const recTotal = receivings.length;
     return { labelsTotal, consumed, expired, active, recTotal };
-  }, [labels, receivings]);
+  }, [labels, receivings, renderNow]);
 
   if (!companyId) {
     return (
@@ -234,7 +237,7 @@ export function RastreabilidadePage() {
                   </thead>
                   <tbody>
                     {labels.map((l) => {
-                      const now = Date.now();
+                      const now = renderNow;
                       const isConsumed = !!l.consumed_at;
                       const isExpired =
                         !isConsumed && new Date(l.expiry_at).getTime() < now;
