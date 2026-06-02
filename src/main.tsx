@@ -2,11 +2,12 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import * as Sentry from '@sentry/react';
 import { registerSW } from 'virtual:pwa-register';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { RootErrorBoundary } from './components/RootErrorBoundary';
+import { setErrorReporter } from './lib/errorReporter';
 import './i18n';
 import './index.css';
 
@@ -20,39 +21,26 @@ const updateSW = registerSW({
   },
 });
 
-// Sentry so liga quando o DSN esta configurado (producao). Em dev
-// fica off para nao poluir o dashboard.
+// Sentry só liga em produção com DSN. Carregado de forma assíncrona para
+// ficar fora do bundle inicial (não é necessário para o primeiro paint) —
+// ganho direto de Core Web Vitals nas páginas públicas.
 const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
 if (sentryDsn && import.meta.env.PROD) {
-  Sentry.init({
-    dsn: sentryDsn,
-    environment: import.meta.env.MODE,
-    release: import.meta.env.VITE_RELEASE,
-    integrations: [Sentry.browserTracingIntegration()],
-    tracesSampleRate: 0.1,
+  void import('@sentry/react').then((Sentry) => {
+    Sentry.init({
+      dsn: sentryDsn,
+      environment: import.meta.env.MODE,
+      release: import.meta.env.VITE_RELEASE,
+      integrations: [Sentry.browserTracingIntegration()],
+      tracesSampleRate: 0.1,
+    });
+    setErrorReporter((error) => Sentry.captureException(error));
   });
 }
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Sentry.ErrorBoundary
-      fallback={
-        <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-6 text-center">
-          <h1 className="text-lg font-semibold text-neutral-800">
-            Algo deu errado.
-          </h1>
-          <p className="max-w-sm text-sm text-neutral-600">
-            Já registramos o erro. Recarregue a página para tentar novamente.
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-          >
-            Recarregar
-          </button>
-        </div>
-      }
-    >
+    <RootErrorBoundary>
       <ThemeProvider>
         <BrowserRouter>
           <AuthProvider>
@@ -61,6 +49,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Toaster richColors position="top-right" />
         </BrowserRouter>
       </ThemeProvider>
-    </Sentry.ErrorBoundary>
+    </RootErrorBoundary>
   </React.StrictMode>,
 );
