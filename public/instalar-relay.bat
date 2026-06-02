@@ -58,7 +58,7 @@ if "%TOKEN%"=="" (
     pause & exit /b 1
 )
 
-powershell -NoProfile -ExecutionPolicy Bypass -Command "$cfg = [ordered]@{ supabaseUrl='https://glvdiicipblsohdgmqaz.supabase.co'; anonKey='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsdmRpaWNpcGJsc29oZGdtcWF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzA2MDAsImV4cCI6MjA5NTA0NjYwMH0.-RZ1w7l78auSDe7u5-gcFJumLRusjrF4i28WibbK4EI'; token='%TOKEN%'; pollMs=2000 }; ($cfg | ConvertTo-Json -Depth 5) | Out-File -FilePath '%DEST%\relay-config.json' -Encoding UTF8" >nul
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$cfg = [ordered]@{ supabaseUrl='https://glvdiicipblsohdgmqaz.supabase.co'; anonKey='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsdmRpaWNpcGJsc29oZGdtcWF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk0NzA2MDAsImV4cCI6MjA5NTA0NjYwMH0.-RZ1w7l78auSDe7u5-gcFJumLRusjrF4i28WibbK4EI'; token='%TOKEN%'; relayUrl='https://pro-active7.vercel.app/relay.ps1'; pollMs=2000 }; ($cfg | ConvertTo-Json -Depth 5) | Out-File -FilePath '%DEST%\relay-config.json' -Encoding UTF8" >nul
 if errorlevel 1 (
     echo   ERRO: falhou ao salvar config.
     pause & exit /b 1

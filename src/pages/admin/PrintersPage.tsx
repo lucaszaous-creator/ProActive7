@@ -101,11 +101,14 @@ export function PrintersPage() {
   }
 
   // Nomes de impressoras detectadas pelo relay (Get-Printer), p/ sugestão.
+  // Filtra impressoras virtuais (PDF/XPS/OneNote/Fax) — não imprimem etiqueta.
   const discoveredNames = Array.from(
     new Set(
-      agents.flatMap((a) => (a.discovered ?? []).map((d) => d.name).filter(Boolean)),
+      agents.flatMap((a) =>
+        (a.discovered ?? []).map((d) => d.name).filter(Boolean),
+      ),
     ),
-  );
+  ).filter((n) => !isVirtualPrinter(n));
 
   return (
     <div className="mx-auto max-w-4xl space-y-4">
@@ -382,6 +385,7 @@ function AgentForm({
   const [printerName, setPrinterName] = useState(suggestions[0] ?? '');
   const [sizeKey, setSizeKey] = useState('40x40');
   const [dpi, setDpi] = useState(203);
+  const [language, setLanguage] = useState<'zpl' | 'escpos'>('zpl');
   const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -403,6 +407,7 @@ function AgentForm({
       label_width_mm: w,
       label_height_mm: h,
       dpi,
+      language,
       created_by: createdBy,
     });
     setSaving(false);
@@ -466,6 +471,21 @@ function AgentForm({
             <option value="203">203 dpi (padrão)</option>
             <option value="300">300 dpi</option>
           </Select>
+        </div>
+        <div>
+          <Select
+            label="Tipo de impressora"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as 'zpl' | 'escpos')}
+          >
+            <option value="zpl">ZPL — Zebra / Elgin L42 (etiqueta)</option>
+            <option value="escpos">ESC/POS — térmica 58/80 mm</option>
+          </Select>
+          <p className="mt-1 text-xs text-neutral-500">
+            Escolha conforme o modelo. ZPL é o padrão das impressoras de
+            etiqueta; ESC/POS são as térmicas de cupom 58/80 mm. ESC/POS exige o
+            relay atualizado (v3+).
+          </p>
         </div>
         <div className="flex gap-2">
           <Button type="submit" disabled={saving}>

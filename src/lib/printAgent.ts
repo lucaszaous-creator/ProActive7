@@ -6,7 +6,24 @@
 // supabase_realtime (subscribePrintJob).
 import { supabase } from './supabase';
 import { buildLabelZpl } from './zpl';
+import { buildLabelEscPos } from './escpos';
+import { ALLERGENS } from './allergens';
 import type { LabelData } from '@/components/LabelPreview';
+
+const ALLERGEN_LABEL = new Map<string, string>(
+  ALLERGENS.map((a) => [a.key, a.label]),
+);
+
+function allergensToText(keys: string[]): string {
+  return keys.map((k) => ALLERGEN_LABEL.get(k) ?? k).join(', ');
+}
+
+/** Uint8Array -> base64 (para trafegar ESC/POS binário no payload de texto). */
+function bytesToBase64(bytes: Uint8Array): string {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
 
 /** Impressora do Windows reportada pelo relay (Get-Printer). */
 export interface DiscoveredPrinter {
@@ -20,6 +37,8 @@ export interface PrintAgent {
   computer_name: string | null;
   /** Nome exato da impressora instalada no Windows. */
   printer_name: string | null;
+  /** Linguagem da impressora: zpl (Zebra/Elgin) ou escpos (térmicas 58/80mm). */
+  language: 'zpl' | 'escpos';
   label_width_mm: number;
   label_height_mm: number;
   dpi: number;
@@ -92,12 +111,39 @@ export interface DirectPrintInput {
 export async function queueDirectPrint(
   input: DirectPrintInput,
 ): Promise<string> {
-  const zpl = buildLabelZpl(input.labelData, {
-    widthMm: input.widthMm,
-    heightMm: input.heightMm,
-    dpi: input.agent.dpi,
-    copies: input.copies,
-  });
+  // O payload é SEMPRE uma única etiqueta; a quantidade é controlada pelo
+  // relay (loop de copies). Antes o ZPL usava ^PQ{copies} E o relay repetia,
+  // gerando copies² etiquetas — corrigido aqui passando copies: 1.
+  const escpos = input.agent.language === 'escpos';
+  let payload: string;
+  if (escpos) {
+    const ld = input.labelData;
+    const bytes = buildLabelEscPos({
+      companyName: ld.companyName,
+      productName: ld.productName,
+      storageConditionLabel: ld.storageConditionLabel,
+      displayQuantity: ld.displayQuantity,
+      manipulationText: ld.manipulationText,
+      expiryText: ld.expiryText,
+      originalExpiryText: ld.originalExpiryText,
+      responsibleName: ld.responsibleName,
+      batch: ld.batch,
+      supplier: ld.supplier,
+      allergensText: allergensToText(ld.allergens ?? []),
+      companyAddress: ld.companyAddress,
+      companyCnpj: ld.companyCnpj,
+      printId: ld.printId,
+      qrUrl: ld.qrUrl,
+    });
+    payload = bytesToBase64(bytes);
+  } else {
+    payload = buildLabelZpl(input.labelData, {
+      widthMm: input.widthMm,
+      heightMm: input.heightMm,
+      dpi: input.agent.dpi,
+      copies: 1,
+    });
+  }
   // Só preenche label_id se a linha JÁ existir em label_prints (FK exige).
   // No fluxo de impressão direta a label_prints geralmente ainda não foi
   // criada (só é criada na confirmação do diálogo do navegador).
@@ -116,7 +162,8 @@ export async function queueDirectPrint(
       company_id: input.companyId,
       agent_id: input.agent.id,
       label_id: labelId,
-      zpl,
+      zpl: payload,
+      format: escpos ? 'escpos' : 'zpl',
       copies: input.copies,
       created_by: input.createdBy ?? null,
     })

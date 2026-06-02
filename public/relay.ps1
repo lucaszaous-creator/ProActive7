@@ -5,7 +5,7 @@
 # - Logs centralizados: erros vao pro Supabase (relay_logs) + arquivo local
 # Log local: %APPDATA%\ProActive7\relay.log
 
-$RELAY_VERSION = '2'
+$RELAY_VERSION = '3'
 
 $ErrorActionPreference = 'Continue'
 $ProgressPreference = 'SilentlyContinue'
@@ -28,7 +28,9 @@ if (-not (Test-Path $configPath)) {
 $cfg = Get-Content $configPath -Raw | ConvertFrom-Json
 $baseUrl = $cfg.supabaseUrl.TrimEnd('/')
 $url = "$baseUrl/functions/v1/print-agent"
-$relayUrl = "$baseUrl/../relay.ps1"  # nao usado; download via dominio publico
+# URL de onde o relay.ps1 e baixado no auto-update. Configuravel (cfg.relayUrl);
+# default no dominio publico que SERVE o arquivo (Vercel), nao o supabaseUrl.
+$relayDownloadUrl = if ($cfg.relayUrl) { $cfg.relayUrl } else { 'https://pro-active7.vercel.app/relay.ps1' }
 $token = $cfg.token
 $anon = $cfg.anonKey
 $pollMs = if ($cfg.pollMs) { [int]$cfg.pollMs } else { 2000 }
@@ -95,22 +97,32 @@ function Send-RemoteLog($level, $msg) {
     try { Invoke-Agent @{ action = 'log'; level = $level; message = $msg } | Out-Null } catch {}
 }
 
-# Auto-update: baixa nova versao do relay.ps1 e reinicia a tarefa
+# Auto-update: baixa nova versao do relay.ps1 e reinicia a tarefa.
+# So atualiza para versao ESTRITAMENTE MAIOR (evita downgrade/thrash) e
+# VALIDA o conteudo antes de sobrescrever (evita brickar se a URL devolver
+# uma pagina de erro HTML em vez do script).
 function Update-Self($latest) {
     if ([string]::IsNullOrEmpty($latest)) { return }
-    if ($latest -eq $RELAY_VERSION) { return }
-    Write-RelayLog "Nova versao disponivel: $latest (atual $RELAY_VERSION). Atualizando..."
-    $downloadUrl = 'https://proactive7.com.br/relay.ps1'
+    $latestNum = 0; $curNum = 0
+    if (-not [int]::TryParse([string]$latest, [ref]$latestNum)) { return }
+    [void][int]::TryParse($RELAY_VERSION, [ref]$curNum)
+    if ($latestNum -le $curNum) { return }
+    Write-RelayLog "Nova versao disponivel: $latest (atual $RELAY_VERSION). Atualizando de $relayDownloadUrl..."
     try {
         $tmp = Join-Path $configDir 'relay.ps1.new'
-        Invoke-WebRequest -UseBasicParsing -MaximumRedirection 10 -Uri $downloadUrl -OutFile $tmp -ErrorAction Stop
-        if ((Get-Item $tmp).Length -gt 1000) {
+        Invoke-WebRequest -UseBasicParsing -MaximumRedirection 10 -Uri $relayDownloadUrl -OutFile $tmp -ErrorAction Stop
+        $content = Get-Content $tmp -Raw -ErrorAction Stop
+        # Valida que e mesmo o relay (e nao um HTML 404/parking page).
+        if ($content.Length -gt 1000 -and $content -match 'ProActive7 - Print Relay' -and $content -match '\$RELAY_VERSION') {
             Move-Item -Force $tmp $selfPath
             Write-RelayLog "Relay atualizado. Reiniciando processo."
             Send-RemoteLog 'info' "Relay auto-atualizado para versao $latest"
-            # Reinicia a si mesmo e encerra o atual
             Start-Process powershell -ArgumentList @('-NoProfile','-WindowStyle','Hidden','-ExecutionPolicy','Bypass','-File',"`"$selfPath`"") -WindowStyle Hidden
             exit 0
+        } else {
+            Remove-Item $tmp -ErrorAction SilentlyContinue
+            Write-RelayLog "Auto-update abortado: download nao parece um relay valido."
+            Send-RemoteLog 'warn' "Auto-update abortado: conteudo invalido de $relayDownloadUrl"
         }
     } catch {
         Write-RelayLog "Falha no auto-update: $($_.Exception.Message)"
@@ -171,9 +183,14 @@ while ($true) {
                 }
             } else {
                 foreach ($job in $resp.jobs) {
-                    Write-RelayLog "Imprimindo job $($job.id) na '$printerName' (copias=$($job.copies))"
+                    Write-RelayLog "Imprimindo job $($job.id) na '$printerName' (copias=$($job.copies) formato=$($job.format))"
                     try {
-                        $bytes = [System.Text.Encoding]::UTF8.GetBytes($job.zpl)
+                        # ZPL = texto UTF-8; ESC/POS = bytes binarios em base64.
+                        if ($job.format -eq 'escpos') {
+                            $bytes = [Convert]::FromBase64String($job.zpl)
+                        } else {
+                            $bytes = [System.Text.Encoding]::UTF8.GetBytes($job.zpl)
+                        }
                         $copies = if ($job.copies) { [int]$job.copies } else { 1 }
                         $ok = $true
                         for ($i = 0; $i -lt $copies; $i++) {

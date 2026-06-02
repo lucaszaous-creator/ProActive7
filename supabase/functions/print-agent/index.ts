@@ -106,27 +106,41 @@ Deno.serve(async (req) => {
       return json({ ok: true }, 200);
     }
 
-    // action=poll: jobs queued de QUALQUER agente da MESMA empresa
-    const { data: jobs } = await admin
-      .from('print_jobs')
-      .select('id, zpl, copies, agent_id')
-      .eq('company_id', agent.company_id)
-      .eq('status', 'queued')
-      .order('created_at', { ascending: true })
-      .limit(10);
+    // action=poll
+    const nowIso = new Date().toISOString();
+    const staleBefore = new Date(Date.now() - 3 * 60 * 1000).toISOString();
 
-    const claimed = jobs ?? [];
-    if (claimed.length > 0) {
-      await admin
-        .from('print_jobs')
-        .update({ status: 'printing', updated_at: new Date().toISOString() })
-        .in('id', claimed.map((j) => j.id));
-    }
+    // (a) Re-enfileira jobs presos em 'printing' há >3min: o relay pode ter
+    // morrido (PC desligou) depois de pegar o job e antes do ack. Sem isso,
+    // a etiqueta sumiria em silêncio.
+    await admin
+      .from('print_jobs')
+      .update({ status: 'queued', updated_at: nowIso })
+      .eq('company_id', agent.company_id)
+      .eq('agent_id', agent.id)
+      .eq('status', 'printing')
+      .lt('updated_at', staleBefore);
+
+    // (b) Claim ATÔMICO: só jobs DESTE agente ainda 'queued'. O filtro
+    // status='queued' dentro da própria UPDATE fecha a corrida (dois relays
+    // não pegam o mesmo job → sem duplo-print) e roteia pela impressora
+    // certa (agent_id), em vez de "qualquer agente da empresa".
+    const { data: claimed } = await admin
+      .from('print_jobs')
+      .update({ status: 'printing', updated_at: nowIso })
+      .eq('company_id', agent.company_id)
+      .eq('agent_id', agent.id)
+      .eq('status', 'queued')
+      .select('id, zpl, copies, format, created_at');
+
+    const jobs = (claimed ?? []).sort((a, b) =>
+      String(a.created_at).localeCompare(String(b.created_at)),
+    );
 
     return json(
       {
         ok: true,
-        jobs: claimed,
+        jobs,
         latest_version: LATEST_RELAY_VERSION,
         printer: {
           name: agent.printer_name,
