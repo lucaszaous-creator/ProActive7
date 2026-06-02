@@ -20,6 +20,7 @@ type PageSeo = {
   keywords?: string[];
   noindex?: boolean;
   image?: string;
+  crumb?: string;
   extraJsonLd?: unknown[];
   faq?: FaqItem[];
 };
@@ -34,6 +35,32 @@ export function buildFaqJsonLd(faq: FaqItem[]) {
       name: item.q,
       acceptedAnswer: { '@type': 'Answer', text: item.a },
     })),
+  };
+}
+
+/** Trilha de navegação (Início › Página) para o rich result de breadcrumb. */
+export function buildBreadcrumbJsonLd(
+  siteUrl: string,
+  path: string,
+  crumb: string,
+) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Início',
+        item: `${siteUrl}/`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: crumb,
+        item: `${siteUrl}${path}`,
+      },
+    ],
   };
 }
 
@@ -98,6 +125,9 @@ export function usePageMeta(path: string): void {
     upsertMeta('property', 'og:description', page.description);
     upsertMeta('property', 'og:url', canonical);
     upsertMeta('property', 'og:image', image);
+    upsertMeta('property', 'og:image:alt', page.title);
+    upsertMeta('property', 'og:image:width', '1200');
+    upsertMeta('property', 'og:image:height', '630');
     upsertMeta('property', 'og:type', 'website');
     upsertMeta('property', 'og:site_name', BRAND_NAME);
     upsertMeta('property', 'og:locale', seoConfig.locale);
@@ -107,9 +137,13 @@ export function usePageMeta(path: string): void {
     upsertMeta('name', 'twitter:title', page.title);
     upsertMeta('name', 'twitter:description', page.description);
     upsertMeta('name', 'twitter:image', image);
+    upsertMeta('name', 'twitter:image:alt', page.title);
 
-    // JSON-LD: organização (sitewide) + FAQ + específicos da página.
+    // JSON-LD: organização (sitewide) + breadcrumb + FAQ + específicos.
     const blocks: unknown[] = [seoConfig.organizationJsonLd];
+    if (page.crumb) {
+      blocks.push(buildBreadcrumbJsonLd(SITE_URL, path, page.crumb));
+    }
     if (page.faq?.length) blocks.push(buildFaqJsonLd(page.faq));
     if (page.extraJsonLd?.length) blocks.push(...page.extraJsonLd);
     const scripts = blocks.map((block) => {
