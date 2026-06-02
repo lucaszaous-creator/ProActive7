@@ -46,9 +46,22 @@ function stripManagedTags(html) {
     );
 }
 
+function buildFaqJsonLd(faq) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faq.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  };
+}
+
 function buildHead(path, page) {
   const canonical = `${siteUrl}${path === '/' ? '/' : path}`;
   const robots = page.noindex ? 'noindex,nofollow' : 'index,follow';
+  const image = page.image ?? defaultImage;
   const t = escapeHtml(page.title);
   const d = escapeHtml(page.description);
   const lines = [
@@ -68,15 +81,19 @@ function buildHead(path, page) {
     `<meta property="og:title" content="${t}" />`,
     `<meta property="og:description" content="${d}" />`,
     `<meta property="og:url" content="${canonical}" />`,
-    `<meta property="og:image" content="${defaultImage}" />`,
+    `<meta property="og:image" content="${image}" />`,
     `<meta property="og:locale" content="${locale}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${t}" />`,
     `<meta name="twitter:description" content="${d}" />`,
-    `<meta name="twitter:image" content="${defaultImage}" />`,
+    `<meta name="twitter:image" content="${image}" />`,
   );
 
-  const blocks = [config.organizationJsonLd, ...(page.extraJsonLd ?? [])];
+  const blocks = [
+    config.organizationJsonLd,
+    ...(page.faq?.length ? [buildFaqJsonLd(page.faq)] : []),
+    ...(page.extraJsonLd ?? []),
+  ];
   for (const block of blocks) {
     lines.push(
       `<script type="application/ld+json">${JSON.stringify(block)}</script>`,
