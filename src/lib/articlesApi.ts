@@ -80,27 +80,29 @@ export async function saveArticle(input: ArticleInput): Promise<void> {
     tags: input.tags,
     cover_image: input.cover_image,
     published: input.published,
-    // Define a data de publicação na primeira vez que é publicado.
-    published_at: input.published ? new Date().toISOString() : null,
   };
 
   if (input.id) {
-    // Preserva published_at já existente quando continua publicado.
+    // published_at é definido na PRIMEIRA publicação e nunca mais é apagado
+    // (despublicar não zera a data; republicar preserva a data original).
     const { data: existing } = await supabase
       .from('articles')
       .select('published_at')
       .eq('id', input.id)
       .single();
-    const published_at = input.published
-      ? (existing?.published_at ?? base.published_at)
-      : null;
+    const published_at =
+      existing?.published_at ??
+      (input.published ? new Date().toISOString() : null);
     const { error } = await supabase
       .from('articles')
       .update({ ...base, published_at })
       .eq('id', input.id);
     if (error) throw error;
   } else {
-    const { error } = await supabase.from('articles').insert(base);
+    const { error } = await supabase.from('articles').insert({
+      ...base,
+      published_at: input.published ? new Date().toISOString() : null,
+    });
     if (error) throw error;
   }
 }
