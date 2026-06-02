@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Leaf, ArrowRight, Construction } from 'lucide-react';
-import { usePageTitle } from '@/lib/usePageTitle';
+import { usePageMeta } from '@/lib/usePageMeta';
 
 interface ComingSoonProps {
   badge: string;
@@ -8,7 +8,8 @@ interface ComingSoonProps {
   subtitle: string;
   /** Texto curto exibido no cartão central. */
   message?: string;
-  pageTitle: string;
+  /** Rota registrada em seo.config.json (ex.: '/cursos'). */
+  seoPath: string;
 }
 
 export function ComingSoonPage({
@@ -16,9 +17,9 @@ export function ComingSoonPage({
   title,
   subtitle,
   message,
-  pageTitle,
+  seoPath,
 }: ComingSoonProps) {
-  usePageTitle(pageTitle);
+  usePageMeta(seoPath);
   return (
     <div>
       <section className="relative overflow-hidden border-b border-[#E8F1EA] bg-gradient-to-b from-[#E8F1EA] to-[#FAFAF7]">
@@ -78,7 +79,7 @@ export function ComingSoonPage({
 export function CursosPage() {
   return (
     <ComingSoonPage
-      pageTitle="Cursos — ProActive7"
+      seoPath="/cursos"
       badge="Cursos e treinamentos"
       title="Treinamentos para manipuladores e gestores."
       subtitle="Capacitação técnica, palestras e cursos práticos sobre boas práticas, segurança alimentar e legislação."
@@ -90,7 +91,7 @@ export function CursosPage() {
 export function ClientesPage() {
   return (
     <ComingSoonPage
-      pageTitle="Clientes — ProActive7"
+      seoPath="/clientes"
       badge="Quem confia"
       title="Estabelecimentos que confiam no nosso trabalho."
       subtitle="Indústrias, restaurantes, hotéis, padarias, mercados, escolas, hortifrutis e operações on-shore e off-shore."

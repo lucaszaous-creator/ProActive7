@@ -11,12 +11,12 @@ import {
   Clock,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { usePageTitle } from '@/lib/usePageTitle';
+import { usePageMeta } from '@/lib/usePageMeta';
 
 const WHATSAPP_URL = 'https://wa.me/5522997662669';
 
 export function ContatoPage() {
-  usePageTitle('Contato — ProActive7');
+  usePageMeta('/contato');
   return (
     <div>
       <Hero />

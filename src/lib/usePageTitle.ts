@@ -12,7 +12,7 @@ export const BRAND_TAGLINE = 'Boa alimentação, bem-estar e saúde!';
 export const BRAND_TAGLINE_LONG =
   'Consultoria Nutricional e Segurança Alimentar';
 export const SITE_URL =
-  import.meta.env.VITE_SITE_URL ?? 'https://pro-active7.vercel.app';
+  import.meta.env.VITE_SITE_URL ?? 'https://www.proactive7.com.br';
 
 export function usePageTitle(title: string | null | undefined): void {
   useEffect(() => {

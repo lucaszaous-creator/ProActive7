@@ -11,7 +11,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { usePageTitle } from '@/lib/usePageTitle';
+import { usePageMeta } from '@/lib/usePageMeta';
 
 interface Servico {
   icon: LucideIcon;
@@ -63,7 +63,7 @@ const SERVICOS: Servico[] = [
 ];
 
 export function ServicosPage() {
-  usePageTitle('Serviços — ProActive7');
+  usePageMeta('/servicos');
   return (
     <div>
       <Hero />

@@ -1,5 +1,5 @@
 import { Instagram, ArrowRight, Hash } from 'lucide-react';
-import { usePageTitle } from '@/lib/usePageTitle';
+import { usePageMeta } from '@/lib/usePageMeta';
 
 interface Post {
   title: string;
@@ -58,7 +58,7 @@ const POSTS: Post[] = [
 const INSTAGRAM_URL = 'https://www.instagram.com/proactive.7/';
 
 export function NovidadesPage() {
-  usePageTitle('Novidades — ProActive7');
+  usePageMeta('/novidades');
   return (
     <div>
       <Hero />

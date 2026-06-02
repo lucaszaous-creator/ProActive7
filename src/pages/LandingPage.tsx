@@ -14,10 +14,10 @@ import {
   Leaf,
   Sparkles,
 } from 'lucide-react';
-import { usePageTitle } from '@/lib/usePageTitle';
+import { usePageMeta } from '@/lib/usePageMeta';
 
 export function LandingPage() {
-  usePageTitle('Consultoria Nutricional e Segurança Alimentar');
+  usePageMeta('/');
   return (
     <>
       <Hero />

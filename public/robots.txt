@@ -1,5 +1,15 @@
 User-agent: *
 Allow: /
-Disallow: /admin/
 
-Sitemap: https://pro-active7.vercel.app/sitemap.xml
+# Áreas autenticadas / não públicas — sem conteúdo indexável
+Disallow: /login
+Disallow: /redefinir-senha
+Disallow: /painel
+Disallow: /admin/
+Disallow: /platform/
+Disallow: /imprimir
+# Páginas públicas dinâmicas por item (etiqueta/selo) — não indexar
+Disallow: /etiqueta/
+Disallow: /selo/
+
+Sitemap: https://www.proactive7.com.br/sitemap.xml
