@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, ArrowRight, Hash, BookOpen } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
-import { publishedArticles } from '@/content/articles';
+import { fetchPublishedArticles, type ArticleSummary } from '@/lib/articlesApi';
 
 interface Post {
   title: string;
@@ -72,7 +73,16 @@ export function NovidadesPage() {
 }
 
 function Articles() {
-  const articles = publishedArticles();
+  const [articles, setArticles] = useState<ArticleSummary[]>([]);
+  useEffect(() => {
+    let active = true;
+    fetchPublishedArticles()
+      .then((a) => active && setArticles(a))
+      .catch(() => active && setArticles([]));
+    return () => {
+      active = false;
+    };
+  }, []);
   if (!articles.length) return null;
   return (
     <section className="mx-auto max-w-6xl px-5 py-16">

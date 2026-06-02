@@ -123,9 +123,7 @@ export function PublicSealPage() {
           <Row
             label="Manipuladores com ASO válido"
             value={
-              data.asos_valid_pct === null
-                ? '—'
-                : `${data.asos_valid_pct}%`
+              data.asos_valid_pct === null ? '—' : `${data.asos_valid_pct}%`
             }
           />
         </div>
@@ -143,9 +141,9 @@ export function PublicSealPage() {
             controle de pragas.
           </p>
           <p className="mt-2 leading-relaxed">
-            <b>{BRAND_NAME}</b> não tem vínculo comercial com o
-            estabelecimento avaliado. O selo é gerado automaticamente a partir
-            dos registros operacionais da empresa.
+            <b>{BRAND_NAME}</b> não tem vínculo comercial com o estabelecimento
+            avaliado. O selo é gerado automaticamente a partir dos registros
+            operacionais da empresa.
           </p>
         </div>
 

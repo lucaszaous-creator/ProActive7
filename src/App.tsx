@@ -50,6 +50,11 @@ const ArticlePage = lazy(() =>
     default: m.ArticlePage,
   })),
 );
+const ArticlesAdminPage = lazy(() =>
+  import('./pages/admin/ArticlesAdminPage').then((m) => ({
+    default: m.ArticlesAdminPage,
+  })),
+);
 
 const ResetPasswordPage = lazy(() =>
   import('./pages/ResetPasswordPage').then((m) => ({
@@ -328,6 +333,7 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/admin/empresas" element={<CompaniesPage />} />
             <Route path="/admin/usuarios" element={<UsersPage />} />
+            <Route path="/admin/novidades" element={<ArticlesAdminPage />} />
             <Route path="/admin/assinatura" element={<SubscriptionPage />} />
             <Route path="/admin/hardware" element={<HardwarePage />} />
           </Route>

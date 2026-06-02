@@ -349,8 +349,12 @@ export function AuditDetailPage() {
     pdf.setTextColor(...PRINT_RGB.body);
     const metaLine = [
       `Modelo: ${template.name}`,
-      audit.scheduled_at ? `Agendada: ${formatDateTime(audit.scheduled_at)}` : '',
-      audit.completed_at ? `Finalizada: ${formatDateTime(audit.completed_at)}` : '',
+      audit.scheduled_at
+        ? `Agendada: ${formatDateTime(audit.scheduled_at)}`
+        : '',
+      audit.completed_at
+        ? `Finalizada: ${formatDateTime(audit.completed_at)}`
+        : '',
     ]
       .filter(Boolean)
       .join('     ·     ');

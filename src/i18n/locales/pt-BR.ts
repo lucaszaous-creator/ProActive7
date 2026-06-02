@@ -47,6 +47,7 @@ const ptBR = {
     library: 'Biblioteca global',
     plans: 'Planos',
     subscription: 'Minha assinatura',
+    siteArticles: 'Artigos do site',
   },
   layout: {
     master: 'Usuário master',

@@ -65,10 +65,7 @@ function buildFindings(c: EnrichedCompany): string[] {
     out.push(
       `${c.temp_out_of_range_7d} leitura(s) de temperatura fora da faixa nos últimos 7 dias.`,
     );
-  if (
-    c.has_pest_service_registered &&
-    !c.has_pest_service_active
-  )
+  if (c.has_pest_service_registered && !c.has_pest_service_active)
     out.push('Contrato de controle de pragas (CIP) vencido.');
   if (c.checklists_planned_30d > 0 && c.checklists_ran_30d === 0)
     out.push('Nenhum checklist executado no período.');

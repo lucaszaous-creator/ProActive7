@@ -1,4 +1,10 @@
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { toast } from 'sonner';
 import {
   Plus,
@@ -39,8 +45,7 @@ import { BookOpen } from 'lucide-react';
 const CONDITIONS: StorageCondition[] = ['ambiente', 'refrigerado', 'congelado'];
 
 const CONDITION_PILL: Record<StorageCondition, string> = {
-  ambiente:
-    'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+  ambiente: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
   refrigerado: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300',
   congelado:
     'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',

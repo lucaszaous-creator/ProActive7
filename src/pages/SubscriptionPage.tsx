@@ -109,7 +109,11 @@ export function SubscriptionPage() {
             Vigência
           </div>
           <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">
-            {trial ? `Trial até ${trial}` : renews ? `Renova em ${renews}` : '—'}
+            {trial
+              ? `Trial até ${trial}`
+              : renews
+                ? `Renova em ${renews}`
+                : '—'}
           </p>
         </Card>
       </div>

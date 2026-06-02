@@ -284,7 +284,9 @@ function AgentCard({
         companyId,
         createdBy,
       });
-      toast.success('Teste enfileirado! Sai em segundos se o relay estiver online.');
+      toast.success(
+        'Teste enfileirado! Sai em segundos se o relay estiver online.',
+      );
     } catch (e) {
       toast.error('Falha: ' + ((e as Error)?.message ?? String(e)));
     } finally {
@@ -350,7 +352,11 @@ function AgentCard({
               onClick={() => void testPrint()}
               disabled={testing || !agent.printer_name}
             >
-              {testing ? <Spinner className="h-4 w-4" /> : <Printer size={14} />}
+              {testing ? (
+                <Spinner className="h-4 w-4" />
+              ) : (
+                <Printer size={14} />
+              )}
               Imprimir teste
             </Button>
             <Button variant="ghost" onClick={() => setShowLogs((v) => !v)}>
@@ -446,9 +452,12 @@ function AgentForm({
             </datalist>
           )}
           <p className="mt-1 text-xs text-neutral-500">
-            Copie o nome igual aparece em <b>Configurações → Bluetooth e
-            dispositivos → Impressoras e scanners</b> no PC. Depois que o relay
-            rodar a primeira vez, os nomes detectados viram sugestões aqui.
+            Copie o nome igual aparece em{' '}
+            <b>
+              Configurações → Bluetooth e dispositivos → Impressoras e scanners
+            </b>{' '}
+            no PC. Depois que o relay rodar a primeira vez, os nomes detectados
+            viram sugestões aqui.
           </p>
         </div>
         <div className="grid grid-cols-2 gap-2">

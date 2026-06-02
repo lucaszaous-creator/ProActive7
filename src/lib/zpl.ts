@@ -47,7 +47,9 @@ export function buildLabelZpl(data: LabelData, opts: ZplOptions): string {
 
   // Nome do produto (negrito, caixa alta, com quebra de linha)
   const name = sanitize(data.productName).toUpperCase() || '-';
-  lines.push(`^FO${margin},${y}^A0N,${fLg},${fLg}^FB${contentW},2,0,L,0^FD${name}^FS`);
+  lines.push(
+    `^FO${margin},${y}^A0N,${fLg},${fLg}^FB${contentW},2,0,L,0^FD${name}^FS`,
+  );
   y += fLg * 2 + mm(1);
 
   // Linha separadora
@@ -95,8 +97,10 @@ export function buildLabelZpl(data: LabelData, opts: ZplOptions): string {
   if (data.supplier) footer.push(`FORN.: ${sanitize(data.supplier)}`);
   if (data.batch) footer.push(`LOTE: ${sanitize(data.batch)}`);
   if (data.companyName) footer.push(sanitize(data.companyName).toUpperCase());
-  if (!compact && data.companyCnpj) footer.push(`CNPJ: ${sanitize(data.companyCnpj)}`);
-  if (!compact && data.companyAddress) footer.push(sanitize(data.companyAddress));
+  if (!compact && data.companyCnpj)
+    footer.push(`CNPJ: ${sanitize(data.companyCnpj)}`);
+  if (!compact && data.companyAddress)
+    footer.push(sanitize(data.companyAddress));
   if (data.printId) footer.push(`#${sanitize(data.printId)}`);
 
   // Desenha o rodapé de baixo pra cima a partir da base

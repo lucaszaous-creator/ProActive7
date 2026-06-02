@@ -95,11 +95,7 @@ const CONDITION_PILL: Record<StorageCondition, string> = {
     'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',
 };
 
-const PILL_ORDER: StorageCondition[] = [
-  'ambiente',
-  'refrigerado',
-  'congelado',
-];
+const PILL_ORDER: StorageCondition[] = ['ambiente', 'refrigerado', 'congelado'];
 
 // Pílulas compactas de validade por condição (mesma linguagem visual da
 // tela de Produtos), pra cozinheira reconhecer o produto pelo prazo.
@@ -1272,8 +1268,7 @@ function Step5({
           </div>
         </div>
         <p className="text-xs text-neutral-400">
-          {size.label} · {quantity}{' '}
-          {quantity === 1 ? 'cópia' : 'cópias'}
+          {size.label} · {quantity} {quantity === 1 ? 'cópia' : 'cópias'}
         </p>
         <DirectPrintBlock
           companyId={companyId}
@@ -1441,7 +1436,10 @@ function DirectPrintBlock({
     return (
       <div className="w-full rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-3 text-xs text-neutral-600 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-300">
         Nenhuma impressora térmica cadastrada. Vá em{' '}
-        <Link to="/admin/impressoras" className="font-medium text-emerald-700 dark:text-emerald-400">
+        <Link
+          to="/admin/impressoras"
+          className="font-medium text-emerald-700 dark:text-emerald-400"
+        >
           Cadastros → Impressoras
         </Link>{' '}
         para configurar a impressão direta.
@@ -1490,8 +1488,8 @@ function DirectPrintBlock({
       {!relayOnline && (
         <p className="text-xs text-amber-700 dark:text-amber-400">
           O relay desta impressora está offline. Verifique se o PC da cozinha
-          está ligado com o relay instalado. (A impressão vai sair assim que
-          ele voltar.)
+          está ligado com o relay instalado. (A impressão vai sair assim que ele
+          voltar.)
         </p>
       )}
       {noPrinter && (

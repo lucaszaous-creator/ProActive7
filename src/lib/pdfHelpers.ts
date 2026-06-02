@@ -1,12 +1,6 @@
 import { jsPDF } from 'jspdf';
 import { supabase } from './supabase';
-import {
-  BRAND,
-  PRINT_RGB,
-  scoreTier,
-  tierLabel,
-  tierRgb,
-} from './printTheme';
+import { BRAND, PRINT_RGB, scoreTier, tierLabel, tierRgb } from './printTheme';
 
 const M = 14; // margem lateral (mm)
 
@@ -134,7 +128,11 @@ export function drawSectionTitle(doc: jsPDF, text: string, y: number): number {
  * Hero de score: bloco arredondado colorido por tier, número grande à
  * esquerda e selo do tier. Desenha em (M, y) ocupando a largura útil.
  */
-export function drawScoreHero(doc: jsPDF, score: number | null, y: number): number {
+export function drawScoreHero(
+  doc: jsPDF,
+  score: number | null,
+  y: number,
+): number {
   const pw = doc.internal.pageSize.getWidth();
   const w = pw - M * 2;
   const h = 22;
@@ -186,7 +184,11 @@ export function drawScoreHero(doc: jsPDF, score: number | null, y: number): numb
 /** Linha de mini-cards de indicadores (label em cima, valor grande). */
 export function drawKpiRow(
   doc: jsPDF,
-  items: { label: string; value: string; tone?: 'green' | 'amber' | 'red' | 'ink' }[],
+  items: {
+    label: string;
+    value: string;
+    tone?: 'green' | 'amber' | 'red' | 'ink';
+  }[],
   y: number,
 ): number {
   const pw = doc.internal.pageSize.getWidth();

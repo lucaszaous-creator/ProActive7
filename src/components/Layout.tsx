@@ -18,6 +18,7 @@ import {
   BarChart3,
   ChefHat,
   FileText,
+  Newspaper,
   ShieldCheck,
   AlertOctagon,
   HardHat,
@@ -303,6 +304,12 @@ const ITEM = {
     labelKey: 'nav.subscription',
     icon: CreditCard,
   } as NavItemDef,
+  artigos: {
+    kind: 'item',
+    to: '/admin/novidades',
+    labelKey: 'nav.siteArticles',
+    icon: Newspaper,
+  } as NavItemDef,
 };
 
 const NAV_PROPERTY: NavNode[] = [
@@ -386,6 +393,7 @@ const NAV_NUTRITIONIST: NavNode[] = [
     children: [
       ITEM.empresas,
       ITEM.usuarios,
+      ITEM.artigos,
       ITEM.assinatura,
       ITEM.impressoras,
       ITEM.hardware,
@@ -406,6 +414,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
       ITEM.planos,
       ITEM.biblioteca,
       ITEM.comunicados,
+      ITEM.artigos,
       ITEM.trilha,
       ITEM.lixeira,
     ],
@@ -423,7 +432,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
       ITEM.contagem,
       ITEM.controlados,
       ITEM.recebimentos,
-  ITEM.rastreabilidade,
+      ITEM.rastreabilidade,
       ITEM.estoque,
       ITEM.relatorios,
     ],

@@ -41,7 +41,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [profileLoading, setProfileLoading] = useState(false);
-  const [subscription, setSubscription] = useState<OrgSubscription | null>(null);
+  const [subscription, setSubscription] = useState<OrgSubscription | null>(
+    null,
+  );
 
   async function loadSubscription(loadedProfile: Profile | null) {
     // platform_admin não pertence a uma org-cliente — nunca é gateado.
