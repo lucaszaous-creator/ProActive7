@@ -45,6 +45,11 @@ const NotFoundPage = lazy(() =>
     default: m.NotFoundPage,
   })),
 );
+const ArticlePage = lazy(() =>
+  import('./pages/public/ArticlePage').then((m) => ({
+    default: m.ArticlePage,
+  })),
+);
 
 const ResetPasswordPage = lazy(() =>
   import('./pages/ResetPasswordPage').then((m) => ({
@@ -264,6 +269,7 @@ export default function App() {
           <Route path="/cursos" element={<CursosPublicPage />} />
           <Route path="/clientes" element={<ClientesPublicPage />} />
           <Route path="/novidades" element={<NovidadesPage />} />
+          <Route path="/novidades/:slug" element={<ArticlePage />} />
           <Route path="/contato" element={<ContatoPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
