@@ -1,30 +1,30 @@
 {
-  "siteUrl": "https://pro-active7.vercel.app",
+  "siteUrl": "https://www.proactive7.com.br",
   "brand": "ProActive7",
   "locale": "pt_BR",
-  "defaultImage": "https://pro-active7.vercel.app/og-image.png",
-  "logo": "https://pro-active7.vercel.app/proactive7-logo.svg",
+  "defaultImage": "https://www.proactive7.com.br/og-image.png",
+  "logo": "https://www.proactive7.com.br/proactive7-logo.svg",
   "organizationJsonLd": {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://pro-active7.vercel.app/#organization",
+        "@id": "https://www.proactive7.com.br/#organization",
         "name": "ProActive7 — Consultoria Nutricional e Segurança Alimentar",
-        "url": "https://pro-active7.vercel.app/",
-        "logo": "https://pro-active7.vercel.app/proactive7-logo.svg",
-        "image": "https://pro-active7.vercel.app/og-image.png",
+        "url": "https://www.proactive7.com.br/",
+        "logo": "https://www.proactive7.com.br/proactive7-logo.svg",
+        "image": "https://www.proactive7.com.br/og-image.png",
         "email": "contato@proactive7.com.br",
         "telephone": "+55-22-99766-2669",
         "sameAs": ["https://www.instagram.com/proactive.7/"]
       },
       {
         "@type": ["ProfessionalService", "LocalBusiness"],
-        "@id": "https://pro-active7.vercel.app/#service",
+        "@id": "https://www.proactive7.com.br/#service",
         "name": "ProActive7 — Consultoria Nutricional e Segurança Alimentar",
         "description": "Consultoria nutricional e gestão de segurança alimentar (ANVISA RDC 216) para serviços de alimentação em Macaé/RJ: implantação de boas práticas, POPs, controle de manipuladores, etiquetas de validade, auditorias e compliance.",
-        "url": "https://pro-active7.vercel.app/",
-        "image": "https://pro-active7.vercel.app/og-image.png",
+        "url": "https://www.proactive7.com.br/",
+        "image": "https://www.proactive7.com.br/og-image.png",
         "priceRange": "$$",
         "telephone": "+55-22-99766-2669",
         "email": "contato@proactive7.com.br",
@@ -51,25 +51,25 @@
           "Manual de Boas Práticas"
         ],
         "parentOrganization": {
-          "@id": "https://pro-active7.vercel.app/#organization"
+          "@id": "https://www.proactive7.com.br/#organization"
         },
-        "founder": { "@id": "https://pro-active7.vercel.app/#ariane" },
-        "provider": { "@id": "https://pro-active7.vercel.app/#ariane" }
+        "founder": { "@id": "https://www.proactive7.com.br/#ariane" },
+        "provider": { "@id": "https://www.proactive7.com.br/#ariane" }
       },
       {
         "@type": "Person",
-        "@id": "https://pro-active7.vercel.app/#ariane",
+        "@id": "https://www.proactive7.com.br/#ariane",
         "name": "Ariane Madureira",
         "jobTitle": "Nutricionista — Responsável Técnica (RT)",
-        "worksFor": { "@id": "https://pro-active7.vercel.app/#organization" }
+        "worksFor": { "@id": "https://www.proactive7.com.br/#organization" }
       },
       {
         "@type": "WebSite",
-        "@id": "https://pro-active7.vercel.app/#website",
-        "url": "https://pro-active7.vercel.app/",
+        "@id": "https://www.proactive7.com.br/#website",
+        "url": "https://www.proactive7.com.br/",
         "name": "ProActive7",
         "inLanguage": "pt-BR",
-        "publisher": { "@id": "https://pro-active7.vercel.app/#organization" }
+        "publisher": { "@id": "https://www.proactive7.com.br/#organization" }
       }
     ]
   },
@@ -117,7 +117,7 @@
           "@type": "Service",
           "name": "Consultoria em Segurança Alimentar e Boas Práticas (ANVISA RDC 216)",
           "serviceType": "Consultoria nutricional e responsabilidade técnica",
-          "provider": { "@id": "https://pro-active7.vercel.app/#service" },
+          "provider": { "@id": "https://www.proactive7.com.br/#service" },
           "areaServed": [
             { "@type": "City", "name": "Macaé" },
             { "@type": "State", "name": "Rio de Janeiro" }
@@ -185,9 +185,9 @@
           "applicationCategory": "BusinessApplication",
           "operatingSystem": "Web",
           "description": "Plataforma para serviços de alimentação: etiquetas de validade, controle de temperatura de equipamentos, POPs, auditorias RDC 216, controle de pragas, manipuladores e não conformidades.",
-          "url": "https://pro-active7.vercel.app/sistema",
+          "url": "https://www.proactive7.com.br/sistema",
           "publisher": {
-            "@id": "https://pro-active7.vercel.app/#organization"
+            "@id": "https://www.proactive7.com.br/#organization"
           },
           "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" }
         }

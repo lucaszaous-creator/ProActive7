@@ -12,4 +12,4 @@ Disallow: /imprimir
 Disallow: /etiqueta/
 Disallow: /selo/
 
-Sitemap: https://pro-active7.vercel.app/sitemap.xml
+Sitemap: https://www.proactive7.com.br/sitemap.xml
