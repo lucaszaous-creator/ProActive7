@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { PublicLayout } from './components/PublicLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -38,6 +38,11 @@ const NovidadesPage = lazy(() =>
 const ContatoPage = lazy(() =>
   import('./pages/public/ContatoPage').then((m) => ({
     default: m.ContatoPage,
+  })),
+);
+const NotFoundPage = lazy(() =>
+  import('./pages/public/NotFoundPage').then((m) => ({
+    default: m.NotFoundPage,
   })),
 );
 
@@ -260,8 +265,8 @@ export default function App() {
           <Route path="/clientes" element={<ClientesPublicPage />} />
           <Route path="/novidades" element={<NovidadesPage />} />
           <Route path="/contato" element={<ContatoPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
-
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
@@ -360,8 +365,6 @@ export default function App() {
             <Route path="/platform/planos" element={<PlatformPlansPage />} />
           </Route>
         </Route>
-
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Suspense>
   );

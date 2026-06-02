@@ -89,6 +89,7 @@
     },
     "/perfil": {
       "image": "https://www.proactive7.com.br/og/perfil.png",
+      "crumb": "Perfil",
       "title": "Ariane Madureira — Nutricionista RT em Macaé | ProActive7",
       "description": "Conheça Ariane Madureira, nutricionista Responsável Técnica em Macaé/RJ. Consultoria em segurança alimentar e boas práticas para serviços de alimentação.",
       "keywords": [
@@ -102,6 +103,7 @@
     },
     "/servicos": {
       "image": "https://www.proactive7.com.br/og/servicos.png",
+      "crumb": "Serviços",
       "title": "Serviços de Consultoria em Segurança Alimentar | ProActive7",
       "description": "Implantação de boas práticas ANVISA RDC 216, POPs, manual de boas práticas, treinamento de manipuladores, auditorias e etiquetas de validade para serviços de alimentação.",
       "keywords": [
@@ -196,6 +198,7 @@
     },
     "/sistema": {
       "image": "https://www.proactive7.com.br/og/sistema.png",
+      "crumb": "Sistema",
       "title": "Sistema de Etiquetas de Validade e Compliance ANVISA | ProActive7",
       "description": "Software para cozinhas: etiquetas de validade térmicas, controle de temperatura, POPs, auditorias RDC 216 e gestão de não conformidades. Zero digitação na cozinha.",
       "keywords": [
@@ -224,6 +227,7 @@
     },
     "/novidades": {
       "image": "https://www.proactive7.com.br/og/novidades.png",
+      "crumb": "Novidades",
       "title": "Novidades e Conteúdo sobre Segurança Alimentar | ProActive7",
       "description": "Atualizações sobre ANVISA RDC 216, boas práticas em cozinhas, segurança alimentar e gestão de serviços de alimentação pela ProActive7.",
       "keywords": [
@@ -236,6 +240,7 @@
     },
     "/contato": {
       "image": "https://www.proactive7.com.br/og/contato.png",
+      "crumb": "Contato",
       "title": "Contato — Consultoria Nutricional em Macaé | ProActive7",
       "description": "Fale com a ProActive7 em Macaé/RJ. Consultoria nutricional e segurança alimentar para restaurantes, cozinhas industriais e serviços de alimentação. WhatsApp e e-mail.",
       "keywords": [
@@ -248,6 +253,7 @@
     },
     "/cursos": {
       "image": "https://www.proactive7.com.br/og/cursos.png",
+      "crumb": "Cursos",
       "title": "Cursos e Treinamentos — Em breve | ProActive7",
       "description": "Cursos e treinamentos em segurança alimentar e boas práticas — em breve na ProActive7.",
       "keywords": ["cursos segurança alimentar", "treinamento boas práticas"],
@@ -255,9 +261,15 @@
     },
     "/clientes": {
       "image": "https://www.proactive7.com.br/og/clientes.png",
+      "crumb": "Clientes",
       "title": "Clientes — Em breve | ProActive7",
       "description": "Cases e clientes atendidos pela ProActive7 — em breve.",
       "keywords": ["clientes ProActive7"],
+      "noindex": true
+    },
+    "/404": {
+      "title": "Página não encontrada (404) | ProActive7",
+      "description": "A página que você procura não existe ou foi movida.",
       "noindex": true
     }
   }
