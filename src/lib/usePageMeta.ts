@@ -163,3 +163,74 @@ export function usePageMeta(path: string): void {
     };
   }, [path]);
 }
+
+export type DynamicMeta = {
+  title: string;
+  description: string;
+  /** Caminho absoluto da rota, ex.: '/novidades/meu-artigo'. */
+  path: string;
+  image?: string;
+  noindex?: boolean;
+  /** Blocos JSON-LD específicos (ex.: Article). */
+  jsonLd?: unknown[];
+};
+
+/**
+ * Versão para páginas fora do seo.config.json (ex.: artigos dinâmicos).
+ * Aplica title/description/canonical/OG/Twitter/robots e injeta JSON-LD
+ * (organização sitewide + os blocos passados). Limpa ao desmontar.
+ */
+export function useDynamicMeta(meta: DynamicMeta | null): void {
+  const key = meta
+    ? `${meta.path}|${meta.title}|${meta.noindex ? 1 : 0}`
+    : null;
+  useEffect(() => {
+    if (!meta) return;
+    const previousTitle = document.title;
+    const canonical = `${SITE_URL}${meta.path}`;
+    const image = meta.image ?? DEFAULT_IMAGE;
+
+    document.title = meta.title;
+    upsertMeta('name', 'description', meta.description);
+    upsertMeta(
+      'name',
+      'robots',
+      meta.noindex
+        ? 'noindex,nofollow'
+        : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1',
+    );
+    upsertCanonical(canonical);
+
+    upsertMeta('property', 'og:title', meta.title);
+    upsertMeta('property', 'og:description', meta.description);
+    upsertMeta('property', 'og:url', canonical);
+    upsertMeta('property', 'og:image', image);
+    upsertMeta('property', 'og:type', 'article');
+    upsertMeta('property', 'og:site_name', BRAND_NAME);
+    upsertMeta('property', 'og:locale', seoConfig.locale);
+
+    upsertMeta('name', 'twitter:card', 'summary_large_image');
+    upsertMeta('name', 'twitter:title', meta.title);
+    upsertMeta('name', 'twitter:description', meta.description);
+    upsertMeta('name', 'twitter:image', image);
+
+    const blocks: unknown[] = [
+      seoConfig.organizationJsonLd,
+      ...(meta.jsonLd ?? []),
+    ];
+    const scripts = blocks.map((block) => {
+      const s = document.createElement('script');
+      s.type = 'application/ld+json';
+      s.dataset.seoJsonld = 'true';
+      s.textContent = JSON.stringify(block);
+      document.head.appendChild(s);
+      return s;
+    });
+
+    return () => {
+      document.title = previousTitle;
+      scripts.forEach((s) => s.remove());
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
+}

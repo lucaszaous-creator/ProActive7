@@ -1,5 +1,7 @@
-import { Instagram, ArrowRight, Hash } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Instagram, ArrowRight, Hash, BookOpen } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
+import { publishedArticles } from '@/content/articles';
 
 interface Post {
   title: string;
@@ -62,9 +64,45 @@ export function NovidadesPage() {
   return (
     <div>
       <Hero />
+      <Articles />
       <Feed />
       <Cta />
     </div>
+  );
+}
+
+function Articles() {
+  const articles = publishedArticles();
+  if (!articles.length) return null;
+  return (
+    <section className="mx-auto max-w-6xl px-5 py-16">
+      <div className="flex items-center gap-2 text-[#2F5D3F]">
+        <BookOpen className="h-5 w-5" />
+        <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+          Artigos
+        </h2>
+      </div>
+      <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {articles.map((a) => (
+          <Link
+            key={a.slug}
+            to={`/novidades/${a.slug}`}
+            className="group flex flex-col rounded-2xl border border-[#E8F1EA] bg-white p-6 transition hover:border-[#6FA68A]/50 hover:shadow-[0_12px_30px_-15px_rgba(47,93,63,0.20)]"
+          >
+            <h3 className="text-lg font-semibold leading-snug text-[#1A2A22] group-hover:text-[#2F5D3F]">
+              {a.title}
+            </h3>
+            <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-[#1A2A22]/70">
+              {a.description}
+            </p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-[#2F5D3F]">
+              Ler artigo
+              <ArrowRight className="h-4 w-4" />
+            </span>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
 
