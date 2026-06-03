@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
@@ -231,8 +231,11 @@ export function PrintWizardPage() {
         .order('name'),
     ]);
     setLoading(false);
-    if (prodRes.error) {
-      toast.error('Erro ao carregar produtos: ' + prodRes.error.message);
+    const loadErr = prodRes.error ?? manipRes.error ?? grpRes.error;
+    if (loadErr) {
+      // Não engole o erro como "lista vazia" — senão o wizard mostra
+      // "nenhum funcionário cadastrado" quando na verdade a busca falhou.
+      toast.error('Erro ao carregar dados: ' + loadErr.message);
       return;
     }
     setProducts((prodRes.data as ProductWithShelfLives[] | null) ?? []);
@@ -1334,6 +1337,10 @@ function DirectPrintBlock({
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  // Limpa timer/subscription do print direto se o componente desmontar
+  // antes do job resolver (evita setState/toast em componente morto).
+  const directCleanupRef = useRef<(() => void) | null>(null);
+  useEffect(() => () => directCleanupRef.current?.(), []);
 
   useEffect(() => {
     let cancelled = false;
@@ -1389,23 +1396,35 @@ function DirectPrintBlock({
         createdBy: profileId,
       });
       toast.info('Enviado à impressora. Aguardando...');
-      const unsub = subscribePrintJob(jobId, (job) => {
+      const ctrl: {
+        timer?: ReturnType<typeof setTimeout>;
+        unsub?: () => void;
+        settled: boolean;
+      } = { settled: false };
+      const finish = () => {
+        if (ctrl.settled) return;
+        ctrl.settled = true;
+        if (ctrl.timer) clearTimeout(ctrl.timer);
+        ctrl.unsub?.();
+        directCleanupRef.current = null;
+      };
+      ctrl.unsub = subscribePrintJob(jobId, (job) => {
         if (job.status === 'done') {
-          unsub();
+          finish();
           setSending(false);
           void logFeatureEvent('label_printed_direct');
           toast.success('Impresso!');
           onAfterPrint();
         } else if (job.status === 'error') {
-          unsub();
+          finish();
           setSending(false);
           setErrorMsg(job.error ?? 'Erro desconhecido');
           toast.error('Falha: ' + (job.error ?? 'erro'));
         }
       });
       // Timeout: se o relay não responder em 60s, libera o botão.
-      setTimeout(() => {
-        unsub();
+      ctrl.timer = setTimeout(() => {
+        finish();
         setSending((cur) => {
           if (cur) {
             setErrorMsg(
@@ -1416,6 +1435,7 @@ function DirectPrintBlock({
           return false;
         });
       }, 60_000);
+      directCleanupRef.current = finish;
     } catch (e) {
       const msg = (e as Error)?.message ?? String(e);
       setErrorMsg(msg);

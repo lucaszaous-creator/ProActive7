@@ -145,10 +145,10 @@ export function DossiePage() {
             .maybeSingle(),
           supabase
             .from('manipulators')
-            .select('id, name, role, active')
+            .select('id, name:full_name, role, active')
             .eq('company_id', companyId)
             .eq('active', true)
-            .order('name'),
+            .order('full_name'),
           supabase
             .from('manipulator_asos')
             .select('manipulator_id, expires_at, doctor_name')

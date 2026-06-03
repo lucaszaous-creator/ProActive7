@@ -89,7 +89,7 @@ export async function saveArticle(input: ArticleInput): Promise<void> {
       .from('articles')
       .select('published_at')
       .eq('id', input.id)
-      .single();
+      .maybeSingle();
     const published_at =
       existing?.published_at ??
       (input.published ? new Date().toISOString() : null);

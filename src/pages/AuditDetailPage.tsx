@@ -117,7 +117,7 @@ export function AuditDetailPage() {
         .from('audit_templates')
         .select('*')
         .eq('id', a.template_id)
-        .single();
+        .maybeSingle();
       if (tpl) setTemplate(tpl as AuditTemplate);
     }
     setLoading(false);
