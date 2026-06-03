@@ -1,7 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ChefHat, AlertTriangle } from 'lucide-react';
+import {
+  ChefHat,
+  AlertTriangle,
+  Boxes,
+  Clock,
+  ArrowDownCircle,
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
@@ -19,13 +31,57 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
 
+const MS_DAY = 86_400_000;
+
+/** Status visual da validade de um item produzido. */
+function expiryInfo(expiryAt: string, now: number) {
+  const diff = new Date(expiryAt).getTime() - now;
+  if (diff < 0)
+    return {
+      label: 'Vencido',
+      badge: 'border-red-200 bg-red-50 text-red-700',
+      ring: 'border-red-200',
+      expired: true,
+      soon: false,
+    };
+  const days = Math.ceil(diff / MS_DAY);
+  if (diff < MS_DAY)
+    return {
+      label: 'Vence hoje',
+      badge: 'border-amber-200 bg-amber-50 text-amber-700',
+      ring: 'border-amber-200',
+      expired: false,
+      soon: true,
+    };
+  if (days <= 3)
+    return {
+      label: `Vence em ${days}d`,
+      badge: 'border-amber-200 bg-amber-50 text-amber-700',
+      ring: 'border-amber-200',
+      expired: false,
+      soon: true,
+    };
+  return {
+    label: `Vence em ${days}d`,
+    badge: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+    ring: 'border-neutral-200',
+    expired: false,
+    soon: false,
+  };
+}
+
 export function ProducaoPage() {
   usePageTitle('Produção');
+  // Snapshot de "agora" por sessão (lazy useState → satisfaz react-hooks/purity).
+  const [now] = useState(() => Date.now());
   const { profile } = useAuth();
   const { isMaster, companies, companyId, setCompanyId } = useCompanyScope();
   const [searchParams] = useSearchParams();
 
   const [labels, setLabels] = useState<LabelPrint[]>([]);
+  const [balances, setBalances] = useState<
+    Map<string, { balance: number; unit: string }>
+  >(new Map());
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
@@ -43,20 +99,50 @@ export function ProducaoPage() {
       return;
     }
     setLoading(true);
-    const { data, error } = await supabase
-      .from('label_prints')
-      .select('*')
-      .eq('company_id', companyId)
-      .is('consumed_at', null)
-      .order('expiry_at', { ascending: true })
-      .limit(500);
+    const [lblRes, balRes] = await Promise.all([
+      supabase
+        .from('label_prints')
+        .select('*')
+        .eq('company_id', companyId)
+        .is('consumed_at', null)
+        .order('expiry_at', { ascending: true })
+        .limit(500),
+      supabase
+        .from('stock_balance_v')
+        .select('product_id, batch, balance, unit')
+        .eq('company_id', companyId),
+    ]);
     setLoading(false);
-    if (error) {
-      toast.error('Erro ao carregar: ' + error.message);
+    if (lblRes.error) {
+      toast.error('Erro ao carregar: ' + lblRes.error.message);
       return;
     }
-    setLabels((data as LabelPrint[] | null) ?? []);
+    setLabels((lblRes.data as LabelPrint[] | null) ?? []);
+
+    const map = new Map<string, { balance: number; unit: string }>();
+    for (const b of (balRes.data ?? []) as {
+      product_id: string | null;
+      batch: string | null;
+      balance: number;
+      unit: string;
+    }[]) {
+      if (b.product_id && b.batch) {
+        map.set(`${b.product_id}|${b.batch}`, {
+          balance: Number(b.balance),
+          unit: b.unit,
+        });
+      }
+    }
+    setBalances(map);
   }, [companyId]);
+
+  const stockFor = useCallback(
+    (l: LabelPrint) =>
+      l.product_id && l.batch
+        ? (balances.get(`${l.product_id}|${l.batch}`) ?? null)
+        : null,
+    [balances],
+  );
 
   useEffect(() => {
     void load();
@@ -82,6 +168,17 @@ export function ProducaoPage() {
         (l.batch ?? '').toLowerCase().includes(q),
     );
   }, [labels, search]);
+
+  const summary = useMemo(() => {
+    let expired = 0;
+    let soon = 0;
+    for (const l of labels) {
+      const info = expiryInfo(l.expiry_at, now);
+      if (info.expired) expired += 1;
+      else if (info.soon) soon += 1;
+    }
+    return { total: labels.length, expired, soon };
+  }, [labels, now]);
 
   function openModal(label: LabelPrint) {
     setTarget(label);
@@ -186,6 +283,29 @@ export function ProducaoPage() {
         />
       </div>
 
+      {!noCompany && !loading && labels.length > 0 && (
+        <div className="mb-4 grid grid-cols-3 gap-3">
+          <StatCard
+            icon={<Boxes size={16} />}
+            label="Itens ativos"
+            value={summary.total}
+            tone="emerald"
+          />
+          <StatCard
+            icon={<Clock size={16} />}
+            label="Vencendo"
+            value={summary.soon}
+            tone="amber"
+          />
+          <StatCard
+            icon={<AlertTriangle size={16} />}
+            label="Vencidos"
+            value={summary.expired}
+            tone="red"
+          />
+        </div>
+      )}
+
       {noCompany ? (
         <Card>
           <p className="text-sm text-neutral-600">
@@ -203,49 +323,93 @@ export function ProducaoPage() {
           </p>
         </Card>
       ) : (
-        <Card>
-          <ul className="divide-y divide-neutral-100">
-            {filtered.map((l) => {
-              const exp = new Date(l.expiry_at);
-              const expired = exp < new Date();
-              return (
-                <li
-                  key={l.id}
-                  className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
-                >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span
-                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-                        expired
-                          ? 'bg-red-50 text-red-600'
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((l) => {
+            const info = expiryInfo(l.expiry_at, now);
+            const stock = stockFor(l);
+            return (
+              <div
+                key={l.id}
+                className={`flex flex-col rounded-xl border bg-white p-4 shadow-sm transition hover:shadow-md ${info.ring}`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <span
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+                      info.expired
+                        ? 'bg-red-50 text-red-600'
+                        : info.soon
+                          ? 'bg-amber-50 text-amber-600'
                           : 'bg-emerald-50 text-emerald-600'
-                      }`}
-                    >
-                      {expired ? (
-                        <AlertTriangle size={16} />
-                      ) : (
-                        <ChefHat size={16} />
-                      )}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-neutral-800">
-                        {l.product_name_snapshot}
-                        {l.batch ? ` · lote ${l.batch}` : ''}
-                      </p>
-                      <p className="text-xs text-neutral-500">
-                        Vence {formatDateTime(exp)}
-                        {expired ? ' · vencido' : ''}
-                      </p>
+                    }`}
+                  >
+                    {info.expired ? (
+                      <AlertTriangle size={16} />
+                    ) : (
+                      <ChefHat size={16} />
+                    )}
+                  </span>
+                  <span
+                    className={`rounded-full border px-2 py-0.5 text-[11px] font-medium ${info.badge}`}
+                  >
+                    {info.label}
+                  </span>
+                </div>
+
+                <p
+                  className="mt-3 truncate text-sm font-semibold text-neutral-800"
+                  title={l.product_name_snapshot}
+                >
+                  {l.product_name_snapshot}
+                </p>
+                {l.batch && (
+                  <p className="text-xs text-neutral-500">Lote {l.batch}</p>
+                )}
+
+                <dl className="mt-3 space-y-1 text-xs text-neutral-500">
+                  {l.display_quantity && (
+                    <div className="flex justify-between gap-2">
+                      <dt>Produzido</dt>
+                      <dd className="font-medium text-neutral-700">
+                        {l.display_quantity}
+                      </dd>
                     </div>
+                  )}
+                  <div className="flex justify-between gap-2">
+                    <dt>Validade</dt>
+                    <dd className="font-medium text-neutral-700">
+                      {formatDateTime(l.expiry_at)}
+                    </dd>
                   </div>
-                  <Button size="sm" onClick={() => openModal(l)}>
-                    Dar baixa
-                  </Button>
-                </li>
-              );
-            })}
-          </ul>
-        </Card>
+                  {stock && (
+                    <div className="flex justify-between gap-2">
+                      <dt>Em estoque (lote)</dt>
+                      <dd
+                        className={`font-semibold ${
+                          stock.balance <= 0
+                            ? 'text-red-600'
+                            : 'text-emerald-700'
+                        }`}
+                      >
+                        {stock.balance.toLocaleString('pt-BR', {
+                          maximumFractionDigits: 3,
+                        })}{' '}
+                        {stock.unit}
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+
+                <Button
+                  size="sm"
+                  className="mt-4 w-full"
+                  onClick={() => openModal(l)}
+                >
+                  <ArrowDownCircle size={15} /> Dar baixa
+                </Button>
+              </div>
+            );
+          })}
+        </div>
       )}
 
       <Modal
@@ -332,6 +496,35 @@ export function ProducaoPage() {
           </div>
         )}
       </Modal>
+    </div>
+  );
+}
+
+function StatCard({
+  icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: ReactNode;
+  label: string;
+  value: number;
+  tone: 'emerald' | 'amber' | 'red';
+}) {
+  const tones = {
+    emerald: 'bg-emerald-50 text-emerald-700',
+    amber: 'bg-amber-50 text-amber-700',
+    red: 'bg-red-50 text-red-700',
+  } as const;
+  return (
+    <div className="rounded-xl border border-neutral-200 bg-white p-3 text-center">
+      <div
+        className={`mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-lg ${tones[tone]}`}
+      >
+        {icon}
+      </div>
+      <div className="text-lg font-semibold text-neutral-800">{value}</div>
+      <div className="text-[11px] text-neutral-500">{label}</div>
     </div>
   );
 }
