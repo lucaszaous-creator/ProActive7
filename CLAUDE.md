@@ -200,9 +200,32 @@ roadmap "para quando houver caixa", fora do MVP.
    corrigir o texto.
 - [ ] **`audit_log` ausente em `profiles`** — adicionar trigger `log_changes()`
    (mudança de `role`/`organization_id` é a mais sensível em multi-tenant).
+   ✅ **Resolvido** (migration `0087`, trigger `trg_profiles_audit`).
 - [ ] **`fetchFeatureUsage` agrega no cliente sem `.limit`** — contagem fica
    silenciosamente errada acima de 1000 eventos (PostgREST corta). Virar RPC/
    view SQL.
+
+### Pendências para a reunião 2026-06-03 (decisão do Lucas/Ariane)
+
+Itens deixados em aberto de propósito, a decidir na apresentação do projeto
+para a Ariane:
+
+- [ ] **Autor do site (CMS de artigos)** — a escrita em `articles` está trancada
+   em `platform_admin OR is_site_author` (flag no `profiles`, default `false`).
+   Hoje **só o platform_admin publica**. Quando a conta da Ariane for criada,
+   definir `is_site_author = true` nela (via SQL/admin). Avaliar também
+   **esconder o menu "Artigos do site"** dos nutricionistas-clientes (hoje eles
+   veem o item mas a RLS nega — precisa expor a flag no `AuthContext`).
+- [ ] **LGPD — selo público expõe dado de saúde** — `get_company_seal()` está
+   concedida a `anon` e retorna `asos_valid_pct` (% de ASOs válidos = dado de
+   saúde). Decidir remover esse campo do acesso anônimo (ou exigir login no
+   `/selo/:id`). Requer aval da RT.
+- [ ] **SEO de marca (ações fora do código)** — buscar "proactive7" no Google
+   ainda não traz o site. Pendências do Lucas: criar **Google Business Profile**
+   (maior alavanca, mata a confusão com o livro "7 Hábitos"), **Solicitar
+   indexação** da home/serviços/perfil no Search Console, e **colocar o link
+   `proactive7.com.br` na bio do @proactive.7**. Código já entregue: meta por
+   página, JSON-LD (com `alternateName`), sitemap, performance.
 
 ### Médio prazo (1–3 meses)
 
