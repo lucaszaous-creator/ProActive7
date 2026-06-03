@@ -418,6 +418,12 @@ export function ProducaoPage() {
                 )}
 
                 <dl className="mt-3 space-y-1 text-xs text-neutral-500 dark:text-neutral-400">
+                  <div className="flex justify-between gap-2">
+                    <dt>Manipulação</dt>
+                    <dd className="font-medium text-neutral-700 dark:text-neutral-200">
+                      {formatDateTime(l.manipulation_at)}
+                    </dd>
+                  </div>
                   {l.display_quantity && (
                     <div className="flex justify-between gap-2">
                       <dt>Produzido</dt>
@@ -432,6 +438,14 @@ export function ProducaoPage() {
                       {formatDateTime(l.expiry_at)}
                     </dd>
                   </div>
+                  {l.responsible_name && (
+                    <div className="flex justify-between gap-2">
+                      <dt>Responsável</dt>
+                      <dd className="max-w-[60%] truncate font-medium text-neutral-700 dark:text-neutral-200">
+                        {l.responsible_name}
+                      </dd>
+                    </div>
+                  )}
                   {stock && (
                     <div className="flex justify-between gap-2">
                       <dt>Em estoque (lote)</dt>
@@ -487,9 +501,15 @@ export function ProducaoPage() {
           <div className="flex flex-col gap-3">
             <div className="rounded-lg bg-neutral-50 p-3 text-sm text-neutral-700 dark:bg-slate-800 dark:text-neutral-200">
               <p className="font-medium">{target.product_name_snapshot}</p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
                 {target.batch ? `Lote ${target.batch} · ` : ''}
+                Manipulado {formatDateTime(target.manipulation_at)}
+              </p>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
                 Vence {formatDateTime(target.expiry_at)}
+                {target.responsible_name
+                  ? ` · Resp. ${target.responsible_name}`
+                  : ''}
               </p>
             </div>
             <Select
