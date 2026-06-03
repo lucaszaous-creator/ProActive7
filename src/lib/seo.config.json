@@ -11,6 +11,12 @@
         "@type": "Organization",
         "@id": "https://www.proactive7.com.br/#organization",
         "name": "ProActive7 — Consultoria Nutricional e Segurança Alimentar",
+        "alternateName": [
+          "ProActive7",
+          "Proactive 7",
+          "ProActive7 Personal Diet",
+          "@proactive.7"
+        ],
         "url": "https://www.proactive7.com.br/",
         "logo": "https://www.proactive7.com.br/proactive7-logo.svg",
         "image": "https://www.proactive7.com.br/og-image.png",
