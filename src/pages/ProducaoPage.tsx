@@ -33,38 +33,42 @@ import { Spinner } from '@/components/ui/Spinner';
 
 const MS_DAY = 86_400_000;
 
-/** Status visual da validade de um item produzido. */
+type ExpiryKey = 'expired' | 'soon' | 'ok';
+
+/** Status visual da validade de um item produzido (com dark mode). */
 function expiryInfo(expiryAt: string, now: number) {
   const diff = new Date(expiryAt).getTime() - now;
   if (diff < 0)
     return {
+      key: 'expired' as ExpiryKey,
       label: 'Vencido',
-      badge: 'border-red-200 bg-red-50 text-red-700',
-      ring: 'border-red-200',
+      badge:
+        'border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300',
+      ring: 'border-red-200 dark:border-red-900/60',
+      iconBg: 'bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400',
       expired: true,
       soon: false,
     };
   const days = Math.ceil(diff / MS_DAY);
-  if (diff < MS_DAY)
-    return {
-      label: 'Vence hoje',
-      badge: 'border-amber-200 bg-amber-50 text-amber-700',
-      ring: 'border-amber-200',
-      expired: false,
-      soon: true,
-    };
-  if (days <= 3)
-    return {
-      label: `Vence em ${days}d`,
-      badge: 'border-amber-200 bg-amber-50 text-amber-700',
-      ring: 'border-amber-200',
-      expired: false,
-      soon: true,
-    };
+  const amber = {
+    badge:
+      'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300',
+    ring: 'border-amber-200 dark:border-amber-900/60',
+    iconBg: 'bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400',
+    expired: false,
+    soon: true,
+    key: 'soon' as ExpiryKey,
+  };
+  if (diff < MS_DAY) return { ...amber, label: 'Vence hoje' };
+  if (days <= 3) return { ...amber, label: `Vence em ${days}d` };
   return {
+    key: 'ok' as ExpiryKey,
     label: `Vence em ${days}d`,
-    badge: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-    ring: 'border-neutral-200',
+    badge:
+      'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300',
+    ring: 'border-neutral-200 dark:border-neutral-800',
+    iconBg:
+      'bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400',
     expired: false,
     soon: false,
   };
@@ -84,6 +88,8 @@ export function ProducaoPage() {
   >(new Map());
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | ExpiryKey>('all');
+  const [sortBy, setSortBy] = useState<'expiry' | 'recent'>('expiry');
 
   const [target, setTarget] = useState<LabelPrint | null>(null);
   const [reason, setReason] = useState<LabelConsumedReason>('producao');
@@ -160,14 +166,28 @@ export function ProducaoPage() {
   }, [labels, searchParams]);
 
   const filtered = useMemo(() => {
-    if (!search) return labels;
-    const q = search.toLowerCase();
-    return labels.filter(
-      (l) =>
-        l.product_name_snapshot.toLowerCase().includes(q) ||
-        (l.batch ?? '').toLowerCase().includes(q),
-    );
-  }, [labels, search]);
+    const q = search.trim().toLowerCase();
+    const rows = labels.filter((l) => {
+      if (
+        q &&
+        !l.product_name_snapshot.toLowerCase().includes(q) &&
+        !(l.batch ?? '').toLowerCase().includes(q)
+      )
+        return false;
+      if (statusFilter !== 'all') {
+        return expiryInfo(l.expiry_at, now).key === statusFilter;
+      }
+      return true;
+    });
+    if (sortBy === 'recent') {
+      return [...rows].sort(
+        (a, b) =>
+          new Date(b.manipulation_at).getTime() -
+          new Date(a.manipulation_at).getTime(),
+      );
+    }
+    return rows;
+  }, [labels, search, statusFilter, sortBy, now]);
 
   const summary = useMemo(() => {
     let expired = 0;
@@ -250,7 +270,7 @@ export function ProducaoPage() {
     <div className="mx-auto max-w-6xl">
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
+          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
             Produção
           </h1>
           <p className="text-sm text-neutral-500">
@@ -260,29 +280,6 @@ export function ProducaoPage() {
         </div>
       </div>
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-3">
-        {isMaster && companies.length > 0 && (
-          <Select
-            label="Empresa"
-            value={companyId}
-            onChange={(e) => setCompanyId(e.target.value)}
-          >
-            {companies.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name}
-              </option>
-            ))}
-          </Select>
-        )}
-        <Input
-          id="search"
-          label="Buscar"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="produto ou lote"
-        />
-      </div>
-
       {!noCompany && !loading && labels.length > 0 && (
         <div className="mb-4 grid grid-cols-3 gap-3">
           <StatCard
@@ -290,21 +287,64 @@ export function ProducaoPage() {
             label="Itens ativos"
             value={summary.total}
             tone="emerald"
+            active={statusFilter === 'all'}
+            onClick={() => setStatusFilter('all')}
           />
           <StatCard
             icon={<Clock size={16} />}
             label="Vencendo"
             value={summary.soon}
             tone="amber"
+            active={statusFilter === 'soon'}
+            onClick={() => setStatusFilter('soon')}
           />
           <StatCard
             icon={<AlertTriangle size={16} />}
             label="Vencidos"
             value={summary.expired}
             tone="red"
+            active={statusFilter === 'expired'}
+            onClick={() => setStatusFilter('expired')}
           />
         </div>
       )}
+
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end">
+        {isMaster && companies.length > 0 && (
+          <div className="sm:w-56">
+            <Select
+              label="Empresa"
+              value={companyId}
+              onChange={(e) => setCompanyId(e.target.value)}
+            >
+              {companies.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </Select>
+          </div>
+        )}
+        <div className="flex-1">
+          <Input
+            id="search"
+            label="Buscar"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="produto ou lote"
+          />
+        </div>
+        <div className="sm:w-48">
+          <Select
+            label="Ordenar"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as 'expiry' | 'recent')}
+          >
+            <option value="expiry">Validade (mais próxima)</option>
+            <option value="recent">Produção (mais recente)</option>
+          </Select>
+        </div>
+      </div>
 
       {noCompany ? (
         <Card>
@@ -316,11 +356,27 @@ export function ProducaoPage() {
         <div className="flex justify-center py-16">
           <Spinner className="h-8 w-8" />
         </div>
-      ) : filtered.length === 0 ? (
+      ) : labels.length === 0 ? (
         <Card>
           <p className="text-sm text-neutral-500">
             Nenhuma etiqueta ativa. Imprima etiquetas em /imprimir.
           </p>
+        </Card>
+      ) : filtered.length === 0 ? (
+        <Card className="flex flex-col items-center gap-3 text-center">
+          <p className="text-sm text-neutral-500">
+            Nenhum item para este filtro.
+          </p>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => {
+              setStatusFilter('all');
+              setSearch('');
+            }}
+          >
+            Limpar filtros
+          </Button>
         </Card>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -330,17 +386,11 @@ export function ProducaoPage() {
             return (
               <div
                 key={l.id}
-                className={`flex flex-col rounded-xl border bg-white p-4 shadow-sm transition hover:shadow-md ${info.ring}`}
+                className={`flex flex-col rounded-xl border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg dark:bg-slate-900 ${info.ring}`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <span
-                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-                      info.expired
-                        ? 'bg-red-50 text-red-600'
-                        : info.soon
-                          ? 'bg-amber-50 text-amber-600'
-                          : 'bg-emerald-50 text-emerald-600'
-                    }`}
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${info.iconBg}`}
                   >
                     {info.expired ? (
                       <AlertTriangle size={16} />
@@ -356,27 +406,29 @@ export function ProducaoPage() {
                 </div>
 
                 <p
-                  className="mt-3 truncate text-sm font-semibold text-neutral-800"
+                  className="mt-3 truncate text-sm font-semibold text-neutral-800 dark:text-neutral-100"
                   title={l.product_name_snapshot}
                 >
                   {l.product_name_snapshot}
                 </p>
                 {l.batch && (
-                  <p className="text-xs text-neutral-500">Lote {l.batch}</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                    Lote {l.batch}
+                  </p>
                 )}
 
-                <dl className="mt-3 space-y-1 text-xs text-neutral-500">
+                <dl className="mt-3 space-y-1 text-xs text-neutral-500 dark:text-neutral-400">
                   {l.display_quantity && (
                     <div className="flex justify-between gap-2">
                       <dt>Produzido</dt>
-                      <dd className="font-medium text-neutral-700">
+                      <dd className="font-medium text-neutral-700 dark:text-neutral-200">
                         {l.display_quantity}
                       </dd>
                     </div>
                   )}
                   <div className="flex justify-between gap-2">
                     <dt>Validade</dt>
-                    <dd className="font-medium text-neutral-700">
+                    <dd className="font-medium text-neutral-700 dark:text-neutral-200">
                       {formatDateTime(l.expiry_at)}
                     </dd>
                   </div>
@@ -386,8 +438,8 @@ export function ProducaoPage() {
                       <dd
                         className={`font-semibold ${
                           stock.balance <= 0
-                            ? 'text-red-600'
-                            : 'text-emerald-700'
+                            ? 'text-red-600 dark:text-red-400'
+                            : 'text-emerald-700 dark:text-emerald-400'
                         }`}
                       >
                         {stock.balance.toLocaleString('pt-BR', {
@@ -433,11 +485,11 @@ export function ProducaoPage() {
       >
         {target && (
           <div className="flex flex-col gap-3">
-            <div className="rounded-lg bg-neutral-50 p-3 text-sm text-neutral-700">
+            <div className="rounded-lg bg-neutral-50 p-3 text-sm text-neutral-700 dark:bg-slate-800 dark:text-neutral-200">
               <p className="font-medium">{target.product_name_snapshot}</p>
-              <p className="text-xs text-neutral-500">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
                 {target.batch ? `Lote ${target.batch} · ` : ''}
-                Vence {formatDateTime(new Date(target.expiry_at))}
+                Vence {formatDateTime(target.expiry_at)}
               </p>
             </div>
             <Select
@@ -456,7 +508,7 @@ export function ProducaoPage() {
               ))}
             </Select>
             {target.product_id && target.batch && (
-              <label className="flex items-start gap-2 rounded-lg border border-neutral-200 p-3 text-sm text-neutral-700">
+              <label className="flex items-start gap-2 rounded-lg border border-neutral-200 p-3 text-sm text-neutral-700 dark:border-neutral-700 dark:text-neutral-200">
                 <input
                   type="checkbox"
                   checked={alsoStock}
@@ -505,26 +557,49 @@ function StatCard({
   label,
   value,
   tone,
+  active = false,
+  onClick,
 }: {
   icon: ReactNode;
   label: string;
   value: number;
   tone: 'emerald' | 'amber' | 'red';
+  active?: boolean;
+  onClick?: () => void;
 }) {
   const tones = {
-    emerald: 'bg-emerald-50 text-emerald-700',
-    amber: 'bg-amber-50 text-amber-700',
-    red: 'bg-red-50 text-red-700',
+    emerald:
+      'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400',
+    amber: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
+    red: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
+  } as const;
+  const activeRing = {
+    emerald:
+      'border-emerald-300 ring-1 ring-emerald-200 dark:border-emerald-800 dark:ring-emerald-900',
+    amber:
+      'border-amber-300 ring-1 ring-amber-200 dark:border-amber-800 dark:ring-amber-900',
+    red: 'border-red-300 ring-1 ring-red-200 dark:border-red-800 dark:ring-red-900',
   } as const;
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-3 text-center">
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`rounded-xl border bg-white p-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 dark:bg-slate-900 ${
+        active ? activeRing[tone] : 'border-neutral-200 dark:border-neutral-800'
+      }`}
+    >
       <div
         className={`mx-auto mb-1 flex h-8 w-8 items-center justify-center rounded-lg ${tones[tone]}`}
       >
         {icon}
       </div>
-      <div className="text-lg font-semibold text-neutral-800">{value}</div>
-      <div className="text-[11px] text-neutral-500">{label}</div>
-    </div>
+      <div className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+        {value}
+      </div>
+      <div className="text-[11px] text-neutral-500 dark:text-neutral-400">
+        {label}
+      </div>
+    </button>
   );
 }
