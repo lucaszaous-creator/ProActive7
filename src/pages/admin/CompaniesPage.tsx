@@ -167,16 +167,20 @@ export function CompaniesPage() {
   async function handleLogoRemove() {
     if (!editing || !logoPath) return;
     setUploadingLogo(true);
-    await supabase.storage.from('branding').remove([logoPath]);
+    // Limpa a referência no banco PRIMEIRO. Só apaga o arquivo se isso der
+    // certo — evita logo_path apontando para arquivo inexistente (imagem
+    // quebrada) caso o update falhe.
     const { error } = await supabase
       .from('companies')
       .update({ logo_path: null })
       .eq('id', editing.id);
-    setUploadingLogo(false);
     if (error) {
+      setUploadingLogo(false);
       toast.error('Erro ao remover logo: ' + error.message);
       return;
     }
+    await supabase.storage.from('branding').remove([logoPath]);
+    setUploadingLogo(false);
     setLogoPath(null);
     toast.success('Logo removido.');
     void load();

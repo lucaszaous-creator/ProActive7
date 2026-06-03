@@ -159,7 +159,7 @@ export function NonConformitiesPage() {
       where_loc: form.where_loc.trim() || null,
       when_due: form.when_due || null,
       how: form.how.trim() || null,
-      how_much: form.how_much ? Number(form.how_much) : null,
+      how_much: form.how_much.trim() !== '' ? Number(form.how_much) : null,
       closing_note: form.closing_note.trim() || null,
     };
     let error;
