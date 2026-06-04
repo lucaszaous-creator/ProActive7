@@ -21,12 +21,12 @@ const SistemaPage = lazy(() =>
   })),
 );
 const CursosPublicPage = lazy(() =>
-  import('./pages/public/CursosPage').then((m) => ({
+  import('./pages/public/ComingSoonPage').then((m) => ({
     default: m.CursosPage,
   })),
 );
 const ClientesPublicPage = lazy(() =>
-  import('./pages/public/ClientesPage').then((m) => ({
+  import('./pages/public/ComingSoonPage').then((m) => ({
     default: m.ClientesPage,
   })),
 );

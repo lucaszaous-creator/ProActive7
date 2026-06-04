@@ -510,26 +510,144 @@ export interface CompanyFile {
   updated_at: string;
 }
 
+export interface CompanyFileCategory {
+  key: string;
+  label: string;
+  /** Observação curta (ex.: "Entregue pelo fiscal", "Últimos 3 meses"). */
+  hint?: string;
+}
+
+export interface CompanyFileGroup {
+  group: string;
+  /** Observação do grupo (ex.: "Apenas se utilizar carro-pipa"). */
+  note?: string;
+  items: CompanyFileCategory[];
+}
+
 /**
- * Categorias de documentos por empresa. Cobre os tipos "cadastrados"
- * (Manual de Boas Práticas, POPs) + documentos que a operação recebe
- * de terceiros (ASO, laudo de controle de pragas, alvarás). A nutri/
- * gerente faz upload do arquivo na categoria certa — sem edição de
- * texto. A ordem aqui define a ordem de exibição.
+ * Catálogo de documentos por empresa, organizado conforme a LISTA DA
+ * VIGILÂNCIA SANITÁRIA 2026 enviada pela RT (Ariane). Cada item é uma
+ * "gaveta" de upload — a nutri/gerente carrega o arquivo do
+ * estabelecimento ali (sem edição de texto). A ordem define a exibição.
  */
-export const COMPANY_FILE_CATEGORIES: { key: string; label: string }[] = [
-  { key: 'mbp', label: 'Manual de Boas Práticas' },
-  { key: 'pop_higienizacao', label: 'POP — Higienização' },
-  { key: 'pop_agua', label: 'POP — Água potável' },
-  { key: 'pop_manipuladores', label: 'POP — Saúde dos manipuladores' },
-  { key: 'pop_residuos', label: 'POP — Manejo de resíduos' },
-  { key: 'pop_manutencao', label: 'POP — Manutenção e calibração' },
-  { key: 'pmoc', label: 'PMOC — Climatização' },
-  { key: 'aso', label: 'ASO — Atestados de saúde ocupacional' },
-  { key: 'pragas', label: 'Controle de pragas (laudos)' },
-  { key: 'alvara', label: 'Alvarás e licenças' },
-  { key: 'outro', label: 'Outros documentos' },
+export const COMPANY_FILE_GROUPS: CompanyFileGroup[] = [
+  {
+    group: 'Contabilidade',
+    items: [
+      { key: 'cont_alvara', label: 'Alvará da contadora' },
+      { key: 'cont_cnpj', label: 'Cartão CNPJ da contadora' },
+      { key: 'cont_contrato', label: 'Contrato social da contadora' },
+    ],
+  },
+  {
+    group: 'Funcionários e saúde',
+    items: [
+      { key: 'aso', label: 'Atestados (ASO)', hint: 'Manter atualizados' },
+      {
+        key: 'exame_fezes',
+        label: 'Exames de fezes',
+        hint: 'Manter atualizados',
+      },
+      {
+        key: 'relacao_funcionarios',
+        label: 'Relação de funcionários, responsáveis e proprietários',
+        hint: 'Com as respectivas funções',
+      },
+      {
+        key: 'cert_curso_bp',
+        label: 'Certificado do Curso de Boas Práticas',
+      },
+    ],
+  },
+  {
+    group: 'Controles periódicos',
+    note: 'Certificado + ordem de serviço — últimos 3 meses',
+    items: [
+      {
+        key: 'dedetizacao',
+        label: 'Dedetização',
+        hint: 'Certificado, ordem de serviço e LAS',
+      },
+      {
+        key: 'reservatorio_agua',
+        label: 'Higienização de reservatório de água',
+        hint: 'Certificado, ordem de serviço e LAS',
+      },
+      {
+        key: 'ar_condicionado',
+        label: 'Limpeza de ar condicionado + PMOC',
+        hint: 'Certificado, OS e plano de manutenção (PMOC)',
+      },
+      {
+        key: 'coleta_oleo',
+        label: 'Comprovante de coleta de óleo',
+        hint: 'Se usar óleo para fritura',
+      },
+    ],
+  },
+  {
+    group: 'Manuais e planilhas',
+    items: [
+      {
+        key: 'mbp',
+        label: 'Manual de Boas Práticas',
+        hint: 'Elaborado pela RT (Ariane)',
+      },
+      { key: 'cronograma_limpeza', label: 'Cronograma de limpeza dos setores' },
+      {
+        key: 'plan_temp_equip',
+        label: 'Planilha de temperatura — equipamentos',
+      },
+      {
+        key: 'plan_temp_receb',
+        label: 'Planilha de temperatura — recebimento',
+      },
+    ],
+  },
+  {
+    group: 'Carro-pipa',
+    note: 'Apenas se utilizar carro-pipa',
+    items: [
+      { key: 'pipa_uta', label: 'Licença da UTA' },
+      { key: 'pipa_crsv', label: 'CRSV do caminhão' },
+      { key: 'pipa_laudo', label: 'Laudo de potabilidade do caminhão' },
+      {
+        key: 'pipa_etiqueta',
+        label: 'Etiqueta de quantidade de água e condição do cloro',
+      },
+    ],
+  },
+  {
+    group: 'Licenciamento e fiscal',
+    items: [
+      {
+        key: 'guia_licenca',
+        label: 'Guia de licença sanitária 2026',
+        hint: 'Entregue pelo fiscal',
+      },
+      {
+        key: 'roteiro_inspecao',
+        label: 'Roteiro de auto inspeção assinado',
+        hint: 'Entregue pelo fiscal',
+      },
+      {
+        key: 'autodeclaracao',
+        label: 'Autodeclaração — licenciamento sanitário assinado',
+        hint: 'Entregue pelo fiscal',
+      },
+      { key: 'selo_abc', label: 'Selo de Categorização ABC' },
+      { key: 'alvara', label: 'Outros alvarás e licenças' },
+    ],
+  },
+  {
+    group: 'Outros',
+    items: [{ key: 'outro', label: 'Outros documentos' }],
+  },
 ];
+
+/** Lista achatada de todas as categorias (na ordem dos grupos). */
+export const COMPANY_FILE_CATEGORIES: CompanyFileCategory[] =
+  COMPANY_FILE_GROUPS.flatMap((g) => g.items);
 
 export const COMPANY_FILE_CATEGORY_LABELS: Record<string, string> =
   Object.fromEntries(COMPANY_FILE_CATEGORIES.map((c) => [c.key, c.label]));

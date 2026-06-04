@@ -7,7 +7,8 @@ import {
   Trash2,
   Download,
   Plus,
-  FolderOpen,
+  Check,
+  CircleDashed,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
@@ -22,6 +23,7 @@ import { Spinner } from './ui/Spinner';
 import {
   COMPANY_FILE_CATEGORIES,
   COMPANY_FILE_CATEGORY_LABELS,
+  COMPANY_FILE_GROUPS,
   type CompanyFile,
 } from '@/lib/types';
 
@@ -44,19 +46,12 @@ function humanBytes(n: number | null | undefined): string {
   return `${v.toFixed(v >= 10 || i === 0 ? 0 : 1)} ${units[i]}`;
 }
 
-function categoryLabel(cat: string | null): string {
-  if (!cat) return COMPANY_FILE_CATEGORY_LABELS[OUTRO];
-  return (
-    COMPANY_FILE_CATEGORY_LABELS[cat] ?? COMPANY_FILE_CATEGORY_LABELS[OUTRO]
-  );
-}
-
 /**
- * Aba "Documentos" da empresa — agora 100% por upload (sem edição de
- * texto). A nutri/gerente carrega o arquivo na categoria certa: Manual
- * de Boas Práticas, POPs, ASO, laudo de controle de pragas, alvarás
- * etc. Persistido em `company_files` + bucket privado `company-docs`,
- * com RLS por empresa.
+ * Aba "Documentos" da empresa — checklist da Vigilância Sanitária 2026
+ * (lista enviada pela RT). Cada item é uma "gaveta" de upload: a nutri/
+ * gerente carrega o arquivo do estabelecimento ali, sem edição de texto.
+ * Persistido em `company_files` + bucket privado `company-docs` (RLS por
+ * empresa). Mostra progresso (itens entregues x pendentes).
  */
 export function CompanyFilesSection({ companyId }: Props) {
   const { profile } = useAuth();
@@ -71,7 +66,7 @@ export function CompanyFilesSection({ companyId }: Props) {
   const [pickedFile, setPickedFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Edit modal (rename / re-describe / recategorize)
+  // Edit modal
   const [editing, setEditing] = useState<CompanyFile | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDesc, setEditDesc] = useState('');
@@ -102,8 +97,7 @@ export function CompanyFilesSection({ companyId }: Props) {
     void load();
   }, [load]);
 
-  // Agrupa por categoria, na ordem de COMPANY_FILE_CATEGORIES.
-  const grouped = useMemo(() => {
+  const byCategory = useMemo(() => {
     const map = new Map<string, CompanyFile[]>();
     for (const f of files) {
       const key = f.category ?? OUTRO;
@@ -111,19 +105,17 @@ export function CompanyFilesSection({ companyId }: Props) {
       arr.push(f);
       map.set(key, arr);
     }
-    const ordered: { key: string; label: string; items: CompanyFile[] }[] = [];
-    for (const { key, label } of COMPANY_FILE_CATEGORIES) {
-      const items = map.get(key);
-      if (items && items.length > 0) ordered.push({ key, label, items });
-    }
-    // Categorias desconhecidas (legados) vão para o fim.
-    for (const [key, items] of map) {
-      if (!COMPANY_FILE_CATEGORY_LABELS[key] && key !== OUTRO) {
-        ordered.push({ key, label: categoryLabel(key), items });
-      }
-    }
-    return ordered;
+    return map;
   }, [files]);
+
+  // Progresso: quantos itens obrigatórios (todos menos "outros") têm
+  // ao menos um arquivo. Carro-pipa é condicional, mas conta no total
+  // só para dar visibilidade — a cliente sabe o que se aplica.
+  const progress = useMemo(() => {
+    const required = COMPANY_FILE_CATEGORIES.filter((c) => c.key !== OUTRO);
+    const done = required.filter((c) => (byCategory.get(c.key)?.length ?? 0) > 0);
+    return { total: required.length, done: done.length };
+  }, [byCategory]);
 
   function openUpload(presetCategory?: string) {
     setTitle('');
@@ -245,132 +237,202 @@ export function CompanyFilesSection({ companyId }: Props) {
     window.open(data.signedUrl, '_blank', 'noopener');
   }
 
+  // Categorias desconhecidas (legado) que não estão no catálogo atual.
+  const unknownKeys = useMemo(() => {
+    const known = new Set(COMPANY_FILE_CATEGORIES.map((c) => c.key));
+    return [...byCategory.keys()].filter((k) => k !== OUTRO && !known.has(k));
+  }, [byCategory]);
+
   function FileRow({ f }: { f: CompanyFile }) {
     return (
-      <li className="flex items-start justify-between gap-3 py-2.5">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <FileText size={14} className="shrink-0 text-neutral-400" />
-            <p className="min-w-0 truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">
+      <li className="flex items-center justify-between gap-2 py-1.5">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <FileText size={13} className="shrink-0 text-neutral-400" />
+          <div className="min-w-0">
+            <p className="truncate text-xs font-medium text-neutral-700 dark:text-neutral-300">
               {f.title}
             </p>
-          </div>
-          {f.description ? (
-            <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-              {f.description}
+            <p className="text-[10px] text-neutral-400">
+              {humanBytes(f.size_bytes)} · {formatDateTime(f.uploaded_at)}
             </p>
-          ) : null}
-          <p className="mt-0.5 text-[11px] text-neutral-400 dark:text-neutral-500">
-            {humanBytes(f.size_bytes)} · adicionado{' '}
-            {formatDateTime(f.uploaded_at)}
-          </p>
+          </div>
         </div>
-        <div className="flex shrink-0 gap-1">
+        <div className="flex shrink-0 gap-0.5">
           <button
             onClick={() => void openFile(f)}
             aria-label="Abrir"
             title="Abrir"
-            className="rounded-lg p-2.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+            className="rounded-lg p-2 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
           >
-            <Download size={16} />
+            <Download size={14} />
           </button>
           <button
             onClick={() => openEdit(f)}
             aria-label="Editar"
             title="Renomear / mudar categoria"
-            className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
           >
-            <Pencil size={16} />
+            <Pencil size={14} />
           </button>
           <button
             onClick={() => setDeleting(f)}
             aria-label="Excluir"
             title="Excluir"
-            className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+            className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
           >
-            <Trash2 size={16} />
+            <Trash2 size={14} />
           </button>
         </div>
       </li>
     );
   }
 
+  function ChecklistItem({
+    catKey,
+    label,
+    hint,
+  }: {
+    catKey: string;
+    label: string;
+    hint?: string;
+  }) {
+    const items = byCategory.get(catKey) ?? [];
+    const has = items.length > 0;
+    return (
+      <div className="rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex min-w-0 items-start gap-2">
+            <span
+              className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                has
+                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300'
+                  : 'bg-neutral-100 text-neutral-400 dark:bg-neutral-800'
+              }`}
+            >
+              {has ? <Check size={12} /> : <CircleDashed size={12} />}
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                {label}
+              </p>
+              {hint ? (
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  {hint}
+                </p>
+              ) : null}
+            </div>
+          </div>
+          <button
+            onClick={() => openUpload(catKey)}
+            className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-400 dark:hover:bg-emerald-900"
+          >
+            <Plus size={12} />
+            {has ? 'Adicionar' : 'Carregar'}
+          </button>
+        </div>
+        {has ? (
+          <ul className="mt-2 divide-y divide-neutral-100 border-t border-neutral-100 pt-1 dark:divide-neutral-800 dark:border-neutral-800">
+            {items.map((f) => (
+              <FileRow key={f.id} f={f} />
+            ))}
+          </ul>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
     <>
+      {/* Progresso */}
       <Card className="mb-4">
-        <div className="mb-3 flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
-              <FolderOpen size={16} className="text-emerald-600" />
-              Documentos da empresa
+            <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+              Lista da Vigilância Sanitária 2026
             </h2>
-            <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-              Carregue os documentos do estabelecimento — Manual de Boas
-              Práticas, POPs, ASO, laudos de controle de pragas, alvarás. PDF
+            <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+              Carregue cada documento do estabelecimento na gaveta certa. PDF
               ou imagem, até 20 MB.
             </p>
           </div>
-          <Button onClick={() => openUpload()} size="sm" disabled={!companyId}>
-            <Plus size={14} />
-            Adicionar
-          </Button>
-        </div>
-
-        {loading ? (
-          <div className="flex justify-center py-6">
-            <Spinner className="h-5 w-5" />
-          </div>
-        ) : files.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-neutral-200 px-4 py-8 text-center dark:border-neutral-700">
-            <p className="text-sm text-neutral-600 dark:text-neutral-300">
-              Nenhum documento ainda.
-            </p>
-            <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-              Comece adicionando o Manual de Boas Práticas ou um POP.
-            </p>
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-              {COMPANY_FILE_CATEGORIES.slice(0, 4).map((c) => (
-                <Button
-                  key={c.key}
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => openUpload(c.key)}
-                >
-                  <Plus size={14} />
-                  {c.label}
-                </Button>
-              ))}
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                Entregues
+              </p>
+              <p className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+                {progress.done}
+                <span className="text-sm font-normal text-neutral-400">
+                  {' '}
+                  / {progress.total}
+                </span>
+              </p>
             </div>
+            <Button onClick={() => openUpload()} size="sm" disabled={!companyId}>
+              <Plus size={14} />
+              Adicionar
+            </Button>
           </div>
-        ) : (
-          <div className="flex flex-col gap-5">
-            {grouped.map((g) => (
-              <div key={g.key}>
-                <div className="mb-1 flex items-center justify-between gap-2">
-                  <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
-                    {g.label}
-                    <span className="ml-1.5 font-normal text-neutral-400">
-                      ({g.items.length})
-                    </span>
-                  </h3>
-                  <button
-                    onClick={() => openUpload(g.key)}
-                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950"
-                  >
-                    <Plus size={12} />
-                    Adicionar
-                  </button>
-                </div>
-                <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                  {g.items.map((f) => (
-                    <FileRow key={f.id} f={f} />
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        )}
+        </div>
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+          <div
+            className="h-full rounded-full bg-emerald-500 transition-all"
+            style={{
+              width: `${
+                progress.total > 0
+                  ? (progress.done / progress.total) * 100
+                  : 0
+              }%`,
+            }}
+          />
+        </div>
       </Card>
+
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <Spinner className="h-6 w-6" />
+        </div>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {COMPANY_FILE_GROUPS.map((g) => (
+            <Card key={g.group}>
+              <div className="mb-3">
+                <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                  {g.group}
+                </h3>
+                {g.note ? (
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                    {g.note}
+                  </p>
+                ) : null}
+              </div>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {g.items.map((c) => (
+                  <ChecklistItem
+                    key={c.key}
+                    catKey={c.key}
+                    label={c.label}
+                    hint={c.hint}
+                  />
+                ))}
+              </div>
+
+              {/* Documentos legados sem categoria conhecida vão no grupo Outros */}
+              {g.group === 'Outros' && unknownKeys.length > 0
+                ? unknownKeys.map((k) => (
+                    <div key={k} className="mt-2">
+                      <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                        {(byCategory.get(k) ?? []).map((f) => (
+                          <FileRow key={f.id} f={f} />
+                        ))}
+                      </ul>
+                    </div>
+                  ))
+                : null}
+            </Card>
+          ))}
+        </div>
+      )}
 
       <Modal
         open={uploadOpen}
@@ -403,10 +465,14 @@ export function CompanyFilesSection({ companyId }: Props) {
             value={category}
             onChange={(e) => setCategory(e.target.value)}
           >
-            {COMPANY_FILE_CATEGORIES.map((c) => (
-              <option key={c.key} value={c.key}>
-                {c.label}
-              </option>
+            {COMPANY_FILE_GROUPS.map((g) => (
+              <optgroup key={g.group} label={g.group}>
+                {g.items.map((c) => (
+                  <option key={c.key} value={c.key}>
+                    {c.label}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </Select>
           <div>
@@ -434,7 +500,11 @@ export function CompanyFilesSection({ companyId }: Props) {
             label="Nome do documento"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder={pickedFile?.name ?? 'Ex.: Manual de Boas Práticas 2026'}
+            placeholder={
+              pickedFile?.name ??
+              COMPANY_FILE_CATEGORY_LABELS[category] ??
+              'Ex.: Manual de Boas Práticas 2026'
+            }
           />
           <Input
             id="cf-desc"
@@ -472,10 +542,14 @@ export function CompanyFilesSection({ companyId }: Props) {
             value={editCategory}
             onChange={(e) => setEditCategory(e.target.value)}
           >
-            {COMPANY_FILE_CATEGORIES.map((c) => (
-              <option key={c.key} value={c.key}>
-                {c.label}
-              </option>
+            {COMPANY_FILE_GROUPS.map((g) => (
+              <optgroup key={g.group} label={g.group}>
+                {g.items.map((c) => (
+                  <option key={c.key} value={c.key}>
+                    {c.label}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </Select>
           <Input
