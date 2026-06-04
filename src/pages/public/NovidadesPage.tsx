@@ -8,9 +8,11 @@ import { ElfsightWidget } from '@/components/public/ElfsightWidget';
 const INSTAGRAM_URL = 'https://www.instagram.com/proactive.7/';
 
 // UUID do widget configurado no painel do Elfsight (Instagram Feed).
-// Sem isso, exibimos o card "Seguir no Instagram" como fallback.
+// Default = widget @proactive.7; pode ser sobrescrito por env var.
+// Sem nenhum dos dois, exibimos o fallback "Feed em breve".
 const ELFSIGHT_INSTAGRAM_APP_ID =
-  import.meta.env.VITE_ELFSIGHT_INSTAGRAM_APP_ID || '';
+  import.meta.env.VITE_ELFSIGHT_INSTAGRAM_APP_ID ||
+  'f1cf91c7-c7dc-4219-90c6-d5eb4b6f5ac9';
 
 export function NovidadesPage() {
   usePageMeta('/novidades');

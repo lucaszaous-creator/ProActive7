@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-const SCRIPT_SRC = 'https://static.elfsight.com/platform/platform.js';
+const SCRIPT_SRC = 'https://elfsightcdn.com/platform.js';
 const SCRIPT_ID = 'elfsight-platform-script';
 
 /**
