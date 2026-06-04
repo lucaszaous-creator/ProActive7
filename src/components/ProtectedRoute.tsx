@@ -41,10 +41,13 @@ export function ProtectedRoute({
   masterOnly = false,
   platformAdminOnly = false,
   nutritionistOrAdmin = false,
+  canManageUsersOnly = false,
 }: {
   masterOnly?: boolean;
   platformAdminOnly?: boolean;
   nutritionistOrAdmin?: boolean;
+  /** Gateia rotas de gestão de usuários da empresa — aceita property_manager. */
+  canManageUsersOnly?: boolean;
 }) {
   const {
     session,
@@ -53,6 +56,7 @@ export function ProtectedRoute({
     profileLoading,
     isPlatformAdmin,
     isNutritionist,
+    canManageUsers,
     signOut,
   } = useAuth();
 
@@ -67,6 +71,8 @@ export function ProtectedRoute({
   if ((masterOnly || platformAdminOnly) && !isPlatformAdmin)
     return <Navigate to="/painel" replace />;
   if (nutritionistOrAdmin && !isPlatformAdmin && !isNutritionist)
+    return <Navigate to="/painel" replace />;
+  if (canManageUsersOnly && !canManageUsers)
     return <Navigate to="/painel" replace />;
 
   return <Outlet />;

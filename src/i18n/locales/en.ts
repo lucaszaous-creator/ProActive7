@@ -53,6 +53,7 @@ const en = {
   layout: {
     master: 'Master user',
     property: 'Company user',
+    propertyManager: 'Company manager',
     signOut: 'Sign out',
     openMenu: 'Open menu',
     installApp: 'Install app',

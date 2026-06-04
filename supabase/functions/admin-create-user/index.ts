@@ -1,6 +1,10 @@
 // admin-create-user — cria um usuario (auth + profile) com role e org/company.
-// platform_admin pode criar qualquer role. nutritionist pode criar apenas 'property'
-// para empresas dentro da sua propria organizacao. Usa a service role key.
+// platform_admin pode criar qualquer role.
+// nutritionist pode criar 'property' OU 'property_manager' para empresas
+//   dentro da sua propria organizacao.
+// property_manager pode criar apenas 'property' para a propria empresa
+//   (NAO eh admin, mas gerencia o time da cozinha).
+// Usa a service role key.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const corsHeaders = {
@@ -47,7 +51,7 @@ Deno.serve(async (req) => {
     const admin = createClient(url, serviceKey);
     const { data: callerProfile } = await admin
       .from('profiles')
-      .select('role, organization_id')
+      .select('role, organization_id, company_id')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -55,8 +59,9 @@ Deno.serve(async (req) => {
     const isPlatformAdmin =
       callerRole === 'platform_admin' || callerRole === 'master';
     const isNutritionist = callerRole === 'nutritionist';
+    const isPropertyManager = callerRole === 'property_manager';
 
-    if (!isPlatformAdmin && !isNutritionist) {
+    if (!isPlatformAdmin && !isNutritionist && !isPropertyManager) {
       return json(
         { error: 'Apenas administradores podem criar usuarios' },
         403,
@@ -77,7 +82,13 @@ Deno.serve(async (req) => {
     }
 
     // Roles validos (mantendo 'master' para compatibilidade retroativa).
-    const validRoles = ['platform_admin', 'master', 'nutritionist', 'property'];
+    const validRoles = [
+      'platform_admin',
+      'master',
+      'nutritionist',
+      'property_manager',
+      'property',
+    ];
     if (!validRoles.includes(role)) {
       return json({ error: 'Role invalido' }, 400);
     }
@@ -87,13 +98,19 @@ Deno.serve(async (req) => {
 
     // 4. Verifica autorizacao especifica por role do chamador.
     if (isNutritionist) {
-      if (normalizedRole !== 'property') {
+      // Nutri so pode criar property/property_manager dentro da propria org.
+      if (
+        normalizedRole !== 'property' &&
+        normalizedRole !== 'property_manager'
+      ) {
         return json(
-          { error: 'Nutricionista so pode criar usuarios da empresa' },
+          {
+            error:
+              'Nutricionista so pode criar usuarios da empresa ou gerentes',
+          },
           403,
         );
       }
-      // Verifica se o company_id pertence a organizacao do chamador.
       if (!companyId) {
         return json(
           { error: 'company_id e obrigatorio para usuario da empresa' },
@@ -113,8 +130,32 @@ Deno.serve(async (req) => {
       }
     }
 
+    if (isPropertyManager) {
+      // Gerente da empresa: so cria 'property' na propria empresa.
+      // Nao pode criar outro gerente (evita escalada lateral) nem nutri/admin.
+      if (normalizedRole !== 'property') {
+        return json(
+          {
+            error:
+              'Gerente da empresa so pode criar usuarios da propria empresa',
+          },
+          403,
+        );
+      }
+      if (!companyId || companyId !== callerProfile?.company_id) {
+        return json(
+          { error: 'Empresa precisa ser a do gerente' },
+          403,
+        );
+      }
+    }
+
     // 5. Validacoes de campos obrigatorios por role.
-    if (normalizedRole === 'property' && !companyId) {
+    if (
+      (normalizedRole === 'property' ||
+        normalizedRole === 'property_manager') &&
+      !companyId
+    ) {
       return json(
         { error: 'company_id e obrigatorio para usuario da empresa' },
         400,
@@ -144,12 +185,14 @@ Deno.serve(async (req) => {
 
     // 7. Define role, empresa e organizacao no profile.
     // Para 'property', organization_id e sincronizado automaticamente pelo trigger do BD.
+    const isCompanyScopedRole =
+      normalizedRole === 'property' || normalizedRole === 'property_manager';
     const { error: upsertErr } = await admin.from('profiles').upsert({
       id: created.user.id,
       email,
       full_name: fullName,
       role: normalizedRole,
-      company_id: normalizedRole === 'property' ? companyId : null,
+      company_id: isCompanyScopedRole ? companyId : null,
       organization_id: normalizedRole === 'nutritionist' ? organizationId : null,
       active: true,
     });

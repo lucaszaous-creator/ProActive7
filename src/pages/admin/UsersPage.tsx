@@ -32,18 +32,29 @@ const ROLE_LABELS: Record<UserRole, string> = {
   master: 'Master (legado)',
   platform_admin: 'Administrador da plataforma',
   nutritionist: 'Nutricionista',
+  property_manager: 'Gerente da empresa',
   property: 'Usuário da empresa',
 };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export function UsersPage() {
-  const { profile: callerProfile, isPlatformAdmin } = useAuth();
+  const {
+    profile: callerProfile,
+    isPlatformAdmin,
+    isNutritionist,
+    isPropertyManager,
+  } = useAuth();
 
-  // Available roles based on caller's own role
+  // Available roles based on caller's own role.
+  // - platform_admin pode criar qualquer papel
+  // - nutritionist cria gerente OU usuário da empresa
+  // - property_manager só cria usuário da empresa (cozinha)
   const availableRoles: UserRole[] = isPlatformAdmin
-    ? ['platform_admin', 'nutritionist', 'property']
-    : ['property']; // nutritionist can only create property users
+    ? ['platform_admin', 'nutritionist', 'property_manager', 'property']
+    : isNutritionist
+      ? ['property_manager', 'property']
+      : ['property'];
   const [users, setUsers] = useState<ProfileRow[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -121,7 +132,13 @@ export function UsersPage() {
     setEmail('');
     setPassword('');
     setRole('property');
-    setCompanyId(companies[0]?.id ?? '');
+    // Manager só vê a própria empresa nesta lista (RLS); preenche
+    // automaticamente para não exigir clique.
+    setCompanyId(
+      isPropertyManager
+        ? (callerProfile?.company_id ?? '')
+        : (companies[0]?.id ?? ''),
+    );
     setOrganizationId(organizations[0]?.id ?? '');
     setActive(true);
     setModalOpen(true);
@@ -161,7 +178,8 @@ export function UsersPage() {
       toast.error('A nova senha deve ter ao menos 6 caracteres.');
       return;
     }
-    if (role === 'property' && !companyId) {
+    const needsCompany = role === 'property' || role === 'property_manager';
+    if (needsCompany && !companyId) {
       toast.error('Selecione a empresa do usuário.');
       return;
     }
@@ -175,6 +193,10 @@ export function UsersPage() {
       );
       return;
     }
+    if (isPropertyManager && role !== 'property') {
+      toast.error('Gerente da empresa só pode criar usuários da empresa.');
+      return;
+    }
 
     setSaving(true);
     if (editing) {
@@ -183,7 +205,7 @@ export function UsersPage() {
           user_id: editing.id,
           full_name: fullName.trim(),
           role,
-          company_id: role === 'property' ? companyId : null,
+          company_id: needsCompany ? companyId : null,
           organization_id: role === 'nutritionist' ? organizationId : null,
           active,
           ...(password.length > 0 ? { password } : {}),
@@ -203,7 +225,7 @@ export function UsersPage() {
           password,
           full_name: fullName.trim(),
           role,
-          company_id: role === 'property' ? companyId : null,
+          company_id: needsCompany ? companyId : null,
           organization_id: role === 'nutritionist' ? organizationId : null,
         },
       });

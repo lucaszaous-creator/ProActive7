@@ -19,10 +19,21 @@ interface AuthState {
    * nutritionist: empresas da propria org). Em todo o codigo o flag e
    * usado para gatear botoes/telas de escrita. Para diferenciar entre
    * platform_admin e nutritionist, use isPlatformAdmin / isNutritionist.
+   *
+   * NOTA: `property_manager` NÃO é "master" — ele gerencia só a própria
+   * empresa, sem privilégios técnicos (não avalia visita, não cria
+   * empresa). Use isPropertyManager para gateá-lo.
    */
   isMaster: boolean;
   isPlatformAdmin: boolean;
   isNutritionist: boolean;
+  /** Gerente da própria empresa — pode criar/editar usuários `property`. */
+  isPropertyManager: boolean;
+  /**
+   * Pode gerenciar usuários da própria empresa (criar/editar `property`).
+   * true para platform_admin, nutritionist e property_manager.
+   */
+  canManageUsers: boolean;
   /** Assinatura da org do usuário (null para platform_admin ou até carregar). */
   subscription: OrgSubscription | null;
   /** true se o módulo está liberado no plano (platform_admin sempre true). */
@@ -129,6 +140,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
+  const isPropertyManager = profile?.role === 'property_manager';
+
   const value: AuthState = {
     session,
     profile,
@@ -141,6 +154,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isPlatformAdmin:
       profile?.role === 'master' || profile?.role === 'platform_admin',
     isNutritionist: profile?.role === 'nutritionist',
+    isPropertyManager,
+    canManageUsers:
+      profile?.role === 'master' ||
+      profile?.role === 'platform_admin' ||
+      profile?.role === 'nutritionist' ||
+      profile?.role === 'property_manager',
     subscription,
     hasModule: (key: string) => {
       // platform_admin/master: tudo liberado.

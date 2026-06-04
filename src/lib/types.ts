@@ -2,6 +2,7 @@ export type UserRole =
   | 'master'
   | 'platform_admin'
   | 'nutritionist'
+  | 'property_manager'
   | 'property';
 
 export interface Organization {

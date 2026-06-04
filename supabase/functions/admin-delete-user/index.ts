@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
     const admin = createClient(url, serviceKey);
     const { data: callerProfile } = await admin
       .from('profiles')
-      .select('role, organization_id')
+      .select('role, organization_id, company_id')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -53,8 +53,9 @@ Deno.serve(async (req) => {
     const isPlatformAdmin =
       callerRole === 'platform_admin' || callerRole === 'master';
     const isNutritionist = callerRole === 'nutritionist';
+    const isPropertyManager = callerRole === 'property_manager';
 
-    if (!isPlatformAdmin && !isNutritionist) {
+    if (!isPlatformAdmin && !isNutritionist && !isPropertyManager) {
       return json(
         { error: 'Apenas administradores podem excluir usuários' },
         403,
@@ -68,7 +69,6 @@ Deno.serve(async (req) => {
       return json({ error: 'Você não pode excluir o próprio usuário' }, 400);
     }
 
-    // Nutricionista so pode deletar usuarios da propria org.
     if (isNutritionist) {
       const { data: targetProfile } = await admin
         .from('profiles')
@@ -84,9 +84,35 @@ Deno.serve(async (req) => {
           403,
         );
       }
-      if (targetProfile.role !== 'property') {
+      if (
+        targetProfile.role !== 'property' &&
+        targetProfile.role !== 'property_manager'
+      ) {
         return json(
           { error: 'Nutricionista só pode excluir usuários da empresa' },
+          403,
+        );
+      }
+    }
+
+    if (isPropertyManager) {
+      const { data: targetProfile } = await admin
+        .from('profiles')
+        .select('company_id, role')
+        .eq('id', userId)
+        .maybeSingle();
+      if (
+        !targetProfile ||
+        targetProfile.company_id !== callerProfile?.company_id
+      ) {
+        return json(
+          { error: 'Usuário não pertence à sua empresa' },
+          403,
+        );
+      }
+      if (targetProfile.role !== 'property') {
+        return json(
+          { error: 'Gerente só pode excluir usuários da própria empresa' },
           403,
         );
       }

@@ -333,10 +333,17 @@ export default function App() {
         <Route element={<ProtectedRoute nutritionistOrAdmin />}>
           <Route element={<Layout />}>
             <Route path="/admin/empresas" element={<CompaniesPage />} />
-            <Route path="/admin/usuarios" element={<UsersPage />} />
             <Route path="/admin/novidades" element={<ArticlesAdminPage />} />
             <Route path="/admin/assinatura" element={<SubscriptionPage />} />
             <Route path="/admin/hardware" element={<HardwarePage />} />
+          </Route>
+        </Route>
+
+        {/* Gestão de usuários: property_manager também acessa (cria/
+            edita os usuários `property` da própria empresa). */}
+        <Route element={<ProtectedRoute canManageUsersOnly />}>
+          <Route element={<Layout />}>
+            <Route path="/admin/usuarios" element={<UsersPage />} />
           </Route>
         </Route>
 

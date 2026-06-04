@@ -53,6 +53,7 @@ const ptBR = {
   layout: {
     master: 'Usuário master',
     property: 'Usuário da empresa',
+    propertyManager: 'Gerente da empresa',
     signOut: 'Sair',
     openMenu: 'Abrir menu',
     installApp: 'Instalar app',

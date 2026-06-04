@@ -1,6 +1,9 @@
 // admin-update-user — edita perfil, ativa/desativa e redefine senha de um
-// usuario. platform_admin/master gerenciam qualquer um; nutritionist só
-// gerencia usuarios `property` (ou a si mesmo) da propria organizacao.
+// usuario.
+// platform_admin/master: gerencia qualquer um.
+// nutritionist: usuarios `property` ou `property_manager` (ou si mesmo)
+//   da propria organizacao.
+// property_manager: usuarios `property` (ou si mesmo) da propria empresa.
 // verify_jwt:true no platform (o gateway valida o JWT); a funcao tambem
 // trata OPTIONS e re-checa a auth/role internamente.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
@@ -53,7 +56,7 @@ Deno.serve(async (req) => {
     const admin = createClient(url, serviceKey);
     const { data: callerProfile } = await admin
       .from('profiles')
-      .select('role, organization_id')
+      .select('role, organization_id, company_id')
       .eq('id', user.id)
       .maybeSingle();
 
@@ -61,8 +64,9 @@ Deno.serve(async (req) => {
     const isPlatformAdmin =
       callerRole === 'platform_admin' || callerRole === 'master';
     const isNutritionist = callerRole === 'nutritionist';
+    const isPropertyManager = callerRole === 'property_manager';
 
-    if (!isPlatformAdmin && !isNutritionist) {
+    if (!isPlatformAdmin && !isNutritionist && !isPropertyManager) {
       return json(
         { error: 'Apenas administradores podem editar usuários' },
         403,
@@ -80,13 +84,21 @@ Deno.serve(async (req) => {
 
     if (!userId) return json({ error: 'user_id é obrigatório' }, 400);
 
-    const validRoles = ['master', 'platform_admin', 'nutritionist', 'property'];
+    const validRoles = [
+      'master',
+      'platform_admin',
+      'nutritionist',
+      'property_manager',
+      'property',
+    ];
     if (role !== undefined && !validRoles.includes(role)) {
       return json({ error: 'Role inválido' }, 400);
     }
     const normalizedRole = role === 'master' ? 'platform_admin' : role;
 
-    if (normalizedRole === 'property' && companyId === null) {
+    const isCompanyScopedRole =
+      normalizedRole === 'property' || normalizedRole === 'property_manager';
+    if (isCompanyScopedRole && companyId === null) {
       return json(
         { error: 'company_id é obrigatório para usuário da empresa' },
         400,
@@ -103,7 +115,11 @@ Deno.serve(async (req) => {
     }
 
     if (isNutritionist) {
-      if (normalizedRole !== undefined && normalizedRole !== 'property') {
+      if (
+        normalizedRole !== undefined &&
+        normalizedRole !== 'property' &&
+        normalizedRole !== 'property_manager'
+      ) {
         return json(
           { error: 'Nutricionista só pode editar usuários da empresa' },
           403,
@@ -123,9 +139,13 @@ Deno.serve(async (req) => {
           403,
         );
       }
-      // Nutri só gerencia usuarios `property` da org — ou a si mesma.
-      // Bloqueia editar/resetar senha de outra nutri ou admin da org.
-      if (targetProfile.role !== 'property' && userId !== user.id) {
+      // Nutri só gerencia `property` e `property_manager` da org —
+      // ou si mesma. Bloqueia editar outra nutri ou admin.
+      if (
+        targetProfile.role !== 'property' &&
+        targetProfile.role !== 'property_manager' &&
+        userId !== user.id
+      ) {
         return json(
           { error: 'Nutricionista só pode gerenciar usuários da empresa' },
           403,
@@ -146,6 +166,43 @@ Deno.serve(async (req) => {
       }
     }
 
+    if (isPropertyManager) {
+      // Gerente: só edita `property` ou a si mesmo, na propria empresa.
+      // Bloqueia editar outro gerente / nutri / admin.
+      if (normalizedRole !== undefined && normalizedRole !== 'property') {
+        return json(
+          { error: 'Gerente só pode definir o papel "property"' },
+          403,
+        );
+      }
+      const { data: targetProfile } = await admin
+        .from('profiles')
+        .select('company_id, role')
+        .eq('id', userId)
+        .maybeSingle();
+      if (
+        !targetProfile ||
+        targetProfile.company_id !== callerProfile?.company_id
+      ) {
+        return json(
+          { error: 'Usuário não pertence à sua empresa' },
+          403,
+        );
+      }
+      if (targetProfile.role !== 'property' && userId !== user.id) {
+        return json(
+          { error: 'Gerente só gerencia usuários da própria empresa' },
+          403,
+        );
+      }
+      if (companyId && companyId !== callerProfile?.company_id) {
+        return json(
+          { error: 'Empresa precisa ser a do gerente' },
+          403,
+        );
+      }
+    }
+
     const authUpdate: Record<string, unknown> = {};
     if (password !== undefined) authUpdate.password = password;
     if (active !== undefined) {
@@ -163,7 +220,14 @@ Deno.serve(async (req) => {
     if (fullName !== undefined) profileUpdate.full_name = fullName;
     if (normalizedRole !== undefined) profileUpdate.role = normalizedRole;
     if (normalizedRole === 'platform_admin') profileUpdate.company_id = null;
-    else if (companyId !== undefined) profileUpdate.company_id = companyId;
+    else if (
+      normalizedRole === 'property' ||
+      normalizedRole === 'property_manager'
+    ) {
+      if (companyId !== undefined) profileUpdate.company_id = companyId;
+    } else if (companyId !== undefined) {
+      profileUpdate.company_id = companyId;
+    }
     if (normalizedRole === 'nutritionist' && organizationId !== undefined) {
       profileUpdate.organization_id = organizationId;
     }

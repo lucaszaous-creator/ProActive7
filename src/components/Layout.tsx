@@ -367,6 +367,60 @@ const NAV_PROPERTY: NavNode[] = [
   },
 ];
 
+// Gerente da empresa: o mesmo menu da cozinha + cadastro de
+// "Funcionários" (manipuladores) e gestão de usuários da empresa.
+// NÃO vê empresas/organizações nem rotinas técnicas da nutri (visitas
+// de avaliação ficam com a RT).
+const NAV_PROPERTY_MANAGER: NavNode[] = [
+  ITEM.inicio,
+  ITEM.imprimir,
+  ITEM.validades,
+  ITEM.producao,
+  ITEM.contagem,
+  ITEM.controlados,
+  ITEM.recebimentos,
+  ITEM.rastreabilidade,
+  ITEM.estoque,
+  ITEM.relatorios,
+  {
+    kind: 'group',
+    labelKey: 'nav.cadastros',
+    icon: Package,
+    defaultOpen: true,
+    children: [
+      ITEM.produtos,
+      ITEM.grupos,
+      ITEM.funcionarios,
+      ITEM.fornecedores,
+      ITEM.fichasTecnicas,
+      ITEM.impressoras,
+    ],
+  },
+  {
+    kind: 'group',
+    labelKey: 'nav.conformidade',
+    icon: ShieldCheck,
+    defaultOpen: false,
+    children: [
+      ITEM.visitas,
+      ITEM.ncs,
+      ITEM.checklists,
+      ITEM.temperatura,
+      ITEM.pragas,
+      ITEM.documentos,
+      ITEM.fotos,
+      ITEM.dossie,
+    ],
+  },
+  {
+    kind: 'group',
+    labelKey: 'nav.administracao',
+    icon: Settings,
+    defaultOpen: false,
+    children: [ITEM.usuarios],
+  },
+];
+
 const NAV_NUTRITIONIST: NavNode[] = [
   ITEM.carteira,
   {
@@ -595,17 +649,26 @@ function filterTreeByModules(
 }
 
 function useActiveTree(): NavNode[] {
-  const { isPlatformAdmin, isNutritionist, hasModule } = useAuth();
+  const { isPlatformAdmin, isNutritionist, isPropertyManager, hasModule } =
+    useAuth();
   const base = isPlatformAdmin
     ? NAV_PLATFORM_ADMIN
     : isNutritionist
       ? NAV_NUTRITIONIST
-      : NAV_PROPERTY;
+      : isPropertyManager
+        ? NAV_PROPERTY_MANAGER
+        : NAV_PROPERTY;
   return filterTreeByModules(base, hasModule);
 }
 
 export function Layout() {
-  const { profile, isPlatformAdmin, isNutritionist, signOut } = useAuth();
+  const {
+    profile,
+    isPlatformAdmin,
+    isNutritionist,
+    isPropertyManager,
+    signOut,
+  } = useAuth();
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const tree = useActiveTree();
@@ -673,7 +736,9 @@ export function Layout() {
                 ? t('layout.master')
                 : isNutritionist
                   ? 'Nutricionista'
-                  : t('layout.property')}
+                  : isPropertyManager
+                    ? t('layout.propertyManager')
+                    : t('layout.property')}
             </p>
           </div>
           <div className="space-y-1">
