@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
+import { PhotoAttacher } from '@/components/PhotoAttacher';
 import type { NcSeverity, NcStatus, NonConformity } from '@/lib/types';
 import { NC_SEVERITY_LABELS, NC_STATUS_LABELS } from '@/lib/types';
 
@@ -54,6 +55,8 @@ interface Form {
   how: string;
   how_much: string;
   closing_note: string;
+  evidence_photo_id: string | null;
+  closing_photo_id: string | null;
 }
 
 const emptyForm: Form = {
@@ -68,6 +71,8 @@ const emptyForm: Form = {
   how: '',
   how_much: '',
   closing_note: '',
+  evidence_photo_id: null,
+  closing_photo_id: null,
 };
 
 export function NonConformitiesPage() {
@@ -190,6 +195,8 @@ export function NonConformitiesPage() {
       how: nc.how ?? '',
       how_much: nc.how_much != null ? String(nc.how_much) : '',
       closing_note: nc.closing_note ?? '',
+      evidence_photo_id: nc.evidence_photo_id ?? null,
+      closing_photo_id: nc.closing_photo_id ?? null,
     });
     setNewCompanyId(nc.company_id);
     setModalOpen(true);
@@ -214,6 +221,8 @@ export function NonConformitiesPage() {
       how: form.how.trim() || null,
       how_much: form.how_much.trim() !== '' ? Number(form.how_much) : null,
       closing_note: form.closing_note.trim() || null,
+      evidence_photo_id: form.evidence_photo_id,
+      closing_photo_id: form.closing_photo_id,
     };
     let error;
     if (editing) {
@@ -517,6 +526,13 @@ export function NonConformitiesPage() {
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
           />
+          <PhotoAttacher
+            companyId={newCompanyId || companyId || null}
+            photoId={form.evidence_photo_id}
+            onChange={(id) => setForm({ ...form, evidence_photo_id: id })}
+            label="Foto da evidência"
+            description="Tire/anexe uma foto do problema (ajuda no plano de ação)."
+          />
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <Input
               id="nc-cat"
@@ -608,6 +624,13 @@ export function NonConformitiesPage() {
                 onChange={(e) =>
                   setForm({ ...form, closing_note: e.target.value })
                 }
+              />
+              <PhotoAttacher
+                companyId={editing.company_id}
+                photoId={form.closing_photo_id}
+                onChange={(id) => setForm({ ...form, closing_photo_id: id })}
+                label="Foto do fechamento (após a correção)"
+                description="Comprova a correção feita — fica registrada no histórico."
               />
             </>
           ) : null}

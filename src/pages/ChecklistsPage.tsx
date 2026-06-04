@@ -28,6 +28,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
+import { PhotoAttacher } from '@/components/PhotoAttacher';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Spinner } from '@/components/ui/Spinner';
 import { LibraryBrowser } from '@/components/LibraryBrowser';
@@ -102,6 +103,7 @@ export function ChecklistsPage() {
   );
   const [runChecks, setRunChecks] = useState<Record<string, boolean>>({});
   const [runNotes, setRunNotes] = useState('');
+  const [runPhotoId, setRunPhotoId] = useState<string | null>(null);
   const [runSaving, setRunSaving] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const [tplIsGlobal, setTplIsGlobal] = useState(false);
@@ -259,6 +261,7 @@ export function ChecklistsPage() {
     setRunTemplate(t);
     setRunChecks(Object.fromEntries(t.items.map((i) => [i.id, false])));
     setRunNotes('');
+    setRunPhotoId(null);
     setRunOpen(true);
   }
 
@@ -274,6 +277,7 @@ export function ChecklistsPage() {
       ran_by: profile?.id ?? null,
       items,
       notes: runNotes.trim() || null,
+      photo_id: runPhotoId,
     });
     setRunSaving(false);
     if (error) {
@@ -613,6 +617,13 @@ export function ChecklistsPage() {
               label="Observações (opcional)"
               value={runNotes}
               onChange={(e) => setRunNotes(e.target.value)}
+            />
+            <PhotoAttacher
+              companyId={companyId || null}
+              photoId={runPhotoId}
+              onChange={setRunPhotoId}
+              label="Foto (opcional)"
+              description="Anexe uma foto do que foi verificado (ex.: bancada limpa, equipamento sanitizado)."
             />
           </div>
         ) : null}

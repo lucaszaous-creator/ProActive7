@@ -1,0 +1,197 @@
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { Camera, Upload, X, ImageIcon } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
+
+const BUCKET = 'photos';
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+interface Props {
+  /** Empresa onde a foto será criada. Se null, o componente fica desabilitado. */
+  companyId: string | null;
+  /** ID da foto atualmente vinculada (na tabela `photos`). */
+  photoId: string | null | undefined;
+  /** Avisa o pai quando o usuário anexa/remove a foto. */
+  onChange: (photoId: string | null) => void;
+  /** Rótulo visível (ex.: "Foto da evidência"). */
+  label?: string;
+  /** Texto auxiliar abaixo do rótulo. */
+  description?: string;
+  /** Bloqueia interação. */
+  disabled?: boolean;
+}
+
+/**
+ * Botão de anexar foto para vincular a um registro (NC, checklist run,
+ * etc.). Faz upload no bucket `photos` e cria linha em `photos` —
+ * compartilha o mesmo armazenamento da página /fotos, então a cleanup
+ * function de 30 dias também limpa estas. Devolve o `photo_id` no
+ * onChange para o pai persistir junto com o registro.
+ *
+ * Não exclui a foto do bucket ao "remover" — apenas zera o vínculo (o
+ * usuário pode preferir manter a foto na galeria geral). A foto será
+ * descartada quando a cleanup function rodar (30 dias) se ninguém mais
+ * referenciar.
+ */
+export function PhotoAttacher({
+  companyId,
+  photoId,
+  onChange,
+  label = 'Foto',
+  description,
+  disabled = false,
+}: Props) {
+  const { profile } = useAuth();
+  const [uploading, setUploading] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  // Carrega URL assinada quando muda o photoId (preview existente).
+  useEffect(() => {
+    let cancelled = false;
+    if (!photoId) {
+      setPreviewUrl(null);
+      return;
+    }
+    void (async () => {
+      const { data: row } = await supabase
+        .from('photos')
+        .select('storage_path')
+        .eq('id', photoId)
+        .maybeSingle();
+      if (cancelled || !row?.storage_path) return;
+      const { data } = await supabase.storage
+        .from(BUCKET)
+        .createSignedUrl(row.storage_path, 3600);
+      if (!cancelled) setPreviewUrl(data?.signedUrl ?? null);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [photoId]);
+
+  async function handleFile(file: File | undefined) {
+    if (!file) return;
+    if (!companyId) {
+      toast.error('Selecione uma empresa antes de anexar foto.');
+      return;
+    }
+    if (!file.type.startsWith('image/')) {
+      toast.error('Selecione um arquivo de imagem.');
+      return;
+    }
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error('A imagem deve ter no máximo 10 MB.');
+      return;
+    }
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const path = `${companyId}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from(BUCKET)
+        .upload(path, file, { contentType: file.type });
+      if (upErr) throw upErr;
+
+      const { data: row, error: insErr } = await supabase
+        .from('photos')
+        .insert({
+          company_id: companyId,
+          storage_path: path,
+          original_name: file.name,
+          uploaded_by: profile?.id ?? null,
+        })
+        .select('id')
+        .single();
+      if (insErr) {
+        // Cleanup do arquivo órfão.
+        await supabase.storage.from(BUCKET).remove([path]);
+        throw insErr;
+      }
+      onChange(row.id);
+      toast.success('Foto anexada.');
+    } catch (e) {
+      toast.error('Erro ao enviar foto: ' + (e as Error).message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  function handleRemove() {
+    onChange(null);
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <div>
+        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+          {label}
+        </p>
+        {description ? (
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+            {description}
+          </p>
+        ) : null}
+      </div>
+
+      {photoId && previewUrl ? (
+        <div className="relative inline-block">
+          <a
+            href={previewUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-700"
+          >
+            <img
+              src={previewUrl}
+              alt="Foto anexada"
+              className="h-32 w-32 object-cover"
+            />
+          </a>
+          <button
+            type="button"
+            onClick={handleRemove}
+            disabled={disabled || uploading}
+            title="Remover anexo (a foto continua na galeria)"
+            aria-label="Remover foto"
+            className="absolute -right-2 -top-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-red-600 shadow ring-1 ring-neutral-200 hover:bg-red-50 disabled:opacity-50 dark:bg-slate-800 dark:ring-neutral-700"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      ) : photoId && !previewUrl ? (
+        <div className="inline-flex h-32 w-32 items-center justify-center rounded-lg border border-dashed border-neutral-300 text-neutral-400 dark:border-neutral-700">
+          <ImageIcon size={20} />
+        </div>
+      ) : (
+        <label
+          className={`inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-dashed border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:border-emerald-300 hover:bg-emerald-50 dark:border-neutral-700 dark:bg-slate-900 dark:text-neutral-200 dark:hover:bg-slate-800 ${
+            disabled || uploading || !companyId
+              ? 'pointer-events-none opacity-60'
+              : ''
+          }`}
+        >
+          {uploading ? (
+            <>
+              <Upload size={14} className="animate-pulse" />
+              Enviando…
+            </>
+          ) : (
+            <>
+              <Camera size={14} />
+              Anexar foto
+            </>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            capture="environment"
+            className="hidden"
+            onChange={(e) => void handleFile(e.target.files?.[0])}
+            disabled={disabled || uploading || !companyId}
+          />
+        </label>
+      )}
+    </div>
+  );
+}
