@@ -27,8 +27,8 @@ export const MODULES: ModuleDef[] = [
   },
   {
     key: 'documentos',
-    label: 'Documentos & fichas técnicas',
-    description: 'Repositório de documentos e fichas técnicas.',
+    label: 'Documentos',
+    description: 'Repositório de documentos do estabelecimento.',
   },
   {
     key: 'auditorias',
@@ -77,7 +77,6 @@ const ROUTE_MODULE: Record<string, string> = {
   '/checklists': 'checklists',
   '/nao-conformidades': 'nao_conformidades',
   '/documentos': 'documentos',
-  '/fichas-tecnicas': 'documentos',
   '/visitas': 'auditorias',
   '/dossie': 'auditorias',
   '/agenda': 'agenda',

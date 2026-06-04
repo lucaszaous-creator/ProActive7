@@ -213,6 +213,8 @@ export interface TemperatureLog {
   temperature: number;
   notes: string | null;
   recorded_by: string | null;
+  /** Foto opcional do termômetro/equipamento no momento da leitura. */
+  photo_id: string | null;
   created_at: string;
 }
 

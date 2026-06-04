@@ -15,6 +15,7 @@ import {
   Save,
   Lock,
   CalendarClock,
+  XCircle,
 } from 'lucide-react';
 import { toLocalInputValue } from '@/lib/dates';
 import { Input } from '@/components/ui/Input';
@@ -26,6 +27,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { Modal } from '@/components/ui/Modal';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import type {
   Audit,
   AuditItem,
@@ -97,6 +99,8 @@ export function AuditDetailPage() {
   const [scheduleOpen, setScheduleOpen] = useState(false);
   const [newScheduledAt, setNewScheduledAt] = useState('');
   const [savingSchedule, setSavingSchedule] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
 
   const sigRef = useRef<SignatureCanvas | null>(null);
 
@@ -191,17 +195,39 @@ export function AuditDetailPage() {
       return;
     }
     setSavingSchedule(true);
+    // Reagendar uma visita cancelada a reabre (volta para "agendada").
+    const reopen = audit.status === 'cancelled';
     const { error } = await supabase
       .from('audits')
-      .update({ scheduled_at: new Date(newScheduledAt).toISOString() })
+      .update({
+        scheduled_at: new Date(newScheduledAt).toISOString(),
+        ...(reopen ? { status: 'scheduled' as const } : {}),
+      })
       .eq('id', audit.id);
     setSavingSchedule(false);
     if (error) {
       toast.error('Erro ao reagendar: ' + error.message);
       return;
     }
-    toast.success('Visita reagendada.');
+    toast.success(reopen ? 'Visita reaberta e reagendada.' : 'Visita reagendada.');
     setScheduleOpen(false);
+    void load();
+  }
+
+  async function handleCancel() {
+    if (!audit) return;
+    setCancelling(true);
+    const { error } = await supabase
+      .from('audits')
+      .update({ status: 'cancelled' })
+      .eq('id', audit.id);
+    setCancelling(false);
+    if (error) {
+      toast.error('Erro ao cancelar: ' + error.message);
+      return;
+    }
+    toast.success('Visita cancelada.');
+    setCancelOpen(false);
     void load();
   }
 
@@ -560,6 +586,7 @@ export function AuditDetailPage() {
   }
 
   const isCompleted = audit.status === 'completed';
+  const isCancelled = audit.status === 'cancelled';
   // Só a RT (nutricionista) e o platform_admin avaliam a visita — competência
   // técnica perante a ANVISA. `isMaster` aqui = master/platform_admin/nutri
   // (ver AuthContext); o `property` NÃO avalia. RLS reforça no banco.
@@ -605,7 +632,7 @@ export function AuditDetailPage() {
             </span>
           ) : null}
           <div className="flex flex-wrap gap-2">
-            {!isCompleted && isMaster ? (
+            {!isCompleted && !isCancelled && isMaster ? (
               <>
                 <Button
                   variant="secondary"
@@ -616,6 +643,17 @@ export function AuditDetailPage() {
                 >
                   <CalendarClock size={14} />
                   Reagendar
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setCancelOpen(true)}
+                  disabled={saving || finalizing}
+                  title="Cancelar esta visita"
+                  className="text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+                >
+                  <XCircle size={14} />
+                  Cancelar
                 </Button>
                 <Button
                   variant="secondary"
@@ -629,6 +667,23 @@ export function AuditDetailPage() {
                 <Button size="sm" onClick={() => setSignOpen(true)}>
                   <PenLine size={14} />
                   Finalizar
+                </Button>
+              </>
+            ) : null}
+            {isCancelled && isMaster ? (
+              <>
+                <span className="inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                  <XCircle size={12} />
+                  Visita cancelada
+                </span>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={openSchedule}
+                  title="Reagendar reabre a visita"
+                >
+                  <CalendarClock size={14} />
+                  Reagendar
                 </Button>
               </>
             ) : null}
@@ -856,6 +911,16 @@ export function AuditDetailPage() {
           />
         </div>
       </Modal>
+
+      <ConfirmDialog
+        open={cancelOpen}
+        title="Cancelar visita"
+        message="Tem certeza que deseja cancelar esta visita? Ela ficará marcada como cancelada — você pode reabri-la depois reagendando."
+        confirmLabel="Cancelar visita"
+        loading={cancelling}
+        onConfirm={handleCancel}
+        onCancel={() => setCancelOpen(false)}
+      />
     </div>
   );
 }

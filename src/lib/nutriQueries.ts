@@ -23,12 +23,10 @@ export interface NutriStaleNc {
   opened_at: string;
 }
 
-export interface NutriDraftDoc {
-  id: string;
-  title: string;
+export interface NutriPestOverdue {
   company_id: string;
-  company_name: string | null;
-  updated_at: string;
+  company_name: string;
+  next_due_at: string;
 }
 
 const SIXTY_DAYS_MS = 60 * 24 * 60 * 60 * 1000;
@@ -149,27 +147,36 @@ export async function fetchStaleNcs(): Promise<NutriStaleNc[]> {
   }));
 }
 
-/** Documentos em rascunho aguardando aprovação. */
-export async function fetchDraftDocuments(): Promise<NutriDraftDoc[]> {
+/**
+ * Empresas com controle de pragas (CIP) vencido: o serviço mais recente
+ * de cada empresa tem `next_due_at` no passado. Afazer recorrente da RT.
+ */
+export async function fetchPestControlOverdue(): Promise<NutriPestOverdue[]> {
+  const today = new Date().toISOString().slice(0, 10);
   const { data, error } = await supabase
-    .from('documents')
-    .select('id, title, updated_at, company:companies(id, name)')
-    .eq('status', 'draft')
-    .is('deleted_at', null)
-    .order('updated_at', { ascending: false })
-    .limit(20);
+    .from('pest_control_services')
+    .select('company_id, performed_at, next_due_at, company:companies(id, name)')
+    .order('performed_at', { ascending: false })
+    .limit(500);
   if (error) throw error;
   type Row = {
-    id: string;
-    title: string;
-    updated_at: string;
+    company_id: string;
+    performed_at: string;
+    next_due_at: string | null;
     company: { id: string; name: string } | null;
   };
-  return ((data as unknown as Row[] | null) ?? []).map((r) => ({
-    id: r.id,
-    title: r.title,
-    updated_at: r.updated_at,
-    company_id: r.company?.id ?? '',
-    company_name: r.company?.name ?? null,
-  }));
+  const rows = (data as unknown as Row[] | null) ?? [];
+  // Mantém só o serviço mais recente por empresa (já vem ordenado desc).
+  const latestByCompany = new Map<string, Row>();
+  for (const r of rows) {
+    if (!latestByCompany.has(r.company_id)) latestByCompany.set(r.company_id, r);
+  }
+  return [...latestByCompany.values()]
+    .filter((r) => r.next_due_at && r.next_due_at < today)
+    .map((r) => ({
+      company_id: r.company_id,
+      company_name: r.company?.name ?? '—',
+      next_due_at: r.next_due_at as string,
+    }))
+    .sort((a, b) => (a.next_due_at < b.next_due_at ? -1 : 1));
 }

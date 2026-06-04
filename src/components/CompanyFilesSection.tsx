@@ -347,10 +347,7 @@ export function CompanyFilesSection({ companyId }: Props) {
       <Card className="mb-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <h2 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
-              Lista da Vigilância Sanitária 2026
-            </h2>
-            <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
               Carregue cada documento do estabelecimento na gaveta certa. PDF
               ou imagem, até 20 MB.
             </p>

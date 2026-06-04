@@ -5,7 +5,7 @@ import {
   CalendarX,
   HardHat,
   AlertOctagon,
-  FileEdit,
+  Bug,
   ChevronRight,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -13,11 +13,11 @@ import { formatDate } from '@/lib/dates';
 import {
   fetchAsosExpiringSoon,
   fetchCompaniesWithoutRecentVisit,
-  fetchDraftDocuments,
+  fetchPestControlOverdue,
   fetchStaleNcs,
   type NutriAsoExpiring,
   type NutriCompanyNoVisit,
-  type NutriDraftDoc,
+  type NutriPestOverdue,
   type NutriStaleNc,
 } from '@/lib/nutriQueries';
 import { Card } from '@/components/ui/Card';
@@ -116,7 +116,7 @@ export function NutriAlerts() {
     loading: true,
     items: [],
   });
-  const [drafts, setDrafts] = useState<CardState<NutriDraftDoc>>({
+  const [pest, setPest] = useState<CardState<NutriPestOverdue>>({
     loading: true,
     items: [],
   });
@@ -127,14 +127,14 @@ export function NutriAlerts() {
       fetchCompaniesWithoutRecentVisit(),
       fetchAsosExpiringSoon(),
       fetchStaleNcs(),
-      fetchDraftDocuments(),
+      fetchPestControlOverdue(),
     ])
-      .then(([nv, as, nc, dr]) => {
+      .then(([nv, as, nc, pe]) => {
         if (cancelled) return;
         setNoVisit({ loading: false, items: nv });
         setAsos({ loading: false, items: as });
         setStaleNcs({ loading: false, items: nc });
-        setDrafts({ loading: false, items: dr });
+        setPest({ loading: false, items: pe });
       })
       .catch((e: Error) => {
         if (cancelled) return;
@@ -142,7 +142,7 @@ export function NutriAlerts() {
         setNoVisit({ loading: false, items: [] });
         setAsos({ loading: false, items: [] });
         setStaleNcs({ loading: false, items: [] });
-        setDrafts({ loading: false, items: [] });
+        setPest({ loading: false, items: [] });
       });
     return () => {
       cancelled = true;
@@ -152,7 +152,7 @@ export function NutriAlerts() {
   return (
     <section className="mb-4">
       <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-300">
-        Triagem da nutricionista
+        Afazeres · pendências dos seus clientes
       </h2>
       <div className="grid gap-3 sm:grid-cols-2">
         <AlertCard
@@ -242,28 +242,25 @@ export function NutriAlerts() {
         </AlertCard>
 
         <AlertCard
-          icon={FileEdit}
-          title="Documentos em rascunho"
-          count={drafts.items.length}
-          tone="blue"
-          to="/documentos"
-          loading={drafts.loading}
-          emptyMsg="Sem pendências"
+          icon={Bug}
+          title="Controle de pragas vencido"
+          count={pest.items.length}
+          tone="red"
+          to="/controle-pragas"
+          loading={pest.loading}
+          emptyMsg="Todas em dia"
         >
-          {drafts.items.slice(0, 3).map((d) => (
+          {pest.items.slice(0, 3).map((p) => (
             <Link
-              key={d.id}
-              to="/documentos"
+              key={p.company_id}
+              to="/controle-pragas"
               className="flex items-center justify-between gap-2 rounded px-2 py-1 text-xs hover:bg-neutral-50"
             >
               <span className="truncate text-neutral-700">
-                {d.title}
-                {d.company_name && (
-                  <span className="text-neutral-400"> · {d.company_name}</span>
-                )}
+                {p.company_name}
               </span>
-              <span className="shrink-0 text-neutral-400">
-                {formatDate(d.updated_at)}
+              <span className="shrink-0 text-red-600">
+                venceu {formatDate(p.next_due_at)}
               </span>
             </Link>
           ))}

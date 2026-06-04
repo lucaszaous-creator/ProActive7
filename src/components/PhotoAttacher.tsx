@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Camera, Upload, X, ImageIcon } from 'lucide-react';
+import { Camera, Upload, X, ImageIcon, Maximize2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
+import { PhotoLightbox } from './PhotoLightbox';
 
 const BUCKET = 'photos';
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
@@ -45,6 +46,8 @@ export function PhotoAttacher({
   const { profile } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [originalName, setOriginalName] = useState<string | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   // Carrega URL assinada quando muda o photoId (preview existente).
   useEffect(() => {
@@ -56,14 +59,17 @@ export function PhotoAttacher({
     void (async () => {
       const { data: row } = await supabase
         .from('photos')
-        .select('storage_path')
+        .select('storage_path, original_name')
         .eq('id', photoId)
         .maybeSingle();
       if (cancelled || !row?.storage_path) return;
       const { data } = await supabase.storage
         .from(BUCKET)
         .createSignedUrl(row.storage_path, 3600);
-      if (!cancelled) setPreviewUrl(data?.signedUrl ?? null);
+      if (!cancelled) {
+        setPreviewUrl(data?.signedUrl ?? null);
+        setOriginalName(row.original_name ?? null);
+      }
     })();
     return () => {
       cancelled = true;
@@ -136,18 +142,24 @@ export function PhotoAttacher({
 
       {photoId && previewUrl ? (
         <div className="relative inline-block">
-          <a
-            href={previewUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-700"
+          <button
+            type="button"
+            onClick={() => setLightboxOpen(true)}
+            title="Clique para expandir"
+            className="group relative block overflow-hidden rounded-lg border border-neutral-200 transition hover:border-emerald-400 dark:border-neutral-700"
           >
             <img
               src={previewUrl}
               alt="Foto anexada"
-              className="h-32 w-32 object-cover"
+              className="h-32 w-32 object-cover transition group-hover:opacity-90"
             />
-          </a>
+            <span className="absolute inset-0 flex items-center justify-center bg-black/0 transition group-hover:bg-black/30">
+              <Maximize2
+                size={18}
+                className="text-white opacity-0 transition group-hover:opacity-100"
+              />
+            </span>
+          </button>
           <button
             type="button"
             onClick={handleRemove}
@@ -192,6 +204,12 @@ export function PhotoAttacher({
           />
         </label>
       )}
+
+      <PhotoLightbox
+        url={lightboxOpen ? previewUrl : null}
+        fileName={originalName}
+        onClose={() => setLightboxOpen(false)}
+      />
     </div>
   );
 }

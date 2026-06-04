@@ -182,12 +182,6 @@ const ITEM = {
     labelKey: 'nav.suppliers',
     icon: Truck,
   } as NavItemDef,
-  fichasTecnicas: {
-    kind: 'item',
-    to: '/fichas-tecnicas',
-    labelKey: 'nav.recipes',
-    icon: ChefHat,
-  } as NavItemDef,
   visitas: {
     kind: 'item',
     to: '/visitas',
@@ -344,7 +338,6 @@ const NAV_PROPERTY: NavNode[] = [
       ITEM.produtos,
       ITEM.grupos,
       ITEM.fornecedores,
-      ITEM.fichasTecnicas,
       ITEM.impressoras,
     ],
   },
@@ -392,7 +385,6 @@ const NAV_PROPERTY_MANAGER: NavNode[] = [
       ITEM.grupos,
       ITEM.funcionarios,
       ITEM.fornecedores,
-      ITEM.fichasTecnicas,
       ITEM.impressoras,
     ],
   },
@@ -436,8 +428,15 @@ const NAV_NUTRITIONIST: NavNode[] = [
     icon: ClipboardCheck,
     defaultOpen: false,
     // Saiu "Relatórios" daqui — virou "Identificação de alimentos" sob
-    // Cadastros (pedido da cliente).
-    children: [ITEM.temperatura, ITEM.pragas, ITEM.documentos, ITEM.agenda],
+    // Cadastros (pedido da cliente). Fotos foi incluído aqui a pedido da
+    // RT — ela precisa ver/baixar fotos das visitas.
+    children: [
+      ITEM.temperatura,
+      ITEM.pragas,
+      ITEM.documentos,
+      ITEM.fotos,
+      ITEM.agenda,
+    ],
   },
   {
     kind: 'group',
@@ -456,10 +455,10 @@ const NAV_NUTRITIONIST: NavNode[] = [
     labelKey: 'nav.administracao',
     icon: Settings,
     defaultOpen: false,
+    // "Artigos do site" só para platform_admin (decisão de produto).
     children: [
       ITEM.empresas,
       ITEM.usuarios,
-      ITEM.artigos,
       ITEM.assinatura,
       ITEM.impressoras,
       ITEM.hardware,
@@ -530,7 +529,6 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
       ITEM.grupos,
       ITEM.manipuladores,
       ITEM.fornecedores,
-      ITEM.fichasTecnicas,
     ],
   },
   {

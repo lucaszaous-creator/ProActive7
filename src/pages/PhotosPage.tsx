@@ -13,6 +13,7 @@ import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Spinner } from '@/components/ui/Spinner';
+import { PhotoLightbox } from '@/components/PhotoLightbox';
 
 const RETENTION_DAYS = 30;
 const BUCKET = 'photos';
@@ -37,6 +38,7 @@ export function PhotosPage() {
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState<PhotoWithUrl | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
+  const [viewing, setViewing] = useState<PhotoWithUrl | null>(null);
 
   const load = useCallback(async () => {
     if (!companyId) {
@@ -216,7 +218,13 @@ export function PhotosPage() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
           {photos.map((p) => (
             <Card key={p.id} className="!p-0">
-              <div className="flex aspect-square items-center justify-center overflow-hidden rounded-t-xl bg-neutral-100">
+              <button
+                type="button"
+                onClick={() => p.url && setViewing(p)}
+                disabled={!p.url}
+                title={p.url ? 'Clique para expandir' : ''}
+                className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-t-xl bg-neutral-100 transition hover:opacity-90 disabled:cursor-default"
+              >
                 {p.url ? (
                   <img
                     src={p.url}
@@ -226,7 +234,7 @@ export function PhotosPage() {
                 ) : (
                   <ImageOff className="text-neutral-300" size={32} />
                 )}
-              </div>
+              </button>
               <div className="flex items-center justify-between gap-2 p-3">
                 <div className="min-w-0">
                   <p className="truncate text-xs font-medium text-neutral-700">
@@ -258,6 +266,12 @@ export function PhotosPage() {
         loading={deleteBusy}
         onConfirm={handleDelete}
         onCancel={() => setDeleting(null)}
+      />
+
+      <PhotoLightbox
+        url={viewing?.url ?? null}
+        fileName={viewing?.original_name ?? null}
+        onClose={() => setViewing(null)}
       />
     </div>
   );

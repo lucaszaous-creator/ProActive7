@@ -98,9 +98,6 @@ const ChecklistsPage = lazy(() =>
 const ReportsPage = lazy(() =>
   import('./pages/ReportsPage').then((m) => ({ default: m.ReportsPage })),
 );
-const RecipesPage = lazy(() =>
-  import('./pages/RecipesPage').then((m) => ({ default: m.RecipesPage })),
-);
 const DocumentsPage = lazy(() =>
   import('./pages/DocumentsPage').then((m) => ({
     default: m.DocumentsPage,
@@ -295,7 +292,6 @@ export default function App() {
             <Route path="/temperatura" element={<TemperaturePage />} />
             <Route path="/checklists" element={<ChecklistsPage />} />
             <Route path="/relatorios" element={<ReportsPage />} />
-            <Route path="/fichas-tecnicas" element={<RecipesPage />} />
             <Route path="/documentos" element={<DocumentsPage />} />
             <Route path="/visitas" element={<AuditsPage />} />
             <Route path="/visitas/:id" element={<AuditDetailPage />} />

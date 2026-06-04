@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Thermometer, AlertTriangle } from 'lucide-react';
+import { Plus, Pencil, Thermometer, AlertTriangle, ImageIcon } from 'lucide-react';
 import { logFeatureEvent } from '@/lib/platformMetrics';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -19,6 +19,8 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
+import { PhotoAttacher } from '@/components/PhotoAttacher';
+import { PhotoLightbox } from '@/components/PhotoLightbox';
 
 const TYPES: EquipmentType[] = ['freezer', 'geladeira', 'estufa'];
 
@@ -55,7 +57,14 @@ export function TemperaturePage() {
   const [selectedEquip, setSelectedEquip] = useState('');
   const [temperature, setTemperature] = useState('');
   const [notes, setNotes] = useState('');
+  const [recordPhotoId, setRecordPhotoId] = useState<string | null>(null);
   const [recording, setRecording] = useState(false);
+
+  // Lightbox para ver foto da leitura
+  const [viewingPhotoUrl, setViewingPhotoUrl] = useState<string | null>(null);
+  const [logPhotoUrls, setLogPhotoUrls] = useState<Map<string, string>>(
+    new Map(),
+  );
 
   const load = useCallback(async () => {
     if (!companyId) {
@@ -86,11 +95,43 @@ export function TemperaturePage() {
     const rawLogs = (logRes.data as LogWithEquip[] | null) ?? [];
     // Filtra ao escopo da empresa (RLS ja garante isso, mas para o master
     // que ve tudo, filtramos pelo company_id selecionado).
-    setLogs(
-      rawLogs.filter((l) =>
-        eqRes.data?.some((e: Equipment) => e.id === l.equipment_id),
-      ),
+    const filtered = rawLogs.filter((l) =>
+      eqRes.data?.some((e: Equipment) => e.id === l.equipment_id),
     );
+    setLogs(filtered);
+
+    // URLs assinadas para os thumbs das leituras com foto.
+    const withPhoto = filtered.filter((l) => l.photo_id);
+    if (withPhoto.length > 0) {
+      const ids = withPhoto.map((l) => l.photo_id as string);
+      const { data: photoRows } = await supabase
+        .from('photos')
+        .select('id, storage_path')
+        .in('id', ids);
+      const paths = (photoRows ?? []).map(
+        (r: { id: string; storage_path: string }) => r.storage_path,
+      );
+      const urls = new Map<string, string>();
+      if (paths.length > 0) {
+        const { data: signed } = await supabase.storage
+          .from('photos')
+          .createSignedUrls(paths, 3600);
+        const pathToUrl = new Map<string, string>();
+        signed?.forEach((s) => {
+          if (s.path && s.signedUrl) pathToUrl.set(s.path, s.signedUrl);
+        });
+        for (const row of photoRows as {
+          id: string;
+          storage_path: string;
+        }[]) {
+          const u = pathToUrl.get(row.storage_path);
+          if (u) urls.set(row.id, u);
+        }
+      }
+      setLogPhotoUrls(urls);
+    } else {
+      setLogPhotoUrls(new Map());
+    }
   }, [companyId]);
 
   useEffect(() => {
@@ -178,6 +219,7 @@ export function TemperaturePage() {
       equipment_id: selectedEquip,
       temperature: temp,
       notes: notes.trim() || null,
+      photo_id: recordPhotoId,
       recorded_by: profile?.id ?? null,
     });
     setRecording(false);
@@ -189,6 +231,7 @@ export function TemperaturePage() {
     void logFeatureEvent('temp_logged');
     setTemperature('');
     setNotes('');
+    setRecordPhotoId(null);
     void load();
   }
 
@@ -315,6 +358,13 @@ export function TemperaturePage() {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                 />
+                <PhotoAttacher
+                  companyId={companyId || null}
+                  photoId={recordPhotoId}
+                  onChange={setRecordPhotoId}
+                  label="Foto (opcional)"
+                  description="Tire/anexe uma foto do termômetro ou do equipamento."
+                />
                 <Button onClick={handleRecord} loading={recording}>
                   <Thermometer size={18} />
                   Registrar
@@ -338,6 +388,9 @@ export function TemperaturePage() {
                     l.equipment &&
                     (l.temperature < l.equipment.temp_min ||
                       l.temperature > l.equipment.temp_max);
+                  const photoUrl = l.photo_id
+                    ? logPhotoUrls.get(l.photo_id)
+                    : undefined;
                   return (
                     <li key={l.id} className="flex items-center gap-3 py-2">
                       <span
@@ -363,6 +416,24 @@ export function TemperaturePage() {
                           {l.notes ? ` · ${l.notes}` : ''}
                         </p>
                       </div>
+                      {photoUrl ? (
+                        <button
+                          type="button"
+                          onClick={() => setViewingPhotoUrl(photoUrl)}
+                          title="Ver foto"
+                          className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-neutral-200 transition hover:border-emerald-400"
+                        >
+                          <img
+                            src={photoUrl}
+                            alt="Foto da leitura"
+                            className="h-full w-full object-cover"
+                          />
+                        </button>
+                      ) : l.photo_id ? (
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-dashed border-neutral-200 text-neutral-300">
+                          <ImageIcon size={14} />
+                        </span>
+                      ) : null}
                     </li>
                   );
                 })}
@@ -440,6 +511,11 @@ export function TemperaturePage() {
           </label>
         </div>
       </Modal>
+
+      <PhotoLightbox
+        url={viewingPhotoUrl}
+        onClose={() => setViewingPhotoUrl(null)}
+      />
     </div>
   );
 }
