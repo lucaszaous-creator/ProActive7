@@ -23,8 +23,10 @@ import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import {
+  LABEL_SIZE_LABELS,
   STORAGE_CONDITION_LABELS,
   VALIDITY_UNIT_LABELS,
+  type LabelSizeId,
   type ProductShelfLife,
   type ProductWithShelfLives,
   type StorageCondition,
@@ -254,6 +256,9 @@ export function ProductsPage() {
   const [active, setActive] = useState(true);
   const [allergens, setAllergens] = useState<string[]>([]);
   const [isSeed, setIsSeed] = useState(false);
+  const [defaultLabelSize, setDefaultLabelSize] = useState<LabelSizeId | ''>(
+    '',
+  );
   const [shelf, setShelf] = useState<ShelfFormMap>(emptyShelfMap());
 
   const [deleting, setDeleting] = useState<ProductWithShelfLives | null>(null);
@@ -308,6 +313,7 @@ export function ProductsPage() {
     setActive(true);
     setAllergens([]);
     setIsSeed(false);
+    setDefaultLabelSize('');
     setShelf(emptyShelfMap());
     setModalOpen(true);
   }
@@ -322,6 +328,7 @@ export function ProductsPage() {
     setActive(p.active);
     setAllergens(p.allergens ?? []);
     setIsSeed(p.is_seed ?? false);
+    setDefaultLabelSize(p.default_label_size ?? '');
     setShelf(shelfMapFrom(p.product_shelf_lives ?? []));
     setModalOpen(true);
   }
@@ -360,6 +367,7 @@ export function ProductsPage() {
             group_id: groupId || null,
             is_controlled: isControlled,
             default_storage_condition: defaultCondition,
+            default_label_size: defaultLabelSize || null,
             active,
             allergens,
             ...(isPlatformAdmin
@@ -378,6 +386,7 @@ export function ProductsPage() {
             group_id: groupId || null,
             is_controlled: isControlled,
             default_storage_condition: defaultCondition,
+            default_label_size: defaultLabelSize || null,
             active,
             allergens,
             ...(isPlatformAdmin ? { is_seed: isSeed } : {}),
@@ -714,6 +723,28 @@ export function ProductsPage() {
               </option>
             ))}
           </Select>
+
+          <div>
+            <Select
+              id="prod-label-size"
+              label="Tamanho padrão da etiqueta"
+              value={defaultLabelSize}
+              onChange={(e) =>
+                setDefaultLabelSize(e.target.value as LabelSizeId | '')
+              }
+            >
+              <option value="">Padrão do sistema (60 × 60 mm)</option>
+              {Object.entries(LABEL_SIZE_LABELS).map(([id, label]) => (
+                <option key={id} value={id}>
+                  {label}
+                </option>
+              ))}
+            </Select>
+            <p className="mt-1 text-xs text-neutral-500">
+              Aplicado automaticamente no wizard de impressão — o cozinheiro
+              não escolhe.
+            </p>
+          </div>
 
           <div>
             <p className="mb-2 text-sm font-medium text-neutral-700">

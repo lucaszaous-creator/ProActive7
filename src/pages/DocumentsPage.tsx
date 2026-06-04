@@ -17,6 +17,7 @@ import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDateTime } from '@/lib/dates';
+import { CompanyFilesSection } from '@/components/CompanyFilesSection';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -81,6 +82,8 @@ export function DocumentsPage() {
 
   const [deleting, setDeleting] = useState<ComplianceDocument | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
+
+  const [tab, setTab] = useState<'pops' | 'files'>('pops');
 
   const load = useCallback(async () => {
     if (!companyId) {
@@ -314,7 +317,42 @@ RDC 275/2002 — POPs e Lista de Verificação aplicada a estabelecimentos produ
         </div>
       ) : null}
 
-      {missingTemplates.length > 0 ? (
+      <div className="mb-4 inline-flex rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-800 dark:bg-slate-900">
+        <button
+          onClick={() => setTab('pops')}
+          className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+            tab === 'pops'
+              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
+              : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
+          }`}
+        >
+          Manuais e POPs
+        </button>
+        <button
+          onClick={() => setTab('files')}
+          className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
+            tab === 'files'
+              ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
+              : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
+          }`}
+        >
+          Arquivos da empresa
+        </button>
+      </div>
+
+      {tab === 'files' ? (
+        companyId ? (
+          <CompanyFilesSection companyId={companyId} />
+        ) : (
+          <Card>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              Selecione uma empresa para gerenciar seus arquivos.
+            </p>
+          </Card>
+        )
+      ) : null}
+
+      {tab === 'pops' && missingTemplates.length > 0 ? (
         <Card className="mb-4">
           <p className="mb-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
             Templates pendentes (clique para iniciar com modelo da ANVISA):
@@ -335,23 +373,24 @@ RDC 275/2002 — POPs e Lista de Verificação aplicada a estabelecimentos produ
         </Card>
       ) : null}
 
-      {loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner className="h-8 w-8" />
-        </div>
-      ) : docs.length === 0 ? (
-        <Card>
-          <div className="flex flex-col items-center gap-3 py-8 text-center">
-            <FileText
-              size={32}
-              className="text-neutral-300 dark:text-neutral-600"
-            />
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
-              Nenhum documento ainda. Use os templates acima para comecar.
-            </p>
+      {tab === 'pops' &&
+        (loading ? (
+          <div className="flex justify-center py-16">
+            <Spinner className="h-8 w-8" />
           </div>
-        </Card>
-      ) : (
+        ) : docs.length === 0 ? (
+          <Card>
+            <div className="flex flex-col items-center gap-3 py-8 text-center">
+              <FileText
+                size={32}
+                className="text-neutral-300 dark:text-neutral-600"
+              />
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                Nenhum documento ainda. Use os templates acima para comecar.
+              </p>
+            </div>
+          </Card>
+        ) : (
         <div className="flex flex-col gap-3">
           {docs.map((d) => (
             <Card key={d.id}>
@@ -414,7 +453,7 @@ RDC 275/2002 — POPs e Lista de Verificação aplicada a estabelecimentos produ
             </Card>
           ))}
         </div>
-      )}
+      ))}
 
       <Modal
         open={modalOpen}

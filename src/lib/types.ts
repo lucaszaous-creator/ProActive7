@@ -97,6 +97,18 @@ export interface OrgSubscription {
   plan_renews_at: string | null;
 }
 
+/** Tamanhos disponíveis para impressão de etiquetas. Bate com LABEL_SIZES no wizard. */
+export type LabelSizeId = '60x60' | '60x40' | '80x60' | '50x30';
+
+export const LABEL_SIZE_LABELS: Record<LabelSizeId, string> = {
+  '60x60': '60 × 60 mm',
+  '60x40': '60 × 40 mm',
+  '80x60': '80 × 60 mm',
+  '50x30': '50 × 30 mm',
+};
+
+export const DEFAULT_LABEL_SIZE: LabelSizeId = '60x60';
+
 export interface Product {
   id: string;
   company_id: string | null;
@@ -105,6 +117,8 @@ export interface Product {
   group_id: string | null;
   is_controlled: boolean;
   default_storage_condition: StorageCondition;
+  /** Cadastrado pela nutri (RT). NULL = usa o padrão do sistema (60x60). */
+  default_label_size: LabelSizeId | null;
   active: boolean;
   allergens: string[];
   is_seed: boolean;
@@ -469,6 +483,26 @@ export interface ComplianceDocument {
   approved_by: string | null;
   approved_at: string | null;
   created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Documento livre anexado a uma empresa — alvarás, contratos,
+ * comprovantes, laudos, etc. Diferente de `documents` (Manual de Boas
+ * Práticas e POPs em markdown). Aceita PDF/imagem.
+ */
+export interface CompanyFile {
+  id: string;
+  company_id: string;
+  title: string;
+  description: string | null;
+  file_path: string;
+  mime_type: string | null;
+  size_bytes: number | null;
+  uploaded_by: string | null;
+  uploaded_at: string;
+  deleted_at: string | null;
   created_at: string;
   updated_at: string;
 }

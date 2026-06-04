@@ -184,11 +184,11 @@ export function PrintWizardPage() {
   const [batch, setBatch] = useState('');
   const [supplier, setSupplier] = useState('');
   const [displayQuantity, setDisplayQuantity] = useState('');
-  // Tamanho da etiqueta é fixo no padrão 60×60 enquanto o cadastro por
-  // produto (default_label_size) não estiver disponível — pedido da
-  // cliente: "tamanho de etiqueta o nutricionista irá cadastrar conforme
-  // o produto, retirar do wizard". Ver migration 0088 / TODO no produto.
-  const [sizeId] = useState(LABEL_SIZES[0].id);
+  // O tamanho da etiqueta vem do cadastro do produto (default_label_size,
+  // adicionado na migration 0088). O cozinheiro não escolhe no wizard
+  // (decisão da cliente). Modo lote: usa o tamanho do PRIMEIRO produto
+  // do lote — uma escolha pragmática, já que o lote sai em uma única
+  // página/job de impressão. Variável `size` derivada mais abaixo.
   const [labelId, setLabelId] = useState(() => crypto.randomUUID());
   const [productSearch, setProductSearch] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -275,7 +275,21 @@ export function PrintWizardPage() {
     manipValid && rule
       ? computeExpiry(manipDate, rule.validity_value, rule.validity_unit)
       : null;
-  const size = LABEL_SIZES.find((s) => s.id === sizeId) ?? LABEL_SIZES[0];
+  // Tamanho da etiqueta: vem do cadastro do produto (single) ou do
+  // primeiro produto do lote (batch). Cai para 60×60 (LABEL_SIZES[0])
+  // se nada estiver definido.
+  const productSize = (() => {
+    const candidate =
+      mode === 'single'
+        ? selectedProduct?.default_label_size
+        : (batchItems[0]
+            ? products.find((p) => p.id === batchItems[0].product_id)
+                ?.default_label_size
+            : null);
+    if (!candidate) return null;
+    return LABEL_SIZES.find((s) => s.id === candidate) ?? null;
+  })();
+  const size = productSize ?? LABEL_SIZES[0];
 
   const filteredProducts = useMemo(() => {
     let list = products;
