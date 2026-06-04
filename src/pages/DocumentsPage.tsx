@@ -284,7 +284,15 @@ export function DocumentsPage() {
             Documentos
           </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Manual de Boas Praticas e POPs (RDC 216 + RDC 275).
+            Manual de Boas Práticas e POPs (
+            <span
+              title="RDC 216/2004 — Boas Práticas para Serviços de Alimentação.
+RDC 275/2002 — POPs e Lista de Verificação aplicada a estabelecimentos produtores."
+              className="cursor-help underline decoration-dotted underline-offset-2"
+            >
+              RDC 216 + RDC 275
+            </span>
+            ).
           </p>
         </div>
       </div>

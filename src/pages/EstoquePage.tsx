@@ -231,10 +231,12 @@ export function EstoquePage() {
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Estoque
+            Estoque (matéria-prima)
           </h1>
           <p className="text-sm text-neutral-500">
-            Saldo por lote, ordenado por validade (FIFO).
+            Saldo dos <b>itens recebidos</b> (NF / nota), por lote, ordenado por
+            validade (FIFO). Para acompanhar etiquetas de produção já feitas,
+            use <b>Produção</b>.
           </p>
         </div>
         <div className="flex gap-2">

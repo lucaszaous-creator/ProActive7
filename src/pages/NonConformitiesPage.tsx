@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { AlertTriangle, Plus, Pencil, CheckCircle2 } from 'lucide-react';
+import {
+  AlertTriangle,
+  Plus,
+  Pencil,
+  CheckCircle2,
+  Building2,
+  XCircle,
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
@@ -76,6 +83,7 @@ export function NonConformitiesPage() {
     'all',
   );
   const [showOverdueOnly, setShowOverdueOnly] = useState(false);
+  const [companyFilter, setCompanyFilter] = useState<string | 'all'>('all');
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<NonConformity | null>(null);
@@ -107,14 +115,59 @@ export function NonConformitiesPage() {
 
   const today = new Date().toISOString().slice(0, 10);
   const filtered = useMemo(() => {
-    if (!showOverdueOnly) return rows;
-    return rows.filter(
-      (r) =>
+    let list = rows;
+    if (companyFilter !== 'all') {
+      list = list.filter((r) => r.company_id === companyFilter);
+    }
+    if (showOverdueOnly) {
+      list = list.filter(
+        (r) =>
+          r.when_due &&
+          r.when_due < today &&
+          (r.status === 'open' || r.status === 'in_progress'),
+      );
+    }
+    return list;
+  }, [rows, companyFilter, showOverdueOnly, today]);
+
+  // Agregação por empresa (para os cards do topo). Mostra todas as NCs
+  // do escopo, independente dos filtros de status/severidade — o card é
+  // um índice de navegação, não um espelho da lista filtrada.
+  const byCompany = useMemo(() => {
+    const map = new Map<
+      string,
+      {
+        company_id: string;
+        company_name: string;
+        total: number;
+        open: number;
+        critical: number;
+        overdue: number;
+      }
+    >();
+    for (const r of rows) {
+      const key = r.company_id;
+      const entry = map.get(key) ?? {
+        company_id: key,
+        company_name: r.company?.name ?? 'Empresa',
+        total: 0,
+        open: 0,
+        critical: 0,
+        overdue: 0,
+      };
+      entry.total += 1;
+      if (r.status === 'open' || r.status === 'in_progress') entry.open += 1;
+      if (r.severity === 'critical') entry.critical += 1;
+      if (
         r.when_due &&
         r.when_due < today &&
-        (r.status === 'open' || r.status === 'in_progress'),
-    );
-  }, [rows, showOverdueOnly, today]);
+        (r.status === 'open' || r.status === 'in_progress')
+      )
+        entry.overdue += 1;
+      map.set(key, entry);
+    }
+    return Array.from(map.values()).sort((a, b) => b.open - a.open);
+  }, [rows, today]);
 
   function openCreate() {
     setEditing(null);
@@ -227,6 +280,69 @@ export function NonConformitiesPage() {
           Nova NC
         </Button>
       </div>
+
+      {isMaster && byCompany.length > 1 ? (
+        <div className="mb-4">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+              Por cliente
+            </p>
+            {companyFilter !== 'all' ? (
+              <button
+                onClick={() => setCompanyFilter('all')}
+                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+              >
+                <XCircle size={12} />
+                Limpar filtro
+              </button>
+            ) : null}
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+            {byCompany.map((c) => {
+              const active = companyFilter === c.company_id;
+              return (
+                <button
+                  key={c.company_id}
+                  onClick={() =>
+                    setCompanyFilter(active ? 'all' : c.company_id)
+                  }
+                  className={`flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition ${
+                    active
+                      ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950'
+                      : 'border-neutral-200 bg-white hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700'
+                  }`}
+                  title={`Clique para ver só as NCs de ${c.company_name}`}
+                >
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-300">
+                    <Building2 size={12} />
+                    <span className="truncate">{c.company_name}</span>
+                  </span>
+                  <div className="flex w-full items-baseline gap-2">
+                    <span className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100">
+                      {c.open}
+                    </span>
+                    <span className="text-xs text-neutral-500">
+                      em aberto · {c.total} total
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {c.critical > 0 && (
+                      <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700 dark:bg-red-900 dark:text-red-200">
+                        {c.critical} crítica{c.critical === 1 ? '' : 's'}
+                      </span>
+                    )}
+                    {c.overdue > 0 && (
+                      <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-900 dark:text-amber-200">
+                        {c.overdue} vencida{c.overdue === 1 ? '' : 's'}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
 
       <Card className="mb-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">

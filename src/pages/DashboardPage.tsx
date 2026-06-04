@@ -50,7 +50,8 @@ async function fetchExpiringLabels(): Promise<ExpiringLabel[]> {
 export function DashboardPage() {
   usePageTitle('Painel');
   const { isMaster, isNutritionist, profile } = useAuth();
-  const { companyId } = useCompanyScope();
+  const { companyId, companyName, companyLogoUrl, selectedCompany } =
+    useCompanyScope();
   const showPortfolio = isMaster || isNutritionist;
 
   // Master state
@@ -173,6 +174,19 @@ export function DashboardPage() {
       <HeroGreeting
         fullName={profile?.full_name}
         email={profile?.email}
+        // Property sempre vê o painel de UMA empresa: destaca essa empresa.
+        // Para nutri/admin, só destacamos a empresa se ela explicitamente
+        // selecionou uma (caso contrário, mostra a saudação geral).
+        companyName={
+          showPortfolio
+            ? selectedCompany
+              ? companyName
+              : null
+            : companyName
+        }
+        companyLogoUrl={
+          showPortfolio ? (selectedCompany ? companyLogoUrl : null) : companyLogoUrl
+        }
         summary={showPortfolio ? masterSummary : propertySummary}
         summaryAccent={
           showPortfolio

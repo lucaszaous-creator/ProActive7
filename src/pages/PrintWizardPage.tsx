@@ -184,7 +184,11 @@ export function PrintWizardPage() {
   const [batch, setBatch] = useState('');
   const [supplier, setSupplier] = useState('');
   const [displayQuantity, setDisplayQuantity] = useState('');
-  const [sizeId, setSizeId] = useState(LABEL_SIZES[0].id);
+  // Tamanho da etiqueta é fixo no padrão 60×60 enquanto o cadastro por
+  // produto (default_label_size) não estiver disponível — pedido da
+  // cliente: "tamanho de etiqueta o nutricionista irá cadastrar conforme
+  // o produto, retirar do wizard". Ver migration 0088 / TODO no produto.
+  const [sizeId] = useState(LABEL_SIZES[0].id);
   const [labelId, setLabelId] = useState(() => crypto.randomUUID());
   const [productSearch, setProductSearch] = useState('');
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -200,6 +204,21 @@ export function PrintWizardPage() {
     quantity,
     companyId,
   ]);
+
+  // A data/hora de manipulação é SEMPRE o momento exato em que a etiqueta
+  // é impressa (decisão da cliente — bloqueia digitação errada).
+  // Refresh sempre que: (1) usuário entra no Step 4 (preencher dados) ou
+  // Step 5 (preview), (2) a cada 30s enquanto está nesses passos (cobre o
+  // caso de deixar o wizard aberto).
+  useEffect(() => {
+    if (step < 4) return;
+    setManipulationLocal(toLocalInputValue(new Date()));
+    const t = setInterval(
+      () => setManipulationLocal(toLocalInputValue(new Date())),
+      30_000,
+    );
+    return () => clearInterval(t);
+  }, [step]);
 
   const load = useCallback(async () => {
     if (!companyId) {
@@ -361,9 +380,15 @@ export function PrintWizardPage() {
   function handlePrint() {
     if (mode === 'single' && !canPrint) return;
     if (mode === 'batch' && !batchValid) return;
-    applyPageStyle(size.w, size.h);
-    window.print();
-    setConfirmOpen(true);
+    // Atualiza a manipulação para o exato instante da impressão e dá um
+    // ciclo de render pra que o HTML reflita o novo timestamp antes do
+    // window.print() (o diálogo do navegador captura o DOM atual).
+    setManipulationLocal(toLocalInputValue(new Date()));
+    requestAnimationFrame(() => {
+      applyPageStyle(size.w, size.h);
+      window.print();
+      setConfirmOpen(true);
+    });
   }
 
   // Idempotente: upsert por id. Pode ser chamada antes da impressão direta
@@ -656,7 +681,6 @@ export function PrintWizardPage() {
               condition={condition}
               setCondition={setCondition}
               manipulationLocal={manipulationLocal}
-              setManipulationLocal={setManipulationLocal}
               quantity={quantity}
               setQuantity={setQuantity}
               batch={batch}
@@ -665,8 +689,6 @@ export function PrintWizardPage() {
               setSupplier={setSupplier}
               displayQuantity={displayQuantity}
               setDisplayQuantity={setDisplayQuantity}
-              sizeId={sizeId}
-              setSizeId={setSizeId}
               rule={rule}
               expiry={expiry}
             />
@@ -676,9 +698,6 @@ export function PrintWizardPage() {
               batchItems={batchItems}
               products={products}
               manipulationLocal={manipulationLocal}
-              setManipulationLocal={setManipulationLocal}
-              sizeId={sizeId}
-              setSizeId={setSizeId}
               manipDate={manipDate}
             />
           )}
@@ -1095,7 +1114,6 @@ function Step4({
   condition,
   setCondition,
   manipulationLocal,
-  setManipulationLocal,
   quantity,
   setQuantity,
   batch,
@@ -1104,8 +1122,6 @@ function Step4({
   setSupplier,
   displayQuantity,
   setDisplayQuantity,
-  sizeId,
-  setSizeId,
   rule,
   expiry,
 }: {
@@ -1113,7 +1129,6 @@ function Step4({
   condition: StorageCondition;
   setCondition: (c: StorageCondition) => void;
   manipulationLocal: string;
-  setManipulationLocal: (s: string) => void;
   quantity: number;
   setQuantity: (n: number) => void;
   batch: string;
@@ -1122,8 +1137,6 @@ function Step4({
   setSupplier: (s: string) => void;
   displayQuantity: string;
   setDisplayQuantity: (s: string) => void;
-  sizeId: string;
-  setSizeId: (s: string) => void;
   rule: {
     storage_condition: StorageCondition;
     validity_value: number;
@@ -1171,37 +1184,29 @@ function Step4({
           </p>
         )}
 
-        <Input
-          id="manip"
-          label="Data e hora da manipulação"
-          type="datetime-local"
-          value={manipulationLocal}
-          onChange={(e) => setManipulationLocal(e.target.value)}
-        />
-
-        <div className="grid grid-cols-2 gap-3">
+        <div>
           <Input
-            id="qty"
-            label="Quantidade (etiquetas)"
-            type="number"
-            min={1}
-            value={quantity}
-            onChange={(e) =>
-              setQuantity(Math.max(1, Number(e.target.value) || 1))
-            }
+            id="manip"
+            label="Data e hora da manipulação"
+            type="datetime-local"
+            value={manipulationLocal}
+            readOnly
+            disabled
           />
-          <Select
-            label="Tamanho"
-            value={sizeId}
-            onChange={(e) => setSizeId(e.target.value)}
-          >
-            {LABEL_SIZES.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </Select>
+          <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+            Bloqueado — usa o exato momento em que a etiqueta for impressa
+            (atualiza automaticamente).
+          </p>
         </div>
+
+        <Input
+          id="qty"
+          label="Quantidade (etiquetas)"
+          type="number"
+          min={1}
+          value={quantity}
+          onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+        />
 
         <Input
           id="display-qty"
@@ -1710,17 +1715,11 @@ function Step4Batch({
   batchItems,
   products,
   manipulationLocal,
-  setManipulationLocal,
-  sizeId,
-  setSizeId,
   manipDate,
 }: {
   batchItems: BatchItem[];
   products: ProductWithShelfLives[];
   manipulationLocal: string;
-  setManipulationLocal: (s: string) => void;
-  sizeId: string;
-  setSizeId: (s: string) => void;
   manipDate: Date | null;
 }) {
   return (
@@ -1732,25 +1731,18 @@ function Step4Batch({
         Manipulação e tamanho valem para todas as etiquetas do lote. Lote e
         fornecedor seguem o que foi informado por produto no passo anterior.
       </p>
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div>
         <Input
           id="manip"
           label="Data e hora da manipulação"
           type="datetime-local"
           value={manipulationLocal}
-          onChange={(e) => setManipulationLocal(e.target.value)}
+          readOnly
+          disabled
         />
-        <Select
-          label="Tamanho"
-          value={sizeId}
-          onChange={(e) => setSizeId(e.target.value)}
-        >
-          {LABEL_SIZES.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.label}
-            </option>
-          ))}
-        </Select>
+        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+          Bloqueado — usa o exato momento em que a etiqueta for impressa.
+        </p>
       </div>
 
       <div className="mt-4">

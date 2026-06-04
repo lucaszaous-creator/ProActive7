@@ -271,11 +271,12 @@ export function ProducaoPage() {
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Produção
+            Produção (etiquetas em uso)
           </h1>
           <p className="text-sm text-neutral-500">
-            Dê baixa nas etiquetas conforme o lote vai sendo usado, descartado
-            ou vence.
+            Etiquetas <b>já impressas</b> aguardando baixa — conforme o lote vai
+            sendo usado, descartado ou vence. Para saldo de matéria-prima
+            recebida, use <b>Estoque</b>.
           </p>
         </div>
       </div>
@@ -359,7 +360,7 @@ export function ProducaoPage() {
       ) : labels.length === 0 ? (
         <Card>
           <p className="text-sm text-neutral-500">
-            Nenhuma etiqueta ativa. Imprima etiquetas em /imprimir.
+            Nenhuma etiqueta ativa. Imprima etiquetas em Etiquetas.
           </p>
         </Card>
       ) : filtered.length === 0 ? (

@@ -544,7 +544,7 @@ export function PestControlPage() {
                           className="mt-2 inline-flex items-center gap-1 text-xs text-emerald-700 hover:underline dark:text-emerald-400"
                         >
                           <FileTextIcon size={12} />
-                          Abrir comprovante
+                          Abrir documento da empresa
                         </button>
                       ) : null}
                     </div>
@@ -823,7 +823,12 @@ export function PestControlPage() {
           />
           <div>
             <p className="mb-1 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-              Certificado / laudo {editingSvc ? '(substituir)' : ''}
+              Documento entregue pela empresa contratada{' '}
+              {editingSvc ? '(substituir)' : ''}
+            </p>
+            <p className="mb-2 text-xs text-neutral-500">
+              PDF ou foto do certificado/laudo/comprovante de aplicação que a
+              empresa de controle de pragas deve entregar após cada serviço.
             </p>
             <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700">
               <Upload size={14} />

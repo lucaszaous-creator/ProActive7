@@ -142,6 +142,16 @@ const ITEM = {
     labelKey: 'nav.reports',
     icon: BarChart3,
   } as NavItemDef,
+  // Alias visual: o mesmo /relatorios é exibido como "Identificação de
+  // alimentos" no menu da nutri (sob Cadastros), porque o conteúdo é o
+  // resumo das etiquetas (produto/categoria/condição) — informação que
+  // a RT usa pra checar consistência do cadastro de produtos.
+  identificacao: {
+    kind: 'item',
+    to: '/relatorios',
+    labelKey: 'nav.foodIdentification',
+    icon: Tag,
+  } as NavItemDef,
   produtos: {
     kind: 'item',
     to: '/produtos',
@@ -328,10 +338,11 @@ const NAV_PROPERTY: NavNode[] = [
     labelKey: 'nav.cadastros',
     icon: Package,
     defaultOpen: true,
+    // Property NÃO vê "Funcionários/Manipuladores" aqui — esse cadastro é
+    // de responsabilidade da nutri (RT), que mantém ASO/treinamento.
     children: [
       ITEM.produtos,
       ITEM.grupos,
-      ITEM.funcionarios,
       ITEM.fornecedores,
       ITEM.fichasTecnicas,
       ITEM.impressoras,
@@ -342,6 +353,7 @@ const NAV_PROPERTY: NavNode[] = [
     labelKey: 'nav.conformidade',
     icon: ShieldCheck,
     defaultOpen: false,
+    // Sem ITEM.agenda — agenda é da nutri (planejamento de visitas).
     children: [
       ITEM.visitas,
       ITEM.ncs,
@@ -350,7 +362,6 @@ const NAV_PROPERTY: NavNode[] = [
       ITEM.pragas,
       ITEM.documentos,
       ITEM.fotos,
-      ITEM.agenda,
       ITEM.dossie,
     ],
   },
@@ -370,20 +381,21 @@ const NAV_NUTRITIONIST: NavNode[] = [
     labelKey: 'nav.acompanhamento',
     icon: ClipboardCheck,
     defaultOpen: false,
-    children: [
-      ITEM.temperatura,
-      ITEM.pragas,
-      ITEM.documentos,
-      ITEM.agenda,
-      ITEM.relatorios,
-    ],
+    // Saiu "Relatórios" daqui — virou "Identificação de alimentos" sob
+    // Cadastros (pedido da cliente).
+    children: [ITEM.temperatura, ITEM.pragas, ITEM.documentos, ITEM.agenda],
   },
   {
     kind: 'group',
     labelKey: 'nav.cadastros',
     icon: Package,
     defaultOpen: true,
-    children: [ITEM.produtos, ITEM.grupos, ITEM.fornecedores],
+    children: [
+      ITEM.produtos,
+      ITEM.grupos,
+      ITEM.fornecedores,
+      ITEM.identificacao,
+    ],
   },
   {
     kind: 'group',

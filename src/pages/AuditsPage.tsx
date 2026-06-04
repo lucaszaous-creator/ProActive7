@@ -158,10 +158,18 @@ export function AuditsPage() {
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Visitas tecnicas
+            Visitas técnicas
           </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Inspecoes sanitarias da RT baseadas em RDC 216/2004.
+            Inspeções sanitárias da RT.{' '}
+            <span
+              title="RDC 216/2004 — Regulamento Técnico de Boas Práticas para Serviços de Alimentação (cozinhas, restaurantes, lanchonetes etc.).
+RDC 275/2002 — Regulamento Técnico de Procedimentos Operacionais Padronizados (POPs) e Lista de Verificação aplicada a indústrias/estabelecimentos produtores."
+              className="cursor-help underline decoration-dotted underline-offset-2"
+            >
+              RDC 216 + RDC 275
+            </span>
+            .
           </p>
         </div>
         <div className="flex gap-2">

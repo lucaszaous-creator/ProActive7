@@ -18,6 +18,7 @@ const ptBR = {
     manipulators: 'Manipuladores',
     pestControl: 'Controle de pragas',
     reports: 'Relatórios',
+    foodIdentification: 'Identificação de alimentos',
     receivings: 'Recebimentos',
     traceability: 'Rastreabilidade',
     dossier: 'Dossiê ANVISA',

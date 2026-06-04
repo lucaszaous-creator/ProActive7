@@ -203,7 +203,7 @@ export function TemperaturePage() {
             Temperatura
           </h1>
           <p className="text-sm text-neutral-500">
-            Registro de equipamentos e leituras (PMOC light).
+            Registro de equipamentos e leituras de temperatura.
           </p>
         </div>
         <Button onClick={openCreate} disabled={!companyId}>

@@ -18,6 +18,7 @@ const en = {
     manipulators: 'Food handlers',
     pestControl: 'Pest control',
     reports: 'Reports',
+    foodIdentification: 'Food identification',
     receivings: 'Receivings',
     traceability: 'Traceability',
     dossier: 'ANVISA Dossier',

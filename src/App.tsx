@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { PublicLayout } from './components/PublicLayout';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -76,11 +76,6 @@ const DashboardPage = lazy(() =>
 );
 const ProductsPage = lazy(() =>
   import('./pages/ProductsPage').then((m) => ({ default: m.ProductsPage })),
-);
-const PrintLabelPage = lazy(() =>
-  import('./pages/PrintLabelPage').then((m) => ({
-    default: m.PrintLabelPage,
-  })),
 );
 const PrintWizardPage = lazy(() =>
   import('./pages/PrintWizardPage').then((m) => ({
@@ -288,7 +283,13 @@ export default function App() {
           <Route element={<Layout />}>
             <Route path="/painel" element={<DashboardPage />} />
             <Route path="/produtos" element={<ProductsPage />} />
-            <Route path="/imprimir" element={<PrintLabelPage />} />
+            {/* Fluxo único de etiquetas: o wizard. A rota legada
+                /imprimir foi aposentada (decisão da cliente). Mantemos
+                o redirect pra não quebrar bookmarks/atalhos. */}
+            <Route
+              path="/imprimir"
+              element={<Navigate to="/imprimir/novo" replace />}
+            />
             <Route path="/imprimir/novo" element={<PrintWizardPage />} />
             <Route path="/fotos" element={<PhotosPage />} />
             <Route path="/temperatura" element={<TemperaturePage />} />

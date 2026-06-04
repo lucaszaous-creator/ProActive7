@@ -105,8 +105,10 @@ export function ControladosPage() {
             Produtos controlados
           </h1>
           <p className="text-sm text-neutral-500">
-            Saneantes, químicos e outros produtos marcados como controlados —
-            saldo e últimos movimentos para auditoria.
+            Saneantes, químicos e outros itens marcados como controlados. Aqui
+            você vê o <b>cadastro</b> (saldo atual por lote) e o <b>uso</b>{' '}
+            (últimas entradas e saídas) — registro exigido para fiscalização
+            sanitária.
           </p>
         </div>
       </div>
@@ -147,9 +149,12 @@ export function ControladosPage() {
       ) : (
         <div className="flex flex-col gap-4">
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
-              Saldo atual
+            <h2 className="mb-1 text-sm font-semibold text-neutral-700">
+              Cadastro · Saldo atual por lote
             </h2>
+            <p className="mb-3 text-xs text-neutral-500">
+              O que está em estoque agora — base para a contagem física.
+            </p>
             {balances.length === 0 ? (
               <p className="text-sm text-neutral-500">
                 Sem saldo nos produtos controlados.
@@ -187,9 +192,13 @@ export function ControladosPage() {
           </Card>
 
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
-              Últimas movimentações
+            <h2 className="mb-1 text-sm font-semibold text-neutral-700">
+              Uso · Últimas movimentações
             </h2>
+            <p className="mb-3 text-xs text-neutral-500">
+              Entradas (recebimento) e saídas (uso, descarte, vencimento) — a
+              trilha que comprova o destino dos controlados.
+            </p>
             {movements.length === 0 ? (
               <p className="text-sm text-neutral-500">Sem movimentações.</p>
             ) : (

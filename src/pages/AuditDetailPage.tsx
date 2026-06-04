@@ -14,7 +14,10 @@ import {
   Eraser,
   Save,
   Lock,
+  CalendarClock,
 } from 'lucide-react';
+import { toLocalInputValue } from '@/lib/dates';
+import { Input } from '@/components/ui/Input';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
@@ -91,6 +94,9 @@ export function AuditDetailPage() {
   const [signOpen, setSignOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
+  const [newScheduledAt, setNewScheduledAt] = useState('');
+  const [savingSchedule, setSavingSchedule] = useState(false);
 
   const sigRef = useRef<SignatureCanvas | null>(null);
 
@@ -166,6 +172,37 @@ export function AuditDetailPage() {
       }
       return prev.map((r) => (r.itemId === itemId ? { ...r, note } : r));
     });
+  }
+
+  function openSchedule() {
+    if (!audit) return;
+    setNewScheduledAt(
+      audit.scheduled_at
+        ? toLocalInputValue(new Date(audit.scheduled_at))
+        : toLocalInputValue(new Date()),
+    );
+    setScheduleOpen(true);
+  }
+
+  async function handleSaveSchedule() {
+    if (!audit) return;
+    if (!newScheduledAt) {
+      toast.error('Informe a data e hora.');
+      return;
+    }
+    setSavingSchedule(true);
+    const { error } = await supabase
+      .from('audits')
+      .update({ scheduled_at: new Date(newScheduledAt).toISOString() })
+      .eq('id', audit.id);
+    setSavingSchedule(false);
+    if (error) {
+      toast.error('Erro ao reagendar: ' + error.message);
+      return;
+    }
+    toast.success('Visita reagendada.');
+    setScheduleOpen(false);
+    void load();
   }
 
   async function handleSaveDraft() {
@@ -573,6 +610,16 @@ export function AuditDetailPage() {
                 <Button
                   variant="secondary"
                   size="sm"
+                  onClick={openSchedule}
+                  disabled={saving || finalizing}
+                  title="Alterar data e hora agendada"
+                >
+                  <CalendarClock size={14} />
+                  Reagendar
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
                   onClick={handleSaveDraft}
                   loading={saving}
                 >
@@ -586,10 +633,19 @@ export function AuditDetailPage() {
               </>
             ) : null}
             {isCompleted ? (
-              <Button size="sm" onClick={handleExportPdf}>
-                <Download size={14} />
-                Exportar PDF
-              </Button>
+              <>
+                <span
+                  className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200"
+                  title="O status de uma visita finalizada não pode ser revertido — assinada pela RT, ela passa a fazer parte da trilha de auditoria."
+                >
+                  <Lock size={12} />
+                  Status travado (finalizada)
+                </span>
+                <Button size="sm" onClick={handleExportPdf}>
+                  <Download size={14} />
+                  Exportar PDF
+                </Button>
+              </>
             ) : null}
           </div>
         </div>
@@ -764,6 +820,40 @@ export function AuditDetailPage() {
             />
             Li e revisei todas as respostas e observacoes.
           </label>
+        </div>
+      </Modal>
+
+      <Modal
+        open={scheduleOpen}
+        onClose={() => setScheduleOpen(false)}
+        title="Reagendar visita"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setScheduleOpen(false)}
+              disabled={savingSchedule}
+            >
+              Cancelar
+            </Button>
+            <Button onClick={handleSaveSchedule} loading={savingSchedule}>
+              Salvar nova data
+            </Button>
+          </>
+        }
+      >
+        <div className="flex flex-col gap-3">
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            Altere a data e hora agendada para esta visita. Visitas já
+            finalizadas não podem ser reagendadas.
+          </p>
+          <Input
+            id="resched"
+            label="Nova data e hora"
+            type="datetime-local"
+            value={newScheduledAt}
+            onChange={(e) => setNewScheduledAt(e.target.value)}
+          />
         </div>
       </Modal>
     </div>
