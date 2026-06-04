@@ -63,10 +63,11 @@ function PublicNav({ onOpenMenu }: { onOpenMenu: () => void }) {
     <header className="sticky top-0 z-30 border-b border-[#E8F1EA] bg-[#FAFAF7]/92 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
         <Link to="/" className="flex shrink-0 items-center gap-2.5">
-          <img src="/proactive7-logo.svg" alt="" className="h-9 w-auto" />
-          <span className="text-base font-semibold tracking-tight text-[#2F5D3F]">
-            ProActive7
-          </span>
+          <img
+            src="/proactive7-logo.svg"
+            alt="ProActive7"
+            className="h-9 w-auto"
+          />
         </Link>
 
         {/* Desktop nav */}
@@ -129,10 +130,9 @@ function MobileDrawer({
           <div className="flex items-center gap-2">
             <img
               src="/proactive7-logo.svg"
-              alt=""
+              alt="ProActive7"
               className="h-7 w-auto brightness-0 invert"
             />
-            <span className="text-sm font-semibold text-white">ProActive7</span>
           </div>
           <button
             onClick={onClose}
@@ -231,10 +231,11 @@ function PublicFooter() {
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2.5">
-            <img src="/proactive7-logo.svg" alt="" className="h-8 w-auto" />
-            <span className="text-sm font-semibold text-[#2F5D3F]">
-              ProActive7
-            </span>
+            <img
+              src="/proactive7-logo.svg"
+              alt="ProActive7"
+              className="h-8 w-auto"
+            />
           </div>
           <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#1A2A22]/65">
             Assessoria e consultoria em segurança alimentar para

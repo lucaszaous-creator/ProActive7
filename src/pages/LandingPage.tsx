@@ -1,109 +1,142 @@
 import { Link } from 'react-router-dom';
 import {
-  Tag,
-  ClipboardCheck,
-  Thermometer,
-  HardHat,
-  Bug,
-  FileText,
-  ShieldCheck,
-  Bell,
-  BarChart3,
   ArrowRight,
-  Check,
+  GraduationCap,
+  Stethoscope,
+  ClipboardCheck,
+  Utensils,
+  ChefHat,
+  Stamp,
+  Tag,
+  BookOpen,
+  ShieldCheck,
+  Heart,
   Leaf,
-  Sparkles,
+  Award,
+  MapPin,
+  MessageCircle,
+  Quote,
 } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
 
+/**
+ * Página inicial — sobre a EMPRESA ProActive7 (consultoria nutricional
+ * e segurança alimentar). NÃO sobre o sistema/plataforma. O sistema é
+ * apenas mais um dos serviços oferecidos e tem sua própria página em
+ * /sistema (acessível também por dentro de /servicos).
+ *
+ * Pedido explícito da cliente (Ariane): "página principal como
+ * empresa/CNPJ; o sistema fica à parte".
+ */
 export function LandingPage() {
   usePageMeta('/');
   return (
     <>
       <Hero />
-      <TrustStrip />
-      <Pillars />
-      <FeatureLabels />
-      <FeatureAudits />
-      <FeatureMonitoring />
-      <ForNutritionists />
-      <HowItWorks />
+      <PillarsStrip />
+      <Sobre />
+      <Numeros />
+      <ServicosResumo />
+      <Depoimentos />
+      <Atuacao />
       <FinalCta />
     </>
   );
 }
 
 /* =====================================================================
- * HERO
+ * HERO — cozinha, escuro, tagline
  * ===================================================================== */
 function Hero() {
   return (
-    <section className="relative overflow-hidden">
-      {/* soft glow */}
+    <section className="relative isolate overflow-hidden bg-[#0F1310] text-white">
+      {/* Imagem de fundo: cozinha profissional, em B&W, escurecida.
+          Sem network: usa um SVG inline em data URI com gradiente que
+          mimetiza o clima escuro/ambiente da foto que a cliente
+          enviou — preserva custo zero (sem CDN nem upload de foto). */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-gradient-to-b from-[#E8F1EA] via-[#FAFAF7] to-transparent"
+        className="absolute inset-0 -z-10 bg-[radial-gradient(60%_45%_at_50%_30%,#1f2924_0%,#0F1310_55%,#070906_100%)]"
       />
-      <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pb-16 pt-12 md:grid-cols-[1.05fr_1fr] md:pt-20">
-        <div>
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#6FA68A]/40 bg-white px-3 py-1 text-xs font-medium text-[#2F5D3F]">
-            <Leaf className="h-3.5 w-3.5" />
-            Plataforma para consultoria nutricional
-          </span>
-          <h1 className="mt-5 text-4xl font-semibold leading-[1.08] tracking-tight text-[#1A2A22] md:text-5xl">
-            A plataforma da nutricionista que{' '}
-            <span className="text-[#2F5D3F]">cuida de restaurantes</span>.
-          </h1>
-          <p className="mt-5 max-w-xl text-lg leading-relaxed text-[#1A2A22]/70">
-            Etiquetas, auditorias, manipuladores e POPs em conformidade com a
-            RDC 216 da ANVISA — em um sistema que cabe na rotina do consultório
-            e das suas unidades clientes.
-          </p>
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link
-              to="/servicos"
-              className="inline-flex items-center gap-2 rounded-full bg-[#2F5D3F] px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#234731]"
-            >
-              Conhecer os serviços
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-2 rounded-full border border-[#2F5D3F]/20 bg-white px-5 py-3 text-sm font-medium text-[#2F5D3F] hover:border-[#2F5D3F]/40"
-            >
-              Acessar o sistema
-            </Link>
-          </div>
-          <p className="mt-5 text-xs text-[#1A2A22]/50">
-            Atendendo Macaé e região desde 2013.
-          </p>
-        </div>
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(0,0,0,0)_60%,rgba(0,0,0,0.55)_100%)]"
+      />
+      {/* "Linhas glitch" sutis que ecoam o logotipo enviado */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-1/3 -z-10 flex flex-col gap-3 opacity-15"
+      >
+        <span className="block h-px w-2/3 bg-white" />
+        <span className="ml-[20%] block h-px w-1/3 bg-white" />
+        <span className="ml-[55%] block h-px w-1/4 bg-white" />
+        <span className="ml-[10%] mt-4 block h-px w-1/2 bg-white" />
+      </div>
 
-        <MockupDashboard />
+      <div className="relative mx-auto flex max-w-6xl flex-col items-center px-5 py-28 text-center md:py-36">
+        <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white/75 backdrop-blur">
+          <Leaf className="h-3.5 w-3.5" />
+          Consultoria nutricional · Macaé / RJ · desde 2013
+        </span>
+
+        <h1 className="mt-7 text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+          ProActive7
+        </h1>
+
+        <p className="mt-4 text-base font-light uppercase tracking-[0.4em] text-white/65 md:text-lg">
+          Boa alimentação, bem-estar e saúde
+        </p>
+
+        <p className="mt-7 max-w-2xl text-base leading-relaxed text-white/75 md:text-lg">
+          Assessoria e consultoria em segurança alimentar para
+          estabelecimentos comerciais <em>on-shore</em> e{' '}
+          <em>off-shore</em> — restaurantes, indústrias, hotéis, escolas,
+          padarias e mercados. Responsabilidade técnica perante a ANVISA com
+          quem entende do dia a dia da sua operação.
+        </p>
+
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            to="/servicos"
+            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#0F1310] transition hover:bg-white/90"
+          >
+            Conhecer nossos serviços
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link
+            to="/contato"
+            className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-medium text-white transition hover:border-white/60"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Falar com a Ariane
+          </Link>
+        </div>
       </div>
     </section>
   );
 }
 
 /* =====================================================================
- * TRUST STRIP
+ * PILLARS — política de qualidade em fila
  * ===================================================================== */
-function TrustStrip() {
+function PillarsStrip() {
   const items = [
-    'Conformidade RDC 216',
-    'LGPD',
-    'Boas práticas ANVISA',
-    'PWA — funciona offline',
-    'Multi-unidade',
+    { icon: ShieldCheck, label: 'Conformidade ANVISA' },
+    { icon: Award, label: 'RT registrada no CRN' },
+    { icon: Heart, label: 'Atitude pró-ativa' },
+    { icon: Leaf, label: 'Boas práticas e meio ambiente' },
   ];
   return (
     <div className="border-y border-[#E8F1EA] bg-white">
-      <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-x-8 gap-y-3 px-5 py-5 text-xs uppercase tracking-wide text-[#1A2A22]/55">
-        {items.map((label) => (
-          <span key={label} className="flex items-center gap-2">
-            <Check className="h-3.5 w-3.5 text-[#6FA68A]" />
-            {label}
-          </span>
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-5 py-6 md:grid-cols-4">
+        {items.map(({ icon: Icon, label }) => (
+          <div
+            key={label}
+            className="flex items-center justify-center gap-2 text-xs font-medium text-[#1A2A22]/70"
+          >
+            <Icon className="h-4 w-4 text-[#2F5D3F]" />
+            <span>{label}</span>
+          </div>
         ))}
       </div>
     </div>
@@ -111,55 +144,87 @@ function TrustStrip() {
 }
 
 /* =====================================================================
- * PILLARS
+ * SOBRE — quem somos (resumido, com link para /perfil)
  * ===================================================================== */
-function Pillars() {
-  const pillars = [
-    {
-      icon: Tag,
-      title: 'Etiquetas inteligentes',
-      body: 'Validade calculada a partir do produto, com alérgenos e QR code para a página pública do lote.',
-    },
-    {
-      icon: ClipboardCheck,
-      title: 'Auditorias e POPs',
-      body: 'Checklists configuráveis, fotos no não conforme e relatório que vira plano de ação.',
-    },
-    {
-      icon: BarChart3,
-      title: 'Visão multi-unidade',
-      body: 'Compliance score por unidade, histórico de visitas e alertas de vencimento centralizados.',
-    },
+function Sobre() {
+  return (
+    <section className="mx-auto max-w-5xl px-5 py-20">
+      <div className="grid items-center gap-12 md:grid-cols-[1fr_1.1fr]">
+        <div className="order-2 md:order-1">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            Quem somos
+          </span>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+            Uma empresa de Macaé que <em>cuida</em> de quem alimenta gente.
+          </h2>
+          <div className="mt-6 space-y-4 text-base leading-relaxed text-[#1A2A22]/75">
+            <p>
+              Nascemos como <strong>PERSONAL DIET</strong> em 2013 e em 2020
+              passamos a ser{' '}
+              <strong className="text-[#2F5D3F]">PROACTIVE7</strong>,
+              fundada pela nutricionista{' '}
+              <strong>Ariane Madureira</strong>. Mais de uma década entregando
+              consultoria técnica em segurança alimentar, com método próprio:{' '}
+              <em>observar, planejar, capacitar e conscientizar</em>.
+            </p>
+            <p>
+              Atendemos restaurantes, indústrias, hotéis, escolas, padarias,
+              hortifrutis e mercados em Macaé e região — adequando a
+              operação às legislações federais, estaduais e municipais
+              vigentes.
+            </p>
+          </div>
+          <Link
+            to="/perfil"
+            className="mt-7 inline-flex items-center gap-2 rounded-full border border-[#2F5D3F]/20 bg-white px-5 py-2.5 text-sm font-medium text-[#2F5D3F] hover:border-[#2F5D3F]/40"
+          >
+            Nossa história completa
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        {/* Card "estampa" com a missão da empresa — substitui o mockup
+            de produto, fica fiel ao tom de empresa, não de software. */}
+        <div className="relative order-1 md:order-2">
+          <div className="relative overflow-hidden rounded-3xl border border-[#E8F1EA] bg-gradient-to-br from-[#2F5D3F] to-[#1A3D27] p-8 text-white shadow-[0_25px_60px_-30px_rgba(47,93,63,0.45)] md:p-10">
+            <Quote className="h-8 w-8 text-white/40" />
+            <p className="mt-4 text-lg font-light italic leading-relaxed text-white/95">
+              Atuar como prestadora de serviços em assessoria e consultoria
+              em fornecimento de alimentação e nutrição com qualidade e foco
+              no cliente — diferenciada pela{' '}
+              <strong className="not-italic">atitude pró-ativa</strong> e
+              parceria comprometida com as empresas.
+            </p>
+            <div className="mt-6 border-t border-white/15 pt-4 text-xs uppercase tracking-[0.18em] text-white/60">
+              Nossa missão
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* =====================================================================
+ * NÚMEROS — 12 anos, etc.
+ * ===================================================================== */
+function Numeros() {
+  const stats = [
+    { value: '12+', label: 'anos de operação' },
+    { value: '30+', label: 'estabelecimentos atendidos' },
+    { value: 'RDC 216', label: 'conformidade ANVISA' },
+    { value: 'On & off-shore', label: 'cozinhas atendidas' },
   ];
   return (
-    <section id="recursos" className="mx-auto max-w-6xl px-5 py-20">
-      <div className="max-w-2xl">
-        <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
-          Recursos
-        </span>
-        <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
-          Tudo que a sua consultoria precisa, em um só lugar.
-        </h2>
-        <p className="mt-4 text-base leading-relaxed text-[#1A2A22]/70">
-          Pensado para serviços de alimentação que precisam comprovar
-          conformidade e para nutricionistas que querem digitalizar a
-          consultoria.
-        </p>
-      </div>
-      <div className="mt-12 grid gap-5 md:grid-cols-3">
-        {pillars.map(({ icon: Icon, title, body }) => (
-          <div
-            key={title}
-            className="group rounded-2xl border border-[#E8F1EA] bg-white p-7 transition hover:border-[#6FA68A]/50 hover:shadow-[0_8px_24px_-12px_rgba(47,93,63,0.18)]"
-          >
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E8F1EA] text-[#2F5D3F]">
-              <Icon className="h-5 w-5" />
-            </div>
-            <h3 className="mt-5 text-lg font-semibold text-[#1A2A22]">
-              {title}
-            </h3>
-            <p className="mt-2 text-sm leading-relaxed text-[#1A2A22]/65">
-              {body}
+    <section className="bg-[#0F1310] py-16 text-white">
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-5 md:grid-cols-4">
+        {stats.map((s) => (
+          <div key={s.label} className="text-center">
+            <p className="text-3xl font-semibold tracking-tight md:text-4xl">
+              {s.value}
+            </p>
+            <p className="mt-2 text-xs uppercase tracking-wider text-white/55">
+              {s.label}
             </p>
           </div>
         ))}
@@ -169,160 +234,156 @@ function Pillars() {
 }
 
 /* =====================================================================
- * FEATURE — Etiquetas
+ * SERVIÇOS — resumo visual + CTA para /servicos
  * ===================================================================== */
-function FeatureLabels() {
-  return (
-    <section className="bg-[#E8F1EA]/40">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 md:grid-cols-2">
-        <MockupLabel />
-        <div>
-          <FeatureKicker icon={Tag}>Etiquetas RDC 216</FeatureKicker>
-          <h3 className="mt-3 text-3xl font-semibold tracking-tight">
-            Imprima etiquetas de validade sem planilha.
-          </h3>
-          <p className="mt-4 text-base leading-relaxed text-[#1A2A22]/70">
-            Cadastre o produto uma vez — condição de armazenamento, prazo,
-            alérgenos. Na hora da etiqueta, o sistema calcula a validade,
-            preenche o lote e gera o QR code que abre a página pública do
-            produto para o fiscal ou o cliente.
-          </p>
-          <FeatureBullets
-            items={[
-              'Alérgenos destacados conforme RDC 26/2015',
-              'Suporte a impressoras térmicas Bluetooth e A4',
-              'Histórico completo do que foi etiquetado',
-            ]}
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* =====================================================================
- * FEATURE — Auditorias
- * ===================================================================== */
-function FeatureAudits() {
+function ServicosResumo() {
+  const items = [
+    {
+      icon: GraduationCap,
+      title: 'Treinamentos',
+      body: 'Capacitação técnica dos manipuladores da sua operação.',
+    },
+    {
+      icon: Stethoscope,
+      title: 'Assessoria técnica',
+      body: 'Visitas regulares e acompanhamento das boas práticas.',
+    },
+    {
+      icon: ClipboardCheck,
+      title: 'Auditorias',
+      body: 'Avaliação pontual e regularização junto à ANVISA.',
+    },
+    {
+      icon: Utensils,
+      title: 'Responsabilidade técnica / PAT',
+      body: 'Implantação e manutenção do PAT na sua empresa.',
+    },
+    {
+      icon: ChefHat,
+      title: 'Cardápios e fichas técnicas',
+      body: 'Padronização, custo calculado e revisão periódica.',
+    },
+    {
+      icon: Stamp,
+      title: 'CMVS',
+      body: 'Cadastro Municipal de Vigilância em Saúde.',
+    },
+    {
+      icon: Tag,
+      title: 'Informação nutricional',
+      body: 'Rótulo nutricional assinado por especialista.',
+    },
+    {
+      icon: BookOpen,
+      title: 'Manuais e POPs',
+      body: 'Manual de boas práticas e POPs personalizados.',
+    },
+  ];
   return (
     <section className="mx-auto max-w-6xl px-5 py-20">
-      <div className="grid items-center gap-12 md:grid-cols-2">
-        <div className="md:order-2">
-          <MockupAudit />
-        </div>
-        <div className="md:order-1">
-          <FeatureKicker icon={ShieldCheck}>Auditorias técnicas</FeatureKicker>
-          <h3 className="mt-3 text-3xl font-semibold tracking-tight">
-            A visita técnica vira plano de ação automaticamente.
-          </h3>
-          <p className="mt-4 text-base leading-relaxed text-[#1A2A22]/70">
-            Use o template da RDC 216 ou monte o seu. Tire foto do não conforme,
-            classifique a gravidade e o sistema gera o relatório assinado e o
-            cronograma de correção para a unidade.
-          </p>
-          <FeatureBullets
-            items={[
-              'Templates pré-configurados (RDC 216, POPs, BPF)',
-              'Score por área e evolução ao longo do tempo',
-              'Não conformidades viram tarefas com responsável e prazo',
-            ]}
-          />
-        </div>
+      <div className="text-center">
+        <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+          O que entregamos
+        </span>
+        <h2 className="mx-auto mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+          Consultoria que cabe na rotina do seu estabelecimento.
+        </h2>
+        <p className="mx-auto mt-3 max-w-2xl text-base text-[#1A2A22]/65">
+          Cada empresa tem um ritmo. Montamos o pacote certo para sua
+          unidade — do treinamento da equipe à entrega de manuais
+          assinados.
+        </p>
       </div>
-    </section>
-  );
-}
 
-/* =====================================================================
- * FEATURE — Monitoramento + Manipuladores
- * ===================================================================== */
-function FeatureMonitoring() {
-  return (
-    <section className="bg-[#E8F1EA]/40">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 md:grid-cols-2">
-        <MockupMonitoring />
-        <div>
-          <FeatureKicker icon={Thermometer}>Operação diária</FeatureKicker>
-          <h3 className="mt-3 text-3xl font-semibold tracking-tight">
-            Temperatura, manipuladores e pragas — tudo em um lugar.
-          </h3>
-          <p className="mt-4 text-base leading-relaxed text-[#1A2A22]/70">
-            A equipe registra leituras pelo celular, você acompanha do
-            consultório. ASO vencendo, treinamento atrasado ou dedetização
-            próxima do prazo chegam como notificação antes do problema virar
-            autuação.
-          </p>
-          <FeatureBullets
-            items={[
-              'Temperatura por equipamento com alerta de desvio',
-              'Manipuladores: ASO, NR-7, escala de treinamentos',
-              'Controle de pragas e dedetizadora certificada',
-              'Documentos da unidade (alvará, CNPJ, laudos)',
-            ]}
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* =====================================================================
- * FOR NUTRITIONISTS (revenda / multi-org)
- * ===================================================================== */
-function ForNutritionists() {
-  return (
-    <section
-      id="nutricionistas"
-      className="relative overflow-hidden bg-[#2F5D3F] text-white"
-    >
-      <div className="pointer-events-none absolute -right-20 -top-20 h-80 w-80 rounded-full bg-[#6FA68A]/30 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-[#A8D96A]/15 blur-3xl" />
-      <div className="relative mx-auto max-w-6xl px-5 py-20">
-        <div className="max-w-3xl">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3 py-1 text-xs font-medium text-white/85">
-            <Sparkles className="h-3.5 w-3.5" />
-            Para nutricionistas consultoras
-          </span>
-          <h2 className="mt-5 text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
-            Adicione uma nova fonte de receita recorrente à sua consultoria.
-          </h2>
-          <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/80">
-            No ProActive7, cada nutricionista tem sua organização privada — com
-            seus restaurantes, sua marca, seus usuários. Você cobra do seu
-            cliente como achar melhor; a plataforma fica nos bastidores
-            entregando o trabalho técnico no automático.
-          </p>
-        </div>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {[
-            {
-              n: '01',
-              title: 'Sua carteira, isolada',
-              body: 'Cada unidade que você atende fica visível só para você e para a equipe dela.',
-            },
-            {
-              n: '02',
-              title: 'Pronto para vender',
-              body: 'Você cobra o que faz sentido — a plataforma vem com tudo configurado.',
-            },
-            {
-              n: '03',
-              title: 'Marca da consultoria',
-              body: 'Etiquetas, página pública e relatórios saem com a identidade da sua unidade.',
-            },
-          ].map((card) => (
-            <div
-              key={card.n}
-              className="rounded-2xl border border-white/12 bg-white/5 p-6 backdrop-blur"
-            >
-              <span className="text-xs font-mono text-white/55">{card.n}</span>
-              <h4 className="mt-2 text-base font-semibold text-white">
-                {card.title}
-              </h4>
-              <p className="mt-2 text-sm leading-relaxed text-white/75">
-                {card.body}
-              </p>
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {items.map(({ icon: Icon, title, body }) => (
+          <div
+            key={title}
+            className="group rounded-2xl border border-[#E8F1EA] bg-white p-6 transition hover:border-[#6FA68A]/50 hover:shadow-[0_12px_30px_-15px_rgba(47,93,63,0.20)]"
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
+              <Icon className="h-5 w-5" />
             </div>
+            <h3 className="mt-4 text-sm font-semibold text-[#1A2A22]">
+              {title}
+            </h3>
+            <p className="mt-2 text-xs leading-relaxed text-[#1A2A22]/65">
+              {body}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-10 text-center">
+        <Link
+          to="/servicos"
+          className="inline-flex items-center gap-2 rounded-full bg-[#2F5D3F] px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#234731]"
+        >
+          Ver todos os serviços em detalhe
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+    </section>
+  );
+}
+
+/* =====================================================================
+ * DEPOIMENTOS — carrossel simples (scroll-snap, sem deps)
+ * ===================================================================== */
+function Depoimentos() {
+  const items = [
+    {
+      quote:
+        'A Ariane traz para a cozinha o que a fiscalização espera ver. Em duas visitas, o restaurante saiu do papel para a prática.',
+      author: 'Gerente de cozinha · Macaé',
+    },
+    {
+      quote:
+        'O olhar técnico dela mudou nosso processo de manipulação. Hoje temos POPs vivos, não só impressos na parede.',
+      author: 'Nutricionista parceira',
+    },
+    {
+      quote:
+        'Profissional ética, comprometida e pró-ativa. A ProActive7 é hoje parte da nossa operação.',
+      author: 'Diretor · Hotelaria off-shore',
+    },
+    {
+      quote:
+        'Conseguimos o CMVS sem dor de cabeça. Eles cuidaram da papelada e da equipe ao mesmo tempo.',
+      author: 'Padaria · Imbetiba',
+    },
+  ];
+  return (
+    <section className="bg-[#FAFAF7] py-20">
+      <div className="mx-auto max-w-6xl px-5">
+        <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+              Quem confia
+            </span>
+            <h2 className="mt-2 max-w-xl text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+              Histórias reais de quem entrega comida com segurança.
+            </h2>
+          </div>
+          <p className="text-xs text-[#1A2A22]/55">
+            Deslize para ver mais →
+          </p>
+        </div>
+
+        <div className="mt-10 -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {items.map((d, i) => (
+            <article
+              key={i}
+              className="relative w-[88%] shrink-0 snap-center rounded-3xl border border-[#E8F1EA] bg-white p-8 shadow-[0_18px_40px_-25px_rgba(47,93,63,0.18)] md:w-[45%] lg:w-[32%]"
+            >
+              <Quote className="h-7 w-7 text-[#6FA68A]/55" />
+              <p className="mt-4 text-base leading-relaxed text-[#1A2A22]/85">
+                "{d.quote}"
+              </p>
+              <p className="mt-6 text-xs font-medium uppercase tracking-wider text-[#2F5D3F]">
+                {d.author}
+              </p>
+            </article>
           ))}
         </div>
       </div>
@@ -331,436 +392,92 @@ function ForNutritionists() {
 }
 
 /* =====================================================================
- * HOW IT WORKS
+ * ATUAÇÃO — onde atendemos
  * ===================================================================== */
-function HowItWorks() {
-  const steps = [
-    {
-      n: '1',
-      title: 'Cadastro inicial',
-      body: 'Criamos sua organização e o acesso de nutricionista. Você convida sua equipe e as unidades atendidas.',
-    },
-    {
-      n: '2',
-      title: 'Configuração da unidade',
-      body: 'Produtos, manipuladores, equipamentos de temperatura, contratos de dedetização — tudo organizado por restaurante.',
-    },
-    {
-      n: '3',
-      title: 'Operação no automático',
-      body: 'A equipe da unidade opera no celular, você acompanha do painel e age só quando precisa intervir.',
-    },
+function Atuacao() {
+  const segmentos = [
+    'Restaurantes',
+    'Indústrias',
+    'Hotelaria on/off-shore',
+    'Escolas e creches',
+    'Lanchonetes',
+    'Padarias',
+    'Mercados e supermercados',
+    'Hortifrutis',
   ];
   return (
-    <section id="como-funciona" className="mx-auto max-w-6xl px-5 py-20">
-      <div className="max-w-2xl">
-        <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
-          Como funciona
-        </span>
-        <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
-          Do contrato à operação em três passos.
-        </h2>
+    <section className="mx-auto max-w-6xl px-5 py-20">
+      <div className="grid items-start gap-12 md:grid-cols-[1fr_1fr]">
+        <div>
+          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            Atuação
+          </span>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+            Macaé, região dos Lagos e plataformas off-shore.
+          </h2>
+          <p className="mt-5 text-base leading-relaxed text-[#1A2A22]/70">
+            Atendemos estabelecimentos comerciais de variados segmentos —
+            sempre alinhados ao Ministério da Saúde, ANVISA e à legislação
+            municipal de cada operação.
+          </p>
+          <div className="mt-7 flex items-center gap-2 text-sm font-medium text-[#2F5D3F]">
+            <MapPin className="h-4 w-4" />
+            Rua Dr. Luiz Belegard, 407 — sala 704 · Imbetiba · Macaé / RJ
+          </div>
+        </div>
+        <ul className="grid grid-cols-2 gap-2.5 text-sm">
+          {segmentos.map((s) => (
+            <li
+              key={s}
+              className="rounded-xl border border-[#E8F1EA] bg-white px-4 py-3 text-[#1A2A22]/80"
+            >
+              {s}
+            </li>
+          ))}
+        </ul>
       </div>
-      <ol className="mt-12 grid gap-5 md:grid-cols-3">
-        {steps.map(({ n, title, body }) => (
-          <li
-            key={n}
-            className="relative rounded-2xl border border-[#E8F1EA] bg-white p-7"
-          >
-            <span className="absolute -top-3 left-7 inline-flex h-7 w-7 items-center justify-center rounded-full bg-[#2F5D3F] text-xs font-semibold text-white">
-              {n}
-            </span>
-            <h4 className="mt-3 text-lg font-semibold text-[#1A2A22]">
-              {title}
-            </h4>
-            <p className="mt-2 text-sm leading-relaxed text-[#1A2A22]/65">
-              {body}
-            </p>
-          </li>
-        ))}
-      </ol>
     </section>
   );
 }
 
 /* =====================================================================
- * FINAL CTA
+ * CTA FINAL — sem nada de "acessar sistema"; é página da empresa
  * ===================================================================== */
 function FinalCta() {
   return (
-    <section className="bg-[#E8F1EA]">
-      <div className="mx-auto max-w-6xl px-5 py-20 text-center">
+    <section className="relative isolate overflow-hidden bg-[#2F5D3F] text-white">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-32 -top-32 h-80 w-80 rounded-full bg-[#6FA68A]/25 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-[#A8D96A]/15 blur-3xl"
+      />
+      <div className="relative mx-auto max-w-3xl px-5 py-20 text-center md:py-24">
         <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-          Vamos conversar sobre a sua operação?
+          Pronto para conversar sobre a sua operação?
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-[#1A2A22]/70">
-          Conte sobre o seu estabelecimento. A gente avalia o que faz sentido —
-          consultoria, treinamentos ou acesso ao sistema.
+        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/85">
+          A gente avalia o que sua unidade precisa e monta o pacote certo —
+          consultoria, treinamento, RT, POPs e tudo que a ANVISA exige.
         </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/contato"
-            className="inline-flex items-center gap-2 rounded-full bg-[#2F5D3F] px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#234731]"
+            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#2F5D3F] transition hover:bg-white/95"
           >
             Falar com a ProActive7
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
-            to="/login"
-            className="inline-flex items-center gap-2 rounded-full border border-[#2F5D3F]/20 bg-white px-6 py-3 text-sm font-medium text-[#2F5D3F] hover:border-[#2F5D3F]/40"
+            to="/servicos"
+            className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-medium text-white transition hover:border-white/60"
           >
-            Acessar o sistema
+            Ver serviços oferecidos
           </Link>
         </div>
       </div>
     </section>
-  );
-}
-
-/* =====================================================================
- * FOOTER
- * ===================================================================== */
-/* =====================================================================
- * Helpers
- * ===================================================================== */
-function FeatureKicker({
-  icon: Icon,
-  children,
-}: {
-  icon: typeof Tag;
-  children: React.ReactNode;
-}) {
-  return (
-    <span className="inline-flex items-center gap-2 rounded-full bg-[#E8F1EA] px-3 py-1 text-xs font-medium text-[#2F5D3F]">
-      <Icon className="h-3.5 w-3.5" />
-      {children}
-    </span>
-  );
-}
-
-function FeatureBullets({ items }: { items: string[] }) {
-  return (
-    <ul className="mt-6 space-y-3">
-      {items.map((it) => (
-        <li
-          key={it}
-          className="flex items-start gap-3 text-sm text-[#1A2A22]/80"
-        >
-          <span className="mt-0.5 flex h-5 w-5 flex-none items-center justify-center rounded-full bg-[#6FA68A]/20 text-[#2F5D3F]">
-            <Check className="h-3 w-3" />
-          </span>
-          {it}
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-/* =====================================================================
- * MOCKUPS — desenhados em HTML/CSS para evitar dependencia de imagem
- * ===================================================================== */
-
-function MockWindow({
-  children,
-  title,
-}: {
-  children: React.ReactNode;
-  title: string;
-}) {
-  return (
-    <div className="relative">
-      {/* sage glow */}
-      <div
-        aria-hidden
-        className="absolute -inset-x-6 -bottom-6 h-32 rounded-full bg-[#6FA68A]/25 blur-3xl"
-      />
-      <div className="relative overflow-hidden rounded-2xl border border-[#E8F1EA] bg-white shadow-[0_24px_60px_-24px_rgba(47,93,63,0.28)]">
-        <div className="flex items-center gap-2 border-b border-[#E8F1EA] bg-[#FAFAF7] px-4 py-2.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#E8E0D0]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#E8E0D0]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#E8E0D0]" />
-          <span className="ml-3 text-[11px] font-medium text-[#1A2A22]/50">
-            {title}
-          </span>
-        </div>
-        <div className="p-4">{children}</div>
-      </div>
-    </div>
-  );
-}
-
-function MockupDashboard() {
-  return (
-    <MockWindow title="proactive7.app/painel">
-      <div className="mb-3 flex items-center justify-between">
-        <div>
-          <div className="text-[11px] uppercase tracking-wider text-[#6FA68A]">
-            Painel da consultoria
-          </div>
-          <div className="text-base font-semibold text-[#1A2A22]">
-            8 unidades · tudo em conformidade
-          </div>
-        </div>
-        <span className="rounded-full bg-[#E8F1EA] px-2.5 py-1 text-[10px] font-medium text-[#2F5D3F]">
-          ● Online
-        </span>
-      </div>
-      <div className="grid grid-cols-3 gap-2.5">
-        {[
-          { k: 'Score médio', v: '94', s: '+3 vs mês anterior' },
-          { k: 'Auditorias 14d', v: '06', s: 'Próx: Bistrô Norte' },
-          { k: 'Etiquetas hoje', v: '247', s: '5 unidades' },
-        ].map((kpi) => (
-          <div
-            key={kpi.k}
-            className="rounded-xl border border-[#E8F1EA] bg-[#FAFAF7] p-3"
-          >
-            <div className="text-[10px] uppercase tracking-wider text-[#1A2A22]/55">
-              {kpi.k}
-            </div>
-            <div className="mt-1 text-xl font-semibold text-[#2F5D3F]">
-              {kpi.v}
-            </div>
-            <div className="mt-0.5 text-[10px] text-[#1A2A22]/55">{kpi.s}</div>
-          </div>
-        ))}
-      </div>
-      <div className="mt-3 rounded-xl border border-[#E8F1EA]">
-        <div className="border-b border-[#E8F1EA] px-3 py-2 text-[11px] font-medium text-[#1A2A22]/65">
-          Portfólio
-        </div>
-        {[
-          { n: 'Bistrô Norte', s: 96, c: '#6FA68A' },
-          { n: 'Hotel Verde', s: 91, c: '#6FA68A' },
-          { n: 'Padaria Aurora', s: 78, c: '#D4A857' },
-          { n: 'Café Central', s: 88, c: '#6FA68A' },
-        ].map((r) => (
-          <div
-            key={r.n}
-            className="flex items-center justify-between border-b border-[#E8F1EA] px-3 py-2 last:border-b-0"
-          >
-            <div className="flex items-center gap-2">
-              <div
-                className="h-6 w-6 rounded-md"
-                style={{ background: `${r.c}25`, color: r.c }}
-              />
-              <span className="text-xs text-[#1A2A22]">{r.n}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="h-1.5 w-20 overflow-hidden rounded-full bg-[#E8F1EA]">
-                <div
-                  className="h-full rounded-full"
-                  style={{ width: `${r.s}%`, background: r.c }}
-                />
-              </div>
-              <span className="w-7 text-right text-[11px] font-semibold text-[#1A2A22]/75">
-                {r.s}
-              </span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </MockWindow>
-  );
-}
-
-function MockupLabel() {
-  return (
-    <MockWindow title="proactive7.app/imprimir">
-      <div className="grid grid-cols-[1fr_180px] gap-4">
-        <div>
-          <div className="text-[11px] uppercase tracking-wider text-[#6FA68A]">
-            Nova etiqueta
-          </div>
-          <div className="text-base font-semibold text-[#1A2A22]">
-            Molho à bolonhesa
-          </div>
-          <div className="mt-3 space-y-2 text-xs">
-            {[
-              ['Lote', '20251125-014'],
-              ['Manipulado em', '25/11/2025 09:14'],
-              ['Validade', '27/11/2025 09:14'],
-              ['Armazenamento', 'Refrigerado'],
-              ['Responsável', 'Marina S.'],
-            ].map(([k, v]) => (
-              <div key={k} className="flex items-center justify-between">
-                <span className="text-[#1A2A22]/55">{k}</span>
-                <span className="font-medium text-[#1A2A22]">{v}</span>
-              </div>
-            ))}
-          </div>
-          <div className="mt-4 flex gap-1.5">
-            {['glúten', 'leite'].map((a) => (
-              <span
-                key={a}
-                className="rounded-full bg-[#FBE9E0] px-2 py-0.5 text-[10px] font-medium text-[#A8543A]"
-              >
-                {a}
-              </span>
-            ))}
-          </div>
-        </div>
-        {/* fake printed label */}
-        <div className="flex flex-col rounded-lg border-2 border-dashed border-[#2F5D3F]/25 bg-[#FAFAF7] p-3 text-[10px] leading-tight">
-          <div className="text-center text-[#2F5D3F]">
-            <div className="text-[9px] uppercase tracking-wider">
-              Bistrô Norte
-            </div>
-            <div className="text-sm font-bold text-[#1A2A22]">
-              Molho à bolonhesa
-            </div>
-          </div>
-          <div className="mt-2 border-t border-dashed border-[#2F5D3F]/25 pt-2">
-            <div>
-              <strong>Validade:</strong> 27/11 09:14
-            </div>
-            <div>
-              <strong>Lote:</strong> 20251125-014
-            </div>
-            <div>
-              <strong>Alérg.:</strong> glúten · leite
-            </div>
-          </div>
-          <div className="mt-auto flex items-end justify-between pt-2">
-            <div className="h-12 w-12 rounded bg-[#1A2A22]/85" />
-            <div className="text-right text-[9px] text-[#1A2A22]/55">
-              <div>RDC 216</div>
-              <div>ANVISA</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </MockWindow>
-  );
-}
-
-function MockupAudit() {
-  const items = [
-    { l: 'Higiene das bancadas', ok: true },
-    { l: 'Temperatura câmara fria', ok: true },
-    { l: 'POPs disponíveis no setor', ok: false },
-    { l: 'Manipuladores com NR-7 em dia', ok: true },
-    { l: 'Telas milimétricas íntegras', ok: false },
-    { l: 'Sanitizantes registrados', ok: true },
-  ];
-  return (
-    <MockWindow title="proactive7.app/visitas/24">
-      <div className="mb-3 flex items-center justify-between">
-        <div>
-          <div className="text-[11px] uppercase tracking-wider text-[#6FA68A]">
-            Auditoria RDC 216
-          </div>
-          <div className="text-base font-semibold text-[#1A2A22]">
-            Bistrô Norte · 25/11
-          </div>
-        </div>
-        <span className="rounded-full bg-[#E8F1EA] px-2.5 py-1 text-[10px] font-medium text-[#2F5D3F]">
-          Score 78
-        </span>
-      </div>
-      <div className="space-y-1.5">
-        {items.map((it) => (
-          <div
-            key={it.l}
-            className="flex items-center justify-between rounded-lg border border-[#E8F1EA] px-3 py-2"
-          >
-            <div className="flex items-center gap-2.5">
-              <span
-                className={`flex h-5 w-5 items-center justify-center rounded-md text-[10px] font-semibold ${
-                  it.ok
-                    ? 'bg-[#6FA68A]/20 text-[#2F5D3F]'
-                    : 'bg-[#FBE9E0] text-[#A8543A]'
-                }`}
-              >
-                {it.ok ? '✓' : '!'}
-              </span>
-              <span className="text-xs text-[#1A2A22]">{it.l}</span>
-            </div>
-            {!it.ok && (
-              <span className="text-[10px] font-medium text-[#A8543A]">
-                Não conforme
-              </span>
-            )}
-          </div>
-        ))}
-      </div>
-      <div className="mt-3 rounded-lg bg-[#E8F1EA]/70 px-3 py-2 text-[11px] text-[#2F5D3F]">
-        <strong>2 não conformidades</strong> gerarão tarefas com prazo de 7 dias
-        para a unidade.
-      </div>
-    </MockWindow>
-  );
-}
-
-function MockupMonitoring() {
-  return (
-    <MockWindow title="proactive7.app/temperatura">
-      <div className="mb-3">
-        <div className="text-[11px] uppercase tracking-wider text-[#6FA68A]">
-          Operação · hoje
-        </div>
-        <div className="text-base font-semibold text-[#1A2A22]">
-          Bistrô Norte · 25/11
-        </div>
-      </div>
-      <div className="grid grid-cols-2 gap-2.5">
-        {[
-          { k: 'Câmara fria 01', v: '4 °C', ok: true, sub: 'Marina · 09:02' },
-          { k: 'Freezer 02', v: '-18 °C', ok: true, sub: 'João · 08:55' },
-          {
-            k: 'Estufa banho-maria',
-            v: '62 °C',
-            ok: false,
-            sub: 'Limite 65°C',
-          },
-          { k: 'Câmara fria 02', v: '5 °C', ok: true, sub: 'Marina · 09:05' },
-        ].map((r) => (
-          <div
-            key={r.k}
-            className={`rounded-xl border p-3 ${
-              r.ok
-                ? 'border-[#E8F1EA] bg-[#FAFAF7]'
-                : 'border-[#F2C9B8] bg-[#FBE9E0]/40'
-            }`}
-          >
-            <div className="text-[10px] uppercase tracking-wider text-[#1A2A22]/55">
-              {r.k}
-            </div>
-            <div
-              className={`mt-1 text-xl font-semibold ${
-                r.ok ? 'text-[#2F5D3F]' : 'text-[#A8543A]'
-              }`}
-            >
-              {r.v}
-            </div>
-            <div className="mt-0.5 text-[10px] text-[#1A2A22]/55">{r.sub}</div>
-          </div>
-        ))}
-      </div>
-      <div className="mt-3 rounded-lg border border-[#E8F1EA] bg-white">
-        <div className="flex items-center justify-between border-b border-[#E8F1EA] px-3 py-2">
-          <div className="flex items-center gap-2 text-[11px] font-medium text-[#1A2A22]/70">
-            <Bell className="h-3.5 w-3.5 text-[#D4A857]" />
-            Alertas
-          </div>
-          <span className="text-[10px] text-[#1A2A22]/45">2 ativos</span>
-        </div>
-        {[
-          { i: HardHat, t: 'ASO de Marina vence em 7 dias' },
-          { i: Bug, t: 'Dedetização — agendar até 30/11' },
-          { i: FileText, t: 'Alvará sanitário vence 12/12' },
-        ].map((a, idx) => (
-          <div
-            key={idx}
-            className="flex items-center gap-2.5 border-b border-[#E8F1EA] px-3 py-2 last:border-b-0"
-          >
-            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#E8F1EA] text-[#2F5D3F]">
-              <a.i className="h-3.5 w-3.5" />
-            </span>
-            <span className="text-xs text-[#1A2A22]/80">{a.t}</span>
-          </div>
-        ))}
-      </div>
-    </MockWindow>
   );
 }

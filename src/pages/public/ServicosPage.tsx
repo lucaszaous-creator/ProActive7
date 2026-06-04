@@ -9,6 +9,15 @@ import {
   Tag,
   BookOpen,
   ArrowRight,
+  Laptop2,
+  Hotel,
+  ShoppingBasket,
+  Factory,
+  School,
+  Building2,
+  Croissant,
+  Apple,
+  Quote,
 } from 'lucide-react';
 import { Plus } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -24,6 +33,8 @@ interface Servico {
   icon: LucideIcon;
   title: string;
   body: string;
+  /** Se preenchido, vira link "Saiba mais" no final do card. */
+  cta?: { to: string; label: string };
 }
 
 const SERVICOS: Servico[] = [
@@ -67,6 +78,12 @@ const SERVICOS: Servico[] = [
     title: 'Manuais de Boas Práticas e POPs',
     body: 'Manual de boas práticas personalizado, respeitando as peculiaridades do seu ramo e negócio. Os POPs (Procedimentos Operacionais Padronizados) orientam o manipulador no dia a dia da operação.',
   },
+  {
+    icon: Laptop2,
+    title: 'Sistema ProActive7 — exclusivo',
+    body: 'Plataforma própria que digitaliza etiquetas RDC 216, auditorias, controle de pragas, temperaturas, ASOs e POPs. Tecnologia que a Ariane entrega gratuitamente junto à consultoria — registre a operação no celular e tenha tudo pronto para a fiscalização.',
+    cta: { to: '/sistema', label: 'Conhecer a plataforma' },
+  },
 ];
 
 export function ServicosPage() {
@@ -75,6 +92,8 @@ export function ServicosPage() {
     <div>
       <Hero />
       <Grid />
+      <Segmentos />
+      <Depoimentos />
       <Faq />
       <CTA />
     </div>
@@ -135,7 +154,7 @@ function Grid() {
   return (
     <section className="mx-auto max-w-6xl px-5 py-16">
       <div className="grid gap-5 md:grid-cols-2">
-        {SERVICOS.map(({ icon: Icon, title, body }, idx) => (
+        {SERVICOS.map(({ icon: Icon, title, body, cta }, idx) => (
           <article
             key={title}
             className="group relative overflow-hidden rounded-2xl border border-[#E8F1EA] bg-white p-7 transition hover:border-[#6FA68A]/50 hover:shadow-[0_12px_30px_-15px_rgba(47,93,63,0.20)]"
@@ -154,10 +173,140 @@ function Grid() {
                 <p className="mt-3 text-sm leading-relaxed text-[#1A2A22]/70">
                   {body}
                 </p>
+                {cta ? (
+                  <Link
+                    to={cta.to}
+                    className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#2F5D3F] hover:underline"
+                  >
+                    {cta.label}
+                    <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                ) : null}
               </div>
             </div>
           </article>
         ))}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Carrossel horizontal de segmentos atendidos. Snap-x para virar
+ * "swipe friendly" no mobile e mostrar visualmente o leque da ProActive7
+ * sem precisar de banco de fotos (custo zero).
+ */
+function Segmentos() {
+  const items: { icon: LucideIcon; label: string; sub: string }[] = [
+    { icon: Hotel, label: 'Hotelaria', sub: 'On-shore e off-shore' },
+    { icon: Factory, label: 'Indústrias', sub: 'Cozinhas industriais e PAT' },
+    { icon: Utensils, label: 'Restaurantes', sub: 'À la carte e self-service' },
+    { icon: School, label: 'Escolas e creches', sub: 'Merenda escolar' },
+    { icon: Croissant, label: 'Padarias', sub: 'Produção e atendimento' },
+    {
+      icon: ShoppingBasket,
+      label: 'Mercados',
+      sub: 'Setor frio, FLV e padaria interna',
+    },
+    { icon: Apple, label: 'Hortifrutis', sub: 'Manipulação e validade' },
+    {
+      icon: Building2,
+      label: 'Lanchonetes',
+      sub: 'Fast food e quiosques',
+    },
+  ];
+  return (
+    <section className="bg-[#FAFAF7] py-16">
+      <div className="mx-auto max-w-6xl px-5">
+        <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-end">
+          <div>
+            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+              Quem atendemos
+            </span>
+            <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
+              Segmentos com necessidades distintas — mesma exigência técnica.
+            </h2>
+          </div>
+          <p className="text-xs text-[#1A2A22]/55">Deslize →</p>
+        </div>
+
+        <div className="mt-8 -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {items.map(({ icon: Icon, label, sub }) => (
+            <article
+              key={label}
+              className="flex w-[70%] shrink-0 snap-start flex-col gap-3 rounded-3xl border border-[#E8F1EA] bg-white p-6 sm:w-[42%] lg:w-[24%]"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
+                <Icon className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-base font-semibold text-[#1A2A22]">
+                  {label}
+                </h3>
+                <p className="mt-1 text-xs text-[#1A2A22]/60">{sub}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Carrossel de depoimentos — reforça confiança. Mesmo padrão visual da
+ * landing pra manter coerência (snap-x scroll, custo zero).
+ */
+function Depoimentos() {
+  const items = [
+    {
+      quote:
+        'A Ariane traz para a cozinha o que a fiscalização espera ver. Em duas visitas, o restaurante saiu do papel para a prática.',
+      author: 'Gerente de cozinha · Macaé',
+    },
+    {
+      quote:
+        'O olhar técnico mudou nosso processo. Hoje temos POPs vivos, não só impressos na parede.',
+      author: 'Nutricionista parceira',
+    },
+    {
+      quote:
+        'Profissional ética e pró-ativa. A ProActive7 é hoje parte da nossa operação.',
+      author: 'Diretor · Hotelaria off-shore',
+    },
+    {
+      quote:
+        'Conseguimos o CMVS sem dor de cabeça. Cuidaram da papelada e treinaram a equipe ao mesmo tempo.',
+      author: 'Padaria · Imbetiba',
+    },
+  ];
+  return (
+    <section className="border-t border-[#E8F1EA] bg-white py-16">
+      <div className="mx-auto max-w-6xl px-5">
+        <div className="text-center">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            Quem confia
+          </span>
+          <h2 className="mx-auto mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
+            O que os clientes dizem.
+          </h2>
+        </div>
+        <div className="mt-8 -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {items.map((d, i) => (
+            <article
+              key={i}
+              className="relative w-[85%] shrink-0 snap-center rounded-3xl border border-[#E8F1EA] bg-[#FAFAF7] p-7 sm:w-[55%] lg:w-[32%]"
+            >
+              <Quote className="h-7 w-7 text-[#6FA68A]/55" />
+              <p className="mt-3 text-sm leading-relaxed text-[#1A2A22]/85">
+                "{d.quote}"
+              </p>
+              <p className="mt-5 text-xs font-medium uppercase tracking-wider text-[#2F5D3F]">
+                {d.author}
+              </p>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
