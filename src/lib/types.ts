@@ -498,6 +498,8 @@ export interface CompanyFile {
   company_id: string;
   title: string;
   description: string | null;
+  /** Categoria do documento (ver COMPANY_FILE_CATEGORIES). NULL = outros. */
+  category: string | null;
   file_path: string;
   mime_type: string | null;
   size_bytes: number | null;
@@ -507,6 +509,30 @@ export interface CompanyFile {
   created_at: string;
   updated_at: string;
 }
+
+/**
+ * Categorias de documentos por empresa. Cobre os tipos "cadastrados"
+ * (Manual de Boas Práticas, POPs) + documentos que a operação recebe
+ * de terceiros (ASO, laudo de controle de pragas, alvarás). A nutri/
+ * gerente faz upload do arquivo na categoria certa — sem edição de
+ * texto. A ordem aqui define a ordem de exibição.
+ */
+export const COMPANY_FILE_CATEGORIES: { key: string; label: string }[] = [
+  { key: 'mbp', label: 'Manual de Boas Práticas' },
+  { key: 'pop_higienizacao', label: 'POP — Higienização' },
+  { key: 'pop_agua', label: 'POP — Água potável' },
+  { key: 'pop_manipuladores', label: 'POP — Saúde dos manipuladores' },
+  { key: 'pop_residuos', label: 'POP — Manejo de resíduos' },
+  { key: 'pop_manutencao', label: 'POP — Manutenção e calibração' },
+  { key: 'pmoc', label: 'PMOC — Climatização' },
+  { key: 'aso', label: 'ASO — Atestados de saúde ocupacional' },
+  { key: 'pragas', label: 'Controle de pragas (laudos)' },
+  { key: 'alvara', label: 'Alvarás e licenças' },
+  { key: 'outro', label: 'Outros documentos' },
+];
+
+export const COMPANY_FILE_CATEGORY_LABELS: Record<string, string> =
+  Object.fromEntries(COMPANY_FILE_CATEGORIES.map((c) => [c.key, c.label]));
 
 export interface Photo {
   id: string;

@@ -22,6 +22,7 @@ import {
 import { Plus } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
+import { Carousel } from '@/components/public/Carousel';
 import seoConfig from '@/lib/seo.config.json';
 
 const FAQ = (seoConfig.pages['/servicos'].faq ?? []) as {
@@ -218,23 +219,23 @@ function Segmentos() {
   return (
     <section className="bg-[#FAFAF7] py-16">
       <div className="mx-auto max-w-6xl px-5">
-        <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-end">
-          <div>
-            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
-              Quem atendemos
-            </span>
-            <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
-              Segmentos com necessidades distintas — mesma exigência técnica.
-            </h2>
-          </div>
-          <p className="text-xs text-[#1A2A22]/55">Deslize →</p>
+        <div className="mb-8">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            Quem atendemos
+          </span>
+          <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
+            Segmentos com necessidades distintas — mesma exigência técnica.
+          </h2>
         </div>
 
-        <div className="mt-8 -mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <Carousel
+          ariaLabel="Segmentos atendidos"
+          slideBasis="basis-[70%] sm:basis-1/2 lg:basis-1/4"
+        >
           {items.map(({ icon: Icon, label, sub }) => (
             <article
               key={label}
-              className="flex w-[70%] shrink-0 snap-start flex-col gap-3 rounded-3xl border border-[#E8F1EA] bg-white p-6 sm:w-[42%] lg:w-[24%]"
+              className="flex h-full flex-col gap-3 rounded-3xl border border-[#E8F1EA] bg-white p-6"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
                 <Icon className="h-5 w-5" />
@@ -247,7 +248,7 @@ function Segmentos() {
               </div>
             </article>
           ))}
-        </div>
+        </Carousel>
       </div>
     </section>
   );
@@ -291,21 +292,23 @@ function Depoimentos() {
             O que os clientes dizem.
           </h2>
         </div>
-        <div className="mt-8 -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {items.map((d, i) => (
-            <article
-              key={i}
-              className="relative w-[85%] shrink-0 snap-center rounded-3xl border border-[#E8F1EA] bg-[#FAFAF7] p-7 sm:w-[55%] lg:w-[32%]"
-            >
-              <Quote className="h-7 w-7 text-[#6FA68A]/55" />
-              <p className="mt-3 text-sm leading-relaxed text-[#1A2A22]/85">
-                "{d.quote}"
-              </p>
-              <p className="mt-5 text-xs font-medium uppercase tracking-wider text-[#2F5D3F]">
-                {d.author}
-              </p>
-            </article>
-          ))}
+        <div className="mt-8">
+          <Carousel ariaLabel="Depoimentos de clientes">
+            {items.map((d, i) => (
+              <article
+                key={i}
+                className="relative h-full rounded-3xl border border-[#E8F1EA] bg-[#FAFAF7] p-7"
+              >
+                <Quote className="h-7 w-7 text-[#6FA68A]/55" />
+                <p className="mt-3 text-sm leading-relaxed text-[#1A2A22]/85">
+                  "{d.quote}"
+                </p>
+                <p className="mt-5 text-xs font-medium uppercase tracking-wider text-[#2F5D3F]">
+                  {d.author}
+                </p>
+              </article>
+            ))}
+          </Carousel>
         </div>
       </div>
     </section>

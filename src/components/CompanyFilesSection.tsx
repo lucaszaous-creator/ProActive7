@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
   FileText,
@@ -15,16 +15,22 @@ import { formatDateTime } from '@/lib/dates';
 import { Card } from './ui/Card';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
+import { Select } from './ui/Select';
 import { Modal } from './ui/Modal';
 import { ConfirmDialog } from './ui/ConfirmDialog';
 import { Spinner } from './ui/Spinner';
-import type { CompanyFile } from '@/lib/types';
+import {
+  COMPANY_FILE_CATEGORIES,
+  COMPANY_FILE_CATEGORY_LABELS,
+  type CompanyFile,
+} from '@/lib/types';
 
 interface Props {
   companyId: string;
 }
 
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024; // 20 MB
+const OUTRO = 'outro';
 
 function humanBytes(n: number | null | undefined): string {
   if (!n) return '—';
@@ -38,11 +44,19 @@ function humanBytes(n: number | null | undefined): string {
   return `${v.toFixed(v >= 10 || i === 0 ? 0 : 1)} ${units[i]}`;
 }
 
+function categoryLabel(cat: string | null): string {
+  if (!cat) return COMPANY_FILE_CATEGORY_LABELS[OUTRO];
+  return (
+    COMPANY_FILE_CATEGORY_LABELS[cat] ?? COMPANY_FILE_CATEGORY_LABELS[OUTRO]
+  );
+}
+
 /**
- * Lista e gerencia documentos arbitrários (alvarás, contratos,
- * comprovantes, laudos etc.) de UMA empresa. Persistido em
- * `company_files` + bucket privado `company-docs`.
- * Apenas usuários com escopo na empresa veem (RLS faz cumprir).
+ * Aba "Documentos" da empresa — agora 100% por upload (sem edição de
+ * texto). A nutri/gerente carrega o arquivo na categoria certa: Manual
+ * de Boas Práticas, POPs, ASO, laudo de controle de pragas, alvarás
+ * etc. Persistido em `company_files` + bucket privado `company-docs`,
+ * com RLS por empresa.
  */
 export function CompanyFilesSection({ companyId }: Props) {
   const { profile } = useAuth();
@@ -53,13 +67,15 @@ export function CompanyFilesSection({ companyId }: Props) {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [category, setCategory] = useState<string>(OUTRO);
   const [pickedFile, setPickedFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Edit modal (rename / re-describe)
+  // Edit modal (rename / re-describe / recategorize)
   const [editing, setEditing] = useState<CompanyFile | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDesc, setEditDesc] = useState('');
+  const [editCategory, setEditCategory] = useState<string>(OUTRO);
   const [savingEdit, setSavingEdit] = useState(false);
 
   // Delete confirm
@@ -76,7 +92,7 @@ export function CompanyFilesSection({ companyId }: Props) {
       .order('uploaded_at', { ascending: false });
     setLoading(false);
     if (error) {
-      toast.error('Erro ao carregar arquivos: ' + error.message);
+      toast.error('Erro ao carregar documentos: ' + error.message);
       return;
     }
     setFiles((data as CompanyFile[] | null) ?? []);
@@ -86,9 +102,33 @@ export function CompanyFilesSection({ companyId }: Props) {
     void load();
   }, [load]);
 
-  function openUpload() {
+  // Agrupa por categoria, na ordem de COMPANY_FILE_CATEGORIES.
+  const grouped = useMemo(() => {
+    const map = new Map<string, CompanyFile[]>();
+    for (const f of files) {
+      const key = f.category ?? OUTRO;
+      const arr = map.get(key) ?? [];
+      arr.push(f);
+      map.set(key, arr);
+    }
+    const ordered: { key: string; label: string; items: CompanyFile[] }[] = [];
+    for (const { key, label } of COMPANY_FILE_CATEGORIES) {
+      const items = map.get(key);
+      if (items && items.length > 0) ordered.push({ key, label, items });
+    }
+    // Categorias desconhecidas (legados) vão para o fim.
+    for (const [key, items] of map) {
+      if (!COMPANY_FILE_CATEGORY_LABELS[key] && key !== OUTRO) {
+        ordered.push({ key, label: categoryLabel(key), items });
+      }
+    }
+    return ordered;
+  }, [files]);
+
+  function openUpload(presetCategory?: string) {
     setTitle('');
     setDescription('');
+    setCategory(presetCategory ?? OUTRO);
     setPickedFile(null);
     setUploadOpen(true);
   }
@@ -120,6 +160,7 @@ export function CompanyFilesSection({ companyId }: Props) {
       company_id: companyId,
       title: finalTitle,
       description: description.trim() || null,
+      category,
       file_path: path,
       mime_type: pickedFile.type || null,
       size_bytes: pickedFile.size,
@@ -127,7 +168,6 @@ export function CompanyFilesSection({ companyId }: Props) {
     });
     setSaving(false);
     if (insErr) {
-      // Cleanup do arquivo órfão.
       await supabase.storage.from('company-docs').remove([path]);
       toast.error('Erro ao registrar: ' + insErr.message);
       return;
@@ -141,6 +181,7 @@ export function CompanyFilesSection({ companyId }: Props) {
     setEditing(f);
     setEditTitle(f.title);
     setEditDesc(f.description ?? '');
+    setEditCategory(f.category ?? OUTRO);
   }
 
   async function handleSaveEdit() {
@@ -155,6 +196,7 @@ export function CompanyFilesSection({ companyId }: Props) {
       .update({
         title: editTitle.trim(),
         description: editDesc.trim() || null,
+        category: editCategory,
       })
       .eq('id', editing.id);
     setSavingEdit(false);
@@ -170,9 +212,6 @@ export function CompanyFilesSection({ companyId }: Props) {
   async function handleDelete() {
     if (!deleting) return;
     setDeleteBusy(true);
-    // Soft delete: marca deleted_at (a tela já filtra por is null).
-    // O arquivo no Storage é removido pra liberar espaço — se um dia
-    // quisermos "restaurar", precisaria refazer upload.
     const { error: updErr } = await supabase
       .from('company_files')
       .update({ deleted_at: new Date().toISOString() })
@@ -182,7 +221,6 @@ export function CompanyFilesSection({ companyId }: Props) {
         .from('company-docs')
         .remove([deleting.file_path]);
       if (rmErr) {
-        // Soft delete já passou — apenas avisa. Não bloqueia a UX.
         console.warn('Falha ao remover arquivo do storage:', rmErr.message);
       }
     }
@@ -207,6 +245,56 @@ export function CompanyFilesSection({ companyId }: Props) {
     window.open(data.signedUrl, '_blank', 'noopener');
   }
 
+  function FileRow({ f }: { f: CompanyFile }) {
+    return (
+      <li className="flex items-start justify-between gap-3 py-2.5">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <FileText size={14} className="shrink-0 text-neutral-400" />
+            <p className="min-w-0 truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">
+              {f.title}
+            </p>
+          </div>
+          {f.description ? (
+            <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+              {f.description}
+            </p>
+          ) : null}
+          <p className="mt-0.5 text-[11px] text-neutral-400 dark:text-neutral-500">
+            {humanBytes(f.size_bytes)} · adicionado{' '}
+            {formatDateTime(f.uploaded_at)}
+          </p>
+        </div>
+        <div className="flex shrink-0 gap-1">
+          <button
+            onClick={() => void openFile(f)}
+            aria-label="Abrir"
+            title="Abrir"
+            className="rounded-lg p-2.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+          >
+            <Download size={16} />
+          </button>
+          <button
+            onClick={() => openEdit(f)}
+            aria-label="Editar"
+            title="Renomear / mudar categoria"
+            className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+          >
+            <Pencil size={16} />
+          </button>
+          <button
+            onClick={() => setDeleting(f)}
+            aria-label="Excluir"
+            title="Excluir"
+            className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+          >
+            <Trash2 size={16} />
+          </button>
+        </div>
+      </li>
+    );
+  }
+
   return (
     <>
       <Card className="mb-4">
@@ -214,15 +302,15 @@ export function CompanyFilesSection({ companyId }: Props) {
           <div className="min-w-0">
             <h2 className="flex items-center gap-2 text-sm font-semibold text-neutral-800 dark:text-neutral-200">
               <FolderOpen size={16} className="text-emerald-600" />
-              Arquivos da empresa
+              Documentos da empresa
             </h2>
             <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-              Suba PDF/imagem de qualquer documento operacional (alvará,
-              contrato, laudo, comprovante etc.). Apenas usuários desta
-              empresa podem abrir.
+              Carregue os documentos do estabelecimento — Manual de Boas
+              Práticas, POPs, ASO, laudos de controle de pragas, alvarás. PDF
+              ou imagem, até 20 MB.
             </p>
           </div>
-          <Button onClick={openUpload} size="sm" disabled={!companyId}>
+          <Button onClick={() => openUpload()} size="sm" disabled={!companyId}>
             <Plus size={14} />
             Adicionar
           </Button>
@@ -233,66 +321,54 @@ export function CompanyFilesSection({ companyId }: Props) {
             <Spinner className="h-5 w-5" />
           </div>
         ) : files.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-neutral-200 px-4 py-6 text-center text-xs text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
-            Nenhum documento ainda. Clique em "Adicionar" para subir o
-            primeiro.
-          </p>
+          <div className="rounded-lg border border-dashed border-neutral-200 px-4 py-8 text-center dark:border-neutral-700">
+            <p className="text-sm text-neutral-600 dark:text-neutral-300">
+              Nenhum documento ainda.
+            </p>
+            <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+              Comece adicionando o Manual de Boas Práticas ou um POP.
+            </p>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {COMPANY_FILE_CATEGORIES.slice(0, 4).map((c) => (
+                <Button
+                  key={c.key}
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => openUpload(c.key)}
+                >
+                  <Plus size={14} />
+                  {c.label}
+                </Button>
+              ))}
+            </div>
+          </div>
         ) : (
-          <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
-            {files.map((f) => (
-              <li
-                key={f.id}
-                className="flex items-start justify-between gap-3 py-2.5"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <FileText
-                      size={14}
-                      className="shrink-0 text-neutral-400"
-                    />
-                    <p className="min-w-0 truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">
-                      {f.title}
-                    </p>
-                  </div>
-                  {f.description ? (
-                    <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-                      {f.description}
-                    </p>
-                  ) : null}
-                  <p className="mt-0.5 text-[11px] text-neutral-400 dark:text-neutral-500">
-                    {humanBytes(f.size_bytes)} · adicionado{' '}
-                    {formatDateTime(f.uploaded_at)}
-                  </p>
-                </div>
-                <div className="flex shrink-0 gap-1">
+          <div className="flex flex-col gap-5">
+            {grouped.map((g) => (
+              <div key={g.key}>
+                <div className="mb-1 flex items-center justify-between gap-2">
+                  <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                    {g.label}
+                    <span className="ml-1.5 font-normal text-neutral-400">
+                      ({g.items.length})
+                    </span>
+                  </h3>
                   <button
-                    onClick={() => void openFile(f)}
-                    aria-label="Abrir"
-                    title="Abrir"
-                    className="rounded-lg p-2.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                    onClick={() => openUpload(g.key)}
+                    className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50 dark:text-emerald-400 dark:hover:bg-emerald-950"
                   >
-                    <Download size={16} />
-                  </button>
-                  <button
-                    onClick={() => openEdit(f)}
-                    aria-label="Renomear"
-                    title="Renomear"
-                    className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                  >
-                    <Pencil size={16} />
-                  </button>
-                  <button
-                    onClick={() => setDeleting(f)}
-                    aria-label="Excluir"
-                    title="Excluir"
-                    className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
-                  >
-                    <Trash2 size={16} />
+                    <Plus size={12} />
+                    Adicionar
                   </button>
                 </div>
-              </li>
+                <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                  {g.items.map((f) => (
+                    <FileRow key={f.id} f={f} />
+                  ))}
+                </ul>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </Card>
 
@@ -321,6 +397,18 @@ export function CompanyFilesSection({ companyId }: Props) {
         }
       >
         <div className="flex flex-col gap-3">
+          <Select
+            id="cf-category"
+            label="Categoria"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            {COMPANY_FILE_CATEGORIES.map((c) => (
+              <option key={c.key} value={c.key}>
+                {c.label}
+              </option>
+            ))}
+          </Select>
           <div>
             <p className="mb-1 text-sm font-medium text-neutral-700 dark:text-neutral-300">
               Arquivo (PDF, imagem ou documento — até 20 MB)
@@ -346,7 +434,7 @@ export function CompanyFilesSection({ companyId }: Props) {
             label="Nome do documento"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder={pickedFile?.name ?? 'Ex.: Alvará sanitário 2026'}
+            placeholder={pickedFile?.name ?? 'Ex.: Manual de Boas Práticas 2026'}
           />
           <Input
             id="cf-desc"
@@ -361,7 +449,7 @@ export function CompanyFilesSection({ companyId }: Props) {
       <Modal
         open={editing !== null}
         onClose={() => setEditing(null)}
-        title="Renomear documento"
+        title="Editar documento"
         footer={
           <>
             <Button
@@ -378,6 +466,18 @@ export function CompanyFilesSection({ companyId }: Props) {
         }
       >
         <div className="flex flex-col gap-3">
+          <Select
+            id="cf-edit-category"
+            label="Categoria"
+            value={editCategory}
+            onChange={(e) => setEditCategory(e.target.value)}
+          >
+            {COMPANY_FILE_CATEGORIES.map((c) => (
+              <option key={c.key} value={c.key}>
+                {c.label}
+              </option>
+            ))}
+          </Select>
           <Input
             id="cf-edit-title"
             label="Nome"

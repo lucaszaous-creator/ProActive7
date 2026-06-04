@@ -18,6 +18,7 @@ import {
   Quote,
 } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
+import { Carousel } from '@/components/public/Carousel';
 
 /**
  * Página inicial — sobre a EMPRESA ProActive7 (consultoria nutricional
@@ -295,23 +296,25 @@ function ServicosResumo() {
         </p>
       </div>
 
-      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {items.map(({ icon: Icon, title, body }) => (
-          <div
-            key={title}
-            className="group rounded-2xl border border-[#E8F1EA] bg-white p-6 transition hover:border-[#6FA68A]/50 hover:shadow-[0_12px_30px_-15px_rgba(47,93,63,0.20)]"
-          >
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
-              <Icon className="h-5 w-5" />
+      <div className="mt-12">
+        <Carousel ariaLabel="Serviços oferecidos">
+          {items.map(({ icon: Icon, title, body }) => (
+            <div
+              key={title}
+              className="group h-full rounded-2xl border border-[#E8F1EA] bg-white p-6 transition hover:border-[#6FA68A]/50 hover:shadow-[0_12px_30px_-15px_rgba(47,93,63,0.20)]"
+            >
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
+                <Icon className="h-5 w-5" />
+              </div>
+              <h3 className="mt-4 text-sm font-semibold text-[#1A2A22]">
+                {title}
+              </h3>
+              <p className="mt-2 text-xs leading-relaxed text-[#1A2A22]/65">
+                {body}
+              </p>
             </div>
-            <h3 className="mt-4 text-sm font-semibold text-[#1A2A22]">
-              {title}
-            </h3>
-            <p className="mt-2 text-xs leading-relaxed text-[#1A2A22]/65">
-              {body}
-            </p>
-          </div>
-        ))}
+          ))}
+        </Carousel>
       </div>
 
       <div className="mt-10 text-center">
@@ -356,25 +359,20 @@ function Depoimentos() {
   return (
     <section className="bg-[#FAFAF7] py-20">
       <div className="mx-auto max-w-6xl px-5">
-        <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
-          <div>
-            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
-              Quem confia
-            </span>
-            <h2 className="mt-2 max-w-xl text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
-              Histórias reais de quem entrega comida com segurança.
-            </h2>
-          </div>
-          <p className="text-xs text-[#1A2A22]/55">
-            Deslize para ver mais →
-          </p>
+        <div className="mb-10">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            Quem confia
+          </span>
+          <h2 className="mt-2 max-w-xl text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+            Histórias reais de quem entrega comida com segurança.
+          </h2>
         </div>
 
-        <div className="mt-10 -mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <Carousel ariaLabel="Depoimentos de clientes">
           {items.map((d, i) => (
             <article
               key={i}
-              className="relative w-[88%] shrink-0 snap-center rounded-3xl border border-[#E8F1EA] bg-white p-8 shadow-[0_18px_40px_-25px_rgba(47,93,63,0.18)] md:w-[45%] lg:w-[32%]"
+              className="relative h-full rounded-3xl border border-[#E8F1EA] bg-white p-8 shadow-[0_18px_40px_-25px_rgba(47,93,63,0.18)]"
             >
               <Quote className="h-7 w-7 text-[#6FA68A]/55" />
               <p className="mt-4 text-base leading-relaxed text-[#1A2A22]/85">
@@ -385,7 +383,7 @@ function Depoimentos() {
               </p>
             </article>
           ))}
-        </div>
+        </Carousel>
       </div>
     </section>
   );

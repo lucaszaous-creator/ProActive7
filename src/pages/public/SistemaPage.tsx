@@ -32,6 +32,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { MODULE_LABEL } from '@/lib/modules';
+import { Carousel } from '@/components/public/Carousel';
 
 const GREEN = '#2F5D3F';
 
@@ -370,12 +371,15 @@ export function SistemaPage() {
           </p>
         </Reveal>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((f, i) => {
-            const Icon = f.icon;
-            return (
-              <Reveal key={f.title} delay={(i % 3) * 80}>
-                <div className="group h-full rounded-2xl border border-[#E8F1EA] bg-white p-6 transition hover:-translate-y-1 hover:border-[#BBE7C6] hover:shadow-lg hover:shadow-[#2F5D3F]/5">
+        <div className="mt-12">
+          <Carousel ariaLabel="Funcionalidades do sistema">
+            {FEATURES.map((f) => {
+              const Icon = f.icon;
+              return (
+                <div
+                  key={f.title}
+                  className="group h-full rounded-2xl border border-[#E8F1EA] bg-white p-6 transition hover:-translate-y-1 hover:border-[#BBE7C6] hover:shadow-lg hover:shadow-[#2F5D3F]/5"
+                >
                   <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E8F1EA] text-[#2F5D3F] transition group-hover:bg-[#2F5D3F] group-hover:text-white">
                     <Icon className="h-5 w-5" />
                   </span>
@@ -386,9 +390,9 @@ export function SistemaPage() {
                     {f.desc}
                   </p>
                 </div>
-              </Reveal>
-            );
-          })}
+              );
+            })}
+          </Carousel>
         </div>
       </section>
 
