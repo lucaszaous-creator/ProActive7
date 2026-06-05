@@ -20,6 +20,7 @@
     "dev": "vite",
     "build": "vite build && node scripts/prerender-seo.mjs",
     "og": "node scripts/generate-og.mjs",
+    "manual:pdf": "node scripts/generate-system-manual.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
