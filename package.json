@@ -21,6 +21,7 @@
     "build": "vite build && node scripts/prerender-seo.mjs",
     "og": "node scripts/generate-og.mjs",
     "manual:pdf": "node scripts/generate-system-manual.mjs",
+    "manual:screenshots": "node scripts/capture-screenshots.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",

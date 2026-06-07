@@ -49,6 +49,7 @@ const ptBR = {
     plans: 'Planos',
     subscription: 'Minha assinatura',
     siteArticles: 'Artigos do site',
+    help: 'Ajuda',
   },
   layout: {
     master: 'Usuário master',

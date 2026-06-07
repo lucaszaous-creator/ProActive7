@@ -1,0 +1,381 @@
+{
+  "version": "1.0",
+  "updatedAt": "2026-06-08",
+  "roles": [
+    {
+      "key": "nutri",
+      "title": "Nutricionista (RT)",
+      "subtitle": "Responsável Técnica perante a ANVISA",
+      "who": "A nutricionista cuida de uma carteira inteira de clientes — várias empresas dentro de uma organização. Avalia visitas técnicas, abre e fecha não-conformidades, mantém documentos, manipuladores e cadastros em dia.",
+      "capabilities": [
+        "Carteira de clientes com a saúde de cada empresa",
+        "Visitas técnicas: avaliação, checklist, assinatura e PDF",
+        "Não-conformidades com plano de ação 5W2H e fotos",
+        "Manipuladores: ASOs e treinamentos",
+        "Documentos da empresa (Lista da Vigilância Sanitária)",
+        "Acompanhamento: temperatura, pragas, fotos e agenda",
+        "Administração: empresas, usuários e assinatura"
+      ],
+      "features": [
+        {
+          "icon": "Briefcase",
+          "title": "Carteira de clientes",
+          "subtitle": "O painel inicial da nutricionista",
+          "route": "/painel",
+          "screenshot": "nutri-painel",
+          "what": "É a tela inicial quando a nutricionista entra. Mostra a saúde geral da carteira: score médio das empresas, quantas estão em situação crítica, próximas visitas e os afazeres do dia.",
+          "how": [
+            "KPIs no topo: score médio, total de empresas, próximas visitas e alertas de hoje.",
+            "Bloco Afazeres: pendências dos clientes (empresas sem visita há 60 dias, ASOs vencendo, NCs paradas, controle de pragas vencido).",
+            "Lista da carteira: cada empresa com seu score e indicadores de conformidade.",
+            "Botão Relatório (PDF) baixa o documento de conformidade assinável da empresa."
+          ],
+          "tip": "Comece o dia pela coluna de Afazeres — cada card é um item da sua agenda. Quando zeram, a carteira está sob controle."
+        },
+        {
+          "icon": "ShieldCheck",
+          "title": "Visitas técnicas",
+          "subtitle": "Inspeções sanitárias (RDC 216 e RDC 275)",
+          "route": "/visitas",
+          "screenshot": "nutri-visitas",
+          "what": "Onde a RT realiza as visitas de avaliação. Cada visita usa um modelo de checklist e gera um score por categoria. Visitas finalizadas produzem um relatório assinado em PDF e abrem automaticamente as não-conformidades encontradas.",
+          "how": [
+            "Agende a visita em Avaliação, Visitas técnicas.",
+            "No dia, abra a visita e marque cada item como C (conforme), NC (não conforme) ou NA (não se aplica).",
+            "Itens marcados como NC viram não-conformidades com prazo de 30 dias automaticamente.",
+            "Botões: Reagendar, Cancelar, Salvar rascunho e Finalizar (assina e bloqueia).",
+            "Visitas finalizadas têm o status travado e o PDF pode ser exportado."
+          ],
+          "tip": "Use Salvar rascunho durante a visita para não perder o trabalho. Só finalize quando tudo estiver conferido: depois de assinada, a visita não retrocede."
+        },
+        {
+          "icon": "AlertOctagon",
+          "title": "Não-conformidades",
+          "subtitle": "Plano de ação 5W2H com fotos",
+          "route": "/nao-conformidades",
+          "screenshot": "nutri-ncs",
+          "what": "Lista dos problemas identificados em visitas, checklists ou registros manuais. Cada NC tem severidade, prazo, responsável e plano de ação 5W2H (o quê, por quê, onde, quando, quem, como, quanto custa), com foto de evidência e de fechamento.",
+          "how": [
+            "Cards no topo agrupam as NCs por cliente; clique para filtrar a lista.",
+            "Abra uma NC para preencher o plano 5W2H e anexar a foto da evidência.",
+            "Para fechar: mude o status para Fechada, escreva a nota de fechamento e anexe a foto da correção.",
+            "Filtros por status (aberta, em andamento, fechada) e por severidade.",
+            "Clique na foto para ampliar, baixar ou abrir em nova aba."
+          ],
+          "tip": "A foto de fechamento é a melhor proteção da RT. Sem ela é palavra contra palavra na auditoria."
+        },
+        {
+          "icon": "ClipboardCheck",
+          "title": "Checklists",
+          "subtitle": "Procedimentos operacionais com histórico",
+          "route": "/checklists",
+          "screenshot": "nutri-checklists",
+          "what": "Templates de checklist criados pela RT e executados pela cozinha no dia a dia, com frequência diária, semanal ou mensal. Cada execução fica registrada com data, responsável, itens marcados e foto opcional.",
+          "how": [
+            "Crie um template em Avaliação, Checklists, Novo template (itens e frequência).",
+            "Use a Biblioteca para clonar modelos prontos (RDC 216, 275 e 259).",
+            "A cozinha executa em Conformidade, Checklists, marcando os itens e anexando foto.",
+            "As execuções aparecem no histórico: quem fez, quando e o que ficou pendente."
+          ],
+          "tip": "Prefira checklists curtos e diários a longos e semanais. O engajamento da cozinha é muito maior."
+        },
+        {
+          "icon": "HardHat",
+          "title": "Manipuladores",
+          "subtitle": "Funcionários, ASOs e treinamentos",
+          "route": "/manipuladores",
+          "screenshot": "nutri-manipuladores",
+          "what": "Ficha completa de cada manipulador de alimentos: dados pessoais, ASOs (Atestados de Saúde Ocupacional) e histórico de treinamentos. Disponível para a nutricionista e o gerente; o cozinheiro não vê.",
+          "how": [
+            "KPIs no topo: ativos, ASOs vencendo em 30 dias, ASOs vencidos e treinamentos.",
+            "Botão Novo funcionário para cadastrar nome, função, CPF e admissão.",
+            "Abra um funcionário para registrar ASOs (com upload do PDF) e treinamentos.",
+            "O painel alerta quando um ASO está perto de vencer."
+          ],
+          "tip": "ASO vencido vira NC imediata em qualquer visita da Vigilância. Ative o lembrete para receber o aviso 30 dias antes."
+        },
+        {
+          "icon": "Thermometer",
+          "title": "Temperatura",
+          "subtitle": "Equipamentos e leituras com foto",
+          "route": "/temperatura",
+          "screenshot": "nutri-temperatura",
+          "what": "Cadastro dos equipamentos térmicos (freezers, geladeiras, estufas) com a faixa segura de operação. A cozinha registra as leituras periódicas e o sistema avisa visualmente quando sai da faixa. Cada leitura aceita foto do termômetro.",
+          "how": [
+            "Cadastre os equipamentos com nome, tipo e faixa (mínima e máxima em graus).",
+            "Para registrar: escolha o equipamento, digite a temperatura, anexe a foto (opcional) e salve.",
+            "A lista de leituras mostra ícone vermelho quando a temperatura fica fora da faixa.",
+            "Clique na miniatura da foto para ampliar."
+          ],
+          "tip": "A foto do termômetro é evidência forte para auditoria. Vale colocar isso no procedimento fixo da cozinha."
+        },
+        {
+          "icon": "Bug",
+          "title": "Controle de pragas",
+          "subtitle": "Dedetização, MIP e laudos",
+          "route": "/controle-pragas",
+          "screenshot": "nutri-pragas",
+          "what": "Registro do controle integrado de pragas exigido pela RDC 216. Cadastra fornecedores licenciados, datas de aplicação, produtos usados e o documento que a empresa contratada entrega após cada serviço.",
+          "how": [
+            "Aba Fornecedores: cadastre a empresa de controle (CNPJ, alvará, contato).",
+            "Aba Serviços: registre cada aplicação (data, tipo, técnico, próxima data).",
+            "Faça o upload do laudo ou certificado entregue pela empresa contratada.",
+            "O painel da nutri avisa quando o próximo serviço está vencido."
+          ],
+          "tip": "Quando a empresa contratada entregar o documento, suba na hora. Depois esquece."
+        },
+        {
+          "icon": "FolderOpen",
+          "title": "Documentos",
+          "subtitle": "Lista da Vigilância Sanitária por upload",
+          "route": "/documentos",
+          "screenshot": "nutri-documentos",
+          "what": "Central de upload dos documentos exigidos pela Vigilância Sanitária, organizados por categoria: Contabilidade, Funcionários e saúde, Controles periódicos, Manuais e planilhas, Carro-pipa (se aplicar) e Licenciamento. Sem editor de texto: é só carregar o PDF ou a imagem.",
+          "how": [
+            "A barra de progresso mostra quantos itens de N já foram entregues.",
+            "Cada item é uma gaveta: clique em Carregar para subir o arquivo.",
+            "As categorias têm dicas (por exemplo, últimos 3 meses ou entregue pelo fiscal).",
+            "Renomeie, recategorize ou exclua documentos quando precisar."
+          ],
+          "tip": "Mantenha sempre os últimos 3 meses dos controles periódicos (dedetização, ar condicionado, reservatório). É o que o fiscal pede primeiro."
+        },
+        {
+          "icon": "Images",
+          "title": "Fotos",
+          "subtitle": "Galeria de evidências",
+          "route": "/fotos",
+          "screenshot": "nutri-fotos",
+          "what": "Galeria de fotos da empresa, usada como evidência em visitas, NCs e checklists. As fotos são excluídas automaticamente após 30 dias para respeitar a LGPD.",
+          "how": [
+            "Envie fotos pelo botão Enviar foto ou anexando direto em uma NC, checklist ou leitura de temperatura.",
+            "Clique em qualquer foto para ampliar em tela cheia.",
+            "No visualizador dá para baixar ou abrir em nova aba.",
+            "Cada foto mostra quantos dias faltam para a exclusão automática."
+          ],
+          "tip": "Use a câmera do celular direto na NC. A foto entra na galeria e fica vinculada ao registro."
+        },
+        {
+          "icon": "CalendarRange",
+          "title": "Agenda",
+          "subtitle": "Calendário de visitas",
+          "route": "/agenda",
+          "screenshot": "nutri-agenda",
+          "what": "Calendário mensal com as visitas técnicas agendadas e concluídas de toda a carteira, com cor por status (agendada, em andamento, concluída, cancelada).",
+          "how": [
+            "Navegue entre os meses com as setas.",
+            "Cada ponto colorido é uma visita; clique para abrir os detalhes.",
+            "Visualize rapidamente as semanas mais carregadas e planeje os deslocamentos."
+          ],
+          "tip": "Agende as visitas recorrentes com antecedência. O sistema gera a próxima automaticamente quando você finaliza a atual."
+        },
+        {
+          "icon": "Building2",
+          "title": "Empresas",
+          "subtitle": "Cadastro das unidades atendidas",
+          "route": "/admin/empresas",
+          "screenshot": "nutri-empresas",
+          "what": "Cadastro das empresas (unidades) atendidas pela RT, com CNPJ, endereço, logo e as configurações de etiqueta de cada uma.",
+          "how": [
+            "Botão Nova empresa para cadastrar (nome, CNPJ, endereço, contato).",
+            "Defina o logo e as opções que aparecem na etiqueta de validade.",
+            "Busca por nome e filtro entre ativas e todas."
+          ],
+          "tip": "Capriche no cadastro da empresa: esses dados saem na etiqueta e no relatório de conformidade que leva sua assinatura."
+        },
+        {
+          "icon": "Users",
+          "title": "Usuários",
+          "subtitle": "Acessos das empresas",
+          "route": "/admin/usuarios",
+          "screenshot": "nutri-usuarios",
+          "what": "Gestão dos acessos. A nutricionista cria usuários da cozinha (property) e gerentes da empresa (property_manager) dentro da sua organização.",
+          "how": [
+            "Botão Novo usuário: informe nome, e-mail, senha, papel e empresa.",
+            "Papel cozinha: opera uma empresa. Papel gerente: opera e ainda gerencia os usuários da cozinha.",
+            "Edite, ative ou desative acessos a qualquer momento.",
+            "A senha pode ser redefinida pela edição do usuário."
+          ],
+          "tip": "Crie um gerente por empresa quando o cliente quiser administrar o próprio time sem depender de você para cada novo usuário."
+        }
+      ]
+    },
+    {
+      "key": "property",
+      "title": "Cozinha (operador)",
+      "subtitle": "Operação na ponta, em uma empresa",
+      "who": "O operador da cozinha (cozinheiro ou gerente local) usa o sistema no dia a dia: imprime etiquetas, registra temperatura, faz checklists, dá baixa em etiquetas e registra recebimentos. Tudo otimizado para o celular.",
+      "capabilities": [
+        "Painel diário com tarefas e atalhos",
+        "Imprimir etiqueta no wizard de 5 passos",
+        "Produção, validades e contagem",
+        "Estoque e recebimentos",
+        "Checklist, temperatura e controle de pragas",
+        "Documentos da empresa por upload",
+        "Não acessa outras empresas nem manipuladores"
+      ],
+      "features": [
+        {
+          "icon": "LayoutDashboard",
+          "title": "Início",
+          "subtitle": "Painel diário do operador",
+          "route": "/painel",
+          "screenshot": "property-painel",
+          "what": "Tela inicial da cozinha. Foco no que fazer agora: checklists pendentes do dia, equipamentos sem leitura, etiquetas vencendo em 24 horas e atalhos para as ações mais comuns.",
+          "how": [
+            "Atalhos no topo: imprimir etiqueta, registrar temperatura e abrir checklist.",
+            "Bloco Para hoje lista as tarefas pendentes da rotina.",
+            "Alertas vermelhos para etiquetas vencidas ou vencendo nas próximas horas.",
+            "Toda a tela é pensada para o celular: cada item é fácil de tocar."
+          ],
+          "tip": "Se o painel está com zero tarefas e zero alertas, está tudo em dia. Não precisa procurar mais nada."
+        },
+        {
+          "icon": "Printer",
+          "title": "Imprimir etiqueta",
+          "subtitle": "Wizard de 5 passos, zero digitação",
+          "route": "/imprimir/novo",
+          "screenshot": "property-imprimir",
+          "what": "Fluxo único e guiado em 5 passos para imprimir uma etiqueta conforme a RDC 216. Tudo escolhido de lista (manipulador, grupo, produto), nada digitado à mão. A validade é calculada sozinha e a data e hora de manipulação travam no exato momento da impressão.",
+          "how": [
+            "Passo 1, Manipulador: quem está manipulando (lista cadastrada pela RT).",
+            "Passo 2, Grupo: opcional, filtra os produtos.",
+            "Passo 3, Produto: escolha o que vai ser etiquetado.",
+            "Passo 4, Informações: condição de armazenamento, quantidade e lote ou fornecedor.",
+            "Passo 5, Imprimir: confirme e envie para a impressora ou para o diálogo do navegador."
+          ],
+          "tip": "A data e hora de manipulação não podem ser editadas, de propósito: o sistema usa o instante exato da impressão. Quanto menos tempo entre manipular e imprimir, melhor."
+        },
+        {
+          "icon": "CalendarClock",
+          "title": "Validades",
+          "subtitle": "O que está vencendo",
+          "route": "/validades",
+          "screenshot": "property-validades",
+          "what": "Visão rápida das etiquetas impressas ordenadas por validade, destacando o que vence hoje e nas próximas horas para a cozinha agir antes do desperdício.",
+          "how": [
+            "A lista vem ordenada da validade mais próxima para a mais distante.",
+            "Cores de alerta: vermelho para vencido e amarelo para vence em breve.",
+            "Toque em um item para dar baixa ou ver detalhes."
+          ],
+          "tip": "Confira as validades no início e no fim de cada turno. É o jeito mais simples de evitar perda e risco."
+        },
+        {
+          "icon": "ChefHat",
+          "title": "Produção",
+          "subtitle": "Dar baixa nas etiquetas em uso",
+          "route": "/producao",
+          "screenshot": "property-producao",
+          "what": "Mostra as etiquetas já impressas que continuam ativas, aguardando uso, descarte ou vencimento. Cards coloridos por status. Cada baixa pode opcionalmente gerar uma saída de estoque.",
+          "how": [
+            "Cards de resumo no topo: itens ativos, vencendo e vencidos.",
+            "Filtre por status e ordene por validade ou produção.",
+            "Cada card mostra produto, lote, manipulação, validade, responsável e saldo do lote.",
+            "O botão Dar baixa abre o motivo (uso, descarte, vencimento) e a opção de baixar do estoque."
+          ],
+          "tip": "Zere os vencidos (em vermelho) todo dia. Se estão acumulando, a cozinha produz mais do que consome: vale revisar com a RT."
+        },
+        {
+          "icon": "BarChart3",
+          "title": "Contagem",
+          "subtitle": "Inventário rápido por lista",
+          "route": "/contagem",
+          "screenshot": "property-contagem",
+          "what": "Ferramenta de contagem de inventário por lista, para conferir o estoque físico contra o saldo do sistema sem digitar produto por produto.",
+          "how": [
+            "Escolha os produtos a contar (tudo já vem da lista).",
+            "Informe a quantidade contada de cada item.",
+            "O sistema mostra a diferença entre o contado e o saldo registrado."
+          ],
+          "tip": "Faça a contagem sempre no mesmo horário (por exemplo, antes da abertura). Os números ficam mais comparáveis."
+        },
+        {
+          "icon": "ShieldAlert",
+          "title": "Controlados",
+          "subtitle": "Saneantes e químicos",
+          "route": "/controlados",
+          "screenshot": "property-controlados",
+          "what": "Acompanha os produtos marcados como controlados (saneantes, químicos). Mostra o cadastro (saldo atual por lote) e o uso (últimas entradas e saídas) exigidos para fiscalização.",
+          "how": [
+            "Bloco Cadastro: saldo atual por lote, base para a contagem física.",
+            "Bloco Uso: entradas e saídas que comprovam o destino dos controlados.",
+            "Marque um produto como controlado em Cadastros, Produtos."
+          ],
+          "tip": "Mantenha o registro de uso dos saneantes em dia. É um dos pontos que a Vigilância olha com atenção."
+        },
+        {
+          "icon": "PackagePlus",
+          "title": "Recebimentos",
+          "subtitle": "Conferência de notas fiscais",
+          "route": "/recebimentos",
+          "screenshot": "property-recebimentos",
+          "what": "Registro de cada nota fiscal recebida: fornecedor, número da NF, data e, item a item, lote, quantidade, validade, temperatura na chegada e se foi aceito ou rejeitado.",
+          "how": [
+            "Botão Novo recebimento inicia o registro.",
+            "Cabeçalho: fornecedor (lista), número da NF, data e foto da nota.",
+            "Itens: produto, lote, quantidade, validade, temperatura na chegada e motivo se rejeitado.",
+            "Ao salvar, o saldo do estoque é atualizado automaticamente."
+          ],
+          "tip": "Foto da nota e temperatura na chegada são as evidências mais cobradas. Vale o minuto extra."
+        },
+        {
+          "icon": "Crosshair",
+          "title": "Rastreabilidade",
+          "subtitle": "Do recebimento ao prato",
+          "route": "/rastreabilidade",
+          "screenshot": "property-rastreabilidade",
+          "what": "Permite seguir o caminho de um lote: de qual recebimento veio, em quais produções foi usado e quais etiquetas gerou. Essencial em caso de recall ou investigação sanitária.",
+          "how": [
+            "Busque por produto ou lote.",
+            "Veja a linha do tempo: recebimento, movimentações de estoque e etiquetas.",
+            "Use o QR code da etiqueta pública para chegar direto no item."
+          ],
+          "tip": "Se a Vigilância pedir a origem de um alimento, essa tela responde em segundos. Mantenha os recebimentos sempre registrados."
+        },
+        {
+          "icon": "Boxes",
+          "title": "Estoque",
+          "subtitle": "Saldo de matéria-prima (FIFO)",
+          "route": "/estoque",
+          "screenshot": "property-estoque",
+          "what": "Saldo da matéria-prima que entrou pelos recebimentos, ordenado por validade (o lote mais perto de vencer aparece primeiro). É diferente de Produção, que mostra as etiquetas de cozinha.",
+          "how": [
+            "Lista por produto e lote com saldo, unidade e validade.",
+            "Cores de alerta: vermelho (vencido) e amarelo (vence em 7 dias).",
+            "Botão Dar saída registra consumo, descarte ou vencimento.",
+            "Filtros por categoria e busca por nome ou lote."
+          ],
+          "tip": "O FIFO automático elimina perdas: sempre use primeiro o que está no topo da lista."
+        },
+        {
+          "icon": "Package",
+          "title": "Produtos",
+          "subtitle": "Cadastro e regras de validade",
+          "route": "/produtos",
+          "screenshot": "property-produtos",
+          "what": "Cadastro dos produtos com suas regras de validade por condição de armazenamento (ambiente, refrigerado, congelado), alergênicos, grupo e tamanho padrão da etiqueta.",
+          "how": [
+            "Botão Novo produto ou use a Biblioteca e a importação por CSV.",
+            "Defina a validade para cada condição de armazenamento.",
+            "Escolha o tamanho padrão da etiqueta do produto (usado no wizard).",
+            "Marque alergênicos e se o produto é controlado."
+          ],
+          "tip": "Capriche nas regras de validade: é delas que o wizard calcula a data de vencimento sem ninguém digitar."
+        },
+        {
+          "icon": "Printer",
+          "title": "Impressoras",
+          "subtitle": "Configurar a impressão direta",
+          "route": "/admin/impressoras",
+          "screenshot": "property-impressoras",
+          "what": "Cadastro das impressoras térmicas da empresa para a impressão direta (sem diálogo), feita pelo relay instalado no computador da cozinha.",
+          "how": [
+            "Cadastre a impressora com nome e o nome exato dela no Windows.",
+            "Instale o relay no computador da cozinha (passo único).",
+            "No wizard de etiqueta, escolha a impressora e use Imprimir direto."
+          ],
+          "tip": "Sem o relay, a impressão sai pelo diálogo do navegador no tamanho certo. O relay só deixa o processo mais rápido."
+        }
+      ]
+    }
+  ]
+}

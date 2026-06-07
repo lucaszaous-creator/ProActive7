@@ -1,26 +1,36 @@
-// Gera o PDF "Manual do Sistema ProActive7" — explicação de cada função
-// disponível, por papel (Platform Admin / Nutricionista / Gerente / Cozinha).
+// Gera o "Manual do Sistema ProActive7" em PDF — explica cada função
+// por papel (Nutricionista / Cozinha). O TEXTO vem de
+// src/content/help-content.json (mesma fonte da aba Ajuda do sistema),
+// então manual e app nunca ficam dessincronizados.
 //
-// Os "prints" são mockups vetoriais desenhados com primitivas do jsPDF
-// (rect, line, text) seguindo o design system real do app. Para usar
-// capturas reais do app em vez de mockups, rode o script
-// scripts/capture-screenshots.mjs (Playwright) e depois regenerar com
-// `npm run manual:pdf -- --screenshots`.
+// Os "prints" são:
+//  - capturas REAIS, se existir dist/screenshots/<screenshot>.png
+//    (gere com: npm run manual:screenshots)
+//  - senão, um mockup vetorial fiel ao design real.
 //
-// Saída: dist/manual-proactive7.pdf
+// IMPORTANTE: jsPDF usa fontes padrão (WinAnsi). Só usar caracteres
+// Latin-1 — nada de emoji, setas unicode (→), check (✓) etc., que viram
+// "mojibake". Para esses, há helpers vetoriais (drawCheck, drawChevron).
 //
-// Uso:
-//   node scripts/generate-system-manual.mjs
+// Uso: node scripts/generate-system-manual.mjs   (ou: npm run manual:pdf)
 
 import { jsPDF } from 'jspdf';
-import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
+import {
+  writeFileSync,
+  mkdirSync,
+  existsSync,
+  readFileSync,
+} from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT_DIR = join(ROOT, 'dist');
 const OUT_FILE = join(OUT_DIR, 'manual-proactive7.pdf');
-const SCREENSHOTS_DIR = join(ROOT, 'dist', 'screenshots');
+const SHOTS_DIR = join(ROOT, 'dist', 'screenshots');
+const CONTENT = JSON.parse(
+  readFileSync(join(ROOT, 'src/content/help-content.json'), 'utf8'),
+);
 
 // ----- Paleta (espelho de src/lib/printTheme.ts) -----
 const C = {
@@ -33,7 +43,7 @@ const C = {
   muted: [100, 116, 139],
   faint: [148, 163, 184],
   hair: [226, 232, 240],
-  paper: [250, 250, 247], // FAFAF7 do site
+  paper: [250, 250, 247],
   white: [255, 255, 255],
   amber: [217, 119, 6],
   amberSoft: [255, 251, 235],
@@ -41,10 +51,6 @@ const C = {
   redSoft: [254, 242, 242],
   blue: [37, 99, 235],
   blueSoft: [239, 246, 255],
-  sidebarBg: [255, 255, 255],
-  sidebarText: [82, 82, 82],
-  sidebarActive: [236, 253, 245],
-  sidebarActiveText: [4, 120, 87],
 };
 
 const PAGE_W = 210;
@@ -53,153 +59,169 @@ const M = 16;
 const CONTENT_W = PAGE_W - M * 2;
 
 // ============================================================
-//  PRIMITIVAS DE DESENHO
+//  PRIMITIVAS
 // ============================================================
+const fill = (d, c) => d.setFillColor(...c);
+const stroke = (d, c, w = 0.2) => {
+  d.setDrawColor(...c);
+  d.setLineWidth(w);
+};
+const ink = (d, c) => d.setTextColor(...c);
+const font = (d, weight = 'normal', size = 10) => {
+  d.setFont('helvetica', weight);
+  d.setFontSize(size);
+};
+const rrect = (d, x, y, w, h, r, style = 'F') =>
+  d.roundedRect(x, y, w, h, r, r, style);
+const opacity = (d, o) => d.setGState(new d.GState({ opacity: o }));
 
-function fill(doc, color) {
-  doc.setFillColor(...color);
-}
-function stroke(doc, color, w = 0.2) {
-  doc.setDrawColor(...color);
-  doc.setLineWidth(w);
-}
-function ink(doc, color) {
-  doc.setTextColor(...color);
-}
-function font(doc, weight = 'normal', size = 10) {
-  doc.setFont('helvetica', weight);
-  doc.setFontSize(size);
-}
-
-/** Retângulo arredondado. */
-function rrect(doc, x, y, w, h, r, style = 'F') {
-  doc.roundedRect(x, y, w, h, r, r, style);
-}
-
-/** Imprime texto com quebra automática por largura. Retorna novo Y. */
-function wrap(doc, text, x, y, w, lineHeight = 4.5) {
-  const lines = doc.splitTextToSize(text, w);
-  doc.text(lines, x, y);
-  return y + lines.length * lineHeight;
+function wrap(d, text, x, y, w, lh = 4.5) {
+  const lines = d.splitTextToSize(String(text), w);
+  d.text(lines, x, y);
+  return y + lines.length * lh;
 }
 
-/** Garante espaço; senão adiciona página. Retorna possivelmente novo Y. */
-function ensure(doc, y, needed = 40) {
+/** Check vetorial (sem unicode). */
+function drawCheck(d, cx, cy, s, color) {
+  stroke(d, color, s * 0.18);
+  d.line(cx - s * 0.4, cy, cx - s * 0.1, cy + s * 0.35);
+  d.line(cx - s * 0.1, cy + s * 0.35, cx + s * 0.45, cy - s * 0.35);
+}
+
+/** Triângulo direcional (chevron). dir: 'r','l','d'. */
+function drawChevron(d, cx, cy, s, color, dir = 'r') {
+  fill(d, color);
+  let pts;
+  if (dir === 'r') pts = [[cx - s, cy - s], [cx + s, cy], [cx - s, cy + s]];
+  else if (dir === 'l') pts = [[cx + s, cy - s], [cx - s, cy], [cx + s, cy + s]];
+  else pts = [[cx - s, cy - s], [cx + s, cy - s], [cx, cy + s]];
+  d.triangle(...pts[0], ...pts[1], ...pts[2], 'F');
+}
+
+function card(d, x, y, w, h) {
+  fill(d, C.white);
+  rrect(d, x, y, w, h, 1.5, 'F');
+  stroke(d, C.hair, 0.15);
+  rrect(d, x, y, w, h, 1.5, 'S');
+}
+function pill(d, x, y, w, h, label, bg, fg) {
+  fill(d, bg);
+  rrect(d, x, y, w, h, h / 2, 'F');
+  ink(d, fg);
+  font(d, 'bold', 5);
+  d.text(label, x + w / 2, y + h / 2 + 1.5, { align: 'center' });
+}
+function btn(d, x, y, w, h, label, primary = true) {
+  fill(d, primary ? C.brand : C.white);
+  rrect(d, x, y, w, h, h / 2, 'F');
+  if (!primary) {
+    stroke(d, C.hair, 0.3);
+    rrect(d, x, y, w, h, h / 2, 'S');
+  }
+  ink(d, primary ? C.white : C.brandDark);
+  font(d, 'bold', 5.5);
+  d.text(label, x + w / 2, y + h / 2 + 1.7, { align: 'center' });
+}
+function input(d, x, y, w, h, placeholder) {
+  fill(d, C.white);
+  rrect(d, x, y, w, h, 0.8, 'F');
+  stroke(d, C.hair, 0.2);
+  rrect(d, x, y, w, h, 0.8, 'S');
+  if (placeholder) {
+    ink(d, C.faint);
+    font(d, 'normal', 5);
+    d.text(placeholder, x + 1.5, y + h / 2 + 1.5);
+  }
+}
+
+function ensure(d, y, needed = 40) {
   if (y + needed > PAGE_H - 18) {
-    drawFooter(doc);
-    doc.addPage();
-    return drawPageHeader(doc);
+    drawFooter(d);
+    d.addPage();
+    return drawPageHeader(d);
   }
   return y;
 }
 
 // ============================================================
-//  CABEÇALHO / RODAPÉ
+//  HEADER / FOOTER
 // ============================================================
-
-function drawPageHeader(doc) {
-  // Faixa fina no topo
-  fill(doc, C.brandSoft);
-  doc.rect(0, 0, PAGE_W, 14, 'F');
-  fill(doc, C.brand);
-  doc.rect(0, 13.5, PAGE_W, 0.5, 'F');
-
-  ink(doc, C.brandDeep);
-  font(doc, 'bold', 10);
-  doc.text('ProActive7', M, 9);
-  font(doc, 'normal', 7.5);
-  ink(doc, C.muted);
-  doc.text('MANUAL DO SISTEMA', PAGE_W - M, 9, { align: 'right' });
+function drawPageHeader(d) {
+  fill(d, C.brandSoft);
+  d.rect(0, 0, PAGE_W, 14, 'F');
+  fill(d, C.brand);
+  d.rect(0, 13.5, PAGE_W, 0.5, 'F');
+  ink(d, C.brandDeep);
+  font(d, 'bold', 10);
+  d.text('ProActive7', M, 9);
+  font(d, 'normal', 7.5);
+  ink(d, C.muted);
+  d.text('MANUAL DO SISTEMA', PAGE_W - M, 9, { align: 'right' });
   return 22;
 }
-
-function drawFooter(doc) {
-  const pageInfo = doc.internal.pages;
-  const total = pageInfo.length - 1; // jsPDF arr starts at 1
-  const current = doc.getCurrentPageInfo().pageNumber;
-  stroke(doc, C.hair);
-  doc.line(M, PAGE_H - 12, PAGE_W - M, PAGE_H - 12);
-  font(doc, 'normal', 7.5);
-  ink(doc, C.muted);
-  doc.text('Manual do Sistema · proactive7.com.br', M, PAGE_H - 7);
-  doc.text(`${current} / ${total}`, PAGE_W - M, PAGE_H - 7, {
-    align: 'right',
-  });
+function drawFooter(d) {
+  const total = d.internal.pages.length - 1;
+  const current = d.getCurrentPageInfo().pageNumber;
+  stroke(d, C.hair);
+  d.line(M, PAGE_H - 12, PAGE_W - M, PAGE_H - 12);
+  font(d, 'normal', 7.5);
+  ink(d, C.muted);
+  d.text('Manual do Sistema - proactive7.com.br', M, PAGE_H - 7);
+  d.text(`${current} / ${total}`, PAGE_W - M, PAGE_H - 7, { align: 'right' });
 }
 
 // ============================================================
 //  CAPA
 // ============================================================
-
-function drawCover(doc) {
-  // Fundo escuro estilo "cozinha"
-  fill(doc, C.ink);
-  doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
-
-  // gradient simulado: retângulos horizontais
+function drawCover(d) {
   for (let i = 0; i < 60; i++) {
     const t = i / 60;
-    const r = Math.round(15 + (6 - 15) * t);
-    const g = Math.round(23 + (78 - 23) * t);
-    const b = Math.round(42 + (59 - 42) * t);
-    fill(doc, [r, g, b]);
-    doc.rect(0, (PAGE_H / 60) * i, PAGE_W, PAGE_H / 60 + 0.5, 'F');
+    fill(d, [
+      Math.round(15 + (6 - 15) * t),
+      Math.round(23 + (78 - 23) * t),
+      Math.round(42 + (59 - 42) * t),
+    ]);
+    d.rect(0, (PAGE_H / 60) * i, PAGE_W, PAGE_H / 60 + 0.5, 'F');
   }
+  fill(d, C.white);
+  opacity(d, 0.13);
+  d.rect(20, 80, 130, 0.3, 'F');
+  d.rect(60, 95, 90, 0.3, 'F');
+  d.rect(40, 110, 110, 0.3, 'F');
+  d.rect(80, 130, 80, 0.3, 'F');
+  opacity(d, 1);
 
-  // Linhas glitch decorativas
-  fill(doc, [255, 255, 255]);
-  doc.setGState(new doc.GState({ opacity: 0.15 }));
-  doc.rect(20, 80, 130, 0.3, 'F');
-  doc.rect(60, 95, 90, 0.3, 'F');
-  doc.rect(40, 110, 110, 0.3, 'F');
-  doc.rect(80, 130, 80, 0.3, 'F');
-  doc.setGState(new doc.GState({ opacity: 1 }));
+  fill(d, C.brand);
+  rrect(d, M, 30, 34, 8, 1, 'F');
+  ink(d, C.white);
+  font(d, 'bold', 7);
+  d.text('MANUAL v1', M + 3, 35.5);
 
-  // Selo verde
-  fill(doc, C.brand);
-  rrect(doc, M, 30, 38, 8, 1, 'F');
-  ink(doc, C.white);
-  font(doc, 'bold', 7);
-  doc.text('MANUAL · v1', M + 3, 35.5);
+  ink(d, C.white);
+  font(d, 'bold', 38);
+  d.text('Manual', M, 100);
+  d.text('do Sistema', M, 117);
+  font(d, 'normal', 12);
+  ink(d, [200, 220, 210]);
+  d.text('ProActive7', M, 129);
+  font(d, 'normal', 9);
+  ink(d, [180, 200, 190]);
+  d.text('BOA ALIMENTACAO, BEM-ESTAR E SAUDE', M, 139, { charSpace: 1.2 });
 
-  // Título
-  ink(doc, C.white);
-  font(doc, 'bold', 36);
-  doc.text('Manual', M, 100);
-  doc.text('do Sistema', M, 116);
+  font(d, 'normal', 11);
+  ink(d, [220, 230, 224]);
+  d.text('Cada funcao do sistema explicada para nutricionistas', M, 180);
+  d.text('e operadores de cozinha, com telas e dicas de uso.', M, 187);
 
-  font(doc, 'normal', 12);
-  ink(doc, [200, 220, 210]);
-  doc.text('ProActive7', M, 128);
-
-  // Tagline
-  font(doc, 'normal', 9);
-  ink(doc, [180, 200, 190]);
-  doc.text('Boa alimentação, bem-estar e saúde'.toUpperCase(), M, 138, {
-    charSpace: 1.2,
-  });
-
-  // Subtítulo
-  font(doc, 'normal', 11);
-  ink(doc, [220, 230, 224]);
-  doc.text(
-    'Cada função do sistema explicada para nutricionistas, gerentes',
-    M,
-    180,
-  );
-  doc.text('e operadores de cozinha. Com prints de tela e dicas de uso.', M, 187);
-
-  // Rodapé de capa
-  fill(doc, C.brand);
-  doc.rect(0, PAGE_H - 30, PAGE_W, 30, 'F');
-  ink(doc, C.white);
-  font(doc, 'bold', 9);
-  doc.text('proactive7.com.br', M, PAGE_H - 18);
-  font(doc, 'normal', 8);
-  ink(doc, [200, 230, 215]);
-  doc.text('Macaé · RJ · Desde 2013', M, PAGE_H - 12);
-  font(doc, 'normal', 8);
-  doc.text(new Date().toLocaleDateString('pt-BR'), PAGE_W - M, PAGE_H - 12, {
+  fill(d, C.brand);
+  d.rect(0, PAGE_H - 30, PAGE_W, 30, 'F');
+  ink(d, C.white);
+  font(d, 'bold', 9);
+  d.text('proactive7.com.br', M, PAGE_H - 18);
+  font(d, 'normal', 8);
+  ink(d, [200, 230, 215]);
+  d.text('Macae - RJ - Desde 2013', M, PAGE_H - 12);
+  d.text(new Date().toLocaleDateString('pt-BR'), PAGE_W - M, PAGE_H - 12, {
     align: 'right',
   });
 }
@@ -207,1476 +229,1051 @@ function drawCover(doc) {
 // ============================================================
 //  SUMÁRIO
 // ============================================================
-
-function drawToc(doc, entries) {
-  let y = drawPageHeader(doc);
-  ink(doc, C.ink);
-  font(doc, 'bold', 22);
-  doc.text('Sumário', M, y + 8);
-  y += 18;
-
-  font(doc, 'normal', 8);
-  ink(doc, C.muted);
-  doc.text(
-    'Este manual cobre todas as funções do sistema agrupadas pelo papel que as utiliza. Cada seção começa com uma visão geral do papel e segue com as telas — descrição, print e dica de uso.',
+function drawToc(d, entries) {
+  let y = drawPageHeader(d);
+  ink(d, C.ink);
+  font(d, 'bold', 22);
+  d.text('Sumario', M, y + 8);
+  y += 16;
+  font(d, 'normal', 8.5);
+  ink(d, C.muted);
+  y = wrap(
+    d,
+    'Este manual cobre as funcoes do sistema agrupadas pelo papel que as utiliza. Cada secao tem a descricao, a tela e a dica de uso.',
     M,
     y,
-    { maxWidth: CONTENT_W },
+    CONTENT_W,
+    4.5,
   );
-  y += 14;
+  y += 8;
 
   for (const e of entries) {
+    y = ensure(d, y, 12);
     if (e.kind === 'role') {
-      y += 4;
-      // separador
-      stroke(doc, C.hair);
-      doc.line(M, y, PAGE_W - M, y);
+      y += 3;
+      stroke(d, C.hair);
+      d.line(M, y, PAGE_W - M, y);
       y += 7;
-      fill(doc, C.brandSoft);
-      rrect(doc, M, y - 4, 4, 5, 1, 'F');
-      ink(doc, C.brandDeep);
-      font(doc, 'bold', 11.5);
-      doc.text(e.title, M + 7, y);
-      font(doc, 'normal', 8);
-      ink(doc, C.muted);
-      doc.text(e.subtitle, M + 7, y + 4.5);
-      ink(doc, C.faint);
-      font(doc, 'bold', 9);
-      doc.text(String(e.page).padStart(3, ' '), PAGE_W - M, y, {
-        align: 'right',
-      });
-      y += 10;
+      fill(d, C.brand);
+      rrect(d, M, y - 4, 1.6, 5, 0.6, 'F');
+      ink(d, C.brandDeep);
+      font(d, 'bold', 11.5);
+      d.text(e.title, M + 5, y);
+      ink(d, C.faint);
+      font(d, 'bold', 9);
+      d.text(String(e.page), PAGE_W - M, y, { align: 'right' });
+      y += 8;
     } else {
-      ink(doc, C.body);
-      font(doc, 'normal', 9.5);
-      doc.text(e.title, M + 10, y);
-      // dotted leader
-      const titleW = doc.getTextWidth(e.title);
-      stroke(doc, C.hair, 0.15);
-      const startX = M + 12 + titleW;
-      const endX = PAGE_W - M - 10;
-      doc.setLineDashPattern([0.6, 0.8], 0);
-      doc.line(startX, y - 0.8, endX, y - 0.8);
-      doc.setLineDashPattern([], 0);
-      ink(doc, C.muted);
-      font(doc, 'normal', 9);
-      doc.text(String(e.page), PAGE_W - M, y, { align: 'right' });
+      ink(d, C.body);
+      font(d, 'normal', 9.5);
+      d.text(e.title, M + 8, y);
+      const tw = d.getTextWidth(e.title);
+      stroke(d, C.hair, 0.15);
+      d.setLineDashPattern([0.6, 0.8], 0);
+      d.line(M + 10 + tw, y - 0.8, PAGE_W - M - 8, y - 0.8);
+      d.setLineDashPattern([], 0);
+      ink(d, C.muted);
+      d.text(String(e.page), PAGE_W - M, y, { align: 'right' });
       y += 6;
     }
-    y = ensure(doc, y, 12);
   }
 }
 
 // ============================================================
 //  DIVISOR DE PAPEL
 // ============================================================
+function drawRoleDivider(d, role) {
+  fill(d, C.brandDark);
+  d.rect(0, 0, PAGE_W, PAGE_H, 'F');
+  ink(d, C.white);
+  font(d, 'bold', 10);
+  d.text('PAPEL', M, 30, { charSpace: 1.5 });
+  font(d, 'bold', 38);
+  d.text(role.title, M, 72);
+  font(d, 'normal', 13);
+  ink(d, [220, 235, 226]);
+  d.text(role.subtitle, M, 86);
 
-function drawRoleDivider(doc, { title, subtitle, color, who, capabilities }) {
-  fill(doc, color);
-  doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
+  fill(d, C.white);
+  opacity(d, 0.1);
+  rrect(d, M, 104, CONTENT_W, 30, 3, 'F');
+  opacity(d, 1);
+  ink(d, [200, 225, 212]);
+  font(d, 'bold', 8);
+  d.text('QUEM E', M + 6, 112, { charSpace: 1 });
+  ink(d, C.white);
+  font(d, 'normal', 10);
+  wrap(d, role.who, M + 6, 118, CONTENT_W - 12, 4.5);
 
-  ink(doc, C.white);
-  font(doc, 'bold', 10);
-  doc.text('PAPEL', M, 30, { charSpace: 1.5 });
-
-  font(doc, 'bold', 42);
-  doc.text(title, M, 75);
-
-  font(doc, 'normal', 14);
-  ink(doc, [220, 235, 226]);
-  doc.text(subtitle, M, 90);
-
-  // Box "Quem é"
-  fill(doc, [255, 255, 255]);
-  doc.setGState(new doc.GState({ opacity: 0.12 }));
-  rrect(doc, M, 110, CONTENT_W, 28, 3, 'F');
-  doc.setGState(new doc.GState({ opacity: 1 }));
-
-  ink(doc, [220, 235, 226]);
-  font(doc, 'bold', 8);
-  doc.text('QUEM É', M + 6, 118, { charSpace: 1 });
-  ink(doc, C.white);
-  font(doc, 'normal', 10);
-  wrap(doc, who, M + 6, 124, CONTENT_W - 12, 4.5);
-
-  // Capacidades
-  ink(doc, [220, 235, 226]);
-  font(doc, 'bold', 8);
-  doc.text('O QUE PODE FAZER', M, 155, { charSpace: 1 });
-
-  let y = 162;
-  for (const c of capabilities) {
-    fill(doc, C.white);
-    doc.circle(M + 1.5, y - 1.5, 1, 'F');
-    ink(doc, C.white);
-    font(doc, 'normal', 10);
-    y = wrap(doc, c, M + 6, y, CONTENT_W - 6, 5);
-    y += 1;
+  ink(d, [200, 225, 212]);
+  font(d, 'bold', 8);
+  d.text('O QUE PODE FAZER', M, 152, { charSpace: 1 });
+  let y = 159;
+  for (const cap of role.capabilities) {
+    drawCheck(d, M + 1.5, y - 1, 1.6, C.white);
+    ink(d, C.white);
+    font(d, 'normal', 10);
+    y = wrap(d, cap, M + 6, y, CONTENT_W - 6, 5) + 1;
   }
-
-  ink(doc, [220, 235, 226]);
-  font(doc, 'normal', 8);
-  doc.text(
-    'As próximas páginas descrevem cada tela disponível para este papel.',
+  ink(d, [200, 225, 212]);
+  font(d, 'normal', 8);
+  d.text(
+    'As proximas paginas descrevem cada tela disponivel para este papel.',
     M,
-    PAGE_H - 25,
+    PAGE_H - 22,
   );
-  ink(doc, C.white);
-  font(doc, 'bold', 8);
-  doc.text('ProActive7 · Manual do Sistema', M, PAGE_H - 18);
+  ink(d, C.white);
+  font(d, 'bold', 8);
+  d.text('ProActive7 - Manual do Sistema', M, PAGE_H - 15);
 }
 
 // ============================================================
-//  MOCKUP: layout base do sistema (sidebar + conteúdo)
+//  APP SHELL (sidebar + área de conteúdo) — base dos mockups
 // ============================================================
+const MENU_BY_ROLE = {
+  nutri: ['Carteira', 'Avaliacao', 'Acompanha.', 'Cadastros', 'Admin', 'Ajuda'],
+  property: [
+    'Inicio',
+    'Etiquetas',
+    'Validades',
+    'Producao',
+    'Estoque',
+    'Cadastros',
+    'Conformidade',
+    'Ajuda',
+  ],
+};
+const ROLE_LABEL = { nutri: 'Nutricionista', property: 'Cozinha' };
 
-function drawAppShell(doc, x, y, w, h, opts = {}) {
-  const { activeMenu = 'Início', menuItems = DEFAULT_MENU, role = 'Cozinha' } = opts;
+function appShell(d, x, y, w, h, role, activeMenu) {
+  fill(d, [0, 0, 0]);
+  opacity(d, 0.07);
+  rrect(d, x + 0.8, y + 1, w, h, 2, 'F');
+  opacity(d, 1);
+  fill(d, C.paper);
+  rrect(d, x, y, w, h, 2, 'F');
+  stroke(d, C.hair, 0.2);
+  rrect(d, x, y, w, h, 2, 'S');
 
-  // Container externo (com sombra leve)
-  fill(doc, [0, 0, 0]);
-  doc.setGState(new doc.GState({ opacity: 0.08 }));
-  rrect(doc, x + 0.8, y + 1, w, h, 2, 'F');
-  doc.setGState(new doc.GState({ opacity: 1 }));
+  const sb = 33;
+  fill(d, C.white);
+  rrect(d, x, y, sb, h, 2, 'F');
+  stroke(d, C.hair, 0.15);
+  d.line(x + sb, y, x + sb, y + h);
 
-  // Fundo
-  fill(doc, C.paper);
-  rrect(doc, x, y, w, h, 2, 'F');
-  stroke(doc, C.hair, 0.2);
-  rrect(doc, x, y, w, h, 2, 'S');
+  fill(d, [156, 163, 175]);
+  rrect(d, x + 3, y + 3, sb - 6, 7, 0.8, 'F');
+  ink(d, C.white);
+  font(d, 'bold', 5.5);
+  d.text('PROACTIVE7', x + sb / 2, y + 7.5, { align: 'center' });
 
-  // Sidebar
-  const sidebarW = 32;
-  fill(doc, C.sidebarBg);
-  rrect(doc, x, y, sidebarW, h, 2, 'F');
-  stroke(doc, C.hair, 0.15);
-  doc.line(x + sidebarW, y, x + sidebarW, y + h);
-
-  // Logo
-  fill(doc, [156, 163, 175]);
-  rrect(doc, x + 3, y + 3, sidebarW - 6, 7, 0.8, 'F');
-  ink(doc, C.white);
-  font(doc, 'bold', 5.5);
-  doc.text('PROACTIVE7', x + sidebarW / 2, y + 7.5, { align: 'center' });
-
-  // Menu
-  let my = y + 14;
-  for (const item of menuItems) {
-    const isActive = item === activeMenu;
-    if (isActive) {
-      fill(doc, C.sidebarActive);
-      rrect(doc, x + 1.5, my - 1.5, sidebarW - 3, 4.4, 0.6, 'F');
-      ink(doc, C.sidebarActiveText);
-      font(doc, 'bold', 5.5);
-    } else {
-      ink(doc, C.sidebarText);
-      font(doc, 'normal', 5.5);
+  const items = MENU_BY_ROLE[role];
+  let my = y + 15;
+  for (const item of items) {
+    const active = item === activeMenu;
+    if (active) {
+      fill(d, C.brandSoft);
+      rrect(d, x + 1.5, my - 1.6, sb - 3, 4.6, 0.6, 'F');
     }
-    // bolinha do ícone
-    if (isActive) {
-      fill(doc, C.brand);
-      doc.circle(x + 4, my, 0.8, 'F');
-    } else {
-      fill(doc, C.faint);
-      doc.circle(x + 4, my, 0.8, 'F');
-    }
-    doc.text(item, x + 6.5, my + 0.5);
-    my += 4.8;
+    fill(d, active ? C.brand : C.faint);
+    d.circle(x + 4, my, 0.8, 'F');
+    ink(d, active ? C.brandDark : C.body);
+    font(d, active ? 'bold' : 'normal', 5.5);
+    d.text(item, x + 6.5, my + 0.6);
+    my += 5;
   }
 
-  // Footer da sidebar
-  fill(doc, C.hair);
-  doc.rect(x + 1.5, y + h - 12, sidebarW - 3, 0.2, 'F');
-  ink(doc, C.body);
-  font(doc, 'bold', 5);
-  doc.text('Usuário Demo', x + 3, y + h - 8);
-  font(doc, 'normal', 4.5);
-  ink(doc, C.muted);
-  doc.text(role, x + 3, y + h - 5);
+  fill(d, C.hair);
+  d.rect(x + 1.5, y + h - 11, sb - 3, 0.2, 'F');
+  ink(d, C.body);
+  font(d, 'bold', 5);
+  d.text('Usuario Demo', x + 3, y + h - 7);
+  ink(d, C.muted);
+  font(d, 'normal', 4.5);
+  d.text(ROLE_LABEL[role], x + 3, y + h - 4);
 
-  return { contentX: x + sidebarW + 4, contentY: y + 4, contentW: w - sidebarW - 8, contentH: h - 8 };
+  return { cx: x + sb + 4, cy: y + 4, cw: w - sb - 8, ch: h - 8 };
 }
 
-const DEFAULT_MENU = [
-  'Início',
-  'Etiquetas',
-  'Validades',
-  'Produção',
-  'Estoque',
-  'Cadastros',
-  'Conformidade',
-  'Fotos',
-];
-
-// Componentes de tela
-function ttitle(doc, x, y, text, sub) {
-  ink(doc, C.ink);
-  font(doc, 'bold', 9);
-  doc.text(text, x, y);
+function header(d, cx, cy, title, sub) {
+  ink(d, C.ink);
+  font(d, 'bold', 9);
+  d.text(title, cx, cy + 2);
   if (sub) {
-    ink(doc, C.muted);
-    font(doc, 'normal', 5.5);
-    doc.text(sub, x, y + 3.5);
+    ink(d, C.muted);
+    font(d, 'normal', 5.5);
+    d.text(sub, cx, cy + 5.5);
   }
-  return y + (sub ? 8 : 5);
-}
-
-function pill(doc, x, y, w, h, label, bg, fg) {
-  fill(doc, bg);
-  rrect(doc, x, y, w, h, h / 2, 'F');
-  ink(doc, fg);
-  font(doc, 'bold', 5);
-  doc.text(label, x + w / 2, y + h / 2 + 1.5, { align: 'center' });
-}
-
-function card(doc, x, y, w, h) {
-  fill(doc, C.white);
-  rrect(doc, x, y, w, h, 1.5, 'F');
-  stroke(doc, C.hair, 0.15);
-  rrect(doc, x, y, w, h, 1.5, 'S');
-}
-
-function btn(doc, x, y, w, h, label, primary = true) {
-  fill(doc, primary ? C.brand : C.white);
-  rrect(doc, x, y, w, h, h / 2, 'F');
-  if (!primary) {
-    stroke(doc, C.hair, 0.3);
-    rrect(doc, x, y, w, h, h / 2, 'S');
-  }
-  ink(doc, primary ? C.white : C.brandDark);
-  font(doc, 'bold', 5.5);
-  doc.text(label, x + w / 2, y + h / 2 + 1.7, { align: 'center' });
-}
-
-function input(doc, x, y, w, h, placeholder) {
-  fill(doc, C.white);
-  rrect(doc, x, y, w, h, 0.8, 'F');
-  stroke(doc, C.hair, 0.2);
-  rrect(doc, x, y, w, h, 0.8, 'S');
-  if (placeholder) {
-    ink(doc, C.faint);
-    font(doc, 'normal', 5);
-    doc.text(placeholder, x + 1.5, y + h / 2 + 1.5);
-  }
-}
-
-function bar(doc, x, y, w, value, color) {
-  fill(doc, C.hair);
-  rrect(doc, x, y, w, 1.5, 0.5, 'F');
-  fill(doc, color);
-  rrect(doc, x, y, w * value, 1.5, 0.5, 'F');
-}
-
-function tableRow(doc, x, y, w, cells, opts = {}) {
-  const { isHeader, height = 4 } = opts;
-  if (isHeader) {
-    fill(doc, C.brandSoft);
-    rrect(doc, x, y - 1, w, height, 0.5, 'F');
-  }
-  ink(doc, isHeader ? C.brandDeep : C.body);
-  font(doc, isHeader ? 'bold' : 'normal', 5);
-  let cx = x + 1;
-  for (const c of cells) {
-    doc.text(c.text, cx, y + 1.8);
-    cx += c.w;
-  }
-  if (!isHeader) {
-    stroke(doc, C.hair, 0.1);
-    doc.line(x, y + height - 1, x + w, y + height - 1);
-  }
+  return cy + (sub ? 9 : 6);
 }
 
 // ============================================================
-//  MOCKUPS DAS TELAS
+//  MOCKUPS ESPECÍFICOS (telas principais)
 // ============================================================
+function mockNutriPainel(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'nutri', 'Carteira');
+  let yy = cy + 1;
+  ink(d, C.muted);
+  font(d, 'normal', 5);
+  d.text('BOM DIA', cx, yy + 2);
+  ink(d, C.ink);
+  font(d, 'bold', 8.5);
+  d.text('Ariane Madureira', cx, yy + 6.5);
+  pill(d, cx + 34, yy + 4, 20, 3.4, '3 criticas', C.amberSoft, C.amber);
+  yy += 10;
 
-function mockDashboardNutri(doc, x, y, w, h) {
-  const { contentX, contentY, contentW } = drawAppShell(doc, x, y, w, h, {
-    activeMenu: 'Carteira',
-    menuItems: [
-      'Carteira',
-      'Avaliação',
-      'Acompanhamento',
-      'Cadastros',
-      'Administração',
-    ],
-    role: 'Nutricionista',
+  const kw = (cw - 6) / 4;
+  const kpis = [
+    ['SCORE MEDIO', '82%'],
+    ['EMPRESAS', '7'],
+    ['PROX. VISITAS', '4'],
+    ['ALERTAS HOJE', '6'],
+  ];
+  kpis.forEach(([l, v], i) => {
+    const kx = cx + i * (kw + 2);
+    card(d, kx, yy, kw, 11);
+    ink(d, C.muted);
+    font(d, 'normal', 4.3);
+    d.text(l, kx + 1.5, yy + 3);
+    ink(d, C.ink);
+    font(d, 'bold', 8);
+    d.text(v, kx + 1.5, yy + 8.5);
   });
+  yy += 14;
 
-  let cy = contentY + 2;
-  ink(doc, C.muted);
-  font(doc, 'normal', 5);
-  doc.text('BOM DIA', contentX, cy + 2);
-  cy += 4;
-  ink(doc, C.ink);
-  font(doc, 'bold', 8.5);
-  doc.text('Ariane Madureira', contentX, cy + 2);
-  pill(doc, contentX + 32, cy - 0.5, 20, 3.4, '3 críticas', C.amberSoft, C.amber);
-  cy += 6;
-
-  // KPIs
-  const kpiW = (contentW - 6) / 4;
-  ['Score 82%', '7 empresas', '4 visitas 14d', '6 alertas'].forEach((l, i) => {
-    card(doc, contentX + i * (kpiW + 2), cy, kpiW, 11);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4.5);
-    doc.text(['SCORE MÉDIO', 'EMPRESAS', 'PRÓX. VISITAS', 'ALERTAS HOJE'][i], contentX + 1 + i * (kpiW + 2), cy + 3);
-    ink(doc, C.ink);
-    font(doc, 'bold', 7);
-    doc.text(l.split(' ')[0], contentX + 1 + i * (kpiW + 2), cy + 7.5);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4.5);
-    doc.text(l.split(' ').slice(1).join(' '), contentX + 1 + i * (kpiW + 2), cy + 10);
+  ink(d, C.body);
+  font(d, 'bold', 6);
+  d.text('Afazeres - pendencias dos seus clientes', cx, yy);
+  yy += 3;
+  const aw = (cw - 4) / 2;
+  const alerts = [
+    ['Empresas sem visita 60d', C.amberSoft],
+    ['ASOs vencendo em 30d', C.redSoft],
+    ['NCs graves +14d', C.redSoft],
+    ['Pragas vencido', C.redSoft],
+  ];
+  alerts.forEach(([l, tone], i) => {
+    const ax = cx + (i % 2) * (aw + 2);
+    const ay = yy + Math.floor(i / 2) * 12;
+    card(d, ax, ay, aw, 10);
+    fill(d, tone);
+    rrect(d, ax + 1.5, ay + 1.5, 4, 4, 0.6, 'F');
+    ink(d, C.body);
+    font(d, 'bold', 5);
+    d.text(l, ax + 7, ay + 3.2);
+    ink(d, C.muted);
+    font(d, 'normal', 4.5);
+    d.text('3 itens', ax + 7, ay + 6);
   });
-  cy += 14;
+  yy += 26;
 
-  // Triagem
-  ink(doc, C.body);
-  font(doc, 'bold', 6);
-  doc.text('Afazeres · pendências dos seus clientes', contentX, cy);
-  cy += 3;
-  const alertW = (contentW - 4) / 2;
-  ['Empresas sem visita 60d', 'ASOs vencendo em 30d', 'NCs graves +14d', 'Pragas vencido'].forEach((l, i) => {
-    const ax = contentX + (i % 2) * (alertW + 2);
-    const ay = cy + Math.floor(i / 2) * 12;
-    card(doc, ax, ay, alertW, 10);
-    fill(doc, [i % 2 === 0 ? C.amberSoft[0] : C.redSoft[0], i % 2 === 0 ? C.amberSoft[1] : C.redSoft[1], i % 2 === 0 ? C.amberSoft[2] : C.redSoft[2]]);
-    rrect(doc, ax + 1.5, ay + 1.5, 4, 4, 0.5, 'F');
-    ink(doc, C.body);
-    font(doc, 'bold', 5);
-    doc.text(l, ax + 7, ay + 3);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4.5);
-    doc.text('3 itens', ax + 7, ay + 6);
-  });
-  cy += 26;
-
-  // Carteira
-  ink(doc, C.body);
-  font(doc, 'bold', 6);
-  doc.text('Carteira · 3 críticas', contentX, cy);
-  cy += 3;
-  ['Restaurante Mar Azul', 'Padaria Imbetiba', 'Cantina Escolar'].forEach((name, i) => {
-    const tones = [C.redSoft, C.amberSoft, C.brandSoft];
-    const toneFg = [C.red, C.amber, C.brand];
-    const scores = ['58%', '72%', '92%'];
-    fill(doc, tones[i]);
-    rrect(doc, contentX, cy, contentW, 7, 1, 'F');
-    ink(doc, C.ink);
-    font(doc, 'bold', 5.5);
-    doc.text(name, contentX + 2, cy + 3.2);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4.5);
-    doc.text('3 NCs · 4/5 ASOs · CIP em dia', contentX + 2, cy + 5.7);
-    ink(doc, toneFg[i]);
-    font(doc, 'bold', 7);
-    doc.text(scores[i], contentX + contentW - 2, cy + 4.5, { align: 'right' });
-    cy += 8;
+  ink(d, C.body);
+  font(d, 'bold', 6);
+  d.text('Carteira - 3 criticas', cx, yy);
+  yy += 3;
+  const comp = [
+    ['Restaurante Mar Azul', '58%', C.redSoft, C.red],
+    ['Padaria Imbetiba', '72%', C.amberSoft, C.amber],
+    ['Cantina Escolar', '92%', C.brandSoft, C.brand],
+  ];
+  comp.forEach(([n, s, bg, fg]) => {
+    fill(d, bg);
+    rrect(d, cx, yy, cw, 7, 1, 'F');
+    ink(d, C.ink);
+    font(d, 'bold', 5.5);
+    d.text(n, cx + 2, yy + 3.2);
+    ink(d, C.muted);
+    font(d, 'normal', 4.5);
+    d.text('3 NCs - 4/5 ASOs - CIP em dia', cx + 2, yy + 5.7);
+    ink(d, fg);
+    font(d, 'bold', 7);
+    d.text(s, cx + cw - 2, yy + 4.5, { align: 'right' });
+    yy += 8;
   });
 }
 
-function mockPrintWizard(doc, x, y, w, h) {
-  const { contentX, contentY, contentW } = drawAppShell(doc, x, y, w, h, {
-    activeMenu: 'Etiquetas',
-    role: 'Cozinha',
+function mockPropertyPainel(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'property', 'Inicio');
+  let yy = cy + 1;
+  fill(d, C.brandSoft);
+  rrect(d, cx, yy, cw, 13, 1.5, 'F');
+  fill(d, C.brand);
+  rrect(d, cx + 2, yy + 2, 9, 9, 1, 'F');
+  ink(d, C.white);
+  font(d, 'bold', 5);
+  d.text('MAR', cx + 6.5, yy + 7, { align: 'center' });
+  ink(d, C.muted);
+  font(d, 'normal', 4.3);
+  d.text('BOM DIA, RAFAEL - PAINEL DA EMPRESA', cx + 13, yy + 4.5);
+  ink(d, C.ink);
+  font(d, 'bold', 7.5);
+  d.text('Restaurante Mar Azul', cx + 13, yy + 9);
+  pill(d, cx + 13, yy + 10.5, 24, 2.6, '3 tarefas hoje', C.amberSoft, C.amber);
+  yy += 16;
+
+  ['Imprimir etiqueta', 'Registrar temp.', 'Abrir checklist'].forEach((l, i) => {
+    const bw = (cw - 6) / 3;
+    btn(d, cx + i * (bw + 3), yy, bw, 8, l, i === 0);
   });
+  yy += 11;
 
-  let cy = contentY + 2;
-  ttitle(doc, contentX, cy, 'Imprimir etiqueta', 'Passo 4 de 5 · nenhum campo precisa ser digitado');
-  cy += 8;
+  ink(d, C.body);
+  font(d, 'bold', 6);
+  d.text('Para hoje', cx, yy);
+  yy += 3;
+  card(d, cx, yy, cw, 24);
+  let ly = yy + 2;
+  [
+    ['Checklist diario de limpeza', 'Higiene - pendente'],
+    ['Registrar temperatura (3)', 'Equipamentos - pendente'],
+    ['Etiquetas vencendo em 24h (4)', 'Validades - atencao'],
+  ].forEach(([t, sub]) => {
+    fill(d, C.amberSoft);
+    rrect(d, cx + 1.5, ly, 1.5, 5, 0.3, 'F');
+    ink(d, C.ink);
+    font(d, 'bold', 5);
+    d.text(t, cx + 4, ly + 2);
+    ink(d, C.muted);
+    font(d, 'normal', 4.5);
+    d.text(sub, cx + 4, ly + 4.5);
+    ink(d, C.brand);
+    font(d, 'bold', 4.5);
+    d.text('Fazer', cx + cw - 8, ly + 3);
+    drawChevron(d, cx + cw - 3, ly + 2.2, 1, C.brand, 'r');
+    ly += 7;
+  });
+  yy += 26;
 
-  // Stepper
+  ink(d, C.body);
+  font(d, 'bold', 6);
+  d.text('Etiquetas vencendo em 24h', cx, yy);
+  yy += 3;
+  ['Salada de frutas - vence em 4h', 'Molho branco - vence amanha'].forEach(
+    (t) => {
+      fill(d, C.redSoft);
+      rrect(d, cx, yy, cw, 5, 0.8, 'F');
+      ink(d, C.red);
+      font(d, 'bold', 5);
+      d.text(t, cx + 2, yy + 3.2);
+      yy += 6;
+    },
+  );
+}
+
+function mockPrintWizard(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'property', 'Etiquetas');
+  let yy = header(d, cx, cy + 1, 'Imprimir etiqueta', 'Passo 4 de 5 - nada digitado');
+  yy += 3;
   ['Manip.', 'Grupo', 'Produto', 'Info', 'Imprimir'].forEach((s, i) => {
-    const sx = contentX + i * (contentW / 5);
-    const isDone = i < 3;
-    const isActive = i === 3;
-    fill(doc, isActive ? C.brand : isDone ? C.brandSoft : C.hair);
-    doc.circle(sx + contentW / 10, cy, 2.2, 'F');
-    if (isDone) {
-      ink(doc, C.brand);
-      font(doc, 'bold', 4);
-      doc.text('✓', sx + contentW / 10, cy + 1, { align: 'center' });
-    } else {
-      ink(doc, isActive ? C.white : C.muted);
-      font(doc, 'bold', 4);
-      doc.text(String(i + 1), sx + contentW / 10, cy + 1, { align: 'center' });
+    const sx = cx + i * (cw / 5);
+    const done = i < 3;
+    const act = i === 3;
+    fill(d, act ? C.brand : done ? C.brandSoft : C.hair);
+    d.circle(sx + cw / 10, yy, 2.2, 'F');
+    if (done) drawCheck(d, sx + cw / 10, yy, 1.3, C.brand);
+    else {
+      ink(d, act ? C.white : C.muted);
+      font(d, 'bold', 4);
+      d.text(String(i + 1), sx + cw / 10, yy + 1, { align: 'center' });
     }
     if (i < 4) {
-      fill(doc, isDone ? C.brand : C.hair);
-      doc.rect(sx + contentW / 10 + 3, cy - 0.2, contentW / 5 - 6, 0.4, 'F');
+      fill(d, done ? C.brand : C.hair);
+      d.rect(sx + cw / 10 + 3, yy - 0.2, cw / 5 - 6, 0.4, 'F');
     }
-    ink(doc, isActive ? C.brandDeep : C.muted);
-    font(doc, 'normal', 4.5);
-    doc.text(s, sx + contentW / 10, cy + 6, { align: 'center' });
+    ink(d, act ? C.brandDeep : C.muted);
+    font(d, 'normal', 4.3);
+    d.text(s, sx + cw / 10, yy + 6, { align: 'center' });
   });
-  cy += 12;
+  yy += 11;
 
-  // Card
-  card(doc, contentX, cy, contentW, 50);
-  cy += 2;
+  card(d, cx, yy, cw, 52);
+  let iy = yy + 2;
+  fill(d, C.brandSoft);
+  rrect(d, cx + 2, iy, cw - 4, 6, 1, 'F');
+  fill(d, C.brand);
+  d.circle(cx + 4.5, iy + 3, 1.5, 'F');
+  ink(d, C.ink);
+  font(d, 'bold', 5.5);
+  d.text('Salada de frutas', cx + 7, iy + 2.6);
+  ink(d, C.brand);
+  font(d, 'bold', 5);
+  d.text('Vence 28/01 14:00', cx + 7, iy + 4.9);
+  iy += 8.5;
 
-  // Produto banner
-  fill(doc, C.brandSoft);
-  rrect(doc, contentX + 2, cy, contentW - 4, 6, 1, 'F');
-  fill(doc, C.brand);
-  doc.circle(contentX + 4.5, cy + 3, 1.5, 'F');
-  ink(doc, C.ink);
-  font(doc, 'bold', 5.5);
-  doc.text('Salada de frutas', contentX + 7, cy + 2.5);
-  ink(doc, C.brand);
-  font(doc, 'bold', 5);
-  doc.text('Vence 28/01 14:00', contentX + 7, cy + 4.8);
-  cy += 8;
+  ink(d, C.body);
+  font(d, 'bold', 5);
+  d.text('Condicao de armazenamento', cx + 2, iy + 2);
+  iy += 3;
+  input(d, cx + 2, iy, cw - 4, 4.5, 'Refrigerado - 2 dias');
+  iy += 6.5;
 
-  // Condição
-  ink(doc, C.body);
-  font(doc, 'bold', 5);
-  doc.text('Condição de armazenamento', contentX + 2, cy + 2);
-  cy += 3;
-  fill(doc, C.white);
-  rrect(doc, contentX + 2, cy, contentW - 4, 4.5, 0.8, 'F');
-  stroke(doc, C.hair, 0.2);
-  rrect(doc, contentX + 2, cy, contentW - 4, 4.5, 0.8, 'S');
-  ink(doc, C.body);
-  font(doc, 'normal', 5);
-  doc.text('Refrigerado — 2 dias', contentX + 4, cy + 3);
-  cy += 6;
+  ink(d, C.body);
+  font(d, 'bold', 5);
+  d.text('Data e hora da manipulacao', cx + 2, iy + 2);
+  iy += 3;
+  fill(d, [243, 244, 246]);
+  rrect(d, cx + 2, iy, cw - 4, 4.5, 0.8, 'F');
+  ink(d, C.muted);
+  font(d, 'normal', 5);
+  d.text('26/01/2026 14:32  (bloqueado)', cx + 4, iy + 3);
+  iy += 5;
+  ink(d, C.muted);
+  font(d, 'italic', 4);
+  d.text('Atualiza no exato momento da impressao.', cx + 2, iy + 2);
+  iy += 4.5;
 
-  // Data bloqueada
-  ink(doc, C.body);
-  font(doc, 'bold', 5);
-  doc.text('Data e hora da manipulação', contentX + 2, cy + 2);
-  cy += 3;
-  fill(doc, [243, 244, 246]);
-  rrect(doc, contentX + 2, cy, contentW - 4, 4.5, 0.8, 'F');
-  ink(doc, C.muted);
-  font(doc, 'normal', 5);
-  doc.text('26/01/2026 14:32 (bloqueado)', contentX + 4, cy + 3);
-  cy += 5;
-  ink(doc, C.muted);
-  font(doc, 'italic', 4);
-  doc.text('Bloqueado — atualiza no exato momento da impressão.', contentX + 2, cy + 2);
-  cy += 4;
-
-  // Quantidade
-  ink(doc, C.body);
-  font(doc, 'bold', 5);
-  doc.text('Quantidade (etiquetas)', contentX + 2, cy + 2);
-  cy += 3;
-  input(doc, contentX + 2, cy, contentW - 4, 4.5, '1');
-  cy += 7;
-
-  // Navigation
-  btn(doc, contentX, cy, 16, 5, '◀ Voltar', false);
-  btn(doc, contentX + contentW - 16, cy, 16, 5, 'Avançar ▶', true);
+  ink(d, C.body);
+  font(d, 'bold', 5);
+  d.text('Quantidade (etiquetas)', cx + 2, iy + 2);
+  iy += 3;
+  input(d, cx + 2, iy, cw - 4, 4.5, '1');
+  iy += 8;
+  btn(d, cx, iy, 16, 5, 'Voltar', false);
+  btn(d, cx + cw - 16, iy, 16, 5, 'Avancar', true);
 }
 
-function mockNonConformities(doc, x, y, w, h) {
-  const { contentX, contentY, contentW } = drawAppShell(doc, x, y, w, h, {
-    activeMenu: 'Avaliação',
-    menuItems: ['Carteira', 'Avaliação', 'Acompanhamento', 'Cadastros'],
-    role: 'Nutricionista',
-  });
-
-  let cy = contentY + 2;
-  ttitle(doc, contentX, cy, 'Não-conformidades', 'Plano de ação 5W2H');
-  btn(doc, contentX + contentW - 18, cy - 2, 18, 5, '+ Nova NC', true);
-  cy += 8;
-
-  // Cards por cliente
-  ink(doc, C.muted);
-  font(doc, 'bold', 4.5);
-  doc.text('POR CLIENTE', contentX, cy);
-  cy += 3;
-  const cardW = (contentW - 6) / 4;
-  ['Mar Azul', 'Imbetiba', 'Cantina', 'Hotel Litoral'].forEach((n, i) => {
-    const active = i === 0;
-    fill(doc, active ? C.brandSoft : C.white);
-    stroke(doc, active ? C.brand : C.hair, 0.2);
-    rrect(doc, contentX + i * (cardW + 2), cy, cardW, 12, 1, 'FD');
-    ink(doc, C.muted);
-    font(doc, 'normal', 4);
-    doc.text(n, contentX + 1 + i * (cardW + 2), cy + 2.5);
-    ink(doc, C.ink);
-    font(doc, 'bold', 8);
-    doc.text(['5', '3', '2', '1'][i], contentX + 1 + i * (cardW + 2), cy + 7);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4);
-    doc.text('em aberto', contentX + 6 + i * (cardW + 2), cy + 7);
-    if (i === 0) {
-      pill(doc, contentX + 1 + i * (cardW + 2), cy + 9, 8, 2.4, '2 crít', C.redSoft, C.red);
-    }
-  });
-  cy += 15;
-
-  // Filtros
-  card(doc, contentX, cy, contentW, 6);
-  cy += 2;
-  pill(doc, contentX + 2, cy, 16, 3.5, 'Status: Aberta', C.brandSoft, C.brandDeep);
-  pill(doc, contentX + 20, cy, 14, 3.5, 'Severidade', C.brandSoft, C.brandDeep);
-  cy += 8;
-
-  // Lista
+function mockNcs(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'nutri', 'Avaliacao');
+  let yy = header(d, cx, cy + 1, 'Nao-conformidades', 'Plano de acao 5W2H');
+  btn(d, cx + cw - 18, cy - 1, 18, 5, '+ Nova NC', true);
+  yy += 2;
+  ink(d, C.muted);
+  font(d, 'bold', 4.5);
+  d.text('POR CLIENTE', cx, yy);
+  yy += 3;
+  const cwid = (cw - 6) / 4;
   [
-    { sev: 'critical', desc: 'Geladeira fora da faixa há 3 dias' },
-    { sev: 'high', desc: 'Manipulador sem ASO em dia' },
-    { sev: 'medium', desc: 'POP de higienização não assinado' },
-  ].forEach((nc) => {
-    card(doc, contentX, cy, contentW, 11);
-    const tone = nc.sev === 'critical' ? C.red : nc.sev === 'high' ? C.amber : C.blue;
-    const toneSoft = nc.sev === 'critical' ? C.redSoft : nc.sev === 'high' ? C.amberSoft : C.blueSoft;
-    pill(doc, contentX + 2, cy + 2, 12, 3, nc.sev === 'critical' ? 'Crítica' : nc.sev === 'high' ? 'Alta' : 'Média', toneSoft, tone);
-    pill(doc, contentX + 15, cy + 2, 10, 3, 'Aberta', C.redSoft, C.red);
-    ink(doc, C.ink);
-    font(doc, 'bold', 5.5);
-    doc.text(nc.desc, contentX + 2, cy + 7);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4.5);
-    doc.text('Prazo: 03/02/2026 (vencida)', contentX + 2, cy + 9.5);
-    cy += 12;
+    ['Mar Azul', '5', true],
+    ['Imbetiba', '3', false],
+    ['Cantina', '2', false],
+    ['Hotel Litoral', '1', false],
+  ].forEach(([n, v, active], i) => {
+    const bx = cx + i * (cwid + 2);
+    fill(d, active ? C.brandSoft : C.white);
+    stroke(d, active ? C.brand : C.hair, 0.2);
+    rrect(d, bx, yy, cwid, 12, 1, 'FD');
+    ink(d, C.muted);
+    font(d, 'normal', 4);
+    d.text(n, bx + 1.5, yy + 2.5);
+    ink(d, C.ink);
+    font(d, 'bold', 8);
+    d.text(v, bx + 1.5, yy + 7);
+    ink(d, C.muted);
+    font(d, 'normal', 4);
+    d.text('em aberto', bx + 6, yy + 7);
+    if (active) pill(d, bx + 1.5, yy + 9, 8, 2.4, '2 crit', C.redSoft, C.red);
+  });
+  yy += 15;
+
+  [
+    ['Critica', 'Geladeira fora da faixa ha 3 dias', C.red, C.redSoft],
+    ['Alta', 'Manipulador sem ASO em dia', C.amber, C.amberSoft],
+    ['Media', 'POP de higienizacao nao assinado', C.blue, C.blueSoft],
+  ].forEach(([sev, desc, fg, bg]) => {
+    card(d, cx, yy, cw, 11);
+    pill(d, cx + 2, yy + 2, 12, 3, sev, bg, fg);
+    pill(d, cx + 15, yy + 2, 10, 3, 'Aberta', C.redSoft, C.red);
+    ink(d, C.ink);
+    font(d, 'bold', 5.5);
+    d.text(desc, cx + 2, yy + 7);
+    ink(d, C.muted);
+    font(d, 'normal', 4.5);
+    d.text('Prazo: 03/02/2026 (vencida)', cx + 2, yy + 9.5);
+    yy += 12;
   });
 }
 
-function mockAuditDetail(doc, x, y, w, h) {
-  const { contentX, contentY, contentW } = drawAppShell(doc, x, y, w, h, {
-    activeMenu: 'Avaliação',
-    menuItems: ['Carteira', 'Avaliação', 'Acompanhamento', 'Cadastros'],
-    role: 'Nutricionista',
-  });
+function mockVisitas(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'nutri', 'Avaliacao');
+  let yy = cy + 1;
+  ink(d, C.muted);
+  font(d, 'normal', 5);
+  d.text('Voltar', cx + 3, yy + 2);
+  drawChevron(d, cx + 1, yy + 1.3, 1, C.muted, 'l');
+  yy += 5;
+  ink(d, C.ink);
+  font(d, 'bold', 8);
+  d.text('Restaurante Mar Azul', cx, yy + 3);
+  ink(d, C.muted);
+  font(d, 'normal', 5);
+  d.text('Checklist RDC 216 - visita mensal', cx, yy + 7);
+  pill(d, cx + cw - 24, yy + 1, 24, 6, 'Score 82%', C.amberSoft, C.amber);
+  yy += 12;
 
-  let cy = contentY + 2;
-  ink(doc, C.muted);
-  font(doc, 'normal', 5);
-  doc.text('← Voltar', contentX, cy + 2);
-  cy += 5;
+  btn(d, cx, yy, 18, 5, 'Reagendar', false);
+  btn(d, cx + 19, yy, 16, 5, 'Cancelar', false);
+  btn(d, cx + 36, yy, 22, 5, 'Salvar rascunho', false);
+  btn(d, cx + cw - 16, yy, 16, 5, 'Finalizar', true);
+  yy += 8;
 
-  ink(doc, C.ink);
-  font(doc, 'bold', 8);
-  doc.text('Restaurante Mar Azul', contentX, cy + 3);
-  ink(doc, C.muted);
-  font(doc, 'normal', 5);
-  doc.text('Checklist RDC 216 — visita mensal', contentX, cy + 7);
-
-  // score
-  pill(doc, contentX + contentW - 24, cy - 1, 24, 6, 'Score 82%', C.amberSoft, C.amber);
-
-  cy += 12;
-
-  // Botões
-  btn(doc, contentX, cy, 18, 5, '📅 Reagendar', false);
-  btn(doc, contentX + 19, cy, 16, 5, '✕ Cancelar', false);
-  btn(doc, contentX + 36, cy, 24, 5, '💾 Salvar rascunho', false);
-  btn(doc, contentX + contentW - 18, cy, 18, 5, '✎ Finalizar', true);
-  cy += 8;
-
-  // Score por categoria
-  card(doc, contentX, cy, contentW, 16);
-  ink(doc, C.body);
-  font(doc, 'bold', 5.5);
-  doc.text('Score por categoria', contentX + 2, cy + 3);
-  ['Edificação', 'Higiene', 'Manipuladores', 'Temperatura'].forEach((cat, i) => {
-    const bx = contentX + 2 + i * ((contentW - 4) / 4);
-    const bw = (contentW - 4) / 4 - 2;
-    fill(doc, C.hair);
-    rrect(doc, bx, cy + 6, bw, 1.5, 0.5, 'F');
+  card(d, cx, yy, cw, 15);
+  ink(d, C.body);
+  font(d, 'bold', 5.5);
+  d.text('Score por categoria', cx + 2, yy + 3);
+  ['Edificacao', 'Higiene', 'Manipul.', 'Temperatura'].forEach((cat, i) => {
+    const bx = cx + 2 + i * ((cw - 4) / 4);
+    const bw = (cw - 4) / 4 - 2;
     const val = [0.9, 0.7, 0.85, 0.6][i];
-    fill(doc, val >= 0.85 ? C.brand : val >= 0.7 ? C.amber : C.red);
-    rrect(doc, bx, cy + 6, bw * val, 1.5, 0.5, 'F');
-    ink(doc, C.muted);
-    font(doc, 'normal', 4);
-    doc.text(cat, bx, cy + 10);
-    ink(doc, C.ink);
-    font(doc, 'bold', 4.5);
-    doc.text(`${(val * 100).toFixed(0)}%`, bx + bw, cy + 10, { align: 'right' });
+    fill(d, C.hair);
+    rrect(d, bx, yy + 6, bw, 1.5, 0.5, 'F');
+    fill(d, val >= 0.85 ? C.brand : val >= 0.7 ? C.amber : C.red);
+    rrect(d, bx, yy + 6, bw * val, 1.5, 0.5, 'F');
+    ink(d, C.muted);
+    font(d, 'normal', 4);
+    d.text(cat, bx, yy + 10);
   });
-  cy += 19;
+  yy += 18;
 
-  // Itens
-  card(doc, contentX, cy, contentW, h - (cy - y) - 6);
-  let iy = cy + 2;
-  ink(doc, C.muted);
-  font(doc, 'bold', 4.5);
-  doc.text('HIGIENE', contentX + 2, iy + 2);
+  card(d, cx, yy, cw, h - (yy - y) - 6);
+  let iy = yy + 2;
+  ink(d, C.muted);
+  font(d, 'bold', 4.5);
+  d.text('HIGIENE', cx + 2, iy + 2);
   iy += 4;
   ['Bancadas limpas', 'Pia higienizada', 'Lixo segregado'].forEach((it, i) => {
-    fill(doc, C.white);
-    stroke(doc, C.hair, 0.15);
-    rrect(doc, contentX + 2, iy, contentW - 4, 6, 0.8, 'FD');
-    ink(doc, C.body);
-    font(doc, 'normal', 5);
-    doc.text(it, contentX + 4, iy + 3.7);
-    // toggle C / NC / NA
+    fill(d, C.white);
+    stroke(d, C.hair, 0.15);
+    rrect(d, cx + 2, iy, cw - 4, 6, 0.8, 'FD');
+    ink(d, C.body);
+    font(d, 'normal', 5);
+    d.text(it, cx + 4, iy + 3.7);
     ['C', 'NC', 'NA'].forEach((opt, j) => {
-      const ox = contentX + contentW - 22 + j * 7;
+      const ox = cx + cw - 22 + j * 7;
       const sel = (i === 1 && opt === 'NC') || (i !== 1 && opt === 'C');
-      fill(doc, sel ? (opt === 'NC' ? C.redSoft : C.brandSoft) : C.white);
-      stroke(doc, sel ? (opt === 'NC' ? C.red : C.brand) : C.hair, 0.2);
-      rrect(doc, ox, iy + 1, 6, 4, 0.8, 'FD');
-      ink(doc, sel ? (opt === 'NC' ? C.red : C.brand) : C.muted);
-      font(doc, 'bold', 4.5);
-      doc.text(opt, ox + 3, iy + 3.6, { align: 'center' });
+      const isNc = opt === 'NC';
+      fill(d, sel ? (isNc ? C.redSoft : C.brandSoft) : C.white);
+      stroke(d, sel ? (isNc ? C.red : C.brand) : C.hair, 0.2);
+      rrect(d, ox, iy + 1, 6, 4, 0.8, 'FD');
+      ink(d, sel ? (isNc ? C.red : C.brand) : C.muted);
+      font(d, 'bold', 4.5);
+      d.text(opt, ox + 3, iy + 3.6, { align: 'center' });
     });
     iy += 7;
   });
 }
 
-function mockTemperature(doc, x, y, w, h) {
-  const { contentX, contentY, contentW } = drawAppShell(doc, x, y, w, h, {
-    activeMenu: 'Acompanhamento',
-    menuItems: ['Carteira', 'Avaliação', 'Acompanhamento', 'Cadastros'],
-    role: 'Nutricionista',
-  });
-
-  let cy = contentY + 2;
-  ttitle(doc, contentX, cy, 'Temperatura', 'Registro de equipamentos e leituras');
-  btn(doc, contentX + contentW - 18, cy - 2, 18, 5, '+ Equipamento', true);
-  cy += 8;
-
-  // Dois cards lado a lado
-  const halfW = (contentW - 3) / 2;
-
-  // Equipamentos
-  card(doc, contentX, cy, halfW, 38);
-  ink(doc, C.body);
-  font(doc, 'bold', 5.5);
-  doc.text('Equipamentos', contentX + 2, cy + 3);
-  let iy = cy + 6;
+function mockTemperatura(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'nutri', 'Acompanha.');
+  let yy = header(d, cx, cy + 1, 'Temperatura', 'Equipamentos e leituras');
+  btn(d, cx + cw - 18, cy - 1, 18, 5, '+ Equip.', true);
+  yy += 2;
+  const hw = (cw - 3) / 2;
+  card(d, cx, yy, hw, 32);
+  ink(d, C.body);
+  font(d, 'bold', 5.5);
+  d.text('Equipamentos', cx + 2, yy + 3);
+  let ey = yy + 6;
   [
-    ['Geladeira cozinha', 'Geladeira · 0 a 8°C'],
-    ['Freezer estoque', 'Freezer · -22 a -15°C'],
-    ['Estufa balcão', 'Estufa · 60 a 90°C'],
+    ['Geladeira cozinha', '0 a 8 C'],
+    ['Freezer estoque', '-22 a -15 C'],
+    ['Estufa balcao', '60 a 90 C'],
   ].forEach(([n, sub]) => {
-    ink(doc, C.ink);
-    font(doc, 'bold', 5);
-    doc.text(n, contentX + 2, iy + 2);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4.5);
-    doc.text(sub, contentX + 2, iy + 4.8);
-    stroke(doc, C.hair, 0.1);
-    doc.line(contentX + 2, iy + 6.5, contentX + halfW - 2, iy + 6.5);
-    iy += 8;
+    ink(d, C.ink);
+    font(d, 'bold', 5);
+    d.text(n, cx + 2, ey + 2);
+    ink(d, C.muted);
+    font(d, 'normal', 4.5);
+    d.text(sub, cx + 2, ey + 4.6);
+    ey += 7;
   });
 
-  // Registrar leitura
-  card(doc, contentX + halfW + 3, cy, halfW, 38);
-  ink(doc, C.body);
-  font(doc, 'bold', 5.5);
-  doc.text('Registrar leitura', contentX + halfW + 5, cy + 3);
-  let ry = cy + 6;
-  input(doc, contentX + halfW + 5, ry, halfW - 6, 4.5, 'Geladeira cozinha');
+  card(d, cx + hw + 3, yy, hw, 32);
+  ink(d, C.body);
+  font(d, 'bold', 5.5);
+  d.text('Registrar leitura', cx + hw + 5, yy + 3);
+  let ry = yy + 6;
+  input(d, cx + hw + 5, ry, hw - 6, 4, 'Geladeira cozinha');
+  ry += 5.5;
+  input(d, cx + hw + 5, ry, hw - 6, 4, 'Ex.: 4.5 C');
+  ry += 5.5;
+  fill(d, C.brandSoft);
+  rrect(d, cx + hw + 5, ry, 20, 4.5, 0.8, 'F');
+  fill(d, C.brand);
+  rrect(d, cx + hw + 6.5, ry + 1, 2.5, 2.5, 0.4, 'F');
+  ink(d, C.brandDeep);
+  font(d, 'bold', 4.3);
+  d.text('Anexar foto', cx + hw + 10, ry + 3);
   ry += 6;
-  input(doc, contentX + halfW + 5, ry, halfW - 6, 4.5, 'Ex.: 4.5');
-  ry += 6;
-  input(doc, contentX + halfW + 5, ry, halfW - 6, 4.5, 'Observações (opcional)');
-  ry += 6;
-  // PhotoAttacher
-  fill(doc, C.brandSoft);
-  rrect(doc, contentX + halfW + 5, ry, 18, 4.5, 0.8, 'F');
-  ink(doc, C.brandDeep);
-  font(doc, 'bold', 4.5);
-  doc.text('📷 Anexar foto', contentX + halfW + 14, ry + 3, { align: 'center' });
-  ry += 6;
-  btn(doc, contentX + halfW + 5, ry, halfW - 6, 5, 'Registrar', true);
-  cy += 41;
+  btn(d, cx + hw + 5, ry, hw - 6, 5, 'Registrar', true);
+  yy += 35;
 
-  // Últimas leituras
-  card(doc, contentX, cy, contentW, h - (cy - y) - 6);
-  ink(doc, C.body);
-  font(doc, 'bold', 5.5);
-  doc.text('Últimas leituras', contentX + 2, cy + 3);
-  iy = cy + 6;
+  card(d, cx, yy, cw, h - (yy - y) - 6);
+  ink(d, C.body);
+  font(d, 'bold', 5.5);
+  d.text('Ultimas leituras', cx + 2, yy + 3);
+  let ly = yy + 6;
   [
-    ['Geladeira cozinha', '4.5°C', 'ok'],
-    ['Freezer estoque', '-12°C', 'alert'],
-    ['Estufa balcão', '78°C', 'ok'],
-  ].forEach(([n, t, status]) => {
-    const isOut = status === 'alert';
-    fill(doc, isOut ? C.redSoft : C.brandSoft);
-    rrect(doc, contentX + 2, iy, 4, 4, 0.8, 'F');
-    ink(doc, isOut ? C.red : C.brand);
-    font(doc, 'bold', 3.5);
-    doc.text(isOut ? '!' : '°', contentX + 4, iy + 2.5, { align: 'center' });
-    ink(doc, C.ink);
-    font(doc, 'bold', 5);
-    doc.text(`${n} — ${t}`, contentX + 8, iy + 2);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4.5);
-    doc.text('26/01 15:30 · Ariane', contentX + 8, iy + 4.5);
-    // thumb
-    fill(doc, C.hair);
-    rrect(doc, contentX + contentW - 7, iy, 4, 4, 0.5, 'F');
-    iy += 6;
+    ['Geladeira cozinha', '4.5 C', false],
+    ['Freezer estoque', '-12 C', true],
+  ].forEach(([n, t, out]) => {
+    fill(d, out ? C.redSoft : C.brandSoft);
+    rrect(d, cx + 2, ly, 4, 4, 0.8, 'F');
+    ink(d, C.ink);
+    font(d, 'bold', 5);
+    d.text(`${n} - ${t}`, cx + 8, ly + 2);
+    ink(d, C.muted);
+    font(d, 'normal', 4.5);
+    d.text('26/01 15:30 - Ariane', cx + 8, ly + 4.5);
+    fill(d, C.hair);
+    rrect(d, cx + cw - 7, ly, 4, 4, 0.5, 'F');
+    ly += 6;
   });
 }
 
-function mockDocuments(doc, x, y, w, h) {
-  const { contentX, contentY, contentW } = drawAppShell(doc, x, y, w, h, {
-    activeMenu: 'Conformidade',
-    role: 'Cozinha',
-  });
+function mockDocumentos(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'property', 'Conformidade');
+  let yy = header(d, cx, cy + 1, 'Documentos', 'Carregue os documentos da empresa');
+  btn(d, cx + cw - 18, cy - 1, 18, 5, '+ Adicionar', true);
+  yy += 2;
+  card(d, cx, yy, cw, 11);
+  ink(d, C.muted);
+  font(d, 'normal', 4.5);
+  d.text('Carregue cada documento na gaveta certa. PDF/imagem ate 20 MB.', cx + 2, yy + 3);
+  ink(d, C.ink);
+  font(d, 'bold', 7);
+  d.text('14', cx + cw - 16, yy + 4.5);
+  ink(d, C.muted);
+  font(d, 'normal', 4);
+  d.text('/ 22 entregues', cx + cw - 13, yy + 4.5);
+  fill(d, C.hair);
+  rrect(d, cx + 2, yy + 7.5, cw - 4, 1.6, 0.6, 'F');
+  fill(d, C.brand);
+  rrect(d, cx + 2, yy + 7.5, (cw - 4) * 0.64, 1.6, 0.6, 'F');
+  yy += 14;
 
-  let cy = contentY + 2;
-  ttitle(doc, contentX, cy, 'Documentos', 'Carregue os documentos do estabelecimento');
-  btn(doc, contentX + contentW - 18, cy - 2, 18, 5, '+ Adicionar', true);
-  cy += 8;
-
-  // Barra de progresso
-  card(doc, contentX, cy, contentW, 10);
-  ink(doc, C.muted);
-  font(doc, 'normal', 4.5);
-  doc.text('Carregue cada documento na gaveta certa. PDF/imagem até 20 MB.', contentX + 2, cy + 3);
-  ink(doc, C.ink);
-  font(doc, 'bold', 7);
-  doc.text('14', contentX + contentW - 14, cy + 4.5);
-  ink(doc, C.muted);
-  font(doc, 'normal', 4);
-  doc.text('/ 22 entregues', contentX + contentW - 14, cy + 7);
-  fill(doc, C.hair);
-  rrect(doc, contentX + 2, cy + 7.5, contentW - 18, 1.5, 0.5, 'F');
-  fill(doc, C.brand);
-  rrect(doc, contentX + 2, cy + 7.5, (contentW - 18) * 0.64, 1.5, 0.5, 'F');
-  cy += 13;
-
-  // Grupos
-  ['Funcionários e saúde', 'Controles periódicos', 'Manuais e planilhas'].forEach((group) => {
-    card(doc, contentX, cy, contentW, 14);
-    ink(doc, C.ink);
-    font(doc, 'bold', 5.5);
-    doc.text(group, contentX + 2, cy + 3);
-    // 2 mini items
-    const itemW = (contentW - 6) / 2;
-    [0, 1].forEach((i) => {
-      const ix = contentX + 2 + i * (itemW + 2);
-      stroke(doc, C.hair, 0.15);
-      rrect(doc, ix, cy + 5, itemW, 7, 0.8, 'S');
-      // status circle
+  const groups = [
+    ['Funcionarios e saude', ['ASO', 'Exames de fezes']],
+    ['Controles periodicos', ['Dedetizacao', 'Reservatorio agua']],
+    ['Manuais e planilhas', ['Manual BP', 'Cronograma limpeza']],
+  ];
+  groups.forEach(([g, items]) => {
+    card(d, cx, yy, cw, 14);
+    ink(d, C.ink);
+    font(d, 'bold', 5.5);
+    d.text(g, cx + 2, yy + 3);
+    const iw = (cw - 6) / 2;
+    items.forEach((it, i) => {
+      const ix = cx + 2 + i * (iw + 2);
+      stroke(d, C.hair, 0.15);
+      rrect(d, ix, yy + 5, iw, 7, 0.8, 'S');
       const done = i === 0;
-      fill(doc, done ? C.brandSoft : C.hair);
-      doc.circle(ix + 2, cy + 8.5, 1.2, 'F');
-      if (done) {
-        ink(doc, C.brand);
-        font(doc, 'bold', 3.5);
-        doc.text('✓', ix + 2, cy + 9, { align: 'center' });
-      }
-      ink(doc, C.body);
-      font(doc, 'bold', 4.5);
-      doc.text(['ASO', 'Exames de fezes', 'Dedetização', 'Reservatório água', 'Manual BP', 'Cronograma'][group === 'Funcionários e saúde' ? i : group === 'Controles periódicos' ? i + 2 : i + 4], ix + 4.5, cy + 8);
-      ink(doc, C.muted);
-      font(doc, 'normal', 3.5);
-      doc.text(done ? '2 anexos' : 'Pendente', ix + 4.5, cy + 10.5);
+      fill(d, done ? C.brandSoft : C.hair);
+      d.circle(ix + 2, yy + 8.5, 1.3, 'F');
+      if (done) drawCheck(d, ix + 2, yy + 8.5, 0.9, C.brand);
+      ink(d, C.body);
+      font(d, 'bold', 4.5);
+      d.text(it, ix + 4.5, yy + 8);
+      ink(d, C.muted);
+      font(d, 'normal', 3.7);
+      d.text(done ? '2 anexos' : 'Pendente', ix + 4.5, yy + 10.5);
     });
-    cy += 16;
+    yy += 16;
   });
 }
 
-function mockPropertyDashboard(doc, x, y, w, h) {
-  const { contentX, contentY, contentW } = drawAppShell(doc, x, y, w, h, {
-    activeMenu: 'Início',
-    role: 'Cozinha',
-  });
-
-  let cy = contentY + 2;
-
-  // Hero
-  fill(doc, C.brandSoft);
-  rrect(doc, contentX, cy, contentW, 14, 1.5, 'F');
-  fill(doc, C.brand);
-  rrect(doc, contentX + 2, cy + 2, 10, 10, 1, 'F');
-  ink(doc, C.white);
-  font(doc, 'bold', 5.5);
-  doc.text('MAR', contentX + 7, cy + 7.5, { align: 'center' });
-  ink(doc, C.muted);
-  font(doc, 'normal', 4.5);
-  doc.text('BOM DIA, RAFAEL · PAINEL DA EMPRESA', contentX + 14, cy + 5);
-  ink(doc, C.ink);
-  font(doc, 'bold', 8);
-  doc.text('Restaurante Mar Azul', contentX + 14, cy + 9.5);
-  pill(doc, contentX + 14, cy + 11, 26, 2.6, '3 tarefas hoje', C.amberSoft, C.amber);
-  cy += 17;
-
-  // Quick actions
-  ['Imprimir etiqueta', 'Registrar temp.', 'Abrir checklist'].forEach((l, i) => {
-    const aw = (contentW - 6) / 3;
-    fill(doc, i === 0 ? C.brand : C.white);
-    stroke(doc, C.brand, 0.2);
-    rrect(doc, contentX + i * (aw + 3), cy, aw, 9, 1, 'FD');
-    ink(doc, i === 0 ? C.white : C.brandDark);
-    font(doc, 'bold', 5.5);
-    doc.text(l, contentX + i * (aw + 3) + aw / 2, cy + 5.5, { align: 'center' });
-  });
-  cy += 12;
-
-  // Tarefas de hoje
-  ink(doc, C.body);
-  font(doc, 'bold', 6);
-  doc.text('Para hoje', contentX, cy);
-  cy += 3;
-
-  card(doc, contentX, cy, contentW, 26);
-  let ly = cy + 2;
+function mockManipuladores(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'nutri', 'Avaliacao');
+  let yy = header(d, cx, cy + 1, 'Manipuladores', 'ASOs, treinamentos e historico');
+  btn(d, cx + cw - 22, cy - 1, 22, 5, '+ Novo funcionario', true);
+  yy += 2;
+  const kw = (cw - 6) / 4;
   [
-    ['Checklist diário de limpeza', 'Higiene · pendente'],
-    ['Registrar temperatura geladeiras (3)', 'Equipamentos · pendente'],
-    ['Etiquetas vencendo em 24h (4)', 'Validades · atenção'],
-  ].forEach(([t, sub], i) => {
-    fill(doc, [254, 249, 230]);
-    rrect(doc, contentX + 1.5, ly, 1.5, 5, 0.3, 'F');
-    ink(doc, C.ink);
-    font(doc, 'bold', 5);
-    doc.text(t, contentX + 4, ly + 2);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4.5);
-    doc.text(sub, contentX + 4, ly + 4.5);
-    ink(doc, C.brand);
-    font(doc, 'bold', 4.5);
-    doc.text('Fazer →', contentX + contentW - 3, ly + 3, { align: 'right' });
-    ly += 7;
+    ['18', 'Ativos'],
+    ['3', 'ASO vencendo'],
+    ['1', 'ASO vencido'],
+    ['12', 'Treinamentos'],
+  ].forEach(([n, l], i) => {
+    const kx = cx + i * (kw + 2);
+    card(d, kx, yy, kw, 11);
+    ink(d, C.ink);
+    font(d, 'bold', 8);
+    d.text(n, kx + 1.5, yy + 6);
+    ink(d, C.muted);
+    font(d, 'normal', 4.3);
+    d.text(l, kx + 1.5, yy + 9);
   });
-  cy += 28;
+  yy += 14;
 
-  // Vencendo
-  ink(doc, C.body);
-  font(doc, 'bold', 6);
-  doc.text('Etiquetas vencendo em 24h', contentX, cy);
-  cy += 3;
-  ['Salada de frutas — vence em 4h', 'Molho branco — vence amanhã'].forEach((t) => {
-    fill(doc, C.redSoft);
-    rrect(doc, contentX, cy, contentW, 5, 0.8, 'F');
-    ink(doc, C.red);
-    font(doc, 'bold', 5);
-    doc.text(t, contentX + 2, cy + 3.2);
-    cy += 6;
+  card(d, cx, yy, cw, h - (yy - y) - 6);
+  let iy = yy + 2;
+  fill(d, C.brandSoft);
+  rrect(d, cx + 1, iy, cw - 2, 4, 0.5, 'F');
+  ink(d, C.brandDeep);
+  font(d, 'bold', 4.5);
+  d.text('NOME', cx + 3, iy + 2.8);
+  d.text('FUNCAO', cx + 48, iy + 2.8);
+  d.text('ASO', cx + 90, iy + 2.8);
+  d.text('TREINAM.', cx + 118, iy + 2.8);
+  iy += 5;
+  [
+    ['Maria Silva Santos', 'Cozinheira', '12/2026', '3', C.brand, C.brandSoft],
+    ['Joao Oliveira', 'Auxiliar', '03/2026', '2', C.amber, C.amberSoft],
+    ['Ana Costa', 'Manipuladora', '08/2025', '4', C.red, C.redSoft],
+    ['Pedro Souza', 'Chef', '11/2026', '5', C.brand, C.brandSoft],
+    ['Carla Lima', 'Cozinheira', '02/2027', '3', C.brand, C.brandSoft],
+  ].forEach(([name, role, aso, tr, fg, bg]) => {
+    ink(d, C.ink);
+    font(d, 'normal', 5);
+    d.text(name, cx + 3, iy + 2.8);
+    ink(d, C.body);
+    font(d, 'normal', 4.5);
+    d.text(role, cx + 48, iy + 2.8);
+    pill(d, cx + 90, iy + 0.5, 16, 3, aso, bg, fg);
+    ink(d, C.body);
+    font(d, 'normal', 4.5);
+    d.text(tr, cx + 118, iy + 2.8);
+    stroke(d, C.hair, 0.1);
+    d.line(cx + 2, iy + 4.5, cx + cw - 2, iy + 4.5);
+    iy += 5;
   });
 }
 
-function mockProduction(doc, x, y, w, h) {
-  const { contentX, contentY, contentW } = drawAppShell(doc, x, y, w, h, {
-    activeMenu: 'Produção',
-    role: 'Cozinha',
-  });
-
-  let cy = contentY + 2;
-  ttitle(doc, contentX, cy, 'Produção (etiquetas em uso)', 'Etiquetas impressas aguardando baixa');
-  cy += 8;
-
-  // Stat cards
-  const sw = (contentW - 6) / 3;
+function mockProducao(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'property', 'Producao');
+  let yy = header(d, cx, cy + 1, 'Producao (etiquetas em uso)', 'Aguardando baixa');
+  yy += 2;
+  const sw = (cw - 6) / 3;
   [
     ['12', 'Itens ativos', C.brand],
     ['4', 'Vencendo', C.amber],
     ['2', 'Vencidos', C.red],
   ].forEach(([n, l, color], i) => {
-    card(doc, contentX + i * (sw + 3), cy, sw, 12);
-    fill(doc, [color[0], color[1], color[2]]);
-    doc.setGState(new doc.GState({ opacity: 0.15 }));
-    rrect(doc, contentX + 1 + i * (sw + 3), cy + 1.5, 4, 4, 0.8, 'F');
-    doc.setGState(new doc.GState({ opacity: 1 }));
-    ink(doc, C.ink);
-    font(doc, 'bold', 8);
-    doc.text(n, contentX + 1 + i * (sw + 3), cy + 7);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4.5);
-    doc.text(l, contentX + 1 + i * (sw + 3), cy + 10);
+    const kx = cx + i * (sw + 3);
+    card(d, kx, yy, sw, 12);
+    fill(d, color);
+    opacity(d, 0.15);
+    rrect(d, kx + 1.5, yy + 1.5, 4, 4, 0.8, 'F');
+    opacity(d, 1);
+    ink(d, C.ink);
+    font(d, 'bold', 8);
+    d.text(n, kx + 1.5, yy + 7);
+    ink(d, C.muted);
+    font(d, 'normal', 4.5);
+    d.text(l, kx + 1.5, yy + 10);
   });
-  cy += 15;
+  yy += 15;
 
-  // Grid de cards de etiqueta
-  const cw = (contentW - 6) / 3;
-  for (let row = 0; row < 2; row++) {
+  const cwid = (cw - 6) / 3;
+  const labels = [
+    'Salada Caesar',
+    'Risoto cogumelos',
+    'Molho rose',
+    'Sopa creme',
+    'Frango assado',
+    'Arroz integral',
+  ];
+  for (let r = 0; r < 2; r++) {
     for (let col = 0; col < 3; col++) {
-      const cx = contentX + col * (cw + 3);
-      const cyy = cy + row * 23;
-      const isExpired = row === 1 && col === 0;
-      const isSoon = row === 0 && col === 2;
-      card(doc, cx, cyy, cw, 21);
-      fill(doc, isExpired ? C.redSoft : isSoon ? C.amberSoft : C.brandSoft);
-      rrect(doc, cx + 1.5, cyy + 1.5, 4, 4, 0.8, 'F');
-      pill(doc, cx + cw - 14, cyy + 1.5, 12, 3, isExpired ? 'Vencido' : isSoon ? 'Hoje' : 'Vence 3d', isExpired ? C.redSoft : isSoon ? C.amberSoft : C.brandSoft, isExpired ? C.red : isSoon ? C.amber : C.brand);
-      ink(doc, C.ink);
-      font(doc, 'bold', 5);
-      doc.text(['Salada Caesar', 'Risoto cogumelos', 'Molho rosé', 'Sopa creme', 'Frango assado', 'Arroz integral'][row * 3 + col], cx + 2, cyy + 8);
-      ink(doc, C.muted);
-      font(doc, 'normal', 4);
-      doc.text('Lote: L-2026-01-A', cx + 2, cyy + 11);
-      doc.text('Manip.: 26/01 10:00', cx + 2, cyy + 13.5);
-      doc.text('Resp.: Maria S.', cx + 2, cyy + 16);
-      btn(doc, cx + 1.5, cyy + 17.5, cw - 3, 3, '▼ Dar baixa', true);
+      const bx = cx + col * (cwid + 3);
+      const by = yy + r * 23;
+      const exp = r === 1 && col === 0;
+      const soon = r === 0 && col === 2;
+      card(d, bx, by, cwid, 21);
+      const bg = exp ? C.redSoft : soon ? C.amberSoft : C.brandSoft;
+      const fg = exp ? C.red : soon ? C.amber : C.brand;
+      fill(d, bg);
+      rrect(d, bx + 1.5, by + 1.5, 4, 4, 0.8, 'F');
+      pill(d, bx + cwid - 14, by + 1.5, 12, 3, exp ? 'Vencido' : soon ? 'Hoje' : 'Vence 3d', bg, fg);
+      ink(d, C.ink);
+      font(d, 'bold', 5);
+      d.text(labels[r * 3 + col], bx + 2, by + 8);
+      ink(d, C.muted);
+      font(d, 'normal', 4);
+      d.text('Lote: L-2026-01-A', bx + 2, by + 11);
+      d.text('Manip.: 26/01 10:00', bx + 2, by + 13.5);
+      d.text('Resp.: Maria S.', bx + 2, by + 16);
+      btn(d, bx + 1.5, by + 17.5, cwid - 3, 3, 'Dar baixa', true);
     }
   }
 }
 
-function mockManipulators(doc, x, y, w, h) {
-  const { contentX, contentY, contentW } = drawAppShell(doc, x, y, w, h, {
-    activeMenu: 'Avaliação',
-    menuItems: ['Carteira', 'Avaliação', 'Acompanhamento', 'Cadastros'],
-    role: 'Nutricionista',
-  });
-
-  let cy = contentY + 2;
-  ttitle(doc, contentX, cy, 'Manipuladores', 'ASOs, treinamentos e histórico');
-  btn(doc, contentX + contentW - 22, cy - 2, 22, 5, '+ Novo funcionário', true);
-  cy += 8;
-
-  // KPIs
-  const sw = (contentW - 6) / 4;
+function mockEstoqueRecebimento(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'property', 'Estoque');
+  let yy = header(d, cx, cy + 1, 'Recebimentos', 'Conferencia de notas e temperaturas');
+  btn(d, cx + cw - 22, cy - 1, 22, 5, '+ Novo recebimento', true);
+  yy += 2;
   [
-    ['18', 'Ativos', C.brand],
-    ['3', 'ASO vencendo', C.amber],
-    ['1', 'ASO vencido', C.red],
-    ['12', 'Treinamentos', C.brand],
-  ].forEach(([n, l, color], i) => {
-    card(doc, contentX + i * (sw + 2), cy, sw, 11);
-    ink(doc, C.ink);
-    font(doc, 'bold', 8);
-    doc.text(n, contentX + 1 + i * (sw + 2), cy + 6);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4.5);
-    doc.text(l, contentX + 1 + i * (sw + 2), cy + 9);
-  });
-  cy += 14;
-
-  // Lista de manipuladores
-  card(doc, contentX, cy, contentW, h - (cy - y) - 6);
-  let iy = cy + 2;
-  // header
-  fill(doc, C.brandSoft);
-  rrect(doc, contentX + 1, iy, contentW - 2, 4, 0.5, 'F');
-  ink(doc, C.brandDeep);
-  font(doc, 'bold', 4.5);
-  doc.text('NOME', contentX + 3, iy + 2.8);
-  doc.text('FUNÇÃO', contentX + 50, iy + 2.8);
-  doc.text('ASO', contentX + 95, iy + 2.8);
-  doc.text('TREINAMENTOS', contentX + 120, iy + 2.8);
-  iy += 5;
-
-  [
-    ['Maria Silva Santos', 'Cozinheira', '12/2026', '3', 'ok'],
-    ['João Oliveira', 'Auxiliar', '03/2026', '2', 'soon'],
-    ['Ana Costa', 'Manipuladora', '08/2025', '4', 'alert'],
-    ['Pedro Souza', 'Chef', '11/2026', '5', 'ok'],
-    ['Carla Lima', 'Cozinheira', '02/2027', '3', 'ok'],
-  ].forEach((row) => {
-    const [name, role, aso, train, status] = row;
-    ink(doc, C.ink);
-    font(doc, 'normal', 5);
-    doc.text(name, contentX + 3, iy + 2.8);
-    ink(doc, C.body);
-    font(doc, 'normal', 4.5);
-    doc.text(role, contentX + 50, iy + 2.8);
-    const tone = status === 'ok' ? C.brand : status === 'soon' ? C.amber : C.red;
-    const toneSoft = status === 'ok' ? C.brandSoft : status === 'soon' ? C.amberSoft : C.redSoft;
-    pill(doc, contentX + 95, iy + 0.5, 16, 3, aso, toneSoft, tone);
-    ink(doc, C.body);
-    font(doc, 'normal', 4.5);
-    doc.text(train, contentX + 120, iy + 2.8);
-    stroke(doc, C.hair, 0.1);
-    doc.line(contentX + 2, iy + 4.5, contentX + contentW - 2, iy + 4.5);
-    iy += 5;
+    ['Distribuidora Alfa', 'NF 12345 - 26/01', 8, 0],
+    ['Hortifruti Beta', 'NF 67890 - 25/01', 5, 1],
+    ['Frigorifico Gama', 'NF 11122 - 24/01', 12, 0],
+  ].forEach(([name, sub, items, rej]) => {
+    card(d, cx, yy, cw, 14);
+    ink(d, C.ink);
+    font(d, 'bold', 6);
+    d.text(name, cx + 2, yy + 4);
+    ink(d, C.muted);
+    font(d, 'normal', 4.5);
+    d.text(sub, cx + 2, yy + 7);
+    pill(d, cx + cw - 32, yy + 1.5, 16, 3.5, `${items} itens`, C.brandSoft, C.brandDeep);
+    if (rej > 0)
+      pill(d, cx + cw - 14, yy + 1.5, 12, 3.5, `${rej} rejeit`, C.redSoft, C.red);
+    ink(d, C.muted);
+    font(d, 'normal', 4);
+    d.text('Conformes', cx + 2, yy + 11);
+    fill(d, C.hair);
+    rrect(d, cx + 20, yy + 9.5, cw - 24, 1.2, 0.4, 'F');
+    fill(d, rej > 0 ? C.amber : C.brand);
+    rrect(d, cx + 20, yy + 9.5, (cw - 24) * (1 - rej / items), 1.2, 0.4, 'F');
+    ink(d, C.body);
+    font(d, 'bold', 4);
+    d.text(`${items - rej}/${items}`, cx + cw - 2, yy + 10.5, { align: 'right' });
+    yy += 16;
   });
 }
 
-function mockReceiving(doc, x, y, w, h) {
-  const { contentX, contentY, contentW } = drawAppShell(doc, x, y, w, h, {
-    activeMenu: 'Estoque',
-    role: 'Cozinha',
-  });
+// Mockup GENÉRICO — usado para funções sem tela dedicada.
+function mockGeneric(d, x, y, w, h, role, feature) {
+  const menu = role === 'nutri' ? 'Acompanha.' : 'Cadastros';
+  const { cx, cy, cw } = appShell(d, x, y, w, h, role, menu);
+  let yy = header(d, cx, cy + 1, feature.title, feature.subtitle);
+  btn(d, cx + cw - 16, cy - 1, 16, 5, '+ Novo', true);
+  yy += 2;
 
-  let cy = contentY + 2;
-  ttitle(doc, contentX, cy, 'Recebimentos', 'Conferência de notas e temperaturas');
-  btn(doc, contentX + contentW - 22, cy - 2, 22, 5, '+ Novo recebimento', true);
-  cy += 8;
-
-  // Lista
+  // KPI row
+  const kw = (cw - 6) / 3;
   [
-    ['Distribuidora Alfa', 'NF 12345 · 26/01', 8, 0],
-    ['Hortifruti Beta', 'NF 67890 · 25/01', 5, 1],
-    ['Frigorífico Gama', 'NF 11122 · 24/01', 12, 0],
-  ].forEach(([name, sub, items, rejected]) => {
-    card(doc, contentX, cy, contentW, 14);
-    ink(doc, C.ink);
-    font(doc, 'bold', 6);
-    doc.text(name, contentX + 2, cy + 4);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4.5);
-    doc.text(sub, contentX + 2, cy + 7);
+    ['REGISTROS', '24'],
+    ['ESTE MES', '8'],
+    ['PENDENTES', '2'],
+  ].forEach(([l, v], i) => {
+    const kx = cx + i * (kw + 3);
+    card(d, kx, yy, kw, 11);
+    ink(d, C.muted);
+    font(d, 'normal', 4.3);
+    d.text(l, kx + 1.5, yy + 3);
+    ink(d, C.ink);
+    font(d, 'bold', 8);
+    d.text(v, kx + 1.5, yy + 8.5);
+  });
+  yy += 14;
 
-    // Resumo
-    pill(doc, contentX + contentW - 32, cy + 1.5, 16, 3.5, `${items} itens`, C.brandSoft, C.brandDeep);
-    if (rejected > 0) {
-      pill(doc, contentX + contentW - 14, cy + 1.5, 12, 3.5, `${rejected} rejeit`, C.redSoft, C.red);
+  // Busca
+  card(d, cx, yy, cw, 6);
+  input(d, cx + 2, yy + 1.5, cw * 0.5, 3.5, 'Buscar...');
+  pill(d, cx + cw * 0.5 + 4, yy + 1.5, 14, 3.5, 'Filtro', C.brandSoft, C.brandDeep);
+  yy += 8;
+
+  // Lista genérica
+  card(d, cx, yy, cw, h - (yy - y) - 6);
+  let iy = yy + 2;
+  for (let i = 0; i < 5; i++) {
+    fill(d, C.white);
+    stroke(d, C.hair, 0.12);
+    rrect(d, cx + 2, iy, cw - 4, 6.5, 0.8, 'FD');
+    fill(d, C.brandSoft);
+    rrect(d, cx + 3.5, iy + 1.2, 4, 4, 0.6, 'F');
+    fill(d, C.brand);
+    d.circle(cx + 5.5, iy + 3.2, 0.8, 'F');
+    ink(d, C.ink);
+    font(d, 'bold', 5);
+    d.text(`${feature.title} ${String(i + 1).padStart(2, '0')}`, cx + 9.5, iy + 3);
+    ink(d, C.muted);
+    font(d, 'normal', 4);
+    d.text('Atualizado 26/01/2026 - responsavel cadastrado', cx + 9.5, iy + 5.2);
+    pill(
+      d,
+      cx + cw - 16,
+      iy + 1.8,
+      12,
+      3,
+      i === 2 ? 'Atencao' : 'Ativo',
+      i === 2 ? C.amberSoft : C.brandSoft,
+      i === 2 ? C.amber : C.brand,
+    );
+    iy += 7.5;
+  }
+}
+
+const MOCKS = {
+  'nutri-painel': mockNutriPainel,
+  'property-painel': mockPropertyPainel,
+  'property-imprimir': mockPrintWizard,
+  'nutri-ncs': mockNcs,
+  'nutri-visitas': mockVisitas,
+  'nutri-temperatura': mockTemperatura,
+  'nutri-documentos': mockDocumentos,
+  'nutri-manipuladores': mockManipuladores,
+  'property-producao': mockProducao,
+  'property-recebimentos': mockEstoqueRecebimento,
+  'property-estoque': mockEstoqueRecebimento,
+};
+
+/** Lê largura/altura de um PNG (IHDR: big-endian uint32 em offsets 16 e 20). */
+function pngSize(buf) {
+  if (buf.length < 24) return null;
+  return { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20) };
+}
+
+/** Desenha a "tela": screenshot real se existir, senão mockup. */
+function drawScreen(d, x, y, w, h, role, feature) {
+  const shotPath = join(SHOTS_DIR, `${feature.screenshot}.png`);
+  if (existsSync(shotPath)) {
+    try {
+      const data = readFileSync(shotPath);
+      const b64 = `data:image/png;base64,${data.toString('base64')}`;
+      // Fundo + moldura
+      fill(d, [241, 245, 244]);
+      rrect(d, x, y, w, h, 2, 'F');
+      stroke(d, C.hair, 0.3);
+      rrect(d, x, y, w, h, 2, 'S');
+      // Ajusta preservando proporção (contain), centralizado.
+      const dim = pngSize(data);
+      let iw = w - 2,
+        ih = h - 2,
+        ix = x + 1,
+        iy = y + 1;
+      if (dim && dim.w > 0 && dim.h > 0) {
+        const boxR = (w - 2) / (h - 2);
+        const imgR = dim.w / dim.h;
+        if (imgR > boxR) {
+          iw = w - 2;
+          ih = iw / imgR;
+          iy = y + (h - ih) / 2;
+        } else {
+          ih = h - 2;
+          iw = ih * imgR;
+          ix = x + (w - iw) / 2;
+        }
+      }
+      d.addImage(b64, 'PNG', ix, iy, iw, ih, undefined, 'FAST');
+      return true;
+    } catch {
+      /* cai pro mockup */
     }
-
-    // Mini barra de itens conformes
-    ink(doc, C.muted);
-    font(doc, 'normal', 4);
-    doc.text('Conformes', contentX + 2, cy + 11);
-    fill(doc, C.hair);
-    rrect(doc, contentX + 20, cy + 9.5, contentW - 24, 1.2, 0.4, 'F');
-    fill(doc, rejected > 0 ? C.amber : C.brand);
-    rrect(doc, contentX + 20, cy + 9.5, (contentW - 24) * (1 - rejected / items), 1.2, 0.4, 'F');
-    ink(doc, C.body);
-    font(doc, 'bold', 4);
-    doc.text(`${items - rejected}/${items}`, contentX + contentW - 2, cy + 10.5, { align: 'right' });
-
-    cy += 16;
-  });
-}
-
-function mockCompanies(doc, x, y, w, h) {
-  const { contentX, contentY, contentW } = drawAppShell(doc, x, y, w, h, {
-    activeMenu: 'Cadastros',
-    menuItems: ['Plataforma', 'Operação', 'Conformidade', 'Cadastros', 'Administração'],
-    role: 'Platform Admin',
-  });
-
-  let cy = contentY + 2;
-  ttitle(doc, contentX, cy, 'Empresas', 'Gestão das empresas atendidas pela RT');
-  btn(doc, contentX + contentW - 18, cy - 2, 18, 5, '+ Nova empresa', true);
-  cy += 8;
-
-  // Filtros / busca
-  card(doc, contentX, cy, contentW, 6);
-  input(doc, contentX + 2, cy + 1.5, 50, 3.5, '🔍 Buscar empresa...');
-  pill(doc, contentX + 54, cy + 1.5, 14, 3.5, 'Ativas', C.brandSoft, C.brandDeep);
-  pill(doc, contentX + 70, cy + 1.5, 14, 3.5, 'Todas', C.white, C.muted);
-  cy += 8;
-
-  // Lista de empresas
-  card(doc, contentX, cy, contentW, h - (cy - y) - 6);
-  let iy = cy + 2;
-  [
-    ['Restaurante Mar Azul', 'CNPJ 12.345.678/0001-90 · Macaé', '82%', 'amber'],
-    ['Padaria Imbetiba', 'CNPJ 23.456.789/0001-01 · Macaé', '72%', 'amber'],
-    ['Hotel Litoral', 'CNPJ 34.567.890/0001-12 · Macaé', '92%', 'green'],
-    ['Cantina Escolar', 'CNPJ 45.678.901/0001-23 · Macaé', '58%', 'red'],
-    ['Restaurante Brisa', 'CNPJ 56.789.012/0001-34 · Macaé', '88%', 'green'],
-  ].forEach(([name, sub, score, status]) => {
-    fill(doc, C.white);
-    stroke(doc, C.hair, 0.15);
-    rrect(doc, contentX + 2, iy, contentW - 4, 7, 0.8, 'FD');
-
-    // Avatar
-    fill(doc, C.brandSoft);
-    rrect(doc, contentX + 3.5, iy + 1.2, 4.5, 4.5, 0.6, 'F');
-    ink(doc, C.brandDeep);
-    font(doc, 'bold', 4);
-    doc.text(name.split(' ').slice(0, 2).map((w) => w[0]).join(''), contentX + 5.75, iy + 4, { align: 'center' });
-
-    ink(doc, C.ink);
-    font(doc, 'bold', 5);
-    doc.text(name, contentX + 9.5, iy + 3);
-    ink(doc, C.muted);
-    font(doc, 'normal', 4);
-    doc.text(sub, contentX + 9.5, iy + 5.5);
-
-    const tone = status === 'green' ? C.brand : status === 'amber' ? C.amber : C.red;
-    const toneSoft = status === 'green' ? C.brandSoft : status === 'amber' ? C.amberSoft : C.redSoft;
-    pill(doc, contentX + contentW - 14, iy + 2, 10, 3.5, score, toneSoft, tone);
-
-    iy += 8;
-  });
+  }
+  const fn = MOCKS[feature.screenshot];
+  if (fn) fn(d, x, y, w, h);
+  else mockGeneric(d, x, y, w, h, role, feature);
+  return false;
 }
 
 // ============================================================
-//  ESTRUTURA DO MANUAL
+//  MONTAGEM DO DOCUMENTO
 // ============================================================
-
-// Cada função: title, role, mockup function, what (o que é), how (como usar), tip
-const FEATURES = [
-  // ====== NUTRICIONISTA ======
-  {
-    role: 'nutri',
-    title: 'Carteira de clientes',
-    subtitle: 'O painel inicial da nutricionista',
-    mock: mockDashboardNutri,
-    what:
-      'É a tela inicial quando a nutricionista entra no sistema. Mostra a saúde geral da carteira: score médio das empresas atendidas, quantas estão em situação crítica, próximas visitas técnicas e alertas de pendências.',
-    how: [
-      'KPIs no topo: score médio, total de empresas e alertas do dia.',
-      'Bloco "Afazeres" — lista as pendências dos clientes (empresas sem visita há 60 dias, ASOs vencendo, NCs paradas, controle de pragas vencido).',
-      'Lista da carteira no rodapé: cada empresa com seu score, NCs abertas e indicadores de conformidade.',
-      'Clique em "Relatório (PDF)" para baixar o documento de conformidade assinável da empresa.',
-    ],
-    tip: 'Comece o dia pela coluna de "Afazeres" — cada card vira um item da sua agenda. Quando todos zeram, a carteira está sob controle.',
-  },
-  {
-    role: 'nutri',
-    title: 'Visitas técnicas',
-    subtitle: 'Inspeções sanitárias (RDC 216 + RDC 275)',
-    mock: mockAuditDetail,
-    what:
-      'Onde a RT realiza as visitas de avaliação às empresas. Cada visita usa um modelo (checklist) e produz um score por categoria. Visitas finalizadas geram um relatório assinado em PDF e abrem automaticamente as NCs identificadas.',
-    how: [
-      'Agendar uma visita em "Avaliação → Visitas técnicas".',
-      'No dia, abrir a visita e marcar cada item como C (conforme), NC (não conforme) ou NA (não se aplica).',
-      'Itens marcados como NC viram automaticamente Não-conformidades com prazo de 30 dias.',
-      'Botões disponíveis: Reagendar, Cancelar, Salvar rascunho, Finalizar (assina e bloqueia).',
-      'Visitas finalizadas têm o status travado — e o PDF pode ser exportado.',
-    ],
-    tip: 'Use "Salvar rascunho" durante a visita para não perder o trabalho. Só finalize quando estiver tudo conferido — depois de assinada, a visita não retrocede.',
-  },
-  {
-    role: 'nutri',
-    title: 'Não-conformidades',
-    subtitle: 'Plano de ação 5W2H',
-    mock: mockNonConformities,
-    what:
-      'Lista de problemas identificados durante visitas, checklists ou registros manuais. Cada NC tem severidade, prazo, responsável e plano de ação no formato 5W2H (O quê, Por quê, Onde, Quando, Quem, Como, Quanto custa).',
-    how: [
-      'Cards no topo agrupam as NCs por cliente — clique para filtrar.',
-      'Abrir uma NC: descrição, severidade, plano 5W2H e fotos (evidência e fechamento).',
-      'Para fechar: marcar status como "Fechada", adicionar nota de fechamento e foto da correção.',
-      'Filtros por status (aberta, em andamento, fechada) e severidade.',
-    ],
-    tip: 'A foto de fechamento é a melhor proteção da RT. Sem ela, é palavra contra palavra na auditoria.',
-  },
-  {
-    role: 'nutri',
-    title: 'Manipuladores',
-    subtitle: 'Cadastro de funcionários, ASOs e treinamentos',
-    mock: mockManipulators,
-    what:
-      'Ficha completa de cada manipulador de alimentos da empresa. Controla ASOs (Atestados de Saúde Ocupacional), histórico de treinamentos e dados pessoais. Disponível para a nutricionista (RT) e gerente; o cozinheiro não vê.',
-    how: [
-      'KPIs no topo: ativos, ASOs vencendo em 30 dias, ASOs vencidos, total de treinamentos.',
-      'Botão "+ Novo funcionário" para cadastrar (nome, função, CPF, data de admissão).',
-      'Clicar em um funcionário abre o histórico de ASOs (com upload do PDF) e treinamentos.',
-      'O sistema envia alerta no painel quando o ASO está perto de vencer.',
-    ],
-    tip: 'ASO vencido = NC imediata em qualquer visita da Vigilância. Configure o lembrete (Notificações) para receber 30 dias antes.',
-  },
-  {
-    role: 'nutri',
-    title: 'Checklists',
-    subtitle: 'Procedimentos operacionais com histórico',
-    mock: mockDocuments,
-    what:
-      'Templates de checklist criados pela RT e executados pelo cozinheiro no dia a dia. Frequência diária, semanal ou mensal. Cada execução fica registrada com data, responsável, itens marcados e opcionalmente foto.',
-    how: [
-      'Criar um template em "Avaliação → Checklists → Novo template" (itens + frequência).',
-      'Use a Biblioteca para clonar modelos prontos (RDC 216, RDC 275, RDC 259).',
-      'Para executar: cozinha entra em "Conformidade → Checklists" e marca os itens.',
-      'Execuções aparecem no histórico — a RT acompanha quem fez, quando e o que deixou pendente.',
-    ],
-    tip: 'Crie checklists curtos e diários ao invés de longos e semanais — o engajamento da cozinha é muito maior.',
-  },
-
-  // ====== ACOMPANHAMENTO ======
-  {
-    role: 'nutri',
-    title: 'Temperatura',
-    subtitle: 'Registro de equipamentos e leituras',
-    mock: mockTemperature,
-    what:
-      'Cadastro de todos os equipamentos térmicos da cozinha (freezers, geladeiras, estufas) com faixa segura de operação. A cozinha registra leituras periódicas; o sistema alerta visualmente quando sai da faixa.',
-    how: [
-      'Cadastrar equipamentos com nome, tipo e faixa (mín/máx em °C).',
-      'Para registrar: selecionar equipamento, digitar temperatura, anexar foto do termômetro (opcional) e salvar.',
-      'Lista de últimas leituras mostra um ícone vermelho quando a temperatura fica fora da faixa.',
-      'O cozinheiro também acessa essa tela (a RT a cadastra; a cozinha registra).',
-    ],
-    tip: 'A foto do termômetro é evidência para auditoria. Vale a pena fazer disso parte do procedimento operacional fixo.',
-  },
-  {
-    role: 'nutri',
-    title: 'Controle de pragas',
-    subtitle: 'Histórico de dedetização e MIP',
-    mock: mockReceiving,
-    what:
-      'Registro do programa de controle integrado de pragas (CIP) exigido pela RDC 216 art. 4.4. Cadastra fornecedores licenciados, datas de aplicação, produtos usados e o documento entregue pela empresa contratada.',
-    how: [
-      'Aba "Fornecedores": cadastra a empresa de controle (CNPJ, alvará/licença sanitária, contato).',
-      'Aba "Serviços": registra cada aplicação (data, tipo, técnico responsável, próxima data).',
-      'Upload do laudo/certificado entregue pela empresa contratada.',
-      'O painel da nutri alerta quando o próximo serviço está vencido.',
-    ],
-    tip: 'O documento da empresa contratada é a evidência principal. Quando ela entrega, suba na mesma hora — depois esquece.',
-  },
-  {
-    role: 'nutri',
-    title: 'Documentos',
-    subtitle: 'Lista da Vigilância Sanitária 2026',
-    mock: mockDocuments,
-    what:
-      'Central de upload dos documentos exigidos pela Vigilância Sanitária, organizados por categoria: Contabilidade, Funcionários e saúde, Controles periódicos, Manuais e planilhas, Carro-pipa (se aplicar) e Licenciamento. Sem editor de texto — é só upload de PDF/imagem.',
-    how: [
-      'Barra de progresso "X de N entregues" no topo.',
-      'Cada item da lista é uma "gaveta" — clique em "Carregar" para subir o arquivo.',
-      'Categorias com dicas contextuais (ex.: "Últimos 3 meses", "Entregue pelo fiscal").',
-      'Renomear, recategorizar ou excluir documentos a qualquer momento.',
-    ],
-    tip: 'Mantenha sempre os últimos 3 meses dos controles periódicos (dedetização, ar condicionado, reservatório). É o que o fiscal pede primeiro.',
-  },
-
-  // ====== PROPERTY / COZINHA ======
-  {
-    role: 'property',
-    title: 'Início (cozinha)',
-    subtitle: 'Painel diário do operador',
-    mock: mockPropertyDashboard,
-    what:
-      'Tela inicial quando o cozinheiro/gerente entra. Foco em "o que fazer agora": checklists pendentes do dia, equipamentos sem leitura, etiquetas vencendo em 24h e atalhos para as ações mais comuns.',
-    how: [
-      'Atalhos no topo: imprimir etiqueta, registrar temperatura, abrir checklist.',
-      'Bloco "Para hoje" lista as tarefas pendentes da rotina.',
-      'Alertas vermelhos para etiquetas vencidas ou vencendo nas próximas horas.',
-      'Toda a tela é otimizada para celular — cada item é tap-friendly.',
-    ],
-    tip: 'Se o painel está com 0 tarefas e 0 alertas, está tudo em dia. Não precisa procurar nada além.',
-  },
-  {
-    role: 'property',
-    title: 'Imprimir etiqueta (wizard)',
-    subtitle: 'Validade calculada, zero digitação',
-    mock: mockPrintWizard,
-    what:
-      'Fluxo único e guiado em 5 passos para imprimir uma etiqueta conforme a RDC 216 da ANVISA. Tudo escolhido de lista (manipulador, grupo, produto) — nada digitado à mão. Validade calculada automaticamente; data e hora de manipulação travadas no exato momento da impressão.',
-    how: [
-      '1. Manipulador: quem está manipulando (escolhe da lista cadastrada pela RT).',
-      '2. Grupo: opcional, filtra os produtos.',
-      '3. Produto: seleciona o que vai ser etiquetado.',
-      '4. Informações: condição de armazenamento, quantidade, lote/fornecedor (opcionais).',
-      '5. Imprimir: confirma e manda para a impressora (relay) ou diálogo do navegador.',
-    ],
-    tip: 'A data/hora de manipulação NÃO pode ser editada. Isso é proposital — o sistema usa o momento exato em que você imprime. Quanto mais rápido entre manipular e imprimir, melhor.',
-  },
-  {
-    role: 'property',
-    title: 'Produção · etiquetas em uso',
-    subtitle: 'Dar baixa conforme o lote vai sendo usado',
-    mock: mockProduction,
-    what:
-      'Mostra as etiquetas já impressas que ainda estão "vivas" — aguardando uso, descarte ou vencimento. Cards coloridos por status (verde = ok, amarelo = vence hoje/em breve, vermelho = vencido). Cada baixa pode opcionalmente gerar saída de estoque.',
-    how: [
-      'Stat cards no topo: ativos, vencendo e vencidos.',
-      'Filtros por status e ordenação por validade ou produção.',
-      'Cada card mostra produto, lote, manipulação, validade, responsável e saldo de estoque do lote.',
-      'Botão "Dar baixa" abre modal com motivo (uso, descarte, vencimento) e opção de baixar do estoque.',
-    ],
-    tip: 'Vencidos em vermelho devem ser zerados todo dia. Se acumulou, é sinal de que a cozinha está produzindo mais do que consome — vale revisar com a RT.',
-  },
-  {
-    role: 'property',
-    title: 'Estoque (matéria-prima)',
-    subtitle: 'Saldo dos itens recebidos por lote (FIFO)',
-    mock: mockReceiving,
-    what:
-      'Saldo da matéria-prima que entrou via "Recebimentos" (nota fiscal). Ordenado por validade — o lote mais perto de vencer aparece primeiro (FIFO). Diferente de "Produção", que mostra etiquetas de cozinha.',
-    how: [
-      'Lista por produto/lote com saldo, unidade e validade.',
-      'Cores de alerta: vermelho (vencido) e amarelo (vence em 7 dias).',
-      'Botão "Dar saída" registra consumo, descarte ou vencimento.',
-      'Filtros por categoria e busca por nome ou lote.',
-    ],
-    tip: 'O FIFO automático é a forma mais simples de eliminar perdas — sempre use primeiro o que está em cima da lista.',
-  },
-  {
-    role: 'property',
-    title: 'Recebimentos',
-    subtitle: 'Conferência de notas fiscais',
-    mock: mockReceiving,
-    what:
-      'Registro de cada nota fiscal recebida: fornecedor, número da NF, data, e item a item com lote, quantidade, validade, temperatura na chegada e se foi aceito ou rejeitado.',
-    how: [
-      'Botão "+ Novo recebimento" inicia o registro.',
-      'Cabeçalho: fornecedor (lista) + NF + data + foto da nota.',
-      'Itens: produto, lote, quantidade, unidade, validade, temperatura na chegada, marcar se foi rejeitado com motivo.',
-      'Ao salvar, o sistema atualiza automaticamente o saldo do estoque.',
-    ],
-    tip: 'Foto da nota + temperatura na chegada são as evidências mais cobradas pela auditoria. Vale o minutinho extra.',
-  },
-];
-
-// Encadeia os papéis com as descrições
-const ROLES = [
-  {
-    role: 'nutri',
-    title: 'Nutricionista (RT)',
-    subtitle: 'Responsável Técnica perante a ANVISA',
-    color: [4, 120, 87],
-    who: 'A nutricionista (Ariane) cuida da carteira de clientes inteira — múltiplas empresas dentro de uma organização. Avalia visitas técnicas, abre/fecha NCs, mantém documentos e manipuladores em dia.',
-    capabilities: [
-      'Carteira de clientes (saúde de cada empresa)',
-      'Visitas técnicas (avaliação, checklist, assinatura, PDF)',
-      'Não-conformidades (5W2H, fotos, fechamento)',
-      'Manipuladores · ASOs · Treinamentos',
-      'Documentos da empresa (Lista da Vigilância)',
-      'Acompanhamento: temperatura, pragas, fotos, agenda',
-      'Administração: empresas, usuários, assinatura',
-    ],
-  },
-  {
-    role: 'property',
-    title: 'Cozinha (Property)',
-    subtitle: 'Operador na ponta · uma empresa',
-    color: [4, 120, 87],
-    who: 'O operador da cozinha (cozinheiro, gerente local) usa o sistema no dia a dia: imprime etiqueta, registra temperatura, faz checklist, dá baixa em etiquetas vencidas, registra recebimentos.',
-    capabilities: [
-      'Painel diário com tarefas e atalhos',
-      'Imprimir etiqueta (wizard de 5 passos)',
-      'Produção e validades (dar baixa)',
-      'Estoque e recebimentos',
-      'Checklist · temperatura · controle de pragas',
-      'Documentos da empresa (upload)',
-      'NÃO acessa: outras empresas, manipuladores, agenda',
-    ],
-  },
-];
-
-// ============================================================
-//  GERAR O PDF
-// ============================================================
-
 function main() {
-  const doc = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
+  const d = new jsPDF({ unit: 'mm', format: 'a4', compress: true });
 
-  // CAPA
-  drawCover(doc);
+  drawCover(d);
 
-  // SUMÁRIO
-  doc.addPage();
-  // Preparar entries (paginação calculada DEPOIS — primeira passada estima):
-  // Estratégia simples: 1 página por feature, primeira página de cada role = divider.
-  const tocEntries = [];
-  let p = 4; // depois da capa(1), sumário(2-3 com 2 páginas reservadas) … vamos contar de verdade.
+  // Reserva páginas do sumário (2 páginas) — preenche no fim.
+  d.addPage();
+  d.addPage();
 
-  // Vamos rodar a geração em DUAS passadas: primeira só para calcular páginas; segunda gera.
-  // Mais simples: gerar tudo de uma vez e preencher o TOC depois com .setPage().
+  const rolePage = {};
+  const featPage = [];
 
-  // Reserva 2 páginas para sumário (atual page=2 e nova page=3)
-  doc.addPage();
+  for (const role of CONTENT.roles) {
+    d.addPage();
+    rolePage[role.key] = d.getCurrentPageInfo().pageNumber;
+    drawRoleDivider(d, role);
 
-  // Para cada papel, gerar divider + páginas
-  const rolePageStarts = {};
-  const featurePages = [];
+    for (const f of role.features) {
+      d.addPage();
+      featPage.push({ role: role.key, title: f.title, page: d.getCurrentPageInfo().pageNumber });
 
-  for (const r of ROLES) {
-    doc.addPage();
-    rolePageStarts[r.role] = doc.getCurrentPageInfo().pageNumber;
-    drawRoleDivider(doc, r);
-
-    // Features do papel
-    const items = FEATURES.filter((f) => f.role === r.role);
-    for (const f of items) {
-      doc.addPage();
-      const page = doc.getCurrentPageInfo().pageNumber;
-      featurePages.push({ feature: f, page });
-
-      let y = drawPageHeader(doc);
-
-      // Título da feature
-      ink(doc, C.brandDeep);
-      font(doc, 'bold', 6.5);
-      doc.text(r.title.toUpperCase(), M, y, { charSpace: 1.5 });
+      let y = drawPageHeader(d);
+      ink(d, C.brandDeep);
+      font(d, 'bold', 6.5);
+      d.text(role.title.toUpperCase(), M, y, { charSpace: 1.2 });
       y += 4;
-      ink(doc, C.ink);
-      font(doc, 'bold', 16);
-      doc.text(f.title, M, y + 4);
+      ink(d, C.ink);
+      font(d, 'bold', 16);
+      d.text(f.title, M, y + 4);
       y += 9;
-      ink(doc, C.muted);
-      font(doc, 'normal', 9);
-      doc.text(f.subtitle, M, y);
+      ink(d, C.muted);
+      font(d, 'normal', 9);
+      d.text(f.subtitle, M, y);
       y += 5;
 
-      // Mockup
-      const mockH = 95;
-      f.mock(doc, M, y, CONTENT_W, mockH);
-      y += mockH + 6;
-
-      // "Captura de tela ilustrativa"
-      ink(doc, C.faint);
-      font(doc, 'italic', 6.5);
-      doc.text(
-        'Mockup ilustrativo · siga as cores e a hierarquia visual do design real.',
+      const mockH = 92;
+      const real = drawScreen(d, M, y, CONTENT_W, mockH, role.key, f);
+      y += mockH + 5;
+      ink(d, C.faint);
+      font(d, 'italic', 6.5);
+      d.text(
+        real
+          ? 'Captura de tela do sistema.'
+          : 'Representacao da tela (mockup) seguindo o design real do sistema.',
         M,
         y,
       );
       y += 6;
 
-      // "O QUE É"
-      y = ensure(doc, y, 30);
-      fill(doc, C.brand);
-      doc.rect(M, y - 3, 1.5, 4, 'F');
-      ink(doc, C.brandDeep);
-      font(doc, 'bold', 8);
-      doc.text('O QUE É', M + 3, y);
-      y += 2;
-      ink(doc, C.body);
-      font(doc, 'normal', 9);
-      y = wrap(doc, f.what, M, y + 4, CONTENT_W, 4.5);
-      y += 5;
+      // O QUE É
+      y = ensure(d, y, 24);
+      fill(d, C.brand);
+      d.rect(M, y - 3, 1.5, 4, 'F');
+      ink(d, C.brandDeep);
+      font(d, 'bold', 8);
+      d.text('O QUE E', M + 3, y);
+      ink(d, C.body);
+      font(d, 'normal', 9);
+      y = wrap(d, f.what, M, y + 5, CONTENT_W, 4.5) + 4;
 
       // COMO USAR
-      y = ensure(doc, y, 30);
-      fill(doc, C.brand);
-      doc.rect(M, y - 3, 1.5, 4, 'F');
-      ink(doc, C.brandDeep);
-      font(doc, 'bold', 8);
-      doc.text('COMO USAR', M + 3, y);
-      y += 4;
-      ink(doc, C.body);
-      font(doc, 'normal', 9);
+      y = ensure(d, y, 24);
+      fill(d, C.brand);
+      d.rect(M, y - 3, 1.5, 4, 'F');
+      ink(d, C.brandDeep);
+      font(d, 'bold', 8);
+      d.text('COMO USAR', M + 3, y);
+      y += 5;
       for (let i = 0; i < f.how.length; i++) {
-        y = ensure(doc, y, 8);
-        fill(doc, C.brandSoft);
-        doc.circle(M + 1.5, y + 1, 1.8, 'F');
-        ink(doc, C.brandDeep);
-        font(doc, 'bold', 6);
-        doc.text(String(i + 1), M + 1.5, y + 1.8, { align: 'center' });
-        ink(doc, C.body);
-        font(doc, 'normal', 9);
-        y = wrap(doc, f.how[i], M + 5, y + 2, CONTENT_W - 5, 4.5);
-        y += 1.5;
+        y = ensure(d, y, 9);
+        fill(d, C.brandSoft);
+        d.circle(M + 1.6, y + 0.8, 1.9, 'F');
+        ink(d, C.brandDeep);
+        font(d, 'bold', 6);
+        d.text(String(i + 1), M + 1.6, y + 1.6, { align: 'center' });
+        ink(d, C.body);
+        font(d, 'normal', 9);
+        y = wrap(d, f.how[i], M + 5.5, y + 1.8, CONTENT_W - 5.5, 4.4) + 1.5;
       }
       y += 3;
 
       // DICA
-      y = ensure(doc, y, 20);
-      fill(doc, C.brandSoft);
-      rrect(doc, M, y, CONTENT_W, 16, 1.5, 'F');
-      stroke(doc, C.brand, 0.3);
-      // Faixa lateral
-      fill(doc, C.brand);
-      rrect(doc, M, y, 2, 16, 1.5, 'F');
-      ink(doc, C.brandDeep);
-      font(doc, 'bold', 7);
-      doc.text('DICA DA NUTRI', M + 5, y + 4);
-      ink(doc, C.body);
-      font(doc, 'italic', 8.5);
-      wrap(doc, f.tip, M + 5, y + 8, CONTENT_W - 8, 4);
+      y = ensure(d, y, 20);
+      const tipLines = d.splitTextToSize(f.tip, CONTENT_W - 9);
+      const tipH = Math.max(14, 8 + tipLines.length * 4);
+      fill(d, C.brandSoft);
+      rrect(d, M, y, CONTENT_W, tipH, 1.5, 'F');
+      fill(d, C.brand);
+      rrect(d, M, y, 2, tipH, 1.5, 'F');
+      ink(d, C.brandDeep);
+      font(d, 'bold', 7);
+      d.text('DICA', M + 5, y + 4.5);
+      ink(d, C.body);
+      font(d, 'italic', 8.5);
+      d.text(tipLines, M + 5, y + 8.5);
 
-      drawFooter(doc);
+      drawFooter(d);
     }
   }
 
-  // Preenche o sumário (página 2 e 3 reservadas)
-  doc.setPage(2);
-  const tocList = [];
-  for (const r of ROLES) {
-    tocList.push({
-      kind: 'role',
-      title: r.title,
-      subtitle: r.subtitle,
-      page: rolePageStarts[r.role],
-    });
-    for (const fp of featurePages.filter((f) => f.feature.role === r.role)) {
-      tocList.push({
-        kind: 'feature',
-        title: fp.feature.title,
-        page: fp.page,
-      });
+  // Sumário (páginas 2 e 3)
+  d.setPage(2);
+  const toc = [];
+  for (const role of CONTENT.roles) {
+    toc.push({ kind: 'role', title: role.title, page: rolePage[role.key] });
+    for (const fp of featPage.filter((f) => f.role === role.key)) {
+      toc.push({ kind: 'feature', title: fp.title, page: fp.page });
     }
   }
-  drawToc(doc, tocList);
-  drawFooter(doc);
+  drawToc(d, toc);
+  drawFooter(d);
 
-  // Salva
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
-  const arr = doc.output('arraybuffer');
+  const arr = d.output('arraybuffer');
   writeFileSync(OUT_FILE, Buffer.from(arr));
-  console.log(`✓ PDF gerado: ${OUT_FILE}`);
-  const sizeKb = (Buffer.from(arr).length / 1024).toFixed(0);
-  console.log(`  ${sizeKb} KB · ${doc.internal.pages.length - 1} páginas`);
+  const kb = (Buffer.from(arr).length / 1024).toFixed(0);
+  const shots = existsSync(SHOTS_DIR);
+  console.log(`OK  ${OUT_FILE}`);
+  console.log(`    ${kb} KB - ${d.internal.pages.length - 1} paginas`);
+  console.log(
+    shots
+      ? '    Usando capturas reais quando disponiveis em dist/screenshots.'
+      : '    Sem dist/screenshots: usando mockups. Rode npm run manual:screenshots para capturas reais.',
+  );
 }
 
 main();

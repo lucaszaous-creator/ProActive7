@@ -103,6 +103,9 @@ const DocumentsPage = lazy(() =>
     default: m.DocumentsPage,
   })),
 );
+const HelpPage = lazy(() =>
+  import('./pages/HelpPage').then((m) => ({ default: m.HelpPage })),
+);
 const AuditsPage = lazy(() =>
   import('./pages/AuditsPage').then((m) => ({ default: m.AuditsPage })),
 );
@@ -293,6 +296,7 @@ export default function App() {
             <Route path="/checklists" element={<ChecklistsPage />} />
             <Route path="/relatorios" element={<ReportsPage />} />
             <Route path="/documentos" element={<DocumentsPage />} />
+            <Route path="/ajuda" element={<HelpPage />} />
             <Route path="/visitas" element={<AuditsPage />} />
             <Route path="/visitas/:id" element={<AuditDetailPage />} />
             <Route path="/agenda" element={<AgendaPage />} />

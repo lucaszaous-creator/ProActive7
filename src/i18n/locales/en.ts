@@ -49,6 +49,7 @@ const en = {
     plans: 'Plans',
     subscription: 'My subscription',
     siteArticles: 'Site articles',
+    help: 'Help',
   },
   layout: {
     master: 'Master user',

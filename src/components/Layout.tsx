@@ -40,6 +40,7 @@ import {
   Settings,
   Gauge,
   CreditCard,
+  LifeBuoy,
   LucideIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -314,6 +315,12 @@ const ITEM = {
     labelKey: 'nav.siteArticles',
     icon: Newspaper,
   } as NavItemDef,
+  ajuda: {
+    kind: 'item',
+    to: '/ajuda',
+    labelKey: 'nav.help',
+    icon: LifeBuoy,
+  } as NavItemDef,
 };
 
 const NAV_PROPERTY: NavNode[] = [
@@ -358,6 +365,7 @@ const NAV_PROPERTY: NavNode[] = [
       ITEM.dossie,
     ],
   },
+  ITEM.ajuda,
 ];
 
 // Gerente da empresa: o mesmo menu da cozinha + cadastro de
@@ -411,6 +419,7 @@ const NAV_PROPERTY_MANAGER: NavNode[] = [
     defaultOpen: false,
     children: [ITEM.usuarios],
   },
+  ITEM.ajuda,
 ];
 
 const NAV_NUTRITIONIST: NavNode[] = [
@@ -464,6 +473,7 @@ const NAV_NUTRITIONIST: NavNode[] = [
       ITEM.hardware,
     ],
   },
+  ITEM.ajuda,
 ];
 
 const NAV_PLATFORM_ADMIN: NavNode[] = [
@@ -538,6 +548,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
     defaultOpen: false,
     children: [ITEM.empresas, ITEM.usuarios, ITEM.impressoras, ITEM.hardware],
   },
+  ITEM.ajuda,
 ];
 
 function NavItem({ item, onClick }: { item: NavItemDef; onClick: () => void }) {
