@@ -5,25 +5,24 @@
 // dist/screenshots/<screenshot>.png. Depois, rode `npm run manual:pdf`
 // e o gerador embute as capturas no lugar dos mockups.
 //
-// PRÉ-REQUISITOS
-//   1) App rodando (use a URL pública ou rode `npm run build && npm run
-//      preview` e aponte BASE_URL para http://localhost:4173).
-//   2) Playwright instalado (uma vez):
-//        npm i -D playwright && npx playwright install chromium
-//   3) Credenciais de teste de cada papel via variáveis de ambiente.
+// USO MAIS SIMPLES (com as contas demo já criadas no banco):
 //
-// VARIÁVEIS DE AMBIENTE
-//   BASE_URL           (default: https://pro-active7.vercel.app)
+//   1) Instale o browser (uma vez):
+//        npx playwright install chromium
+//   2) Rode a captura:
+//        npm run manual:screenshots
+//   3) Gere o PDF:
+//        npm run manual:pdf
+//
+// As contas demo embutidas neste script existem na organização "Demo
+// (manual PDF)" do banco de produção, isoladas dos clientes reais.
+// Para apagar a demo depois, rode o script de cleanup em:
+//   supabase/migrations/cleanup-demo-accounts.sql (executar manualmente).
+//
+// CUSTOMIZAÇÃO (opcional)
+//   BASE_URL           default https://pro-active7.vercel.app
 //   NUTRI_EMAIL / NUTRI_PASSWORD
 //   PROPERTY_EMAIL / PROPERTY_PASSWORD
-//
-// EXEMPLO
-//   BASE_URL=http://localhost:4173 \
-//   NUTRI_EMAIL=nutri@teste.com NUTRI_PASSWORD=... \
-//   PROPERTY_EMAIL=cozinha@teste.com PROPERTY_PASSWORD=... \
-//   node scripts/capture-screenshots.mjs
-//
-// Papéis sem credenciais são pulados (e o PDF mantém o mockup deles).
 
 import { chromium } from 'playwright';
 import { mkdirSync, existsSync, readFileSync } from 'node:fs';
@@ -36,30 +35,31 @@ const CONTENT = JSON.parse(
   readFileSync(join(ROOT, 'src/content/help-content.json'), 'utf8'),
 );
 
-const BASE_URL = (process.env.BASE_URL || 'https://pro-active7.vercel.app').replace(/\/$/, '');
+const BASE_URL = (
+  process.env.BASE_URL || 'https://pro-active7.vercel.app'
+).replace(/\/$/, '');
 const VIEWPORT = { width: 1440, height: 760 };
 
+// Contas demo criadas no banco para gerar o manual.
 const CREDS = {
   nutri: {
-    email: process.env.NUTRI_EMAIL,
-    password: process.env.NUTRI_PASSWORD,
+    email: process.env.NUTRI_EMAIL || 'nutri-demo@proactive7.com.br',
+    password: process.env.NUTRI_PASSWORD || 'Demo2026!',
   },
   property: {
-    email: process.env.PROPERTY_EMAIL,
-    password: process.env.PROPERTY_PASSWORD,
+    email: process.env.PROPERTY_EMAIL || 'cozinha-demo@proactive7.com.br',
+    password: process.env.PROPERTY_PASSWORD || 'Demo2026!',
   },
 };
 
 async function login(page, email, password) {
   await page.goto(`${BASE_URL}/login`, { waitUntil: 'networkidle' });
-  // Campos comuns: input[type=email] e input[type=password].
   await page.fill('input[type="email"]', email);
   await page.fill('input[type="password"]', password);
   await Promise.all([
     page.waitForLoadState('networkidle'),
     page.click('button[type="submit"]'),
   ]);
-  // Espera sair da tela de login.
   await page.waitForTimeout(2500);
 }
 
@@ -67,7 +67,7 @@ async function capture(page, route, name) {
   const url = `${BASE_URL}${route}`;
   try {
     await page.goto(url, { waitUntil: 'networkidle' });
-    // Dá tempo para dados carregarem (queries Supabase).
+    // Dá tempo para queries Supabase carregarem.
     await page.waitForTimeout(2500);
     const file = join(OUT_DIR, `${name}.png`);
     await page.screenshot({ path: file });
@@ -101,7 +101,9 @@ async function runRole(browser, roleKey) {
 
 async function main() {
   if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
-  console.log(`Capturando de ${BASE_URL} (viewport ${VIEWPORT.width}x${VIEWPORT.height})`);
+  console.log(
+    `Capturando de ${BASE_URL} (viewport ${VIEWPORT.width}x${VIEWPORT.height})`,
+  );
   const browser = await chromium.launch();
   try {
     await runRole(browser, 'nutri');
