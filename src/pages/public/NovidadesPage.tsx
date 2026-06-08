@@ -1,9 +1,20 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Instagram, ArrowRight, BookOpen } from 'lucide-react';
+import {
+  Instagram,
+  ArrowRight,
+  BookOpen,
+  ShieldCheck,
+  Bug,
+  Thermometer,
+  Tag,
+  ClipboardCheck,
+  GraduationCap,
+} from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { fetchPublishedArticles, type ArticleSummary } from '@/lib/articlesApi';
 import { ElfsightWidget } from '@/components/public/ElfsightWidget';
+import { Reveal } from '@/components/public/Reveal';
 
 const INSTAGRAM_URL = 'https://www.instagram.com/proactive.7/';
 
@@ -19,6 +30,7 @@ export function NovidadesPage() {
   return (
     <div>
       <Hero />
+      <Temas />
       <Articles />
       <Feed />
       <Cta />
@@ -64,6 +76,77 @@ function Articles() {
               <ArrowRight className="h-4 w-4" />
             </span>
           </Link>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Temas recorrentes do conteúdo — dá ao visitante uma noção do que
+ * encontra (mesmo antes de haver muitos posts/artigos) e mostra domínio
+ * técnico. Preenche o espaço entre o hero e os artigos.
+ */
+function Temas() {
+  const temas = [
+    {
+      icon: ShieldCheck,
+      title: 'Boas práticas (RDC 216)',
+      body: 'O que a fiscalização espera ver na manipulação de alimentos.',
+    },
+    {
+      icon: Thermometer,
+      title: 'Controle de temperatura',
+      body: 'Cadeia de frio, cocção e o registro que comprova segurança.',
+    },
+    {
+      icon: Bug,
+      title: 'Controle de pragas',
+      body: 'Prevenção, monitoramento e documentação exigida.',
+    },
+    {
+      icon: Tag,
+      title: 'Etiquetagem e validade',
+      body: 'Datas, lotes e rastreabilidade sem erro na cozinha.',
+    },
+    {
+      icon: ClipboardCheck,
+      title: 'Auditorias e não-conformidades',
+      body: 'Como avaliar e corrigir o que sai da conformidade.',
+    },
+    {
+      icon: GraduationCap,
+      title: 'Treinamento de equipe',
+      body: 'Capacitar manipuladores e criar cultura de segurança.',
+    },
+  ];
+  return (
+    <section className="mx-auto max-w-6xl px-5 py-16">
+      <Reveal>
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            O que abordamos
+          </span>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
+            Temas que ajudam a sua operação no dia a dia.
+          </h2>
+        </div>
+      </Reveal>
+      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {temas.map(({ icon: Icon, title, body }, i) => (
+          <Reveal key={title} delay={(i % 3) * 90}>
+            <div className="group flex h-full gap-4 rounded-2xl border border-[#E8F1EA] bg-white p-6 transition hover:border-[#6FA68A]/50 hover:shadow-[0_12px_30px_-15px_rgba(47,93,63,0.20)]">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
+                <Icon className="h-5 w-5" />
+              </span>
+              <div>
+                <h3 className="text-sm font-semibold text-[#1A2A22]">{title}</h3>
+                <p className="mt-1.5 text-xs leading-relaxed text-[#1A2A22]/65">
+                  {body}
+                </p>
+              </div>
+            </div>
+          </Reveal>
         ))}
       </div>
     </section>
