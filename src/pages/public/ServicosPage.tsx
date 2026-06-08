@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   GraduationCap,
@@ -22,6 +23,10 @@ import {
   Bug,
   ShieldCheck,
   Sparkles,
+  Search,
+  Wrench,
+  CalendarCheck,
+  BadgeCheck,
 } from 'lucide-react';
 import { Plus } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -37,7 +42,11 @@ const FAQ = (seoConfig.pages['/servicos'].faq ?? []) as {
 interface Servico {
   icon: LucideIcon;
   title: string;
+  /** Pílula curta de categoria, exibida no banner do showcase. */
+  tag: string;
   body: string;
+  /** Resultado concreto entregue ao cliente — reforça o valor. */
+  entrega: string;
   /** Se preenchido, vira link "Saiba mais" no final do card. */
   cta?: { to: string; label: string };
 }
@@ -46,42 +55,58 @@ const SERVICOS: Servico[] = [
   {
     icon: GraduationCap,
     title: 'Treinamentos',
+    tag: 'Capacitação da equipe',
     body: 'Promovemos, com qualidade, uma maneira diferente de levar conhecimento técnico até os manipuladores de alimentos da sua operação.',
+    entrega: 'Equipe treinada e registro de capacitação para a fiscalização.',
   },
   {
     icon: Stethoscope,
     title: 'Assessoria técnica periódica',
+    tag: 'Acompanhamento contínuo',
     body: 'Visitas e acompanhamento regulares garantem que as boas práticas de manipulação de alimentos estejam corretamente implantadas e aplicadas conforme a necessidade do seu estabelecimento.',
+    entrega: 'Visitas recorrentes com relatório técnico a cada acompanhamento.',
   },
   {
     icon: ClipboardCheck,
     title: 'Auditoria técnica pontual',
+    tag: 'Diagnóstico ANVISA',
     body: 'Através das auditorias técnicas avaliamos se o estabelecimento está apto a produzir/fornecer produtos alimentícios com qualidade e segurança alimentar — auxiliando na regularização junto à legislação da ANVISA.',
+    entrega: 'Laudo de conformidade e plano de ação para regularização.',
   },
   {
     icon: Utensils,
     title: 'Responsabilidade técnica / PAT',
+    tag: 'RT e PAT',
     body: 'O PAT (Programa de Alimentação do Trabalhador) é uma iniciativa do governo para proporcionar mais qualidade na alimentação de trabalhadores. Auxiliamos na implantação e manutenção do programa na sua empresa.',
+    entrega: 'RT assinada e PAT implantado conforme a legislação.',
   },
   {
     icon: ChefHat,
     title: 'Cardápios e fichas técnicas',
+    tag: 'Padronização',
     body: 'Criação, implementação e revisão de cardápios e fichas técnicas de cada preparação do seu estabelecimento — com padronização e custo calculado.',
+    entrega: 'Fichas técnicas com custo por porção e cardápio padronizado.',
   },
   {
     icon: Stamp,
     title: 'CMVS — Cadastro Municipal de Vigilância em Saúde',
+    tag: 'Licenciamento',
     body: 'Auxiliamos na obtenção do CMVS do seu estabelecimento, conduzindo o processo de documentação e atendendo às exigências municipais.',
+    entrega: 'CMVS emitido com a documentação municipal em dia.',
   },
   {
     icon: Tag,
     title: 'Informação nutricional',
+    tag: 'Rotulagem',
     body: 'Todos os alimentos fabricados e embalados para venda devem ter rótulo nutricional elaborado e assinado por nutricionista especializada — nossa equipe entrega isso para você dentro da legislação vigente.',
+    entrega: 'Rótulo nutricional assinado, pronto para a embalagem.',
   },
   {
     icon: BookOpen,
     title: 'Manuais de Boas Práticas e POPs',
+    tag: 'Documentação',
     body: 'Manual de boas práticas personalizado, respeitando as peculiaridades do seu ramo e negócio. Os POPs (Procedimentos Operacionais Padronizados) orientam o manipulador no dia a dia da operação.',
+    entrega: 'Manual de Boas Práticas e POPs personalizados para a sua operação.',
   },
 ];
 
@@ -104,8 +129,9 @@ export function ServicosPage() {
   return (
     <div>
       <Hero />
-      <Grid />
+      <ServiceShowcase />
       <SistemaBanner />
+      <ComoFunciona />
       <Segmentos />
       <Depoimentos />
       <Faq />
@@ -164,7 +190,19 @@ function Hero() {
   );
 }
 
-function Grid() {
+/**
+ * Showcase interativo dos serviços ("modo galeria"). Uma lista à esquerda
+ * (todos os serviços) controla um painel-banner à direita que se transforma
+ * ao passar o mouse / focar / tocar. Cada serviço ganha tratamento de banner,
+ * não só um. No mobile a lista empilha e o banner aparece abaixo (toque
+ * seleciona, já que não há hover). Acessível: botões reais + aria-pressed.
+ */
+function ServiceShowcase() {
+  const [active, setActive] = useState(0);
+  const current = SERVICOS[active];
+  const CurrentIcon = current.icon;
+  const num = String(active + 1).padStart(2, '0');
+
   return (
     <section className="mx-auto max-w-6xl px-5 pb-4 pt-16">
       <div className="mb-8">
@@ -174,40 +212,100 @@ function Grid() {
         <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
           Consultoria técnica do início à fiscalização.
         </h2>
+        <p className="mt-3 max-w-xl text-sm text-[#1A2A22]/60">
+          Passe o mouse (ou toque) em cada serviço para ver o que entregamos.
+        </p>
       </div>
-      <div className="grid gap-5 md:grid-cols-2">
-        {SERVICOS.map(({ icon: Icon, title, body, cta }, idx) => (
-          <article
-            key={title}
-            className="group relative overflow-hidden rounded-2xl border border-[#E8F1EA] bg-white p-7 transition hover:border-[#6FA68A]/50 hover:shadow-[0_12px_30px_-15px_rgba(47,93,63,0.20)]"
-          >
-            <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
-                <Icon className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-[#6FA68A]">
-                  {String(idx + 1).padStart(2, '0')}
-                </span>
-                <h3 className="mt-0.5 text-base font-semibold leading-snug text-[#1A2A22]">
-                  {title}
-                </h3>
-                <p className="mt-3 text-sm leading-relaxed text-[#1A2A22]/70">
-                  {body}
-                </p>
-                {cta ? (
-                  <Link
-                    to={cta.to}
-                    className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#2F5D3F] hover:underline"
+
+      <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
+        {/* Lista — galeria de serviços */}
+        <ul className="flex flex-col gap-2.5">
+          {SERVICOS.map((s, i) => {
+            const Icon = s.icon;
+            const isActive = i === active;
+            return (
+              <li key={s.title}>
+                <button
+                  type="button"
+                  onMouseEnter={() => setActive(i)}
+                  onFocus={() => setActive(i)}
+                  onClick={() => setActive(i)}
+                  aria-pressed={isActive}
+                  className={`group flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition ${
+                    isActive
+                      ? 'border-[#2F5D3F] bg-[#2F5D3F] text-white shadow-[0_12px_28px_-16px_rgba(47,93,63,0.55)]'
+                      : 'border-[#E8F1EA] bg-white text-[#1A2A22] hover:border-[#6FA68A]/60 hover:bg-[#FAFAF7]'
+                  }`}
+                >
+                  <span
+                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition ${
+                      isActive
+                        ? 'bg-white/15 text-white'
+                        : 'bg-[#E8F1EA] text-[#2F5D3F]'
+                    }`}
                   >
-                    {cta.label}
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                ) : null}
-              </div>
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span
+                      className={`block font-mono text-[10px] uppercase tracking-wider ${
+                        isActive ? 'text-white/55' : 'text-[#6FA68A]'
+                      }`}
+                    >
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="block truncate text-sm font-semibold leading-snug">
+                      {s.title}
+                    </span>
+                  </span>
+                  <ArrowRight
+                    className={`h-4 w-4 shrink-0 transition-all ${
+                      isActive
+                        ? 'translate-x-0 opacity-100'
+                        : '-translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-60'
+                    }`}
+                  />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* Banner que se transforma */}
+        <div className="relative min-h-[20rem] overflow-hidden rounded-3xl bg-gradient-to-br from-[#234731] via-[#2F5D3F] to-[#3C7350] p-8 text-white shadow-[0_24px_60px_-25px_rgba(47,93,63,0.55)] md:p-10">
+          <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-white/5" />
+          <div className="pointer-events-none absolute -bottom-24 -left-12 h-56 w-56 rounded-full bg-white/5" />
+          <span
+            className="pointer-events-none absolute right-6 top-2 select-none font-mono text-[7rem] font-bold leading-none text-white/5"
+            aria-hidden="true"
+          >
+            {num}
+          </span>
+
+          {/* key={active} remonta o bloco → dispara a animação a cada troca */}
+          <div
+            key={active}
+            className="animate-service-reveal relative flex h-full flex-col"
+          >
+            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
+              <Sparkles className="h-3.5 w-3.5" />
+              {current.tag}
+            </span>
+            <div className="mt-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-[#BFE3CC]">
+              <CurrentIcon className="h-7 w-7" />
             </div>
-          </article>
-        ))}
+            <h3 className="mt-5 text-2xl font-semibold tracking-tight">
+              {current.title}
+            </h3>
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/85 md:text-base">
+              {current.body}
+            </p>
+            <div className="mt-auto flex items-start gap-2.5 pt-6">
+              <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#BFE3CC]" />
+              <p className="text-sm font-medium text-white">{current.entrega}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -265,6 +363,86 @@ function SistemaBanner() {
             ))}
           </ul>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Seção "Como trabalhamos" — linha do tempo do processo de consultoria.
+ * Enriquece a página explicando o método (não inventa métrica; descreve
+ * o fluxo real: diagnóstico → implantação → acompanhamento → pronto).
+ */
+function ComoFunciona() {
+  const passos: { icon: LucideIcon; step: string; title: string; body: string }[] =
+    [
+      {
+        icon: Search,
+        step: '01',
+        title: 'Diagnóstico',
+        body: 'Auditoria inicial da sua operação para mapear o que já está conforme e o que precisa de ajuste.',
+      },
+      {
+        icon: Wrench,
+        step: '02',
+        title: 'Implantação',
+        body: 'Manuais, POPs, fichas técnicas e treinamento da equipe — colocamos as boas práticas para rodar de fato.',
+      },
+      {
+        icon: CalendarCheck,
+        step: '03',
+        title: 'Acompanhamento',
+        body: 'Visitas periódicas e o sistema ProActive7 mantêm tudo registrado e atualizado no dia a dia.',
+      },
+      {
+        icon: BadgeCheck,
+        step: '04',
+        title: 'Pronto para a fiscalização',
+        body: 'Documentação assinada pela RT e operação em conformidade com a ANVISA, a qualquer momento.',
+      },
+    ];
+  return (
+    <section className="border-t border-[#E8F1EA] bg-white py-16">
+      <div className="mx-auto max-w-6xl px-5">
+        <div className="mb-10">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            Como trabalhamos
+          </span>
+          <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
+            Do diagnóstico à fiscalização — sem improviso.
+          </h2>
+        </div>
+
+        <ol className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {passos.map(({ icon: Icon, step, title, body }, i) => (
+            <li
+              key={step}
+              className="relative rounded-2xl border border-[#E8F1EA] bg-[#FAFAF7] p-6"
+            >
+              {/* conector entre cards no desktop */}
+              {i < passos.length - 1 && (
+                <span
+                  className="pointer-events-none absolute right-[-14px] top-10 hidden h-px w-7 bg-[#6FA68A]/40 lg:block"
+                  aria-hidden="true"
+                />
+              )}
+              <div className="flex items-center justify-between">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2F5D3F] text-white">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span className="font-mono text-2xl font-bold text-[#E8F1EA]">
+                  {step}
+                </span>
+              </div>
+              <h3 className="mt-4 text-base font-semibold text-[#1A2A22]">
+                {title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#1A2A22]/70">
+                {body}
+              </p>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );
