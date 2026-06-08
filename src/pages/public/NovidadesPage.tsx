@@ -198,6 +198,14 @@ function Hero() {
 }
 
 function InstagramCard() {
+  const tiles = [
+    { icon: ShieldCheck, grad: 'from-[#2F5D3F] to-[#3C7350]' },
+    { icon: Thermometer, grad: 'from-[#3C7350] to-[#6FA68A]' },
+    { icon: Tag, grad: 'from-[#234731] to-[#2F5D3F]' },
+    { icon: Bug, grad: 'from-[#6FA68A] to-[#3C7350]' },
+    { icon: ClipboardCheck, grad: 'from-[#2F5D3F] to-[#1A3D27]' },
+    { icon: GraduationCap, grad: 'from-[#3C7350] to-[#2F5D3F]' },
+  ];
   return (
     <a
       href={INSTAGRAM_URL}
@@ -213,26 +221,36 @@ function InstagramCard() {
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#A8543A] via-[#D4A857] to-[#6FA68A] text-white shadow-sm">
           <Instagram className="h-5 w-5" />
         </div>
-        <div>
-          <div className="text-[11px] font-medium uppercase tracking-wider text-[#1A2A22]/50">
-            Instagram
-          </div>
-          <div className="text-base font-semibold text-[#1A2A22]">
+        <div className="min-w-0">
+          <div className="text-base font-semibold leading-tight text-[#1A2A22]">
             @proactive.7
           </div>
+          <div className="text-[11px] font-medium text-[#1A2A22]/50">
+            Perfil oficial · Macaé / RJ
+          </div>
         </div>
+        <span className="ml-auto rounded-full bg-[#2F5D3F] px-3 py-1.5 text-xs font-medium text-white">
+          Seguir
+        </span>
       </div>
-      <div className="relative mt-6 grid grid-cols-3 gap-1.5">
-        {Array.from({ length: 9 }).map((_, i) => (
+
+      {/* Grade temática (gradiente da marca + ícone) — substitui os
+          quadrados vazios por algo intencional. O feed ao vivo aparece
+          logo abaixo, na seção "Publicações recentes". */}
+      <div className="relative mt-6 grid grid-cols-3 gap-2">
+        {tiles.map(({ icon: Icon, grad }, i) => (
           <div
             key={i}
-            className="aspect-square rounded-md bg-[#E8F1EA]"
-            style={{ opacity: 0.4 + (i % 3) * 0.15 }}
-          />
+            className={`flex aspect-square items-center justify-center rounded-xl bg-gradient-to-br ${grad} text-white/90 shadow-sm transition group-hover:scale-[1.03]`}
+          >
+            <Icon className="h-6 w-6" />
+          </div>
         ))}
       </div>
-      <div className="relative mt-5 text-xs text-[#1A2A22]/55">
-        Toque para abrir o perfil →
+
+      <div className="relative mt-5 flex items-center gap-1.5 text-xs font-medium text-[#2F5D3F]">
+        Ver o feed ao vivo
+        <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-0.5" />
       </div>
     </a>
   );
