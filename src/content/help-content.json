@@ -12,15 +12,15 @@
         "tagline": "O quanto a cozinha passou na inspeção daquele dia",
         "plain": "Quando a nutricionista faz uma visita, ela percorre um checklist e marca cada ponto como Conforme, Não conforme ou Não se aplica. A nota transforma essas marcações em um número de 0 a 100% — quanto maior, mais a cozinha está dentro das regras da ANVISA.",
         "calc": [
-          "Cada item do checklist tem um peso, de 1 a 5. Itens mais graves (como contaminação cruzada) pesam mais que detalhes menores.",
+          "Cada item do checklist tem um peso, de 1 a 3. Itens mais graves (como contaminação cruzada) pesam mais que detalhes menores.",
           "Somamos os pesos de tudo que foi marcado como Conforme.",
           "Dividimos pela soma dos pesos de tudo que foi avaliado (Conforme mais Não conforme).",
           "O que foi marcado como Não se aplica sai inteiro da conta — não ajuda nem atrapalha.",
           "Item que ficou sem resposta conta como Não conforme, para incentivar a nutricionista a preencher tudo."
         ],
         "example": {
-          "scenario": "Uma visita com 5 itens: 3 conformes (pesos 5, 3 e 2, somando 10) e 2 não conformes (pesos 4 e 1, somando 5).",
-          "result": "Nota = 10 ÷ 15 = 66,7%. Faixa âmbar (atenção)."
+          "scenario": "Uma visita com 5 itens: 3 conformes (pesos 3, 2 e 2, somando 7) e 2 não conformes (pesos 3 e 1, somando 4).",
+          "result": "Nota = 7 ÷ 11 = 63,6%. Faixa vermelha (crítico)."
         },
         "howToRead": [
           "85% ou mais — verde: operação conforme.",
@@ -28,6 +28,36 @@
           "Abaixo de 70% — vermelho: situação crítica."
         ],
         "whyMatters": "É o número que a nutricionista mostra ao cliente para provar evolução visita após visita. Como os itens críticos pesam mais, a nota reflete risco real de fiscalização — não apenas a quantidade de itens marcados."
+      },
+      {
+        "id": "audit-weights",
+        "title": "De onde vem o peso de cada item",
+        "where": "Em qualquer template de checklist e na nota da visita",
+        "tagline": "A escala de gravidade que a RDC 216 desenha — explícita, não opinião",
+        "plain": "Toda nota de visita técnica é a média ponderada dos itens do checklist. Mas e o peso de cada item, quem decide? A resposta é a própria ANVISA. A nutricionista cataloga cada exigência da RDC 216 em três níveis de risco, levando em conta o impacto direto na segurança alimentar — não opinião pessoal.",
+        "calc": [
+          "Peso 3 — risco direto e imediato à saúde de quem come. São os itens que, sozinhos, podem causar contaminação ou intoxicação. Exemplos: mãos lavadas corretamente, ASO em dia, temperatura sob controle, ausência de evidências de pragas, diluição correta dos saneantes.",
+          "Peso 2 — risco indireto ou estrutural. São itens que não causam dano imediato, mas, se descuidados, criam ambiente para falha. Exemplos: vedação de portas e janelas, uniforme adequado, organização do estoque, plano de manutenção documentado.",
+          "Peso 1 — itens de conformidade documental ou de boa prática complementar. Exemplos: identificação dos utensílios de limpeza por área, iluminação adequada nas áreas de produção.",
+          "A referência legal da RDC 216 fica vinculada a cada item (artigos 4.1 a 4.7), e aparece no relatório da visita ao lado da exigência. Auditável."
+        ],
+        "breakdownTitle": "DISTRIBUICAO NO TEMPLATE OFICIAL (45 ITENS RDC 216)",
+        "breakdownUnit": "itens",
+        "breakdown": [
+          { "label": "Peso 3", "points": 23, "desc": "Risco direto à saúde — pesa o mais alto no cálculo. Cerca da metade dos itens do template oficial são desta categoria." },
+          { "label": "Peso 2", "points": 18, "desc": "Risco indireto ou estrutural — a maior parte dos itens do dia a dia." },
+          { "label": "Peso 1", "points": 4, "desc": "Boa prática complementar — pesa o menos no cálculo, mas continua sendo cobrado." }
+        ],
+        "example": {
+          "scenario": "O template oficial do sistema (RDC 216) tem 45 itens distribuídos em 9 categorias.",
+          "result": "23 itens são peso 3, 18 são peso 2 e 4 são peso 1. Itens críticos pesam o triplo dos itens documentais — alinhado com o que a Vigilância prioriza."
+        },
+        "howToRead": [
+          "Peso 3 (vermelho) — não pode falhar; falhar derruba a nota com força.",
+          "Peso 2 (âmbar) — falhar pesa, mas dá para compensar com a maioria conforme.",
+          "Peso 1 (verde) — falhar quase não move a nota, mas ainda vira observação no relatório."
+        ],
+        "whyMatters": "É a transparência que diferencia o ProActive7 de planilhas caseiras. A nutricionista pode mostrar ao cliente exatamente por que aquela falha valeu 3 pontos e aquela outra valeu 1, com a referência legal junto. E como o peso é cadastrado em cada template, a nutricionista pode criar checklists próprios para casos específicos (PAT, controle de qualidade interno, RDC 275) ajustando os pesos conforme o contexto — sempre dentro da mesma escala de 1 a 3."
       },
       {
         "id": "compliance-score",

@@ -112,6 +112,8 @@ interface Metric {
   plain: string;
   calc?: string[];
   breakdown?: { label: string; points: number; desc: string }[];
+  breakdownTitle?: string;
+  breakdownUnit?: string;
   example?: { scenario: string; result: string };
   howToRead?: string[];
   whyMatters?: string;
@@ -394,29 +396,58 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                   ) : null}
 
                   {m.breakdown?.length ? (
-                    <div>
-                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
-                        As sete frentes (total 100 pontos)
-                      </p>
-                      <div className="space-y-1.5">
-                        {m.breakdown.map((p) => (
-                          <div key={p.label} className="flex items-center gap-2">
-                            <span className="w-28 shrink-0 text-xs font-medium text-neutral-700 dark:text-neutral-300">
-                              {p.label}
-                            </span>
-                            <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+                    (() => {
+                      const max = Math.max(...m.breakdown.map((p) => p.points));
+                      const sum = m.breakdown.reduce((s, p) => s + p.points, 0);
+                      const unit = m.breakdownUnit ?? (sum === 100 ? 'pts' : 'itens');
+                      const defaultTitle =
+                        sum === 100
+                          ? 'As sete frentes (total 100 pontos)'
+                          : 'Distribuição';
+                      return (
+                        <div>
+                          <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                            {m.breakdownTitle ?? defaultTitle}
+                          </p>
+                          <div className="space-y-1.5">
+                            {m.breakdown.map((p) => (
                               <div
-                                className="h-full rounded-full bg-emerald-500"
-                                style={{ width: `${(p.points / 25) * 100}%` }}
-                              />
-                            </div>
-                            <span className="w-10 shrink-0 text-right text-xs font-semibold text-emerald-700 dark:text-emerald-400">
-                              {p.points} pts
-                            </span>
+                                key={p.label}
+                                className="flex items-center gap-2"
+                              >
+                                <span className="w-28 shrink-0 text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                                  {p.label}
+                                </span>
+                                <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+                                  <div
+                                    className="h-full rounded-full bg-emerald-500"
+                                    style={{
+                                      width: `${(p.points / max) * 100}%`,
+                                    }}
+                                  />
+                                </div>
+                                <span className="w-16 shrink-0 text-right text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                                  {p.points} {unit}
+                                </span>
+                              </div>
+                            ))}
                           </div>
-                        ))}
-                      </div>
-                    </div>
+                          <ul className="mt-2 space-y-0.5">
+                            {m.breakdown.map((p) => (
+                              <li
+                                key={`d-${p.label}`}
+                                className="text-[11px] leading-snug text-neutral-500 dark:text-neutral-400"
+                              >
+                                <span className="font-medium text-neutral-700 dark:text-neutral-300">
+                                  {p.label}:
+                                </span>{' '}
+                                {p.desc}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      );
+                    })()
                   ) : null}
 
                   {m.example ? (

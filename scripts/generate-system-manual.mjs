@@ -1614,16 +1614,29 @@ function drawMethodologyPage(d, m, index) {
     y += 3;
   }
 
-  // BREAKDOWN visual (compliance: barras com peso)
+  // BREAKDOWN visual (barras proporcionais)
   if (m.breakdown && m.breakdown.length) {
     y = ensure(d, y, 14 + m.breakdown.length * 7);
     fill(d, C.brand);
     d.rect(M, y - 3, 1.5, 4, 'F');
     ink(d, C.brandDeep);
     font(d, 'bold', 8);
-    d.text('AS SETE FRENTES (TOTAL 100 PONTOS)', M + 3, y);
+    // Título: usa breakdownTitle se fornecido; senão escolhe o padrão
+    // de "7 frentes" (compliance) baseado no número de partes.
+    const sum = m.breakdown.reduce((s, p) => s + p.points, 0);
+    const isHundred = sum === 100;
+    const defaultTitle = isHundred
+      ? `AS ${
+          ['UMA', 'DUAS', 'TRES', 'QUATRO', 'CINCO', 'SEIS', 'SETE', 'OITO'][
+            m.breakdown.length - 1
+          ] ?? m.breakdown.length
+        } FRENTES (TOTAL 100 PONTOS)`
+      : 'DISTRIBUICAO';
+    d.text(m.breakdownTitle || defaultTitle, M + 3, y);
     y += 6;
-    const maxPts = 25;
+    // Escala da barra: usa o maior valor do breakdown (não força 25).
+    const maxPts = Math.max(...m.breakdown.map((p) => p.points));
+    const unit = m.breakdownUnit || (isHundred ? 'pts' : 'itens');
     const barMaxW = 46;
     const labelW = 36;
     for (const part of m.breakdown) {
@@ -1631,7 +1644,6 @@ function drawMethodologyPage(d, m, index) {
       ink(d, C.ink);
       font(d, 'bold', 8);
       d.text(part.label, M, y + 1.5, { maxWidth: labelW });
-      // barra proporcional ao peso
       const bx = M + labelW + 2;
       fill(d, C.hair);
       rrect(d, bx, y, barMaxW, 3.2, 1, 'F');
@@ -1639,8 +1651,7 @@ function drawMethodologyPage(d, m, index) {
       rrect(d, bx, y, (part.points / maxPts) * barMaxW, 3.2, 1, 'F');
       ink(d, C.brandDeep);
       font(d, 'bold', 8);
-      d.text(`${part.points} pts`, bx + barMaxW + 3, y + 2.6);
-      // descrição
+      d.text(`${part.points} ${unit}`, bx + barMaxW + 3, y + 2.6);
       ink(d, C.muted);
       font(d, 'normal', 7);
       const dx = bx + barMaxW + 16;
