@@ -39,6 +39,28 @@ body {
   display: none;
 }
 
+/* Transicao do showcase de servicos (ServicosPage): o painel-banner
+   reaparece com fade+slide a cada troca de servico. Re-disparada via
+   `key` no React, que remonta o elemento. Respeita prefers-reduced-motion. */
+@keyframes serviceReveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-service-reveal {
+  animation: serviceReveal 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-service-reveal {
+    animation: none;
+  }
+}
+
 /* Impressao: a area da etiqueta/ficha eh montada via React Portal
    direto no <body>, como irma de #root. Aqui escondemos o app
    inteiro (#root) e mostramos somente o portal — evita paginas em
