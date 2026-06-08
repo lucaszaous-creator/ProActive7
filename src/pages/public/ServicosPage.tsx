@@ -191,11 +191,14 @@ function Hero() {
 }
 
 /**
- * Showcase interativo dos serviços ("modo galeria"). Uma lista à esquerda
- * (todos os serviços) controla um painel-banner à direita que se transforma
- * ao passar o mouse / focar / tocar. Cada serviço ganha tratamento de banner,
- * não só um. No mobile a lista empilha e o banner aparece abaixo (toque
- * seleciona, já que não há hover). Acessível: botões reais + aria-pressed.
+ * Showcase interativo dos serviços ("modo galeria") em liquid glass.
+ * Seção full-bleed (largura total no desktop) com fundo aurora — blobs
+ * coloridos desfocados em movimento — e painéis de vidro fosco
+ * (backdrop-blur) por cima. A lista à esquerda controla um painel-banner
+ * que se transforma ao passar o mouse / focar / tocar. Cada serviço ganha
+ * tratamento de banner. No mobile/tablet a lista empilha e o banner
+ * aparece abaixo (toque seleciona, já que não há hover). Acessível:
+ * botões reais + aria-pressed.
  */
 function ServiceShowcase() {
   const [active, setActive] = useState(0);
@@ -204,105 +207,119 @@ function ServiceShowcase() {
   const num = String(active + 1).padStart(2, '0');
 
   return (
-    <section className="mx-auto max-w-6xl px-5 pb-4 pt-16">
-      <div className="mb-8">
-        <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
-          O que fazemos
-        </span>
-        <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
-          Consultoria técnica do início à fiscalização.
-        </h2>
-        <p className="mt-3 max-w-xl text-sm text-[#1A2A22]/60">
-          Passe o mouse (ou toque) em cada serviço para ver o que entregamos.
-        </p>
+    <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden py-16 md:py-20">
+      {/* Fundo aurora (liquid glass backdrop) */}
+      <div className="absolute inset-0 -z-10 bg-[#0d1f15]" />
+      <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="animate-aurora absolute -left-24 -top-24 h-[30rem] w-[30rem] rounded-full bg-[#3C7350]/45 blur-[120px]" />
+        <div className="animate-aurora absolute right-[-6rem] top-1/4 h-[28rem] w-[28rem] rounded-full bg-[#6FA68A]/35 blur-[130px] [animation-delay:-7s]" />
+        <div className="animate-aurora absolute bottom-[-8rem] left-1/3 h-[26rem] w-[26rem] rounded-full bg-[#1f6f5c]/40 blur-[120px] [animation-delay:-14s]" />
+        {/* véu sutil para uniformizar o contraste do texto */}
+        <div className="absolute inset-0 bg-[#0d1f15]/30" />
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
-        {/* Lista — galeria de serviços */}
-        <ul className="flex flex-col gap-2.5">
-          {SERVICOS.map((s, i) => {
-            const Icon = s.icon;
-            const isActive = i === active;
-            return (
-              <li key={s.title}>
-                <button
-                  type="button"
-                  onMouseEnter={() => setActive(i)}
-                  onFocus={() => setActive(i)}
-                  onClick={() => setActive(i)}
-                  aria-pressed={isActive}
-                  className={`group flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition ${
-                    isActive
-                      ? 'border-[#2F5D3F] bg-[#2F5D3F] text-white shadow-[0_12px_28px_-16px_rgba(47,93,63,0.55)]'
-                      : 'border-[#E8F1EA] bg-white text-[#1A2A22] hover:border-[#6FA68A]/60 hover:bg-[#FAFAF7]'
-                  }`}
-                >
-                  <span
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition ${
+      <div className="mx-auto max-w-6xl px-5">
+        <div className="mb-8">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#9FD3B5]">
+            O que fazemos
+          </span>
+          <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-white md:text-3xl">
+            Consultoria técnica do início à fiscalização.
+          </h2>
+          <p className="mt-3 max-w-xl text-sm text-white/60">
+            Passe o mouse (ou toque) em cada serviço para ver o que entregamos.
+          </p>
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
+          {/* Lista — galeria de serviços (vidro) */}
+          <ul className="flex flex-col gap-2.5">
+            {SERVICOS.map((s, i) => {
+              const Icon = s.icon;
+              const isActive = i === active;
+              return (
+                <li key={s.title}>
+                  <button
+                    type="button"
+                    onMouseEnter={() => setActive(i)}
+                    onFocus={() => setActive(i)}
+                    onClick={() => setActive(i)}
+                    aria-pressed={isActive}
+                    className={`group flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left text-white backdrop-blur-md transition ${
                       isActive
-                        ? 'bg-white/15 text-white'
-                        : 'bg-[#E8F1EA] text-[#2F5D3F]'
+                        ? 'border-white/30 bg-white/15 shadow-[0_12px_30px_-14px_rgba(0,0,0,0.5)]'
+                        : 'border-white/10 bg-white/5 hover:border-white/25 hover:bg-white/10'
                     }`}
                   >
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <span className="min-w-0 flex-1">
                     <span
-                      className={`block font-mono text-[10px] uppercase tracking-wider ${
-                        isActive ? 'text-white/55' : 'text-[#6FA68A]'
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition ${
+                        isActive
+                          ? 'border-white/30 bg-white/20 text-white'
+                          : 'border-white/10 bg-white/10 text-[#BFE3CC]'
                       }`}
                     >
-                      {String(i + 1).padStart(2, '0')}
+                      <Icon className="h-5 w-5" />
                     </span>
-                    <span className="block truncate text-sm font-semibold leading-snug">
-                      {s.title}
+                    <span className="min-w-0 flex-1">
+                      <span
+                        className={`block font-mono text-[10px] uppercase tracking-wider ${
+                          isActive ? 'text-white/60' : 'text-[#9FD3B5]/70'
+                        }`}
+                      >
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                      <span className="block truncate text-sm font-semibold leading-snug">
+                        {s.title}
+                      </span>
                     </span>
-                  </span>
-                  <ArrowRight
-                    className={`h-4 w-4 shrink-0 transition-all ${
-                      isActive
-                        ? 'translate-x-0 opacity-100'
-                        : '-translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-60'
-                    }`}
-                  />
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+                    <ArrowRight
+                      className={`h-4 w-4 shrink-0 transition-all ${
+                        isActive
+                          ? 'translate-x-0 opacity-100'
+                          : '-translate-x-1 opacity-0 group-hover:translate-x-0 group-hover:opacity-60'
+                      }`}
+                    />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
 
-        {/* Banner que se transforma */}
-        <div className="relative min-h-[20rem] overflow-hidden rounded-3xl bg-gradient-to-br from-[#234731] via-[#2F5D3F] to-[#3C7350] p-8 text-white shadow-[0_24px_60px_-25px_rgba(47,93,63,0.55)] md:p-10">
-          <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-white/5" />
-          <div className="pointer-events-none absolute -bottom-24 -left-12 h-56 w-56 rounded-full bg-white/5" />
-          <span
-            className="pointer-events-none absolute right-6 top-2 select-none font-mono text-[7rem] font-bold leading-none text-white/5"
-            aria-hidden="true"
-          >
-            {num}
-          </span>
-
-          {/* key={active} remonta o bloco → dispara a animação a cada troca */}
-          <div
-            key={active}
-            className="animate-service-reveal relative flex h-full flex-col"
-          >
-            <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
-              <Sparkles className="h-3.5 w-3.5" />
-              {current.tag}
+          {/* Banner de vidro que se transforma */}
+          <div className="relative min-h-[20rem] overflow-hidden rounded-3xl border border-white/15 bg-white/10 p-8 shadow-[0_24px_70px_-30px_rgba(0,0,0,0.7)] backdrop-blur-2xl md:p-10">
+            {/* brilho superior do vidro */}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+            <span
+              className="pointer-events-none absolute right-6 top-2 select-none font-mono text-[7rem] font-bold leading-none text-white/10"
+              aria-hidden="true"
+            >
+              {num}
             </span>
-            <div className="mt-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-[#BFE3CC]">
-              <CurrentIcon className="h-7 w-7" />
-            </div>
-            <h3 className="mt-5 text-2xl font-semibold tracking-tight">
-              {current.title}
-            </h3>
-            <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/85 md:text-base">
-              {current.body}
-            </p>
-            <div className="mt-auto flex items-start gap-2.5 pt-6">
-              <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#BFE3CC]" />
-              <p className="text-sm font-medium text-white">{current.entrega}</p>
+
+            {/* key={active} remonta o bloco → dispara a animação a cada troca */}
+            <div
+              key={active}
+              className="animate-service-reveal relative flex h-full flex-col text-white"
+            >
+              <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur-sm">
+                <Sparkles className="h-3.5 w-3.5" />
+                {current.tag}
+              </span>
+              <div className="mt-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-white">
+                <CurrentIcon className="h-7 w-7" />
+              </div>
+              <h3 className="mt-5 text-2xl font-semibold tracking-tight">
+                {current.title}
+              </h3>
+              <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/80 md:text-base">
+                {current.body}
+              </p>
+              <div className="mt-auto flex items-start gap-2.5 pt-6">
+                <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#BFE3CC]" />
+                <p className="text-sm font-medium text-white">
+                  {current.entrega}
+                </p>
+              </div>
             </div>
           </div>
         </div>

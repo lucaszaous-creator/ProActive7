@@ -55,8 +55,28 @@ body {
 .animate-service-reveal {
   animation: serviceReveal 0.35s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
+/* Aurora do showcase (liquid glass): blobs coloridos que flutuam devagar
+   atras dos paineis de vidro fosco, dando profundidade ao backdrop-blur. */
+@keyframes auroraFloat {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(6%, -8%) scale(1.12);
+  }
+  66% {
+    transform: translate(-7%, 6%) scale(0.92);
+  }
+}
+.animate-aurora {
+  animation: auroraFloat 22s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .animate-service-reveal {
+  .animate-service-reveal,
+  .animate-aurora {
     animation: none;
   }
 }
