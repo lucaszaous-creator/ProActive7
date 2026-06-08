@@ -1,5 +1,22 @@
-import { Droplet, Heart, Scale, Leaf, Compass, Eye, Gem } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import {
+  Droplet,
+  Heart,
+  Scale,
+  Leaf,
+  Compass,
+  Eye,
+  Gem,
+  Calendar,
+  MapPin,
+  Anchor,
+  GraduationCap,
+  BadgeCheck,
+  ArrowRight,
+  MessageCircle,
+} from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
+import { Reveal } from '@/components/public/Reveal';
 
 export function PerfilPage() {
   usePageMeta('/perfil');
@@ -8,8 +25,10 @@ export function PerfilPage() {
       <Hero />
       <QuemSomos />
       <NossaHistoria />
+      <Fundadora />
       <Pilares />
       <Politica />
+      <CtaPerfil />
     </div>
   );
 }
@@ -36,79 +55,208 @@ function Hero() {
 }
 
 function QuemSomos() {
+  const fatos = [
+    { icon: Calendar, label: 'Desde', value: '2013' },
+    { icon: MapPin, label: 'Sede', value: 'Macaé / RJ' },
+    { icon: BadgeCheck, label: 'RT', value: 'Nutricionista no CRN' },
+    { icon: Anchor, label: 'Atuação', value: 'On & off-shore' },
+  ];
   return (
-    <section className="mx-auto max-w-5xl px-5 py-16">
-      <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
-        Sobre a empresa
-      </span>
-      <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
-        Da PERSONAL DIET à PROACTIVE7.
-      </h2>
-      <div className="mt-6 space-y-5 text-base leading-relaxed text-[#1A2A22]/75">
-        <p>
-          Começamos como{' '}
-          <strong className="text-[#2F5D3F]">PERSONAL DIET</strong> e hoje somos
-          a <strong className="text-[#2F5D3F]">PROACTIVE7</strong> — uma empresa
-          especializada em assessoria e consultoria em segurança alimentar que
-          reúne profissionais capacitados, experiência, ética, responsabilidade,
-          comprometimento, transparência, atitude e respeito para oferecer o
-          melhor serviço aos seus clientes.
-        </p>
-        <p>
-          Nossa metodologia consiste em{' '}
-          <em>observar, planejar, capacitar e conscientizar</em> a fim de
-          auditar e avaliar um real parâmetro de evolução dos estabelecimentos
-          em relação às legislações federais, estaduais e municipais vigentes —
-          e à qualidade dos produtos oferecidos.
-        </p>
-        <p className="rounded-2xl border border-[#E8F1EA] bg-white p-5 text-[#1A2A22]/85">
-          <strong className="text-[#2F5D3F]">Atendemos estabelecimentos</strong>{' '}
-          comerciais com seguimento em alimentação on-shore ou off-shore como:
-          indústrias, fábricas, restaurantes, lanchonetes, padarias,
-          mercados/supermercados, creches/escolas, hortifrutis e hotelaria.
-        </p>
+    <section className="mx-auto max-w-6xl px-5 py-16">
+      <div className="grid gap-10 lg:grid-cols-[1.3fr_1fr] lg:items-start">
+        <Reveal>
+          <div>
+            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+              Sobre a empresa
+            </span>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
+              Da PERSONAL DIET à PROACTIVE7.
+            </h2>
+            <div className="mt-6 space-y-5 text-base leading-relaxed text-[#1A2A22]/75">
+              <p>
+                Começamos como{' '}
+                <strong className="text-[#2F5D3F]">PERSONAL DIET</strong> e hoje
+                somos a{' '}
+                <strong className="text-[#2F5D3F]">PROACTIVE7</strong> — uma
+                empresa especializada em assessoria e consultoria em segurança
+                alimentar que reúne profissionais capacitados, experiência,
+                ética, responsabilidade, comprometimento, transparência, atitude
+                e respeito para oferecer o melhor serviço aos seus clientes.
+              </p>
+              <p>
+                Nossa metodologia consiste em{' '}
+                <em>observar, planejar, capacitar e conscientizar</em> a fim de
+                auditar e avaliar um real parâmetro de evolução dos
+                estabelecimentos em relação às legislações federais, estaduais e
+                municipais vigentes — e à qualidade dos produtos oferecidos.
+              </p>
+              <p className="rounded-2xl border border-[#E8F1EA] bg-white p-5 text-[#1A2A22]/85">
+                <strong className="text-[#2F5D3F]">
+                  Atendemos estabelecimentos
+                </strong>{' '}
+                comerciais com seguimento em alimentação on-shore ou off-shore
+                como: indústrias, fábricas, restaurantes, lanchonetes, padarias,
+                mercados/supermercados, creches/escolas, hortifrutis e hotelaria.
+              </p>
+            </div>
+          </div>
+        </Reveal>
+
+        <Reveal delay={120}>
+          <aside className="rounded-3xl border border-[#E8F1EA] bg-gradient-to-br from-[#FAFAF7] to-white p-7 shadow-[0_20px_50px_-30px_rgba(47,93,63,0.25)]">
+            <h3 className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+              A empresa em resumo
+            </h3>
+            <dl className="mt-5 space-y-4">
+              {fatos.map(({ icon: Icon, label, value }) => (
+                <div key={label} className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <div>
+                    <dt className="text-[11px] font-medium uppercase tracking-wider text-[#1A2A22]/50">
+                      {label}
+                    </dt>
+                    <dd className="text-sm font-semibold text-[#1A2A22]">
+                      {value}
+                    </dd>
+                  </div>
+                </div>
+              ))}
+            </dl>
+            <Link
+              to="/servicos"
+              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#2F5D3F] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#234731]"
+            >
+              Ver nossos serviços
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </aside>
+        </Reveal>
       </div>
     </section>
   );
 }
 
 function NossaHistoria() {
+  const marcos = [
+    {
+      year: '2013',
+      title: 'Nasce a PERSONAL DIET',
+      body: 'O começo da jornada em Macaé, levando orientação técnica em alimentação e nutrição para estabelecimentos da região.',
+    },
+    {
+      year: '2020',
+      title: 'Surge a PROACTIVE7',
+      body: 'Fundada pela nutricionista Ariane Madureira, a empresa evolui para assessoria e consultoria completa em segurança alimentar, com método próprio.',
+    },
+    {
+      year: 'Hoje',
+      title: '+12 anos de experiência',
+      body: 'Atendemos restaurantes, indústrias, hotelaria on/off-shore, escolas e mercados — adequando cada operação à ANVISA e às legislações federal, estadual e municipal.',
+    },
+  ];
   return (
     <section className="bg-[#E8F1EA]/40">
-      <div className="mx-auto max-w-5xl px-5 py-16">
-        <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
-          Nossa história
-        </span>
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
-          Mais de uma década consolidando segurança alimentar em Macaé.
-        </h2>
-        <div className="mt-6 space-y-5 text-base leading-relaxed text-[#1A2A22]/75">
-          <p>
-            A <strong className="text-[#2F5D3F]">PERSONAL DIET</strong> foi
-            criada em 2013 e em 2020 nasceu a{' '}
-            <strong className="text-[#2F5D3F]">PROACTIVE7</strong>, fundada pela
-            nutricionista <strong>Ariane Madureira</strong> na cidade de Macaé.
-            A partir da realização de cursos de especialização, pós-graduação e
-            MBA — que somados já contabilizam mais de 12 anos de experiência —
-            observou-se a necessidade dos estabelecimentos possuírem orientações
-            técnicas para atender suas demandas na área de alimentação e
-            nutrição.
-          </p>
-          <p>
-            Essas demandas envolvem as legislações impostas pelo Ministério da
-            Saúde — Agência Nacional de Vigilância Sanitária (ANVISA) — e
-            legislações de âmbito municipal, estadual e federal que direcionam
-            os estabelecimentos que manipulam ou fabricam alimentos a se
-            adequarem às normas de Boas Práticas de Produção de Alimentos.
-          </p>
-          <p>
-            Mais do que conformidade, atendemos a cobrança direta dos clientes
-            que buscam melhor qualidade nos produtos consumidos — levando em
-            consideração a diversidade da cidade em acolher público local e
-            estrangeiro.
-          </p>
-        </div>
+      <div className="mx-auto max-w-6xl px-5 py-16">
+        <Reveal>
+          <div className="max-w-2xl">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+              Nossa história
+            </span>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
+              Mais de uma década consolidando segurança alimentar em Macaé.
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-[#1A2A22]/70">
+              Da cobrança crescente por qualidade na alimentação à exigência das
+              normas de Boas Práticas — acompanhamos essa evolução de perto,
+              atendendo público local e estrangeiro.
+            </p>
+          </div>
+        </Reveal>
+
+        <ol className="mt-12 grid gap-6 md:grid-cols-3">
+          {marcos.map(({ year, title, body }, i) => (
+            <Reveal key={year} delay={i * 110}>
+              <li className="relative h-full rounded-2xl border border-[#E8F1EA] bg-white p-6">
+                {/* conector horizontal no desktop */}
+                {i < marcos.length - 1 && (
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute right-[-15px] top-12 hidden h-px w-8 bg-[#6FA68A]/40 md:block"
+                  />
+                )}
+                <span className="inline-flex items-center rounded-full bg-[#2F5D3F] px-3 py-1 text-sm font-semibold text-white">
+                  {year}
+                </span>
+                <h3 className="mt-4 text-base font-semibold text-[#1A2A22]">
+                  {title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#1A2A22]/70">
+                  {body}
+                </p>
+              </li>
+            </Reveal>
+          ))}
+        </ol>
       </div>
+    </section>
+  );
+}
+
+/**
+ * Fundadora — destaca a Ariane (RT registrada no CRN) como principal ativo
+ * de confiança numa página institucional. Usa monograma em vez de foto
+ * (custo zero; foto real pode entrar depois). Fatos reaproveitados do texto
+ * já existente — sem inventar credenciais.
+ */
+function Fundadora() {
+  const formacao = [
+    'Especialização',
+    'Pós-graduação',
+    'MBA',
+    '+12 anos de experiência',
+  ];
+  return (
+    <section className="mx-auto max-w-6xl px-5 py-16">
+      <Reveal>
+        <div className="grid gap-8 overflow-hidden rounded-3xl border border-[#E8F1EA] bg-white p-7 shadow-[0_24px_60px_-35px_rgba(47,93,63,0.3)] md:grid-cols-[auto_1fr] md:items-center md:p-10">
+          {/* Monograma */}
+          <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-3xl bg-gradient-to-br from-[#2F5D3F] to-[#1A3D27] text-4xl font-semibold tracking-tight text-white shadow-lg md:mx-0">
+            AM
+          </div>
+
+          <div>
+            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+              Responsável técnica
+            </span>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
+              Ariane Madureira
+            </h2>
+            <p className="mt-1 flex flex-wrap items-center gap-2 text-sm font-medium text-[#2F5D3F]">
+              <BadgeCheck className="h-4 w-4" />
+              Nutricionista · Fundadora da ProActive7
+            </p>
+            <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#1A2A22]/75">
+              À frente da consultoria, Ariane é a responsável técnica perante a
+              ANVISA — nenhuma automação substitui o aval dela. Une formação
+              continuada e mais de uma década de prática para transformar a
+              rotina das cozinhas em conformidade real e duradoura.
+            </p>
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {formacao.map((f) => (
+                <li
+                  key={f}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#E8F1EA] bg-[#FAFAF7] px-3 py-1 text-xs font-medium text-[#1A2A22]/75"
+                >
+                  <GraduationCap className="h-3.5 w-3.5 text-[#2F5D3F]" />
+                  {f}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </Reveal>
     </section>
   );
 }
@@ -227,31 +375,73 @@ function Politica() {
   ];
   return (
     <section className="mx-auto max-w-6xl px-5 py-16">
-      <div className="mx-auto max-w-2xl text-center">
-        <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
-          Política de qualidade
-        </span>
-        <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
-          Quatro pilares que guiam cada projeto.
-        </h2>
-      </div>
+      <Reveal>
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            Política de qualidade
+          </span>
+          <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
+            Quatro pilares que guiam cada projeto.
+          </h2>
+        </div>
+      </Reveal>
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {pillars.map(({ icon: Icon, title, body }) => (
-          <div
-            key={title}
-            className="rounded-2xl border border-[#E8F1EA] bg-white p-6 text-center transition hover:border-[#6FA68A]/50 hover:shadow-[0_8px_24px_-12px_rgba(47,93,63,0.18)]"
-          >
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
-              <Icon className="h-5 w-5" />
+        {pillars.map(({ icon: Icon, title, body }, i) => (
+          <Reveal key={title} delay={i * 90}>
+            <div className="h-full rounded-2xl border border-[#E8F1EA] bg-white p-6 text-center transition hover:border-[#6FA68A]/50 hover:shadow-[0_8px_24px_-12px_rgba(47,93,63,0.18)]">
+              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
+                <Icon className="h-5 w-5" />
+              </div>
+              <h3 className="mt-4 text-sm font-semibold text-[#1A2A22]">
+                {title}
+              </h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-[#1A2A22]/65">
+                {body}
+              </p>
             </div>
-            <h3 className="mt-4 text-sm font-semibold text-[#1A2A22]">
-              {title}
-            </h3>
-            <p className="mt-1.5 text-xs leading-relaxed text-[#1A2A22]/65">
-              {body}
-            </p>
-          </div>
+          </Reveal>
         ))}
+      </div>
+    </section>
+  );
+}
+
+/* CTA final — fecha a página convidando ao contato (faltava). */
+function CtaPerfil() {
+  return (
+    <section className="relative isolate overflow-hidden bg-[#2F5D3F] text-white">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-32 -top-32 h-80 w-80 rounded-full bg-[#6FA68A]/25 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-[#A8D96A]/15 blur-3xl"
+      />
+      <div className="relative mx-auto max-w-3xl px-5 py-20 text-center md:py-24">
+        <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+          Vamos cuidar da segurança alimentar da sua operação?
+        </h2>
+        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/85">
+          Converse com a Ariane e descubra o que sua unidade precisa para estar
+          em conformidade — sem compromisso.
+        </p>
+        <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            to="/contato"
+            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#2F5D3F] transition hover:bg-white/95"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Falar com a ProActive7
+          </Link>
+          <Link
+            to="/servicos"
+            className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-medium text-white transition hover:border-white/60"
+          >
+            Ver serviços
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
       </div>
     </section>
   );
