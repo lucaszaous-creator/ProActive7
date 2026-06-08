@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight,
@@ -33,6 +33,7 @@ import { supabase } from '@/lib/supabase';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { MODULE_LABEL } from '@/lib/modules';
 import { Carousel } from '@/components/public/Carousel';
+import { Reveal } from '@/components/public/Reveal';
 
 const GREEN = '#2F5D3F';
 
@@ -43,47 +44,6 @@ interface PublicPlan {
   allowed_modules: string[];
   price_cents: number;
   sort_order: number;
-}
-
-// Reveal-on-scroll leve (IntersectionObserver, sem libs). Anima só
-// opacity/transform — GPU-friendly, roda liso no celular.
-function Reveal({
-  children,
-  delay = 0,
-  className = '',
-}: {
-  children: ReactNode;
-  delay?: number;
-  className?: string;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [shown, setShown] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) {
-          setShown(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-  return (
-    <div
-      ref={ref}
-      style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-all duration-700 ease-out ${
-        shown ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
-      } ${className}`}
-    >
-      {children}
-    </div>
-  );
 }
 
 const FEATURES: { icon: typeof Printer; title: string; desc: string }[] = [

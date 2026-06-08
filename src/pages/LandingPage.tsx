@@ -160,7 +160,7 @@ function Sobre() {
   return (
     <section className="mx-auto max-w-5xl px-5 py-20">
       <div className="grid items-center gap-12 md:grid-cols-[1fr_1.1fr]">
-        <div className="order-2 md:order-1">
+        <Reveal className="order-2 md:order-1">
           <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
             Quem somos
           </span>
@@ -191,11 +191,11 @@ function Sobre() {
             Nossa história completa
             <ArrowRight className="h-4 w-4" />
           </Link>
-        </div>
+        </Reveal>
 
         {/* Card "estampa" com a missão da empresa — substitui o mockup
             de produto, fica fiel ao tom de empresa, não de software. */}
-        <div className="relative order-1 md:order-2">
+        <Reveal delay={120} className="relative order-1 md:order-2">
           <div className="relative overflow-hidden rounded-3xl border border-[#E8F1EA] bg-gradient-to-br from-[#2F5D3F] to-[#1A3D27] p-8 text-white shadow-[0_25px_60px_-30px_rgba(47,93,63,0.45)] md:p-10">
             <Quote className="h-8 w-8 text-white/40" />
             <p className="mt-4 text-lg font-light italic leading-relaxed text-white/95">
@@ -209,7 +209,7 @@ function Sobre() {
               Nossa missão
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -304,15 +304,17 @@ function Numeros() {
   return (
     <section className="bg-[#0F1310] py-16 text-white">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-5 md:grid-cols-4">
-        {stats.map((s) => (
-          <div key={s.label} className="text-center">
-            <p className="text-3xl font-semibold tracking-tight md:text-4xl">
-              {s.value}
-            </p>
-            <p className="mt-2 text-xs uppercase tracking-wider text-white/55">
-              {s.label}
-            </p>
-          </div>
+        {stats.map((s, i) => (
+          <Reveal key={s.label} delay={i * 90}>
+            <div className="text-center">
+              <p className="text-3xl font-semibold tracking-tight md:text-4xl">
+                {s.value}
+              </p>
+              <p className="mt-2 text-xs uppercase tracking-wider text-white/55">
+                {s.label}
+              </p>
+            </div>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -367,19 +369,21 @@ function ServicosResumo() {
   ];
   return (
     <section className="mx-auto max-w-6xl px-5 py-20">
-      <div className="text-center">
-        <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
-          O que entregamos
-        </span>
-        <h2 className="mx-auto mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
-          Consultoria que cabe na rotina do seu estabelecimento.
-        </h2>
-        <p className="mx-auto mt-3 max-w-2xl text-base text-[#1A2A22]/65">
-          Cada empresa tem um ritmo. Montamos o pacote certo para sua
-          unidade — do treinamento da equipe à entrega de manuais
-          assinados.
-        </p>
-      </div>
+      <Reveal>
+        <div className="text-center">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            O que entregamos
+          </span>
+          <h2 className="mx-auto mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+            Consultoria que cabe na rotina do seu estabelecimento.
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-base text-[#1A2A22]/65">
+            Cada empresa tem um ritmo. Montamos o pacote certo para sua
+            unidade — do treinamento da equipe à entrega de manuais
+            assinados.
+          </p>
+        </div>
+      </Reveal>
 
       <div className="mt-12">
         <Carousel ariaLabel="Serviços oferecidos">
@@ -515,14 +519,16 @@ function Depoimentos() {
   return (
     <section className="bg-[#FAFAF7] py-20">
       <div className="mx-auto max-w-6xl px-5">
-        <div className="mb-10">
-          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
-            Quem confia
-          </span>
-          <h2 className="mt-2 max-w-xl text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
-            Histórias reais de quem entrega comida com segurança.
-          </h2>
-        </div>
+        <Reveal>
+          <div className="mb-10">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+              Quem confia
+            </span>
+            <h2 className="mt-2 max-w-xl text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+              Histórias reais de quem entrega comida com segurança.
+            </h2>
+          </div>
+        </Reveal>
 
         <Carousel ariaLabel="Depoimentos de clientes">
           {items.map((d, i) => (
@@ -562,33 +568,37 @@ function Atuacao() {
   return (
     <section className="mx-auto max-w-6xl px-5 py-20">
       <div className="grid items-start gap-12 md:grid-cols-[1fr_1fr]">
-        <div>
-          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
-            Atuação
-          </span>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
-            Macaé, região dos Lagos e plataformas off-shore.
-          </h2>
-          <p className="mt-5 text-base leading-relaxed text-[#1A2A22]/70">
-            Atendemos estabelecimentos comerciais de variados segmentos —
-            sempre alinhados ao Ministério da Saúde, ANVISA e à legislação
-            municipal de cada operação.
-          </p>
-          <div className="mt-7 flex items-center gap-2 text-sm font-medium text-[#2F5D3F]">
-            <MapPin className="h-4 w-4" />
-            Rua Dr. Luiz Belegard, 407 — sala 704 · Imbetiba · Macaé / RJ
+        <Reveal>
+          <div>
+            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+              Atuação
+            </span>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+              Macaé, região dos Lagos e plataformas off-shore.
+            </h2>
+            <p className="mt-5 text-base leading-relaxed text-[#1A2A22]/70">
+              Atendemos estabelecimentos comerciais de variados segmentos —
+              sempre alinhados ao Ministério da Saúde, ANVISA e à legislação
+              municipal de cada operação.
+            </p>
+            <div className="mt-7 flex items-center gap-2 text-sm font-medium text-[#2F5D3F]">
+              <MapPin className="h-4 w-4" />
+              Rua Dr. Luiz Belegard, 407 — sala 704 · Imbetiba · Macaé / RJ
+            </div>
           </div>
-        </div>
-        <ul className="grid grid-cols-2 gap-2.5 text-sm">
-          {segmentos.map((s) => (
-            <li
-              key={s}
-              className="rounded-xl border border-[#E8F1EA] bg-white px-4 py-3 text-[#1A2A22]/80"
-            >
-              {s}
-            </li>
-          ))}
-        </ul>
+        </Reveal>
+        <Reveal delay={120}>
+          <ul className="grid grid-cols-2 gap-2.5 text-sm">
+            {segmentos.map((s) => (
+              <li
+                key={s}
+                className="rounded-xl border border-[#E8F1EA] bg-white px-4 py-3 text-[#1A2A22]/80"
+              >
+                {s}
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </div>
     </section>
   );
@@ -608,7 +618,7 @@ function FinalCta() {
         aria-hidden
         className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-[#A8D96A]/15 blur-3xl"
       />
-      <div className="relative mx-auto max-w-3xl px-5 py-20 text-center md:py-24">
+      <Reveal className="relative mx-auto max-w-3xl px-5 py-20 text-center md:py-24">
         <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
           Pronto para conversar sobre a sua operação?
         </h2>
@@ -631,7 +641,7 @@ function FinalCta() {
             Ver serviços oferecidos
           </Link>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }
