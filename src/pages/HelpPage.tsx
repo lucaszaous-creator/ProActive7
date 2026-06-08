@@ -29,6 +29,19 @@ import {
   Crosshair,
   Boxes,
   Package,
+  Gauge,
+  LineChart,
+  Network,
+  CreditCard,
+  BookOpen,
+  Megaphone,
+  Activity,
+  Trash2,
+  Newspaper,
+  Truck,
+  Tag,
+  History,
+  FileText,
   type LucideIcon,
 } from 'lucide-react';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -59,6 +72,19 @@ const ICONS: Record<string, LucideIcon> = {
   Crosshair,
   Boxes,
   Package,
+  Gauge,
+  LineChart,
+  Network,
+  CreditCard,
+  BookOpen,
+  Megaphone,
+  Activity,
+  Trash2,
+  Newspaper,
+  Truck,
+  Tag,
+  History,
+  FileText,
 };
 
 interface Feature {
@@ -86,12 +112,12 @@ export function HelpPage() {
   const { isPlatformAdmin, isNutritionist, isPropertyManager } = useAuth();
 
   // Qual conjunto de conteúdo mostrar conforme o papel.
-  // - platform_admin: vê tudo (nutri + cozinha)
+  // - platform_admin: vê tudo (próprio papel + nutri + cozinha)
   // - nutricionista: conteúdo da nutri
   // - gerente / cozinha: conteúdo da cozinha
   const visibleRoles = useMemo(() => {
     const roleKeys = isPlatformAdmin
-      ? ['nutri', 'property']
+      ? ['platform_admin', 'nutri', 'property']
       : isNutritionist
         ? ['nutri']
         : isPropertyManager

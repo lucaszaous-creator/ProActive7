@@ -342,8 +342,20 @@ const MENU_BY_ROLE = {
     'Conformidade',
     'Ajuda',
   ],
+  platform_admin: [
+    'Plataforma',
+    'Operacao',
+    'Conformidade',
+    'Cadastros',
+    'Admin',
+    'Ajuda',
+  ],
 };
-const ROLE_LABEL = { nutri: 'Nutricionista', property: 'Cozinha' };
+const ROLE_LABEL = {
+  nutri: 'Nutricionista',
+  property: 'Cozinha',
+  platform_admin: 'Platform Admin',
+};
 
 function appShell(d, x, y, w, h, role, activeMenu) {
   fill(d, [0, 0, 0]);
@@ -1084,7 +1096,352 @@ function mockGeneric(d, x, y, w, h, role, feature) {
   }
 }
 
+// ====== Mockups do PLATFORM ADMIN ======
+
+function mockAdminCentro(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Plataforma');
+  let yy = header(d, cx, cy + 1, 'Centro de controle', 'Visao geral do SaaS');
+  yy += 2;
+  const kw = (cw - 9) / 4;
+  [
+    ['ORGS ATIVAS', '24'],
+    ['EMPRESAS', '87'],
+    ['USUARIOS', '142'],
+    ['ETIQUETAS 30d', '12.4k'],
+  ].forEach(([l, v], i) => {
+    const kx = cx + i * (kw + 3);
+    card(d, kx, yy, kw, 12);
+    ink(d, C.muted);
+    font(d, 'normal', 4.3);
+    d.text(l, kx + 1.5, yy + 3);
+    ink(d, C.ink);
+    font(d, 'bold', 8.5);
+    d.text(v, kx + 1.5, yy + 9);
+  });
+  yy += 15;
+  card(d, cx, yy, cw, 24);
+  ink(d, C.body);
+  font(d, 'bold', 6);
+  d.text('Alertas que exigem acao', cx + 2, yy + 3);
+  let ay = yy + 6;
+  [
+    ['3 orgs em trial vencendo em 7d', C.amber],
+    ['2 orgs sem login ha 30 dias', C.amber],
+    ['1 hardware com erro recorrente', C.red],
+  ].forEach(([t, color]) => {
+    fill(d, color);
+    opacity(d, 0.15);
+    rrect(d, cx + 2, ay, cw - 4, 5, 0.5, 'F');
+    opacity(d, 1);
+    fill(d, color);
+    rrect(d, cx + 2, ay, 1.2, 5, 0.3, 'F');
+    ink(d, C.body);
+    font(d, 'bold', 5);
+    d.text(t, cx + 5, ay + 3.2);
+    drawChevron(d, cx + cw - 4, ay + 2.4, 1, color, 'r');
+    ay += 6;
+  });
+  yy += 27;
+  card(d, cx, yy, cw, h - (yy - y) - 6);
+  ink(d, C.body);
+  font(d, 'bold', 6);
+  d.text('Eventos recentes', cx + 2, yy + 3);
+  let ey = yy + 6;
+  [
+    ['Nova empresa', 'Restaurante Mar Azul (Royal Nutri)', '2 min'],
+    ['Trial criado', 'Cafe da Esquina', '15 min'],
+    ['Plano alterado', 'AP Madureira -> Profissional', '1h'],
+    ['Push enviado', 'Manutencao programada', '3h'],
+  ].forEach(([action, target, when]) => {
+    fill(d, C.brandSoft);
+    d.circle(cx + 4, ey + 2, 1.4, 'F');
+    ink(d, C.ink);
+    font(d, 'bold', 5);
+    d.text(action, cx + 7, ey + 1.5);
+    ink(d, C.muted);
+    font(d, 'normal', 4.5);
+    d.text(target, cx + 7, ey + 3.8);
+    ink(d, C.faint);
+    font(d, 'normal', 4);
+    d.text(when, cx + cw - 3, ey + 2.5, { align: 'right' });
+    stroke(d, C.hair, 0.1);
+    d.line(cx + 2, ey + 5.5, cx + cw - 2, ey + 5.5);
+    ey += 6;
+  });
+}
+
+function mockAdminDashboard(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Plataforma');
+  let yy = header(d, cx, cy + 1, 'Dashboard SaaS', 'Saude e uso das organizacoes');
+  yy += 2;
+  // Tabs
+  ['Saude das orgs', 'Uso de features', 'Crescimento'].forEach((t, i) => {
+    const tx = cx + i * 32;
+    fill(d, i === 0 ? C.brandSoft : C.white);
+    stroke(d, i === 0 ? C.brand : C.hair, 0.2);
+    rrect(d, tx, yy, 30, 5, 0.8, 'FD');
+    ink(d, i === 0 ? C.brandDark : C.muted);
+    font(d, 'bold', 4.5);
+    d.text(t, tx + 15, yy + 3.2, { align: 'center' });
+  });
+  yy += 7;
+  // Lista de orgs
+  card(d, cx, yy, cw, h - (yy - y) - 6);
+  let iy = yy + 2;
+  fill(d, C.brandSoft);
+  rrect(d, cx + 1, iy, cw - 2, 4, 0.5, 'F');
+  ink(d, C.brandDeep);
+  font(d, 'bold', 4.3);
+  d.text('ORGANIZACAO', cx + 3, iy + 2.8);
+  d.text('SCORE', cx + 60, iy + 2.8);
+  d.text('NCs', cx + 80, iy + 2.8);
+  d.text('ETIQ. 30d', cx + 95, iy + 2.8);
+  d.text('ULT. LOGIN', cx + 120, iy + 2.8);
+  iy += 5;
+  [
+    ['Royal Nutri', '88%', 'green', 4, '1.2k', 'hoje'],
+    ['AP Madureira Servicos', '72%', 'amber', 11, '845', '2d'],
+    ['ProActive Consultoria', '92%', 'green', 2, '2.1k', 'hoje'],
+    ['LucasTeste', '58%', 'red', 18, '320', '15d'],
+    ['Demo (manual PDF)', '82%', 'amber', 3, '8', 'hoje'],
+  ].forEach(([name, score, tier, ncs, eti, login]) => {
+    const fg = tier === 'green' ? C.brand : tier === 'amber' ? C.amber : C.red;
+    const bg = tier === 'green' ? C.brandSoft : tier === 'amber' ? C.amberSoft : C.redSoft;
+    ink(d, C.ink);
+    font(d, 'bold', 4.8);
+    d.text(name, cx + 3, iy + 2.8);
+    pill(d, cx + 60, iy + 0.5, 14, 3, score, bg, fg);
+    ink(d, C.body);
+    font(d, 'normal', 4.5);
+    d.text(String(ncs), cx + 80, iy + 2.8);
+    d.text(eti, cx + 95, iy + 2.8);
+    d.text(login, cx + 120, iy + 2.8);
+    stroke(d, C.hair, 0.1);
+    d.line(cx + 2, iy + 4.5, cx + cw - 2, iy + 4.5);
+    iy += 5;
+  });
+}
+
+function mockAdminOrgs(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Plataforma');
+  let yy = header(d, cx, cy + 1, 'Organizacoes', 'Clientes do SaaS');
+  btn(d, cx + cw - 18, cy - 1, 18, 5, '+ Nova org', true);
+  yy += 2;
+  card(d, cx, yy, cw, 6);
+  input(d, cx + 2, yy + 1.5, 55, 3.5, 'Buscar organizacao...');
+  pill(d, cx + 60, yy + 1.5, 12, 3.5, 'Ativas', C.brandSoft, C.brandDeep);
+  pill(d, cx + 74, yy + 1.5, 12, 3.5, 'Trial', C.amberSoft, C.amber);
+  pill(d, cx + 88, yy + 1.5, 14, 3.5, 'Suspensas', C.redSoft, C.red);
+  yy += 8;
+
+  card(d, cx, yy, cw, h - (yy - y) - 6);
+  let iy = yy + 2;
+  [
+    ['Royal Nutri', 'royal-nutri - Profissional', 6, 'Ativa', C.brand],
+    ['AP Madureira Servicos', 'ap-madureira-servicos - Essencial', 4, 'Ativa', C.brand],
+    ['ProActive Consultoria', 'proactive - Premium', 12, 'Ativa', C.brand],
+    ['Cafe da Esquina', 'cafe-esquina - Trial', 1, 'Trial 7d', C.amber],
+    ['Demo (manual PDF)', 'demo-manual - Profissional', 1, 'Ativa', C.brand],
+  ].forEach(([name, sub, comps, status, color]) => {
+    fill(d, C.white);
+    stroke(d, C.hair, 0.15);
+    rrect(d, cx + 2, iy, cw - 4, 8, 1, 'FD');
+    fill(d, C.brandSoft);
+    rrect(d, cx + 3.5, iy + 1.5, 5, 5, 0.6, 'F');
+    ink(d, C.brandDeep);
+    font(d, 'bold', 4);
+    d.text(name.slice(0, 2).toUpperCase(), cx + 6, iy + 4.6, { align: 'center' });
+    ink(d, C.ink);
+    font(d, 'bold', 5.5);
+    d.text(name, cx + 10, iy + 3.5);
+    ink(d, C.muted);
+    font(d, 'normal', 4.3);
+    d.text(sub, cx + 10, iy + 6);
+    ink(d, C.body);
+    font(d, 'normal', 4.5);
+    d.text(`${comps} empresa(s)`, cx + cw - 30, iy + 4.5);
+    const tone = color === C.brand ? C.brandSoft : C.amberSoft;
+    pill(d, cx + cw - 16, iy + 2, 14, 3.5, status, tone, color);
+    drawChevron(d, cx + cw - 4, iy + 4, 1, C.faint, 'r');
+    iy += 9;
+  });
+}
+
+function mockAdminPlanos(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Plataforma');
+  let yy = header(d, cx, cy + 1, 'Planos', 'Modulos e limites por plano');
+  btn(d, cx + cw - 18, cy - 1, 18, 5, '+ Novo plano', true);
+  yy += 2;
+
+  const colW = (cw - 9) / 3;
+  ['Essencial', 'Profissional', 'Premium'].forEach((plan, i) => {
+    const px = cx + i * (colW + 3);
+    const featured = i === 1;
+    fill(d, featured ? C.brand : C.white);
+    stroke(d, featured ? C.brand : C.hair, 0.3);
+    rrect(d, px, yy, colW, 60, 2, 'FD');
+    if (featured) {
+      fill(d, [187, 231, 198]);
+      rrect(d, px + colW / 2 - 12, yy - 2, 24, 4, 1, 'F');
+      ink(d, C.brandDeep);
+      font(d, 'bold', 4);
+      d.text('MAIS ESCOLHIDO', px + colW / 2, yy + 0.8, { align: 'center' });
+    }
+    ink(d, featured ? C.white : C.ink);
+    font(d, 'bold', 7);
+    d.text(plan, px + colW / 2, yy + 6, { align: 'center' });
+    font(d, 'bold', 11);
+    d.text(['R$ 99', 'R$ 199', 'R$ 399'][i], px + colW / 2, yy + 14, { align: 'center' });
+    ink(d, featured ? [200, 225, 212] : C.muted);
+    font(d, 'normal', 4.5);
+    d.text(['Ate 2 empresas', 'Ate 5 empresas', 'Ilimitado'][i], px + colW / 2, yy + 19, { align: 'center' });
+
+    const mods = [
+      ['Etiquetas', true, true, true],
+      ['Checklists', i >= 1, true, true],
+      ['NCs', i >= 1, true, true],
+      ['Pragas', i >= 1, true, true],
+      ['Estoque', i >= 2, true, true],
+      ['Dossie', false, i >= 1, true],
+    ];
+    let my = yy + 26;
+    mods.forEach(([m, ...vals]) => {
+      const ok = vals[i];
+      drawCheck(d, px + 4, my, 1.2, ok ? (featured ? C.white : C.brand) : C.faint);
+      ink(d, featured ? C.white : C.body);
+      font(d, ok ? 'bold' : 'normal', 4.8);
+      d.text(m, px + 7, my + 0.8);
+      my += 4.5;
+    });
+
+    btn(d, px + 2, yy + 53, colW - 4, 5, 'Editar', !featured);
+  });
+}
+
+function mockAdminBiblioteca(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Plataforma');
+  let yy = header(d, cx, cy + 1, 'Biblioteca global', 'Modelos compartilhados');
+  btn(d, cx + cw - 22, cy - 1, 22, 5, '+ Novo modelo', true);
+  yy += 2;
+
+  ['Checklists', 'Produtos seed', 'Documentos'].forEach((t, i) => {
+    const tx = cx + i * 32;
+    fill(d, i === 0 ? C.brandSoft : C.white);
+    stroke(d, i === 0 ? C.brand : C.hair, 0.2);
+    rrect(d, tx, yy, 30, 5, 0.8, 'FD');
+    ink(d, i === 0 ? C.brandDark : C.muted);
+    font(d, 'bold', 4.5);
+    d.text(t, tx + 15, yy + 3.2, { align: 'center' });
+  });
+  yy += 8;
+
+  [
+    ['RDC 216 - Diaria de limpeza', '12 itens - Diario', '23 orgs clonaram'],
+    ['RDC 216 - Pre-abertura', '8 itens - Diario', '18 orgs clonaram'],
+    ['RDC 275 - POPs verificacao', '15 itens - Semanal', '15 orgs clonaram'],
+    ['RDC 259 - Rotulagem', '10 itens - Mensal', '11 orgs clonaram'],
+  ].forEach(([name, sub, usage]) => {
+    card(d, cx, yy, cw, 11);
+    fill(d, C.brandSoft);
+    rrect(d, cx + 2, yy + 2, 7, 7, 1, 'F');
+    fill(d, C.brand);
+    drawCheck(d, cx + 5.5, yy + 5.5, 2, C.white);
+    ink(d, C.ink);
+    font(d, 'bold', 5.5);
+    d.text(name, cx + 12, yy + 4);
+    ink(d, C.muted);
+    font(d, 'normal', 4.3);
+    d.text(sub, cx + 12, yy + 6.5);
+    pill(d, cx + cw - 26, yy + 4, 24, 3.5, usage, C.brandSoft, C.brandDeep);
+    yy += 13;
+  });
+}
+
+function mockAdminTrilha(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Admin');
+  let yy = header(d, cx, cy + 1, 'Trilha de auditoria', 'Historico imutavel de mudancas');
+  yy += 2;
+  card(d, cx, yy, cw, 6);
+  input(d, cx + 2, yy + 1.5, 40, 3.5, 'Entidade...');
+  input(d, cx + 44, yy + 1.5, 30, 3.5, 'Ator...');
+  pill(d, cx + 76, yy + 1.5, 20, 3.5, 'Ultimos 30 dias', C.brandSoft, C.brandDeep);
+  yy += 8;
+
+  card(d, cx, yy, cw, h - (yy - y) - 6);
+  let iy = yy + 2;
+  [
+    ['profiles', 'role', 'Lucas (admin)', 'Pedro -> property_manager', '2h'],
+    ['profiles', 'create', 'Ariane (nutri)', 'Cozinha Demo', '5h'],
+    ['organizations', 'plan_key', 'Lucas (admin)', 'essencial -> profissional', '1d'],
+    ['companies', 'delete', 'Ariane (nutri)', 'Soft delete: Padaria X', '2d'],
+    ['profiles', 'impersonate', 'Lucas (admin)', 'logou como Ariane', '3d'],
+  ].forEach(([ent, act, who, what, when]) => {
+    fill(d, C.white);
+    stroke(d, C.hair, 0.12);
+    rrect(d, cx + 2, iy, cw - 4, 7, 0.8, 'FD');
+    pill(d, cx + 4, iy + 1.8, 16, 3, ent, C.brandSoft, C.brandDeep);
+    pill(d, cx + 21, iy + 1.8, 14, 3, act, C.amberSoft, C.amber);
+    ink(d, C.ink);
+    font(d, 'bold', 4.5);
+    d.text(who, cx + 4, iy + 6);
+    ink(d, C.muted);
+    font(d, 'normal', 4.3);
+    d.text(what, cx + 35, iy + 4);
+    ink(d, C.faint);
+    font(d, 'normal', 4);
+    d.text(when, cx + cw - 4, iy + 4, { align: 'right' });
+    iy += 8;
+  });
+}
+
+function mockAdminComunicados(d, x, y, w, h) {
+  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Plataforma');
+  let yy = header(d, cx, cy + 1, 'Comunicados', 'Banner global para todas as orgs');
+  btn(d, cx + cw - 18, cy - 1, 18, 5, '+ Novo', true);
+  yy += 2;
+
+  // Preview do banner em destaque
+  fill(d, C.amberSoft);
+  rrect(d, cx, yy, cw, 8, 1, 'F');
+  fill(d, C.amber);
+  rrect(d, cx, yy, 1.5, 8, 0.5, 'F');
+  ink(d, [120, 65, 6]);
+  font(d, 'bold', 5);
+  d.text('PREVIEW DO BANNER ATIVO', cx + 4, yy + 3);
+  font(d, 'normal', 4.8);
+  d.text('Manutencao programada no dia 15/06 das 02h as 04h. Sem impacto previsto.', cx + 4, yy + 5.8);
+  yy += 11;
+
+  ink(d, C.body);
+  font(d, 'bold', 5.5);
+  d.text('Historico', cx, yy);
+  yy += 3;
+
+  [
+    ['Manutencao programada 15/06', 'Atencao - Ativo', C.amberSoft, C.amber],
+    ['Nova feature: Carrosseis', 'Info - Encerrado', C.blueSoft, C.blue],
+    ['Lembrete: Renovar ASOs', 'Atencao - Encerrado', C.amberSoft, C.amber],
+  ].forEach(([title, status, bg, fg]) => {
+    card(d, cx, yy, cw, 10);
+    ink(d, C.ink);
+    font(d, 'bold', 5.5);
+    d.text(title, cx + 2, yy + 4);
+    pill(d, cx + cw - 24, yy + 2, 22, 3.5, status, bg, fg);
+    ink(d, C.muted);
+    font(d, 'normal', 4.3);
+    d.text('Inicio: 10/06 - Fim: 15/06', cx + 2, yy + 7);
+    yy += 12;
+  });
+}
+
 const MOCKS = {
+  'admin-centro': mockAdminCentro,
+  'admin-dashboard': mockAdminDashboard,
+  'admin-orgs': mockAdminOrgs,
+  'admin-planos': mockAdminPlanos,
+  'admin-biblioteca': mockAdminBiblioteca,
+  'admin-trilha': mockAdminTrilha,
+  'admin-comunicados': mockAdminComunicados,
   'nutri-painel': mockNutriPainel,
   'property-painel': mockPropertyPainel,
   'property-imprimir': mockPrintWizard,
@@ -1145,6 +1502,164 @@ function drawScreen(d, x, y, w, h, role, feature) {
   if (fn) fn(d, x, y, w, h);
   else mockGeneric(d, x, y, w, h, role, feature);
   return false;
+}
+
+// ============================================================
+//  SEÇÃO: METODOLOGIA (scores e métricas)
+// ============================================================
+
+/** Capa da seção de metodologia (página inteira, igual ao divisor de papel). */
+function drawMethodologyDivider(d, meth) {
+  fill(d, C.ink);
+  d.rect(0, 0, PAGE_W, PAGE_H, 'F');
+
+  ink(d, C.white);
+  font(d, 'bold', 10);
+  d.text('METODOLOGIA', M, 30, { charSpace: 1.5 });
+
+  font(d, 'bold', 30);
+  d.text(meth.title, M, 70, { maxWidth: CONTENT_W });
+
+  fill(d, C.white);
+  opacity(d, 0.1);
+  rrect(d, M, 100, CONTENT_W, 50, 3, 'F');
+  opacity(d, 1);
+  ink(d, [200, 225, 212]);
+  font(d, 'bold', 8);
+  d.text('TRANSPARENCIA', M + 6, 108, { charSpace: 1 });
+  ink(d, C.white);
+  font(d, 'normal', 10);
+  wrap(d, meth.intro, M + 6, 115, CONTENT_W - 12, 4.8);
+
+  ink(d, [200, 225, 212]);
+  font(d, 'bold', 8);
+  d.text('METRICAS COBERTAS', M, 165, { charSpace: 1 });
+  let y = 172;
+  meth.metrics.forEach((m, i) => {
+    fill(d, C.brandSoft);
+    rrect(d, M, y - 3, 4, 4, 0.6, 'F');
+    ink(d, C.brandDeep);
+    font(d, 'bold', 5);
+    d.text(String(i + 1).padStart(2, '0'), M + 2, y, { align: 'center' });
+    ink(d, C.white);
+    font(d, 'normal', 10);
+    d.text(m.title, M + 7, y);
+    y += 6;
+  });
+
+  ink(d, [200, 225, 212]);
+  font(d, 'normal', 8);
+  d.text(
+    'Cada metrica e detalhada na pagina seguinte, com formula, regras e arquivo-fonte do codigo.',
+    M,
+    PAGE_H - 22,
+  );
+  ink(d, C.white);
+  font(d, 'bold', 8);
+  d.text('ProActive7 - Manual do Sistema', M, PAGE_H - 15);
+}
+
+/** Página de uma métrica. Retorna a página final usada. */
+function drawMethodologyPage(d, m, index) {
+  let y = drawPageHeader(d);
+  ink(d, C.brandDeep);
+  font(d, 'bold', 6.5);
+  d.text('METODOLOGIA', M, y, { charSpace: 1.2 });
+  ink(d, C.faint);
+  font(d, 'normal', 6.5);
+  d.text(`${String(index + 1).padStart(2, '0')} / ${m.where}`.toUpperCase(), PAGE_W - M, y, {
+    align: 'right',
+    charSpace: 0.6,
+  });
+  y += 4;
+  ink(d, C.ink);
+  font(d, 'bold', 15);
+  d.text(m.title, M, y + 4);
+  y += 9;
+
+  // ONDE APARECE
+  ink(d, C.muted);
+  font(d, 'normal', 8);
+  y = wrap(d, m.what, M, y, CONTENT_W, 4.6) + 5;
+
+  // FÓRMULA — bloco em destaque
+  y = ensure(d, y, 22);
+  fill(d, C.ink);
+  rrect(d, M, y, CONTENT_W, 16, 1.5, 'F');
+  ink(d, [200, 225, 212]);
+  font(d, 'bold', 7);
+  d.text('FORMULA', M + 4, y + 5, { charSpace: 1 });
+  ink(d, C.white);
+  font(d, 'bold', 11);
+  doc_setMono(d);
+  d.text(m.formula, M + 4, y + 12, { maxWidth: CONTENT_W - 8 });
+  doc_setHelvetica(d);
+  y += 20;
+
+  // REGRAS
+  y = ensure(d, y, 24);
+  fill(d, C.brand);
+  d.rect(M, y - 3, 1.5, 4, 'F');
+  ink(d, C.brandDeep);
+  font(d, 'bold', 8);
+  d.text('REGRAS', M + 3, y);
+  y += 5;
+  for (let i = 0; i < m.rules.length; i++) {
+    y = ensure(d, y, 9);
+    fill(d, C.brandSoft);
+    d.circle(M + 1.6, y + 0.8, 1.9, 'F');
+    ink(d, C.brandDeep);
+    font(d, 'bold', 6);
+    d.text(String(i + 1), M + 1.6, y + 1.6, { align: 'center' });
+    ink(d, C.body);
+    font(d, 'normal', 9);
+    y = wrap(d, m.rules[i], M + 5.5, y + 1.8, CONTENT_W - 5.5, 4.4) + 1.5;
+  }
+  y += 3;
+
+  // FAIXAS (se houver — só compliance e tiers têm)
+  if (m.tiers && m.tiers.length) {
+    y = ensure(d, y, 22);
+    fill(d, C.brand);
+    d.rect(M, y - 3, 1.5, 4, 'F');
+    ink(d, C.brandDeep);
+    font(d, 'bold', 8);
+    d.text('FAIXAS DE COR', M + 3, y);
+    y += 5;
+    const colors = [C.brand, C.amber, C.red];
+    for (let i = 0; i < m.tiers.length; i++) {
+      y = ensure(d, y, 7);
+      const tone = colors[i] || C.muted;
+      fill(d, tone);
+      rrect(d, M, y - 2.5, 4, 4, 0.6, 'F');
+      ink(d, C.body);
+      font(d, 'normal', 9);
+      y = wrap(d, m.tiers[i], M + 6, y, CONTENT_W - 6, 4.4) + 1.5;
+    }
+    y += 2;
+  }
+
+  // FONTE DO CÓDIGO
+  y = ensure(d, y, 14);
+  fill(d, [243, 244, 246]);
+  rrect(d, M, y, CONTENT_W, 9, 1, 'F');
+  ink(d, C.muted);
+  font(d, 'bold', 6.5);
+  d.text('FONTE NO CODIGO', M + 3, y + 3.5, { charSpace: 0.8 });
+  ink(d, C.body);
+  doc_setMono(d);
+  font(d, 'normal', 8);
+  d.text(m.source, M + 3, y + 7);
+  doc_setHelvetica(d);
+
+  drawFooter(d);
+}
+
+function doc_setMono(d) {
+  d.setFont('courier', 'normal');
+}
+function doc_setHelvetica(d) {
+  d.setFont('helvetica', 'normal');
 }
 
 // ============================================================
@@ -1250,6 +1765,21 @@ function main() {
     }
   }
 
+  // SEÇÃO DE METODOLOGIA (após os papéis)
+  let methodologyPage = null;
+  const methodologyEntries = [];
+  if (CONTENT.methodology) {
+    d.addPage();
+    methodologyPage = d.getCurrentPageInfo().pageNumber;
+    drawMethodologyDivider(d, CONTENT.methodology);
+
+    CONTENT.methodology.metrics.forEach((m, i) => {
+      d.addPage();
+      methodologyEntries.push({ title: m.title, page: d.getCurrentPageInfo().pageNumber });
+      drawMethodologyPage(d, m, i);
+    });
+  }
+
   // Sumário (páginas 2 e 3)
   d.setPage(2);
   const toc = [];
@@ -1257,6 +1787,16 @@ function main() {
     toc.push({ kind: 'role', title: role.title, page: rolePage[role.key] });
     for (const fp of featPage.filter((f) => f.role === role.key)) {
       toc.push({ kind: 'feature', title: fp.title, page: fp.page });
+    }
+  }
+  if (methodologyPage) {
+    toc.push({
+      kind: 'role',
+      title: 'Metodologia (scores e métricas)',
+      page: methodologyPage,
+    });
+    for (const e of methodologyEntries) {
+      toc.push({ kind: 'feature', title: e.title, page: e.page });
     }
   }
   drawToc(d, toc);
