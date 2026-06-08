@@ -104,8 +104,26 @@ interface Role {
   capabilities: string[];
   features: Feature[];
 }
+interface Metric {
+  id: string;
+  title: string;
+  where: string;
+  tagline: string;
+  plain: string;
+  calc?: string[];
+  breakdown?: { label: string; points: number; desc: string }[];
+  example?: { scenario: string; result: string };
+  howToRead?: string[];
+  whyMatters?: string;
+}
+interface Methodology {
+  title: string;
+  intro: string;
+  metrics: Metric[];
+}
 
 const ROLES = (help.roles as Role[]) ?? [];
+const METHODOLOGY = (help as { methodology?: Methodology }).methodology ?? null;
 
 export function HelpPage() {
   usePageTitle('Ajuda');
@@ -293,6 +311,174 @@ export function HelpPage() {
           </p>
         </Card>
       ) : null}
+
+      {!q && METHODOLOGY ? <MethodologySection meth={METHODOLOGY} /> : null}
     </div>
+  );
+}
+
+/**
+ * Seção "Como medimos a saúde da cozinha" — mesma fonte do PDF.
+ * Material de ensino/venda: a nutri pode abrir e explicar ao cliente
+ * como cada score é calculado, sem jargão técnico.
+ */
+function MethodologySection({ meth }: { meth: Methodology }) {
+  const [open, setOpen] = useState<string | null>(null);
+  return (
+    <section className="mt-10">
+      <div className="mb-4 rounded-2xl bg-emerald-700 p-5 text-white dark:bg-emerald-900">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-100">
+          <BarChart3 size={14} />
+          Parte especial
+        </div>
+        <h2 className="mt-1 text-lg font-semibold sm:text-xl">{meth.title}</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-emerald-50">
+          {meth.intro}
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-3">
+        {meth.metrics.map((m) => {
+          const isOpen = open === m.id;
+          return (
+            <Card key={m.id}>
+              <button
+                onClick={() => setOpen(isOpen ? null : m.id)}
+                className="flex w-full items-start justify-between gap-3 text-left"
+              >
+                <div className="min-w-0">
+                  <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
+                    {m.title}
+                  </h3>
+                  <p className="text-xs italic text-emerald-700 dark:text-emerald-400">
+                    {m.tagline}
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-neutral-400">
+                    Onde aparece: {m.where}
+                  </p>
+                </div>
+                <ArrowRight
+                  size={16}
+                  className={`mt-1 shrink-0 text-neutral-400 transition-transform ${
+                    isOpen ? 'rotate-90' : ''
+                  }`}
+                />
+              </button>
+
+              {isOpen ? (
+                <div className="mt-3 space-y-3">
+                  <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+                    {m.plain}
+                  </p>
+
+                  {m.calc?.length ? (
+                    <div>
+                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                        Como é calculado
+                      </p>
+                      <ul className="space-y-1.5">
+                        {m.calc.map((c, i) => (
+                          <li
+                            key={i}
+                            className="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-300"
+                          >
+                            <CheckCircle2
+                              size={14}
+                              className="mt-0.5 shrink-0 text-emerald-500"
+                            />
+                            <span>{c}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {m.breakdown?.length ? (
+                    <div>
+                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                        As sete frentes (total 100 pontos)
+                      </p>
+                      <div className="space-y-1.5">
+                        {m.breakdown.map((p) => (
+                          <div key={p.label} className="flex items-center gap-2">
+                            <span className="w-28 shrink-0 text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                              {p.label}
+                            </span>
+                            <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+                              <div
+                                className="h-full rounded-full bg-emerald-500"
+                                style={{ width: `${(p.points / 25) * 100}%` }}
+                              />
+                            </div>
+                            <span className="w-10 shrink-0 text-right text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                              {p.points} pts
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  {m.example ? (
+                    <div className="rounded-lg border-l-4 border-amber-400 bg-amber-50 p-3 dark:bg-amber-950/40">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+                        Exemplo prático
+                      </p>
+                      <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">
+                        <span className="font-medium">Cenário:</span>{' '}
+                        {m.example.scenario}
+                      </p>
+                      <p className="mt-1 text-sm font-semibold text-amber-800 dark:text-amber-300">
+                        Resultado: {m.example.result}
+                      </p>
+                    </div>
+                  ) : null}
+
+                  {m.howToRead?.length ? (
+                    <div>
+                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                        Como ler o resultado
+                      </p>
+                      <ul className="space-y-1">
+                        {m.howToRead.map((t, i) => (
+                          <li
+                            key={i}
+                            className="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-300"
+                          >
+                            <span
+                              className={`mt-1 h-3 w-3 shrink-0 rounded-sm ${
+                                ['bg-emerald-500', 'bg-amber-500', 'bg-red-500'][
+                                  i
+                                ] ?? 'bg-neutral-400'
+                              }`}
+                            />
+                            <span>{t}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+
+                  {m.whyMatters ? (
+                    <div className="flex items-start gap-2 rounded-lg border-l-4 border-emerald-500 bg-emerald-50 p-3 dark:bg-emerald-950/50">
+                      <Lightbulb
+                        size={15}
+                        className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400"
+                      />
+                      <p className="text-xs italic leading-relaxed text-neutral-700 dark:text-neutral-300">
+                        <span className="font-semibold not-italic">
+                          Por que isso importa:{' '}
+                        </span>
+                        {m.whyMatters}
+                      </p>
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+            </Card>
+          );
+        })}
+      </div>
+    </section>
   );
 }

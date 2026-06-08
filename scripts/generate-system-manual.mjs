@@ -1508,158 +1508,219 @@ function drawScreen(d, x, y, w, h, role, feature) {
 //  SEÇÃO: METODOLOGIA (scores e métricas)
 // ============================================================
 
-/** Capa da seção de metodologia (página inteira, igual ao divisor de papel). */
+/** Capa da seção de metodologia (página inteira). */
 function drawMethodologyDivider(d, meth) {
-  fill(d, C.ink);
+  fill(d, C.brandDeep);
   d.rect(0, 0, PAGE_W, PAGE_H, 'F');
 
-  ink(d, C.white);
+  ink(d, [200, 225, 212]);
   font(d, 'bold', 10);
-  d.text('METODOLOGIA', M, 30, { charSpace: 1.5 });
+  d.text('PARTE ESPECIAL', M, 30, { charSpace: 1.5 });
 
-  font(d, 'bold', 30);
-  d.text(meth.title, M, 70, { maxWidth: CONTENT_W });
+  ink(d, C.white);
+  font(d, 'bold', 28);
+  d.text(d.splitTextToSize(meth.title, CONTENT_W), M, 58);
 
   fill(d, C.white);
   opacity(d, 0.1);
-  rrect(d, M, 100, CONTENT_W, 50, 3, 'F');
+  rrect(d, M, 92, CONTENT_W, 46, 3, 'F');
   opacity(d, 1);
   ink(d, [200, 225, 212]);
   font(d, 'bold', 8);
-  d.text('TRANSPARENCIA', M + 6, 108, { charSpace: 1 });
+  d.text('PARA APRESENTAR AO CLIENTE', M + 6, 100, { charSpace: 1 });
   ink(d, C.white);
   font(d, 'normal', 10);
-  wrap(d, meth.intro, M + 6, 115, CONTENT_W - 12, 4.8);
+  wrap(d, meth.intro, M + 6, 107, CONTENT_W - 12, 4.8);
 
   ink(d, [200, 225, 212]);
   font(d, 'bold', 8);
-  d.text('METRICAS COBERTAS', M, 165, { charSpace: 1 });
-  let y = 172;
+  d.text('O QUE VOCE VAI ENTENDER', M, 153, { charSpace: 1 });
+  let y = 161;
   meth.metrics.forEach((m, i) => {
-    fill(d, C.brandSoft);
-    rrect(d, M, y - 3, 4, 4, 0.6, 'F');
-    ink(d, C.brandDeep);
-    font(d, 'bold', 5);
-    d.text(String(i + 1).padStart(2, '0'), M + 2, y, { align: 'center' });
+    fill(d, C.brand);
+    rrect(d, M, y - 3, 4.5, 4.5, 0.6, 'F');
     ink(d, C.white);
-    font(d, 'normal', 10);
-    d.text(m.title, M + 7, y);
-    y += 6;
+    font(d, 'bold', 5);
+    d.text(String(i + 1).padStart(2, '0'), M + 2.25, y, { align: 'center' });
+    ink(d, C.white);
+    font(d, 'bold', 9.5);
+    d.text(m.title, M + 8, y - 0.3);
+    ink(d, [180, 205, 192]);
+    font(d, 'normal', 7);
+    d.text(m.tagline, M + 8, y + 3);
+    y += 8.5;
   });
 
-  ink(d, [200, 225, 212]);
-  font(d, 'normal', 8);
-  d.text(
-    'Cada metrica e detalhada na pagina seguinte, com formula, regras e arquivo-fonte do codigo.',
-    M,
-    PAGE_H - 22,
-  );
   ink(d, C.white);
   font(d, 'bold', 8);
   d.text('ProActive7 - Manual do Sistema', M, PAGE_H - 15);
 }
 
-/** Página de uma métrica. Retorna a página final usada. */
+/** Página de uma métrica, em linguagem de ensino e venda. */
 function drawMethodologyPage(d, m, index) {
   let y = drawPageHeader(d);
   ink(d, C.brandDeep);
   font(d, 'bold', 6.5);
-  d.text('METODOLOGIA', M, y, { charSpace: 1.2 });
+  d.text('COMO MEDIMOS', M, y, { charSpace: 1.2 });
   ink(d, C.faint);
   font(d, 'normal', 6.5);
-  d.text(`${String(index + 1).padStart(2, '0')} / ${m.where}`.toUpperCase(), PAGE_W - M, y, {
+  d.text(`METRICA ${String(index + 1).padStart(2, '0')}`, PAGE_W - M, y, {
     align: 'right',
     charSpace: 0.6,
   });
   y += 4;
   ink(d, C.ink);
-  font(d, 'bold', 15);
-  d.text(m.title, M, y + 4);
-  y += 9;
+  font(d, 'bold', 17);
+  d.text(d.splitTextToSize(m.title, CONTENT_W), M, y + 5);
+  y += 5 + 6 * d.splitTextToSize(m.title, CONTENT_W).length;
 
-  // ONDE APARECE
-  ink(d, C.muted);
-  font(d, 'normal', 8);
-  y = wrap(d, m.what, M, y, CONTENT_W, 4.6) + 5;
+  // Tagline em destaque
+  ink(d, C.brand);
+  font(d, 'bolditalic', 10);
+  y = wrap(d, m.tagline, M, y, CONTENT_W, 5) + 2;
 
-  // FÓRMULA — bloco em destaque
-  y = ensure(d, y, 22);
-  fill(d, C.ink);
-  rrect(d, M, y, CONTENT_W, 16, 1.5, 'F');
-  ink(d, [200, 225, 212]);
-  font(d, 'bold', 7);
-  d.text('FORMULA', M + 4, y + 5, { charSpace: 1 });
-  ink(d, C.white);
-  font(d, 'bold', 11);
-  doc_setMono(d);
-  d.text(m.formula, M + 4, y + 12, { maxWidth: CONTENT_W - 8 });
-  doc_setHelvetica(d);
-  y += 20;
-
-  // REGRAS
-  y = ensure(d, y, 24);
-  fill(d, C.brand);
-  d.rect(M, y - 3, 1.5, 4, 'F');
+  // Onde aparece (chip)
+  fill(d, C.brandSoft);
+  const whereLabel = `Onde aparece:  ${m.where}`;
+  const ww = d.getTextWidth(whereLabel) + 6;
+  rrect(d, M, y, Math.min(ww, CONTENT_W), 6, 3, 'F');
   ink(d, C.brandDeep);
-  font(d, 'bold', 8);
-  d.text('REGRAS', M + 3, y);
-  y += 5;
-  for (let i = 0; i < m.rules.length; i++) {
-    y = ensure(d, y, 9);
-    fill(d, C.brandSoft);
-    d.circle(M + 1.6, y + 0.8, 1.9, 'F');
-    ink(d, C.brandDeep);
-    font(d, 'bold', 6);
-    d.text(String(i + 1), M + 1.6, y + 1.6, { align: 'center' });
-    ink(d, C.body);
-    font(d, 'normal', 9);
-    y = wrap(d, m.rules[i], M + 5.5, y + 1.8, CONTENT_W - 5.5, 4.4) + 1.5;
-  }
-  y += 3;
+  font(d, 'normal', 7.5);
+  d.text(whereLabel, M + 3, y + 4);
+  y += 10;
 
-  // FAIXAS (se houver — só compliance e tiers têm)
-  if (m.tiers && m.tiers.length) {
+  // O que é
+  ink(d, C.body);
+  font(d, 'normal', 9.5);
+  y = wrap(d, m.plain, M, y, CONTENT_W, 5) + 5;
+
+  // COMO É CALCULADO (linguagem simples)
+  if (m.calc && m.calc.length) {
     y = ensure(d, y, 22);
     fill(d, C.brand);
     d.rect(M, y - 3, 1.5, 4, 'F');
     ink(d, C.brandDeep);
     font(d, 'bold', 8);
-    d.text('FAIXAS DE COR', M + 3, y);
+    d.text('COMO E CALCULADO', M + 3, y);
     y += 5;
-    const colors = [C.brand, C.amber, C.red];
-    for (let i = 0; i < m.tiers.length; i++) {
-      y = ensure(d, y, 7);
-      const tone = colors[i] || C.muted;
-      fill(d, tone);
-      rrect(d, M, y - 2.5, 4, 4, 0.6, 'F');
+    for (const line of m.calc) {
+      y = ensure(d, y, 8);
+      fill(d, C.brand);
+      d.circle(M + 1.4, y + 0.6, 1, 'F');
       ink(d, C.body);
       font(d, 'normal', 9);
-      y = wrap(d, m.tiers[i], M + 6, y, CONTENT_W - 6, 4.4) + 1.5;
+      y = wrap(d, line, M + 5, y + 1.4, CONTENT_W - 5, 4.4) + 1.5;
+    }
+    y += 3;
+  }
+
+  // BREAKDOWN visual (compliance: barras com peso)
+  if (m.breakdown && m.breakdown.length) {
+    y = ensure(d, y, 14 + m.breakdown.length * 7);
+    fill(d, C.brand);
+    d.rect(M, y - 3, 1.5, 4, 'F');
+    ink(d, C.brandDeep);
+    font(d, 'bold', 8);
+    d.text('AS SETE FRENTES (TOTAL 100 PONTOS)', M + 3, y);
+    y += 6;
+    const maxPts = 25;
+    const barMaxW = 46;
+    const labelW = 36;
+    for (const part of m.breakdown) {
+      y = ensure(d, y, 9);
+      ink(d, C.ink);
+      font(d, 'bold', 8);
+      d.text(part.label, M, y + 1.5, { maxWidth: labelW });
+      // barra proporcional ao peso
+      const bx = M + labelW + 2;
+      fill(d, C.hair);
+      rrect(d, bx, y, barMaxW, 3.2, 1, 'F');
+      fill(d, C.brand);
+      rrect(d, bx, y, (part.points / maxPts) * barMaxW, 3.2, 1, 'F');
+      ink(d, C.brandDeep);
+      font(d, 'bold', 8);
+      d.text(`${part.points} pts`, bx + barMaxW + 3, y + 2.6);
+      // descrição
+      ink(d, C.muted);
+      font(d, 'normal', 7);
+      const dx = bx + barMaxW + 16;
+      d.text(d.splitTextToSize(part.desc, PAGE_W - M - dx), dx, y + 1.5);
+      const lines = d.splitTextToSize(part.desc, PAGE_W - M - dx).length;
+      y += Math.max(7, lines * 3 + 1.5);
     }
     y += 2;
   }
 
-  // FONTE DO CÓDIGO
-  y = ensure(d, y, 14);
-  fill(d, [243, 244, 246]);
-  rrect(d, M, y, CONTENT_W, 9, 1, 'F');
-  ink(d, C.muted);
-  font(d, 'bold', 6.5);
-  d.text('FONTE NO CODIGO', M + 3, y + 3.5, { charSpace: 0.8 });
-  ink(d, C.body);
-  doc_setMono(d);
-  font(d, 'normal', 8);
-  d.text(m.source, M + 3, y + 7);
-  doc_setHelvetica(d);
+  // EXEMPLO (caixa destacada)
+  if (m.example) {
+    const scnLines = d.splitTextToSize(
+      'Cenario:  ' + m.example.scenario,
+      CONTENT_W - 10,
+    );
+    const resLines = d.splitTextToSize(
+      'Resultado:  ' + m.example.result,
+      CONTENT_W - 10,
+    );
+    const boxH = 9 + scnLines.length * 4.2 + resLines.length * 4.6 + 4;
+    y = ensure(d, y, boxH + 4);
+    fill(d, [255, 251, 235]);
+    rrect(d, M, y, CONTENT_W, boxH, 1.5, 'F');
+    fill(d, C.amber);
+    rrect(d, M, y, 2, boxH, 1.5, 'F');
+    ink(d, [146, 64, 14]);
+    font(d, 'bold', 7.5);
+    d.text('EXEMPLO PRATICO', M + 5, y + 5);
+    ink(d, C.body);
+    font(d, 'normal', 8.5);
+    let ey = y + 10;
+    d.text(scnLines, M + 5, ey);
+    ey += scnLines.length * 4.2 + 1.5;
+    ink(d, [146, 64, 14]);
+    font(d, 'bold', 8.5);
+    d.text(resLines, M + 5, ey);
+    y += boxH + 5;
+  }
+
+  // COMO LER O RESULTADO (tiers coloridos)
+  if (m.howToRead && m.howToRead.length) {
+    y = ensure(d, y, 10 + m.howToRead.length * 6);
+    fill(d, C.brand);
+    d.rect(M, y - 3, 1.5, 4, 'F');
+    ink(d, C.brandDeep);
+    font(d, 'bold', 8);
+    d.text('COMO LER O RESULTADO', M + 3, y);
+    y += 5;
+    const colors = [C.brand, C.amber, C.red];
+    for (let i = 0; i < m.howToRead.length; i++) {
+      y = ensure(d, y, 7);
+      const tone = colors[i] || C.muted;
+      fill(d, tone);
+      rrect(d, M, y - 2.4, 4, 4, 0.8, 'F');
+      ink(d, C.body);
+      font(d, 'normal', 9);
+      y = wrap(d, m.howToRead[i], M + 6, y, CONTENT_W - 6, 4.4) + 1.5;
+    }
+    y += 3;
+  }
+
+  // POR QUE IMPORTA (caixa de venda/ensino)
+  if (m.whyMatters) {
+    const wmLines = d.splitTextToSize(m.whyMatters, CONTENT_W - 10);
+    const boxH = 9 + wmLines.length * 4.4 + 2;
+    y = ensure(d, y, boxH + 2);
+    fill(d, C.brandSoft);
+    rrect(d, M, y, CONTENT_W, boxH, 1.5, 'F');
+    fill(d, C.brand);
+    rrect(d, M, y, 2, boxH, 1.5, 'F');
+    ink(d, C.brandDeep);
+    font(d, 'bold', 7.5);
+    d.text('POR QUE ISSO IMPORTA', M + 5, y + 5);
+    ink(d, C.body);
+    font(d, 'italic', 8.7);
+    d.text(wmLines, M + 5, y + 10);
+  }
 
   drawFooter(d);
-}
-
-function doc_setMono(d) {
-  d.setFont('courier', 'normal');
-}
-function doc_setHelvetica(d) {
-  d.setFont('helvetica', 'normal');
 }
 
 // ============================================================

@@ -2,143 +2,156 @@
   "version": "2.1",
   "updatedAt": "2026-06-08",
   "methodology": {
-    "title": "Como os scores e métricas são calculados",
-    "intro": "Todo número que aparece no sistema (score da empresa, score de visita técnica, status de ASO, alerta de pragas, retenção de fotos) vem de uma fórmula explícita no código — não é estimativa. As regras abaixo são as mesmas usadas em produção; se a fórmula mudar, esta página muda junto. Transparência sobre cada cálculo:",
+    "title": "Como o sistema mede a saúde da sua cozinha",
+    "intro": "Todo número que o ProActive7 mostra — a nota de uma visita, o score de uma empresa, o semáforo de um ASO — tem um critério claro e justo por trás. Nada é \"achismo\". Esta parte do manual explica, em linguagem simples e com exemplos, como cada métrica é calculada e, principalmente, por que ela importa para a sua operação e para a fiscalização. Use estas páginas para apresentar o sistema a um cliente com segurança.",
     "metrics": [
       {
         "id": "audit-score",
-        "title": "Score de visita técnica",
-        "where": "Visita técnica · detalhe",
-        "what": "Mostra o quanto da operação está conforme no checklist da visita. Aparece como 'Score: 82%' no topo do detalhe e também por categoria.",
-        "formula": "score = soma(peso × C) / soma(peso × não-NA) × 100",
-        "rules": [
-          "Cada item do checklist tem um peso (1 a 5). Itens mais críticos pesam mais.",
-          "Resposta C (conforme) entra como peso completo no numerador e no denominador.",
-          "Resposta NC (não conforme) entra no denominador mas zero no numerador (puxa o score pra baixo).",
-          "Resposta NA (não se aplica) é ignorada inteira — não entra na conta.",
-          "Item sem resposta conta como NC: incentiva preencher tudo.",
-          "Se TODOS os itens forem NA, o score vira nulo (não calculado)."
+        "title": "Nota da visita técnica",
+        "where": "No topo de cada visita e no relatório em PDF",
+        "tagline": "O quanto a cozinha passou na inspeção daquele dia",
+        "plain": "Quando a nutricionista faz uma visita, ela percorre um checklist e marca cada ponto como Conforme, Não conforme ou Não se aplica. A nota transforma essas marcações em um número de 0 a 100% — quanto maior, mais a cozinha está dentro das regras da ANVISA.",
+        "calc": [
+          "Cada item do checklist tem um peso, de 1 a 5. Itens mais graves (como contaminação cruzada) pesam mais que detalhes menores.",
+          "Somamos os pesos de tudo que foi marcado como Conforme.",
+          "Dividimos pela soma dos pesos de tudo que foi avaliado (Conforme mais Não conforme).",
+          "O que foi marcado como Não se aplica sai inteiro da conta — não ajuda nem atrapalha.",
+          "Item que ficou sem resposta conta como Não conforme, para incentivar a nutricionista a preencher tudo."
         ],
-        "source": "src/lib/auditScore.ts"
+        "example": {
+          "scenario": "Uma visita com 5 itens: 3 conformes (pesos 5, 3 e 2, somando 10) e 2 não conformes (pesos 4 e 1, somando 5).",
+          "result": "Nota = 10 ÷ 15 = 66,7%. Faixa âmbar (atenção)."
+        },
+        "howToRead": [
+          "85% ou mais — verde: operação conforme.",
+          "Entre 70% e 84% — âmbar: precisa de atenção.",
+          "Abaixo de 70% — vermelho: situação crítica."
+        ],
+        "whyMatters": "É o número que a nutricionista mostra ao cliente para provar evolução visita após visita. Como os itens críticos pesam mais, a nota reflete risco real de fiscalização — não apenas a quantidade de itens marcados."
       },
       {
         "id": "compliance-score",
-        "title": "Score de compliance da empresa",
-        "where": "Painel da nutri · cards da carteira",
-        "what": "Indicador 0–100 da saúde geral de cada empresa atendida. É a soma ponderada de 7 indicadores. Aparece com cor: verde (≥85), âmbar (70–84) ou vermelho (<70).",
-        "formula": "score = NC + Checklist + Visita + Temp + Docs + Manip + CIP (total 100 pontos)",
-        "rules": [
-          "NC — 25 pontos: 25 × (1 − NCs vencidas no 30d / total de NCs no 30d). Sem NCs no mês = parcela cheia.",
-          "Checklist — 20 pontos: 20 × (checklists rodados no 30d / checklists planejados no 30d), no máximo 1. Sem plano = parcela cheia (neutro positivo).",
-          "Visita — 20 pontos: 20 se houve visita técnica concluída nos últimos 90 dias; 0 senão.",
-          "Temperatura — 10 pontos: 10 × (1 − leituras fora da faixa no 7d / total de leituras no 7d). Sem leituras = parcela cheia.",
-          "Documentos — 10 pontos: 10 se a empresa tem 6 documentos publicados (MBP + 5 POPs); 0 senão.",
-          "Manipuladores — 10 pontos: 10 × (manipuladores com ASO em dia / manipuladores ativos), no máximo 1.",
-          "CIP (controle de pragas) — 5 pontos: 5 se em dia; 0 se já contratou e está vencido; 5 (neutro) se nunca contratou (regra protege empresa pequena sem CIP terceirizado de travar o score em 95%)."
+        "title": "Score de saúde da empresa",
+        "where": "No painel da nutricionista, em cada empresa da carteira",
+        "tagline": "A nota viva de cada cliente, que se atualiza sozinha",
+        "plain": "Se a nota da visita é uma foto do dia da inspeção, o score de saúde é um filme contínuo. Ele observa sete frentes da operação ao mesmo tempo e resume tudo em um número de 0 a 100, que muda sozinho conforme a cozinha registra (ou deixa de registrar) suas rotinas. Cada frente vale uma quantidade de pontos:",
+        "breakdown": [
+          { "label": "Não-conformidades", "points": 25, "desc": "Quanto menos pendências vencidas, mais pontos. Empresa sem NC atrasada leva os 25 cheios." },
+          { "label": "Checklists", "points": 20, "desc": "A fatia dos checklists planejados no mês que foi de fato realizada pela cozinha." },
+          { "label": "Visita técnica", "points": 20, "desc": "Houve visita da nutricionista nos últimos 90 dias? Sim leva 20; não, zero." },
+          { "label": "Temperatura", "points": 10, "desc": "Quanto menos leituras fora da faixa segura na semana, mais pontos." },
+          { "label": "Documentos", "points": 10, "desc": "Manual de Boas Práticas mais os 5 POPs publicados garantem os 10 pontos." },
+          { "label": "Manipuladores", "points": 10, "desc": "A proporção da equipe com ASO em dia." },
+          { "label": "Controle de pragas", "points": 5, "desc": "Dedetização em dia leva 5; vencida, zero. Quem nunca precisou contratar não é penalizado." }
         ],
-        "tiers": [
-          "≥ 85 — verde (conforme)",
-          "70 – 84 — âmbar (atenção)",
-          "< 70 — vermelho (crítico)"
+        "example": {
+          "scenario": "Uma empresa com: nenhuma NC atrasada (25), 8 de 10 checklists feitos (16), visita há 40 dias (20), nenhuma temperatura fora da faixa (10), documentos completos (10), 9 de 10 ASOs em dia (9) e pragas em dia (5).",
+          "result": "Score = 25 + 16 + 20 + 10 + 10 + 9 + 5 = 95. Faixa verde."
+        },
+        "howToRead": [
+          "85 ou mais — verde: empresa saudável.",
+          "Entre 70 e 84 — âmbar: merece acompanhamento.",
+          "Abaixo de 70 — vermelho: prioridade da nutricionista."
         ],
-        "source": "src/lib/complianceScore.ts · view SQL company_compliance_v"
+        "whyMatters": "É a métrica de venda da consultoria: mostra, em um número honesto, que a cozinha está protegida. O sistema nunca esconde uma nota ruim — esse é um princípio dele — então o cliente confia. E como ela se atualiza sozinha, vira o placar do trabalho da nutricionista mês a mês."
       },
       {
         "id": "aso-status",
-        "title": "Status do ASO (Atestado de Saúde Ocupacional)",
-        "where": "Manipuladores · lista e ficha",
-        "what": "Classifica cada manipulador conforme o ASO mais recente. Aparece como badge colorido (verde / âmbar / vermelho / cinza).",
-        "formula": "diasRestantes = expires_at − hoje",
-        "rules": [
-          "Em dia (verde) — ASO ainda válido com mais de 30 dias.",
-          "Vence em breve (âmbar) — falta entre 0 e 30 dias para vencer.",
-          "Vencido (vermelho) — data de vencimento no passado.",
-          "Sem ASO (cinza) — manipulador nunca teve ASO registrado no sistema."
+        "title": "Semáforo do ASO",
+        "where": "Em Manipuladores, na lista e na ficha de cada funcionário",
+        "tagline": "Quem está com o exame de saúde em dia — e quem não está",
+        "plain": "O ASO (Atestado de Saúde Ocupacional) é o exame que todo manipulador de alimentos precisa manter válido. O sistema olha o ASO mais recente de cada pessoa e pinta um semáforo, para a nutricionista agir antes de virar problema.",
+        "calc": [
+          "Verde (em dia) — o exame ainda é válido por mais de 30 dias.",
+          "Âmbar (vence em breve) — faltam 30 dias ou menos para vencer.",
+          "Vermelho (vencido) — a data de validade já passou.",
+          "Cinza (sem ASO) — a pessoa ainda não tem nenhum exame registrado."
         ],
-        "source": "src/lib/asoStatus.ts"
+        "example": {
+          "scenario": "Um ASO que vence daqui a 20 dias.",
+          "result": "Aparece âmbar — a nutricionista já sabe que precisa renovar antes do prazo."
+        },
+        "whyMatters": "ASO vencido é uma das primeiras coisas que o fiscal pede e vira multa na hora. O semáforo permite resolver o exame com folga, em vez de descobrir o problema durante a inspeção."
       },
       {
         "id": "pest-status",
-        "title": "Status do controle de pragas (CIP)",
-        "where": "Painel da nutri · cards · controle de pragas",
-        "what": "Avalia se o programa de controle integrado de pragas está em dia, com base no serviço mais recente.",
-        "formula": "diasRestantes = next_due_at − hoje  (do serviço mais recente)",
-        "rules": [
-          "Em dia (verde) — próxima visita ainda no futuro, com mais de 30 dias.",
-          "Vence em breve (âmbar) — próxima visita entre 0 e 30 dias.",
-          "Vencido (vermelho) — próxima visita no passado.",
-          "Sem serviço (cinza) — nenhuma aplicação registrada OU sem data da próxima."
+        "title": "Semáforo do controle de pragas",
+        "where": "No painel da nutricionista e na tela de Controle de pragas",
+        "tagline": "Se a dedetização está em dia ou já venceu",
+        "plain": "A RDC 216 exige um programa contínuo de controle de pragas. O sistema olha o serviço mais recente e a data prevista para o próximo, e mostra um semáforo igual ao do ASO.",
+        "calc": [
+          "Verde (em dia) — a próxima aplicação está prevista para daqui a mais de 30 dias.",
+          "Âmbar (vence em breve) — faltam 30 dias ou menos para a próxima.",
+          "Vermelho (vencido) — a data da próxima aplicação já passou.",
+          "Cinza (sem serviço) — nenhuma aplicação registrada ainda."
         ],
-        "source": "src/lib/pestStatus.ts"
+        "example": {
+          "scenario": "Última dedetização com próxima visita marcada para ontem.",
+          "result": "Aparece vermelho — e entra na lista de afazeres da nutricionista automaticamente."
+        },
+        "whyMatters": "Controle de pragas vencido é não-conformidade na certa. Manter o semáforo verde é manter o laudo sempre à mão quando o fiscal pedir os últimos três meses."
       },
       {
         "id": "validity-label",
-        "title": "Validade da etiqueta",
-        "where": "Wizard de impressão · Produção · Validades",
-        "what": "Calcula a data e hora de validade de cada etiqueta automaticamente — o operador da cozinha não digita nada.",
-        "formula": "expiry_at = manipulation_at + (validade do produto na condição escolhida)",
-        "rules": [
-          "manipulation_at é o exato momento da impressão (não pode ser editado).",
-          "A validade vem do cadastro do produto (Cadastros → Produtos → Validade por condição: ambiente, refrigerado, congelado).",
-          "Unidade pode ser horas ou dias — a nutri define.",
-          "Cor na tela de Validades: vermelho (vencido), âmbar (vence nas próximas 24h), verde (ok)."
+        "title": "Validade automática da etiqueta",
+        "where": "No wizard de impressão, em Produção e em Validades",
+        "tagline": "A data de vencimento calculada sozinha, sem digitar",
+        "plain": "O maior erro de fiscalização em cozinha é validade escrita à mão errada. No ProActive7, o cozinheiro nunca digita a validade: o sistema calcula a partir do momento exato da impressão e do prazo cadastrado para aquele produto.",
+        "calc": [
+          "A hora de manipulação é o instante exato em que a etiqueta é impressa (não dá para editar).",
+          "O prazo de validade vem do cadastro do produto, para cada forma de armazenamento (ambiente, refrigerado ou congelado).",
+          "O prazo pode ser em horas ou em dias — quem define é a nutricionista.",
+          "A validade final é simplesmente a hora da impressão somada a esse prazo."
         ],
-        "source": "src/lib/dates.ts (computeExpiry)"
+        "example": {
+          "scenario": "Uma salada refrigerada com prazo de 2 dias, impressa às 14h de uma segunda-feira.",
+          "result": "A etiqueta vence automaticamente às 14h da quarta-feira."
+        },
+        "whyMatters": "Tira o erro humano da etiqueta — o problema mais comum em fiscalização. E como a hora é travada na impressão, ninguém consegue \"esticar\" a validade de um alimento."
       },
       {
         "id": "afazeres",
-        "title": "Afazeres do painel da nutri",
-        "where": "Painel da carteira · bloco 'Afazeres'",
-        "what": "Cards de pendência que mostram à RT o que precisa ser feito hoje na carteira de clientes.",
-        "formula": "Quatro consultas SQL com janelas temporais fixas",
-        "rules": [
-          "Empresas sem visita técnica há mais de 60 dias.",
-          "ASOs vencendo nos próximos 30 dias (ou já vencidos).",
-          "NCs com severidade alta ou crítica abertas/em andamento há mais de 14 dias.",
-          "Controle de pragas com próxima data no passado."
+        "title": "Os afazeres do dia da nutricionista",
+        "where": "No painel da carteira, no bloco Afazeres",
+        "tagline": "O sistema monta a agenda da RT sozinho",
+        "plain": "Em vez de a nutricionista vasculhar empresa por empresa, o sistema varre a carteira inteira e junta as pendências que precisam de ação, em quatro grupos.",
+        "calc": [
+          "Empresas que estão há mais de 60 dias sem visita técnica.",
+          "ASOs que vencem nos próximos 30 dias (ou já vencidos).",
+          "Não-conformidades graves que estão paradas há mais de 14 dias.",
+          "Controle de pragas com a próxima aplicação já vencida."
         ],
-        "source": "src/lib/nutriQueries.ts"
+        "example": {
+          "scenario": "Uma carteira de 7 empresas, em que 2 estão sem visita há mais de 60 dias e 3 têm ASO vencendo.",
+          "result": "O painel mostra esses cards prontos para a nutricionista agir, sem ela precisar procurar."
+        },
+        "whyMatters": "Transforma a consultoria em algo proativo: a RT começa o dia sabendo exatamente o que fazer, e o cliente sente que está sendo cuidado de perto."
       },
       {
         "id": "tiers",
-        "title": "Faixas de cor (todos os scores)",
-        "where": "Carteira, visita técnica, dossiê",
-        "what": "Convenção visual usada em todo o sistema para indicar saúde de um número 0–100.",
-        "formula": "Mesmas faixas em todas as telas",
-        "rules": [
-          "≥ 85 — verde (conforme)",
-          "70 – 84 — âmbar (atenção)",
-          "< 70 — vermelho (crítico)"
+        "title": "Como ler qualquer nota do sistema",
+        "where": "Em toda tela que mostra um número de 0 a 100",
+        "tagline": "O mesmo semáforo em todo lugar",
+        "plain": "Para não confundir, o ProActive7 usa sempre as mesmas três faixas de cor em qualquer nota — seja o score de uma empresa, a nota de uma visita ou um indicador do dossiê.",
+        "calc": [
+          "Verde — 85 ou mais: tudo conforme, pode mostrar com orgulho ao cliente.",
+          "Âmbar — de 70 a 84: aceitável, mas com pontos a melhorar.",
+          "Vermelho — abaixo de 70: situação crítica, prioridade absoluta."
         ],
-        "source": "src/lib/printTheme.ts (scoreTier)"
+        "whyMatters": "A consistência de cores faz qualquer pessoa entender a saúde da operação em um relance, sem precisar de explicação — inclusive o dono do restaurante e o fiscal."
       },
       {
         "id": "retention-photos",
-        "title": "Retenção de fotos",
-        "where": "Galeria · NC · checklist · temperatura",
-        "what": "Quantos dias uma foto fica armazenada no sistema antes da exclusão automática.",
-        "formula": "RETENTION_DAYS = 30",
-        "rules": [
-          "Todas as fotos (galeria geral e anexadas a NC/checklist/temperatura) são excluídas 30 dias após o upload.",
-          "Limpeza diária via Edge Function `cleanup-photos`.",
-          "A página de Fotos mostra na badge quantos dias faltam para a exclusão de cada item.",
-          "Política LGPD: fotos podem conter rosto de manipulador (dado pessoal) — retenção curta minimiza risco."
+        "title": "Por quanto tempo as fotos ficam guardadas",
+        "where": "Na galeria de Fotos e em tudo que aceita anexo de imagem",
+        "tagline": "Evidência suficiente, com respeito à LGPD",
+        "plain": "Toda foto enviada ao sistema (na galeria, em uma não-conformidade, em um checklist ou numa leitura de temperatura) é guardada por 30 dias e depois apagada automaticamente.",
+        "calc": [
+          "O prazo é de 30 dias a partir do envio.",
+          "A limpeza acontece sozinha, todos os dias.",
+          "Na tela de Fotos, cada imagem mostra quantos dias faltam para ser apagada."
         ],
-        "source": "src/pages/PhotosPage.tsx · supabase/functions/cleanup-photos"
-      },
-      {
-        "id": "expiry-window-labels",
-        "title": "Janelas de validade na tela de Validades",
-        "where": "Produção · Validades · Painel da cozinha",
-        "what": "Faixas que definem como cada etiqueta aparece visualmente.",
-        "formula": "tempo até expirar (em horas)",
-        "rules": [
-          "Vencido (vermelho) — expiry_at já no passado.",
-          "Vence hoje (âmbar) — expira nas próximas 24 horas.",
-          "Vence em N dias (âmbar) — entre 24h e 72h restantes.",
-          "Verde — mais de 3 dias até vencer."
-        ],
-        "source": "src/pages/ProducaoPage.tsx (expiryInfo)"
+        "whyMatters": "Fotos de cozinha podem capturar o rosto de um manipulador, que é dado pessoal. Guardar por pouco tempo é o que a LGPD recomenda: tempo suficiente para servir de evidência, sem acumular dado sensível à toa."
       }
     ]
   },
@@ -448,7 +461,7 @@
           "subtitle": "Galeria de evidências",
           "route": "/fotos",
           "screenshot": "nutri-fotos",
-          "what": "Galeria das fotos da empresa, usadas como evidência em visitas, NCs e checklists. As fotos são excluídas automaticamente após 30 dias para respeitar a LGPD (limpeza feita pela Edge Function cleanup-photos).",
+          "what": "Galeria das fotos da empresa, usadas como evidência em visitas, NCs e checklists. As fotos são excluídas automaticamente após 30 dias para respeitar a LGPD (a limpeza acontece sozinha todos os dias).",
           "how": [
             "Envie fotos pelo botão Enviar foto ou anexe direto numa NC, checklist, leitura de temperatura ou recebimento.",
             "Clique em qualquer foto para ampliar em tela cheia (lightbox).",
