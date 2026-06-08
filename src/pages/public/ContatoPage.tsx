@@ -9,11 +9,17 @@ import {
   Leaf,
   Send,
   Clock,
+  ClipboardCheck,
+  Handshake,
+  ShieldCheck,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { usePageMeta } from '@/lib/usePageMeta';
+import { Reveal } from '@/components/public/Reveal';
 
 const WHATSAPP_URL = 'https://wa.me/5522997662669';
+const MAPS_QUERY =
+  'Rua Dr. Luiz Belegard, 407, Imbetiba, Macaé - RJ';
 
 export function ContatoPage() {
   usePageMeta('/contato');
@@ -21,6 +27,8 @@ export function ContatoPage() {
     <div>
       <Hero />
       <ContatoGrid />
+      <ComoAtendemos />
+      <Mapa />
     </div>
   );
 }
@@ -50,9 +58,133 @@ function ContatoGrid() {
   return (
     <section className="mx-auto max-w-6xl px-5 py-16">
       <div className="grid gap-8 lg:grid-cols-[1.1fr_1fr]">
-        <ContactCard />
-        <ContatoForm />
+        <Reveal>
+          <ContactCard />
+        </Reveal>
+        <Reveal delay={120}>
+          <ContatoForm />
+        </Reveal>
       </div>
+    </section>
+  );
+}
+
+/**
+ * Como funciona o atendimento — reduz a fricção de "e agora?" e passa
+ * confiança de que existe um processo (e que a primeira conversa é sem
+ * compromisso). Preenche o espaço entre o formulário e o mapa.
+ */
+function ComoAtendemos() {
+  const passos = [
+    {
+      icon: MessageCircle,
+      title: 'Você fala com a gente',
+      body: 'Pelo WhatsApp, e-mail ou formulário. Conte o segmento e o tamanho da sua operação.',
+    },
+    {
+      icon: ClipboardCheck,
+      title: 'Diagnóstico inicial',
+      body: 'Entendemos o momento do seu estabelecimento e o que a legislação exige no seu caso.',
+    },
+    {
+      icon: Handshake,
+      title: 'Proposta sob medida',
+      body: 'Você recebe um plano de consultoria com escopo e prazos claros — sem compromisso.',
+    },
+  ];
+  return (
+    <section className="bg-[#FAFAF7] py-16">
+      <div className="mx-auto max-w-6xl px-5">
+        <Reveal>
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+              Como atendemos
+            </span>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
+              Da primeira mensagem à proposta — simples assim.
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-[#1A2A22]/65">
+              A primeira conversa é sempre sem compromisso. A gente só avança
+              quando faz sentido para a sua operação.
+            </p>
+          </div>
+        </Reveal>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {passos.map(({ icon: Icon, title, body }, i) => (
+            <Reveal key={title} delay={i * 110}>
+              <div className="relative h-full rounded-2xl border border-[#E8F1EA] bg-white p-6">
+                <div className="flex items-center justify-between">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2F5D3F] text-white">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="font-mono text-2xl font-bold text-[#E8F1EA]">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                </div>
+                <h3 className="mt-4 text-base font-semibold text-[#1A2A22]">
+                  {title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#1A2A22]/70">
+                  {body}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Mapa do escritório (Google Maps embed — sem chave/API, custo zero).
+ * Dá prova de existência física (confiança) e preenche o fim da página.
+ */
+function Mapa() {
+  return (
+    <section className="mx-auto max-w-6xl px-5 py-16">
+      <Reveal>
+        <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr] lg:items-stretch">
+          <div className="flex flex-col justify-center rounded-3xl border border-[#E8F1EA] bg-white p-7">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+              Onde estamos
+            </span>
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#1A2A22]">
+              Escritório em Imbetiba, Macaé.
+            </h2>
+            <p className="mt-3 flex items-start gap-2 text-sm leading-relaxed text-[#1A2A22]/70">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#2F5D3F]" />
+              Rua Dr. Luiz Belegard, 407 — sala 704 · Imbetiba · Macaé / RJ
+            </p>
+            <p className="mt-2 flex items-center gap-2 text-sm text-[#1A2A22]/70">
+              <ShieldCheck className="h-4 w-4 shrink-0 text-[#2F5D3F]" />
+              Atendimento in-loco em toda a região mediante agendamento.
+            </p>
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                MAPS_QUERY,
+              )}`}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-[#2F5D3F] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#234731]"
+            >
+              Abrir no Google Maps
+              <MapPin className="h-4 w-4" />
+            </a>
+          </div>
+          <div className="overflow-hidden rounded-3xl border border-[#E8F1EA] shadow-[0_24px_60px_-30px_rgba(47,93,63,0.25)]">
+            <iframe
+              title="Mapa do escritório da ProActive7 em Macaé"
+              src={`https://www.google.com/maps?q=${encodeURIComponent(
+                MAPS_QUERY,
+              )}&output=embed`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="h-72 w-full lg:h-full lg:min-h-[22rem]"
+            />
+          </div>
+        </div>
+      </Reveal>
     </section>
   );
 }

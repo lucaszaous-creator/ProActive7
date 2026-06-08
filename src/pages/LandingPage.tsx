@@ -16,9 +16,16 @@ import {
   MapPin,
   MessageCircle,
   Quote,
+  Eye,
+  ClipboardList,
+  Lightbulb,
+  BadgeCheck,
+  Users,
+  Laptop2,
 } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { Carousel } from '@/components/public/Carousel';
+import { Reveal } from '@/components/public/Reveal';
 
 /**
  * Página inicial — sobre a EMPRESA ProActive7 (consultoria nutricional
@@ -36,8 +43,10 @@ export function LandingPage() {
       <Hero />
       <PillarsStrip />
       <Sobre />
+      <Metodo />
       <Numeros />
       <ServicosResumo />
+      <Diferenciais />
       <Depoimentos />
       <Atuacao />
       <FinalCta />
@@ -207,6 +216,82 @@ function Sobre() {
 }
 
 /* =====================================================================
+ * MÉTODO — observar, planejar, capacitar, conscientizar
+ * ===================================================================== */
+function Metodo() {
+  const etapas = [
+    {
+      icon: Eye,
+      title: 'Observar',
+      body: 'Auditamos a operação como ela realmente é — fluxo, estrutura e rotina da equipe.',
+    },
+    {
+      icon: ClipboardList,
+      title: 'Planejar',
+      body: 'Montamos um plano de ação priorizado, alinhado à RDC 216 e às exigências locais.',
+    },
+    {
+      icon: GraduationCap,
+      title: 'Capacitar',
+      body: 'Treinamos os manipuladores e implantamos POPs que funcionam no dia a dia.',
+    },
+    {
+      icon: Lightbulb,
+      title: 'Conscientizar',
+      body: 'Criamos cultura de segurança alimentar que se mantém entre uma visita e outra.',
+    },
+  ];
+  return (
+    <section className="bg-[#FAFAF7] py-20">
+      <div className="mx-auto max-w-6xl px-5">
+        <Reveal>
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+              Nosso método
+            </span>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+              Um jeito próprio de transformar a cozinha.
+            </h2>
+            <p className="mt-3 text-base leading-relaxed text-[#1A2A22]/65">
+              Quatro etapas que levam o estabelecimento do papel à prática — e
+              mantêm a conformidade viva ao longo do tempo.
+            </p>
+          </div>
+        </Reveal>
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {etapas.map(({ icon: Icon, title, body }, i) => (
+            <Reveal key={title} delay={i * 100}>
+              <div className="relative h-full rounded-2xl border border-[#E8F1EA] bg-white p-6">
+                {i < etapas.length - 1 && (
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute right-[-14px] top-9 hidden h-px w-7 bg-[#6FA68A]/40 lg:block"
+                  />
+                )}
+                <div className="flex items-center justify-between">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="font-mono text-2xl font-bold text-[#E8F1EA]">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                </div>
+                <h3 className="mt-4 text-base font-semibold text-[#1A2A22]">
+                  {title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#1A2A22]/70">
+                  {body}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* =====================================================================
  * NÚMEROS — 12 anos, etc.
  * ===================================================================== */
 function Numeros() {
@@ -325,6 +410,77 @@ function ServicosResumo() {
           Ver todos os serviços em detalhe
           <ArrowRight className="h-4 w-4" />
         </Link>
+      </div>
+    </section>
+  );
+}
+
+/* =====================================================================
+ * DIFERENCIAIS — por que a ProActive7
+ * ===================================================================== */
+function Diferenciais() {
+  const items = [
+    {
+      icon: BadgeCheck,
+      title: 'Responsabilidade técnica de verdade',
+      body: 'Nutricionista RT registrada no CRN assina pela sua operação perante a ANVISA — não é só relatório, é responsabilidade assumida.',
+    },
+    {
+      icon: Laptop2,
+      title: 'Sistema próprio incluso',
+      body: 'A plataforma ProActive7 (etiquetas RDC 216, auditorias, temperaturas, ASOs e POPs) entra junto com a consultoria, sem custo extra.',
+    },
+    {
+      icon: Users,
+      title: 'On-shore e off-shore',
+      body: 'Experiência com cozinhas de plataforma, indústria, hotelaria e food service — a exigência técnica é a mesma, o contexto a gente conhece.',
+    },
+    {
+      icon: Heart,
+      title: 'Atitude pró-ativa',
+      body: 'Antecipamos o problema antes da fiscalização chegar. Acompanhamento próximo, sem espera e sem improviso.',
+    },
+  ];
+  return (
+    <section className="relative isolate overflow-hidden bg-[#0F1310] py-20 text-white">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-40 top-0 h-96 w-96 rounded-full bg-[#2F5D3F]/40 blur-[120px]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -left-40 bottom-0 h-96 w-96 rounded-full bg-[#6FA68A]/20 blur-[120px]"
+      />
+      <div className="relative mx-auto max-w-6xl px-5">
+        <Reveal>
+          <div className="mx-auto max-w-2xl text-center">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#A8D96A]">
+              Por que a ProActive7
+            </span>
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
+              Consultoria que assume a responsabilidade com você.
+            </h2>
+          </div>
+        </Reveal>
+        <div className="mt-12 grid gap-5 sm:grid-cols-2">
+          {items.map(({ icon: Icon, title, body }, i) => (
+            <Reveal key={title} delay={i * 90}>
+              <div className="flex h-full gap-4 rounded-3xl border border-white/10 bg-white/5 p-7 backdrop-blur-sm transition hover:border-white/25 hover:bg-white/10">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-[#A8D96A]">
+                  <Icon className="h-6 w-6" />
+                </span>
+                <div>
+                  <h3 className="text-lg font-semibold tracking-tight">
+                    {title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-white/75">
+                    {body}
+                  </p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   );
