@@ -1,4 +1,4 @@
-import { Droplet, Heart, Scale, Leaf, Compass } from 'lucide-react';
+import { Droplet, Heart, Scale, Leaf, Compass, Eye, Gem } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
 
 export function PerfilPage() {
@@ -8,7 +8,7 @@ export function PerfilPage() {
       <Hero />
       <QuemSomos />
       <NossaHistoria />
-      <Missao />
+      <Pilares />
       <Politica />
     </div>
   );
@@ -113,29 +113,90 @@ function NossaHistoria() {
   );
 }
 
-function Missao() {
+/**
+ * Pilares institucionais — Missão, Visão e Valores (resgatados do site
+ * antigo). Seção full-bleed (largura total no desktop) com fundo verde +
+ * aurora e cartões de vidro fosco. No mobile/tablet os cartões empilham.
+ */
+function Pilares() {
+  const valores = [
+    'Ética',
+    'Profissionalismo',
+    'Comprometimento',
+    'Transparência',
+    'Qualidade',
+    'Competência',
+    'Atitude',
+    'Responsabilidade',
+    'Respeito',
+    'Trabalho em equipe',
+  ];
   return (
-    <section className="relative overflow-hidden bg-[#2F5D3F] text-white">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-32 -top-32 h-80 w-80 rounded-full bg-[#6FA68A]/25 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-[#A8D96A]/15 blur-3xl"
-      />
-      <div className="relative mx-auto max-w-4xl px-5 py-16 text-center md:py-20">
-        <Compass className="mx-auto h-10 w-10 text-[#A8D96A]" />
-        <h2 className="mt-4 text-3xl font-semibold tracking-tight md:text-4xl">
-          Missão
-        </h2>
-        <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-white/85 md:text-lg">
-          Atuar como prestadora de serviços em assessoria e consultoria em
-          fornecimento de alimentação e nutrição com qualidade e foco do
-          cliente, diferenciada pela{' '}
-          <strong className="text-white">atitude pró-ativa</strong> e parceria
-          com as empresas de forma comprometida.
-        </p>
+    <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#173a27] py-16 text-white md:py-20">
+      {/* Aurora de fundo */}
+      <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="animate-aurora absolute -left-24 -top-24 h-[28rem] w-[28rem] rounded-full bg-[#3C7350]/45 blur-[120px]" />
+        <div className="animate-aurora absolute right-[-6rem] top-1/3 h-[26rem] w-[26rem] rounded-full bg-[#6FA68A]/35 blur-[130px] [animation-delay:-7s]" />
+        <div className="animate-aurora absolute bottom-[-8rem] left-1/3 h-[24rem] w-[24rem] rounded-full bg-[#A8D96A]/20 blur-[120px] [animation-delay:-14s]" />
+      </div>
+
+      <div className="mx-auto max-w-6xl px-5">
+        <div className="mx-auto max-w-2xl text-center">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#A8D96A]">
+            Quem nos move
+          </span>
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
+            Missão, Visão e Valores
+          </h2>
+        </div>
+
+        <div className="mt-12 grid gap-5 lg:grid-cols-3 lg:items-stretch">
+          {/* Missão */}
+          <article className="flex flex-col rounded-3xl border border-white/15 bg-white/10 p-7 backdrop-blur-xl">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-[#A8D96A]">
+              <Compass className="h-6 w-6" />
+            </div>
+            <h3 className="mt-5 text-xl font-semibold tracking-tight">Missão</h3>
+            <p className="mt-3 text-sm leading-relaxed text-white/85">
+              Atuar como prestadora de serviços em assessoria e consultoria em
+              fornecimento de alimentação e nutrição com qualidade e foco do
+              cliente, diferenciada pela{' '}
+              <strong className="text-white">atitude pró-ativa</strong> e
+              parceria com as empresas de forma comprometida.
+            </p>
+          </article>
+
+          {/* Visão */}
+          <article className="flex flex-col rounded-3xl border border-white/15 bg-white/10 p-7 backdrop-blur-xl">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-[#A8D96A]">
+              <Eye className="h-6 w-6" />
+            </div>
+            <h3 className="mt-5 text-xl font-semibold tracking-tight">Visão</h3>
+            <p className="mt-3 text-sm leading-relaxed text-white/85">
+              Atingir níveis de excelência na prestação de serviços aos clientes
+              através da segurança e qualidade nutricional, agregando valor aos
+              serviços e colaboradores, com atendimento de qualidade e confiança.
+            </p>
+          </article>
+
+          {/* Valores */}
+          <article className="flex flex-col rounded-3xl border border-white/15 bg-white/10 p-7 backdrop-blur-xl">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-[#A8D96A]">
+              <Gem className="h-6 w-6" />
+            </div>
+            <h3 className="mt-5 text-xl font-semibold tracking-tight">Valores</h3>
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {valores.map((v) => (
+                <li
+                  key={v}
+                  className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white/90"
+                >
+                  {v}
+                </li>
+              ))}
+            </ul>
+          </article>
+        </div>
       </div>
     </section>
   );
