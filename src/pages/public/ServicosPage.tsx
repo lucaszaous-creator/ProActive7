@@ -18,6 +18,10 @@ import {
   Croissant,
   Apple,
   Quote,
+  Thermometer,
+  Bug,
+  ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 import { Plus } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -79,12 +83,20 @@ const SERVICOS: Servico[] = [
     title: 'Manuais de Boas Práticas e POPs',
     body: 'Manual de boas práticas personalizado, respeitando as peculiaridades do seu ramo e negócio. Os POPs (Procedimentos Operacionais Padronizados) orientam o manipulador no dia a dia da operação.',
   },
-  {
-    icon: Laptop2,
-    title: 'Sistema ProActive7 — exclusivo',
-    body: 'Plataforma própria que digitaliza etiquetas RDC 216, auditorias, controle de pragas, temperaturas, ASOs e POPs. Tecnologia que a Ariane entrega gratuitamente junto à consultoria — registre a operação no celular e tenha tudo pronto para a fiscalização.',
-    cta: { to: '/sistema', label: 'Conhecer a plataforma' },
-  },
+];
+
+/**
+ * Destaque do sistema próprio — sai do grid de serviços e vira banner
+ * full-width. Além de dar protagonismo ao diferencial da ProActive7,
+ * resolve o número ímpar de serviços (8 cards = grid 2×4 sem órfão).
+ */
+const SISTEMA_HIGHLIGHTS: { icon: LucideIcon; label: string }[] = [
+  { icon: Tag, label: 'Etiquetas RDC 216' },
+  { icon: ClipboardCheck, label: 'Auditorias e checklists' },
+  { icon: Thermometer, label: 'Temperaturas de equipamentos' },
+  { icon: Bug, label: 'Controle de pragas' },
+  { icon: ShieldCheck, label: 'ASOs e treinamentos' },
+  { icon: BookOpen, label: 'POPs e documentos' },
 ];
 
 export function ServicosPage() {
@@ -93,6 +105,7 @@ export function ServicosPage() {
     <div>
       <Hero />
       <Grid />
+      <SistemaBanner />
       <Segmentos />
       <Depoimentos />
       <Faq />
@@ -153,7 +166,15 @@ function Hero() {
 
 function Grid() {
   return (
-    <section className="mx-auto max-w-6xl px-5 py-16">
+    <section className="mx-auto max-w-6xl px-5 pb-4 pt-16">
+      <div className="mb-8">
+        <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+          O que fazemos
+        </span>
+        <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
+          Consultoria técnica do início à fiscalização.
+        </h2>
+      </div>
       <div className="grid gap-5 md:grid-cols-2">
         {SERVICOS.map(({ icon: Icon, title, body, cta }, idx) => (
           <article
@@ -187,6 +208,63 @@ function Grid() {
             </div>
           </article>
         ))}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Banner full-width do sistema próprio. Destaca o diferencial da
+ * ProActive7 (tecnologia inclusa na consultoria) e equilibra o grid
+ * de serviços, que fica par sem este card.
+ */
+function SistemaBanner() {
+  return (
+    <section className="mx-auto max-w-6xl px-5 py-12">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#234731] via-[#2F5D3F] to-[#3C7350] p-8 text-white shadow-[0_24px_60px_-25px_rgba(47,93,63,0.55)] md:p-12">
+        {/* círculos decorativos */}
+        <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-white/5" />
+        <div className="pointer-events-none absolute -bottom-24 -left-12 h-56 w-56 rounded-full bg-white/5" />
+
+        <div className="relative grid gap-10 md:grid-cols-[1.3fr_1fr] md:items-center">
+          <div>
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
+              <Sparkles className="h-3.5 w-3.5" />
+              Exclusivo · incluso na consultoria
+            </span>
+            <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold tracking-tight md:text-3xl">
+              <Laptop2 className="h-7 w-7 shrink-0 text-[#BFE3CC]" />
+              Sistema ProActive7
+            </h2>
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/85 md:text-base">
+              Plataforma própria que digitaliza toda a operação — a Ariane
+              entrega gratuitamente junto à consultoria. Registre tudo pelo
+              celular e tenha a documentação pronta para a fiscalização a
+              qualquer momento.
+            </p>
+            <Link
+              to="/sistema"
+              className="mt-7 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-medium text-[#2F5D3F] shadow-sm transition hover:bg-[#E8F1EA]"
+            >
+              Conhecer a plataforma
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-1">
+            {SISTEMA_HIGHLIGHTS.map(({ icon: Icon, label }) => (
+              <li
+                key={label}
+                className="flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-medium backdrop-blur-sm"
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15 text-[#BFE3CC]">
+                  <Icon className="h-4 w-4" />
+                </span>
+                {label}
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );
