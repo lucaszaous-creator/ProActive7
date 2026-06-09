@@ -214,7 +214,7 @@ function NossaHistoria() {
 function FundadoraAvatar() {
   const [erro, setErro] = useState(false);
   const base =
-    'mx-auto h-32 w-32 shrink-0 rounded-3xl shadow-lg ring-4 ring-[#e5e5e5] md:mx-0';
+    'fx-ring fx-float mx-auto h-32 w-32 shrink-0 rounded-3xl shadow-lg ring-4 ring-[#e5e5e5] md:mx-0';
   if (erro) {
     return (
       <div
@@ -316,12 +316,13 @@ function Pilares() {
     'Trabalho em equipe',
   ];
   return (
-    <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#1f1f1f] py-16 text-white md:py-20">
+    <section className="fx-grain relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#1f1f1f] py-16 text-white md:py-20">
       {/* Aurora de fundo */}
       <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
         <div className="animate-aurora absolute -left-24 -top-24 h-[28rem] w-[28rem] rounded-full bg-[#525252]/45 blur-[120px]" />
         <div className="animate-aurora absolute right-[-6rem] top-1/3 h-[26rem] w-[26rem] rounded-full bg-[#737373]/35 blur-[130px] [animation-delay:-7s]" />
         <div className="animate-aurora absolute bottom-[-8rem] left-1/3 h-[24rem] w-[24rem] rounded-full bg-[#a3a3a3]/20 blur-[120px] [animation-delay:-14s]" />
+        <div className="fx-grid absolute inset-0" />
       </div>
 
       <div className="mx-auto max-w-6xl px-5">

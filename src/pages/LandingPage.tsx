@@ -28,6 +28,7 @@ import { usePageMeta } from '@/lib/usePageMeta';
 import seoConfig from '@/lib/seo.config.json';
 import { Carousel } from '@/components/public/Carousel';
 import { Reveal } from '@/components/public/Reveal';
+import { Spotlight } from '@/components/public/Spotlight';
 
 /** FAQ da home — mesma fonte (seo.config.json) que alimenta o FAQPage do
  *  schema, garantindo que o texto visível seja idêntico ao structured data. */
@@ -108,7 +109,7 @@ function Faq() {
  * ===================================================================== */
 function Hero() {
   return (
-    <section className="relative isolate overflow-hidden bg-[#111111] text-white">
+    <Spotlight className="relative isolate overflow-hidden bg-[#111111] text-white fx-grain">
       {/* Imagem de fundo: cozinha profissional, em B&W, escurecida.
           Sem network: usa um SVG inline em data URI com gradiente que
           mimetiza o clima escuro/ambiente da foto que a cliente
@@ -117,6 +118,8 @@ function Hero() {
         aria-hidden
         className="absolute inset-0 -z-10 bg-[radial-gradient(60%_45%_at_50%_30%,#1f1f1f_0%,#111111_55%,#050505_100%)]"
       />
+      {/* Grade técnica mascarada — profundidade discreta no fundo. */}
+      <div aria-hidden className="fx-grid absolute inset-0 -z-10" />
       <div
         aria-hidden
         className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(0,0,0,0)_60%,rgba(0,0,0,0.55)_100%)]"
@@ -132,13 +135,13 @@ function Hero() {
         <span className="ml-[10%] mt-4 block h-px w-1/2 bg-white" />
       </div>
 
-      <div className="relative mx-auto flex max-w-6xl flex-col items-center px-5 py-28 text-center md:py-36">
+      <div className="relative z-[2] mx-auto flex max-w-6xl flex-col items-center px-5 py-28 text-center md:py-36">
         <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white/75 backdrop-blur">
           <Leaf className="h-3.5 w-3.5" />
           Consultoria nutricional · Macaé / RJ · desde 2013
         </span>
 
-        <h1 className="mt-7 text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+        <h1 className="fx-shimmer mt-7 text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
           ProActive7
         </h1>
 
@@ -157,7 +160,7 @@ function Hero() {
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/servicos"
-            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#111111] transition hover:bg-white/90"
+            className="fx-sheen inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#111111] transition hover:bg-white/90"
           >
             Conhecer nossos serviços
             <ArrowRight className="h-4 w-4" />
@@ -171,7 +174,7 @@ function Hero() {
           </Link>
         </div>
       </div>
-    </section>
+    </Spotlight>
   );
 }
 
