@@ -337,22 +337,41 @@ const ITEM = {
   } as NavItemDef,
 };
 
+// Reorganização por fluxo de trabalho (mantendo as regras de
+// visibilidade da Ariane): Início no topo, grupos por etapa da operação,
+// Ajuda no fim. Cozinha NÃO vê Funcionários (cadastro é da RT) nem Agenda.
 const NAV_PROPERTY: NavNode[] = [
   ITEM.inicio,
-  ITEM.imprimir,
-  ITEM.validades,
-  ITEM.producao,
-  ITEM.contagem,
-  ITEM.controlados,
-  ITEM.recebimentos,
-  ITEM.rastreabilidade,
-  ITEM.estoque,
-  ITEM.relatorios,
+  {
+    kind: 'group',
+    labelKey: 'nav.gEtiquetas',
+    icon: Printer,
+    defaultOpen: true,
+    children: [
+      ITEM.imprimir,
+      ITEM.validades,
+      ITEM.producao,
+      ITEM.contagem,
+      ITEM.relatorios,
+    ],
+  },
+  {
+    kind: 'group',
+    labelKey: 'nav.gEstoque',
+    icon: Boxes,
+    defaultOpen: false,
+    children: [
+      ITEM.recebimentos,
+      ITEM.controlados,
+      ITEM.estoque,
+      ITEM.rastreabilidade,
+    ],
+  },
   {
     kind: 'group',
     labelKey: 'nav.cadastros',
     icon: Package,
-    defaultOpen: true,
+    defaultOpen: false,
     // Property NÃO vê "Funcionários/Manipuladores" aqui — esse cadastro é
     // de responsabilidade da nutri (RT), que mantém ASO/treinamento.
     children: [
@@ -388,20 +407,36 @@ const NAV_PROPERTY: NavNode[] = [
 // de avaliação ficam com a RT).
 const NAV_PROPERTY_MANAGER: NavNode[] = [
   ITEM.inicio,
-  ITEM.imprimir,
-  ITEM.validades,
-  ITEM.producao,
-  ITEM.contagem,
-  ITEM.controlados,
-  ITEM.recebimentos,
-  ITEM.rastreabilidade,
-  ITEM.estoque,
-  ITEM.relatorios,
+  {
+    kind: 'group',
+    labelKey: 'nav.gEtiquetas',
+    icon: Printer,
+    defaultOpen: true,
+    children: [
+      ITEM.imprimir,
+      ITEM.validades,
+      ITEM.producao,
+      ITEM.contagem,
+      ITEM.relatorios,
+    ],
+  },
+  {
+    kind: 'group',
+    labelKey: 'nav.gEstoque',
+    icon: Boxes,
+    defaultOpen: false,
+    children: [
+      ITEM.recebimentos,
+      ITEM.controlados,
+      ITEM.estoque,
+      ITEM.rastreabilidade,
+    ],
+  },
   {
     kind: 'group',
     labelKey: 'nav.cadastros',
     icon: Package,
-    defaultOpen: true,
+    defaultOpen: false,
     children: [
       ITEM.produtos,
       ITEM.grupos,
@@ -501,13 +536,19 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
       ITEM.platformDash,
       ITEM.orgs,
       ITEM.planos,
+    ],
+  },
+  {
+    kind: 'group',
+    labelKey: 'nav.gConteudoSite',
+    icon: Newspaper,
+    defaultOpen: false,
+    children: [
       ITEM.siteCursos,
       ITEM.siteClientes,
+      ITEM.artigos,
       ITEM.biblioteca,
       ITEM.comunicados,
-      ITEM.artigos,
-      ITEM.trilha,
-      ITEM.lixeira,
     ],
   },
   {
@@ -563,6 +604,13 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
     icon: Settings,
     defaultOpen: false,
     children: [ITEM.empresas, ITEM.usuarios, ITEM.impressoras, ITEM.hardware],
+  },
+  {
+    kind: 'group',
+    labelKey: 'nav.gSistema',
+    icon: Activity,
+    defaultOpen: false,
+    children: [ITEM.trilha, ITEM.lixeira],
   },
   ITEM.ajuda,
 ];
