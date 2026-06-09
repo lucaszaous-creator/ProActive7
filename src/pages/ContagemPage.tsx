@@ -145,7 +145,7 @@ export function ContagemPage() {
           <div className="grid gap-3 sm:grid-cols-3">
             <Card>
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-50 text-neutral-600">
                   <Printer size={18} />
                 </span>
                 <div>
@@ -210,7 +210,7 @@ export function ContagemPage() {
                     </div>
                     <div className="h-2 overflow-hidden rounded bg-neutral-100">
                       <div
-                        className="h-full bg-emerald-500"
+                        className="h-full bg-neutral-500"
                         style={{ width: `${(p.count / maxCount) * 100}%` }}
                       />
                     </div>
@@ -239,7 +239,7 @@ export function ContagemPage() {
                       title={`${day}: ${n}`}
                     >
                       <div
-                        className="w-full rounded-t bg-emerald-500"
+                        className="w-full rounded-t bg-neutral-500"
                         style={{ height: `${pct}%` }}
                       />
                       <span className="mt-1 truncate text-[10px] text-neutral-400">

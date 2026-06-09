@@ -65,10 +65,10 @@ function expiryInfo(expiryAt: string, now: number) {
     key: 'ok' as ExpiryKey,
     label: `Vence em ${days}d`,
     badge:
-      'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300',
+      'border-neutral-200 bg-neutral-50 text-neutral-700 dark:border-neutral-900 dark:bg-neutral-950 dark:text-neutral-300',
     ring: 'border-neutral-200 dark:border-neutral-800',
     iconBg:
-      'bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400',
+      'bg-neutral-50 text-neutral-600 dark:bg-neutral-950 dark:text-neutral-400',
     expired: false,
     soon: false,
   };
@@ -454,7 +454,7 @@ export function ProducaoPage() {
                         className={`font-semibold ${
                           stock.balance <= 0
                             ? 'text-red-600 dark:text-red-400'
-                            : 'text-emerald-700 dark:text-emerald-400'
+                            : 'text-neutral-700 dark:text-neutral-400'
                         }`}
                       >
                         {stock.balance.toLocaleString('pt-BR', {
@@ -534,7 +534,7 @@ export function ProducaoPage() {
                   type="checkbox"
                   checked={alsoStock}
                   onChange={(e) => setAlsoStock(e.target.checked)}
-                  className="mt-0.5 h-5 w-5 accent-emerald-600"
+                  className="mt-0.5 h-5 w-5 accent-neutral-600"
                 />
                 <span>
                   Também gerar movimento de estoque (sai de
@@ -590,7 +590,7 @@ function StatCard({
 }) {
   const tones = {
     emerald:
-      'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400',
+      'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-400',
     amber: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
     red: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
   } as const;

@@ -15,8 +15,8 @@ interface HeroGreetingProps {
 
 const ACCENT: Record<'emerald' | 'teal' | 'amber' | 'red', string> = {
   emerald:
-    'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
-  teal: 'bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300',
+    'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
+  teal: 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
   amber: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
   red: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300',
 };
@@ -53,7 +53,7 @@ export function HeroGreeting({
               className="h-12 w-12 shrink-0 rounded-lg border border-neutral-200 object-contain p-1 dark:border-neutral-800"
             />
           ) : (
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-base font-semibold text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-neutral-50 text-base font-semibold text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
               {companyName
                 .split(/\s+/)
                 .filter(Boolean)

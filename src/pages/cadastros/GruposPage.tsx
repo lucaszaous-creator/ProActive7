@@ -15,7 +15,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 const DEFAULT_COLORS = [
   '#ef4444',
   '#f59e0b',
-  '#10b981',
+  '#737373',
   '#3b82f6',
   '#8b5cf6',
   '#ec4899',
@@ -177,7 +177,7 @@ export function GruposPage() {
             return (
               <div
                 key={g.id}
-                className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700"
+                className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700"
               >
                 <span
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white"
@@ -284,7 +284,7 @@ export function GruposPage() {
               type="checkbox"
               checked={active}
               onChange={(e) => setActive(e.target.checked)}
-              className="h-5 w-5 accent-emerald-600"
+              className="h-5 w-5 accent-neutral-600"
             />
             Grupo ativo
           </label>

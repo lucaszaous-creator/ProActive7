@@ -209,18 +209,18 @@ function ServiceShowcase() {
   return (
     <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden py-16 md:py-20">
       {/* Fundo aurora (liquid glass backdrop) */}
-      <div className="absolute inset-0 -z-10 bg-[#0d1f15]" />
+      <div className="absolute inset-0 -z-10 bg-[#121212]" />
       <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
         <div className="animate-aurora absolute -left-24 -top-24 h-[30rem] w-[30rem] rounded-full bg-[#525252]/45 blur-[120px]" />
         <div className="animate-aurora absolute right-[-6rem] top-1/4 h-[28rem] w-[28rem] rounded-full bg-[#737373]/35 blur-[130px] [animation-delay:-7s]" />
-        <div className="animate-aurora absolute bottom-[-8rem] left-1/3 h-[26rem] w-[26rem] rounded-full bg-[#1f6f5c]/40 blur-[120px] [animation-delay:-14s]" />
+        <div className="animate-aurora absolute bottom-[-8rem] left-1/3 h-[26rem] w-[26rem] rounded-full bg-[#525252]/40 blur-[120px] [animation-delay:-14s]" />
         {/* véu sutil para uniformizar o contraste do texto */}
-        <div className="absolute inset-0 bg-[#0d1f15]/30" />
+        <div className="absolute inset-0 bg-[#121212]/30" />
       </div>
 
       <div className="mx-auto max-w-6xl px-5">
         <div className="mb-8">
-          <span className="text-xs font-medium uppercase tracking-wider text-[#9FD3B5]">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#d4d4d4]">
             O que fazemos
           </span>
           <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-white md:text-3xl">
@@ -255,7 +255,7 @@ function ServiceShowcase() {
                       className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition ${
                         isActive
                           ? 'border-white/30 bg-white/20 text-white'
-                          : 'border-white/10 bg-white/10 text-[#BFE3CC]'
+                          : 'border-white/10 bg-white/10 text-[#e5e5e5]'
                       }`}
                     >
                       <Icon className="h-5 w-5" />
@@ -263,7 +263,7 @@ function ServiceShowcase() {
                     <span className="min-w-0 flex-1">
                       <span
                         className={`block font-mono text-[10px] uppercase tracking-wider ${
-                          isActive ? 'text-white/60' : 'text-[#9FD3B5]/70'
+                          isActive ? 'text-white/60' : 'text-[#d4d4d4]/70'
                         }`}
                       >
                         {String(i + 1).padStart(2, '0')}
@@ -315,7 +315,7 @@ function ServiceShowcase() {
                 {current.body}
               </p>
               <div className="mt-auto flex items-start gap-2.5 pt-6">
-                <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#BFE3CC]" />
+                <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#e5e5e5]" />
                 <p className="text-sm font-medium text-white">
                   {current.entrega}
                 </p>
@@ -348,7 +348,7 @@ function SistemaBanner() {
               Exclusivo · incluso na consultoria
             </span>
             <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold tracking-tight md:text-3xl">
-              <Laptop2 className="h-7 w-7 shrink-0 text-[#BFE3CC]" />
+              <Laptop2 className="h-7 w-7 shrink-0 text-[#e5e5e5]" />
               Sistema ProActive7
             </h2>
             <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/85 md:text-base">
@@ -372,7 +372,7 @@ function SistemaBanner() {
                 key={label}
                 className="flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-medium backdrop-blur-sm"
               >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15 text-[#BFE3CC]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15 text-[#e5e5e5]">
                   <Icon className="h-4 w-4" />
                 </span>
                 {label}

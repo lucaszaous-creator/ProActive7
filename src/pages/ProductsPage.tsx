@@ -108,7 +108,7 @@ function GroupChip({
       onClick={onClick}
       className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition ${
         active
-          ? 'border-emerald-500 bg-emerald-50 font-medium text-emerald-700 dark:border-emerald-600 dark:bg-emerald-950 dark:text-emerald-300'
+          ? 'border-neutral-500 bg-neutral-50 font-medium text-neutral-700 dark:border-neutral-600 dark:bg-neutral-950 dark:text-neutral-300'
           : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-slate-800'
       }`}
     >
@@ -120,7 +120,7 @@ function GroupChip({
       )}
       <span>{label}</span>
       <span
-        className={`text-xs ${active ? 'text-emerald-600 dark:text-emerald-400' : 'text-neutral-400'}`}
+        className={`text-xs ${active ? 'text-neutral-600 dark:text-neutral-400' : 'text-neutral-400'}`}
       >
         {count}
       </span>
@@ -142,7 +142,7 @@ function ProductCard({
   const rules = product.product_shelf_lives ?? [];
   const allergenCount = product.allergens?.length ?? 0;
   return (
-    <div className="flex flex-col gap-2.5 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700">
+    <div className="flex flex-col gap-2.5 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <h3 className="truncate font-medium text-neutral-800 dark:text-neutral-100">
@@ -185,7 +185,7 @@ function ProductCard({
           </span>
         ) : null}
         {product.is_seed ? (
-          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+          <span className="rounded-full bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
             Seed
           </span>
         ) : null}
@@ -584,7 +584,7 @@ export function ProductsPage() {
                 type="checkbox"
                 checked={showInactive}
                 onChange={(e) => setShowInactive(e.target.checked)}
-                className="h-5 w-5 accent-emerald-600"
+                className="h-5 w-5 accent-neutral-600"
               />
               Mostrar inativos
             </label>
@@ -819,7 +819,7 @@ export function ProductsPage() {
                             : prev.filter((k) => k !== a.key),
                         )
                       }
-                      className="mt-0.5 h-3.5 w-3.5 accent-emerald-600"
+                      className="mt-0.5 h-3.5 w-3.5 accent-neutral-600"
                     />
                     {a.label}
                   </label>
@@ -837,24 +837,24 @@ export function ProductsPage() {
               type="checkbox"
               checked={active}
               onChange={(e) => setActive(e.target.checked)}
-              className="h-5 w-5 accent-emerald-600"
+              className="h-5 w-5 accent-neutral-600"
             />
             Produto ativo
           </label>
 
           {isPlatformAdmin ? (
-            <label className="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-2 text-sm dark:border-emerald-900 dark:bg-emerald-950">
+            <label className="flex items-start gap-2 rounded-lg border border-neutral-200 bg-neutral-50 p-2 text-sm dark:border-neutral-900 dark:bg-neutral-950">
               <input
                 type="checkbox"
                 checked={isSeed}
                 onChange={(e) => setIsSeed(e.target.checked)}
-                className="mt-0.5 h-5 w-5 accent-emerald-600"
+                className="mt-0.5 h-5 w-5 accent-neutral-600"
               />
               <span>
-                <span className="font-medium text-emerald-700 dark:text-emerald-300">
+                <span className="font-medium text-neutral-700 dark:text-neutral-300">
                   Publicar no catálogo seed
                 </span>
-                <span className="block text-xs text-emerald-600 dark:text-emerald-400">
+                <span className="block text-xs text-neutral-600 dark:text-neutral-400">
                   Visível para todas as orgs. Elas podem clonar com os prazos.
                 </span>
               </span>

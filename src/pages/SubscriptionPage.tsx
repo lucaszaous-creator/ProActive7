@@ -71,7 +71,7 @@ export function SubscriptionPage() {
           <span
             className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
               sub.status === 'active'
-                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300'
                 : 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
             }`}
           >
@@ -130,12 +130,12 @@ export function SubscriptionPage() {
                 key={m.key}
                 className={`flex items-start gap-3 rounded-lg border p-3 ${
                   on
-                    ? 'border-emerald-200 bg-emerald-50 dark:border-emerald-900 dark:bg-emerald-950'
+                    ? 'border-neutral-200 bg-neutral-50 dark:border-neutral-900 dark:bg-neutral-950'
                     : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-slate-800'
                 }`}
               >
                 <span
-                  className={`mt-0.5 shrink-0 ${on ? 'text-emerald-600' : 'text-neutral-400'}`}
+                  className={`mt-0.5 shrink-0 ${on ? 'text-neutral-600' : 'text-neutral-400'}`}
                 >
                   {on ? <Check size={16} /> : <Lock size={16} />}
                 </span>

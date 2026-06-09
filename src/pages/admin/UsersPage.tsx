@@ -352,7 +352,7 @@ export function UsersPage() {
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs ${
                             u.active
-                              ? 'bg-emerald-50 text-emerald-700'
+                              ? 'bg-neutral-50 text-neutral-700'
                               : 'bg-neutral-100 text-neutral-500'
                           }`}
                         >
@@ -489,7 +489,7 @@ export function UsersPage() {
                 checked={active}
                 onChange={(e) => setActive(e.target.checked)}
                 disabled={editing.id === callerProfile?.id}
-                className="h-5 w-5 accent-emerald-600"
+                className="h-5 w-5 accent-neutral-600"
               />
               Usuário ativo
               {editing.id === callerProfile?.id && (

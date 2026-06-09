@@ -80,7 +80,7 @@ function Bar({
       </div>
       <div className="h-2 rounded-full bg-neutral-100">
         <div
-          className="h-2 rounded-full bg-emerald-500"
+          className="h-2 rounded-full bg-neutral-500"
           style={{ width: `${pct}%` }}
         />
       </div>

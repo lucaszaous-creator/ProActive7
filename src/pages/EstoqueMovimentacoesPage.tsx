@@ -126,7 +126,7 @@ export function EstoqueMovimentacoesPage() {
                   <span
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                       isEntry
-                        ? 'bg-emerald-50 text-emerald-600'
+                        ? 'bg-neutral-50 text-neutral-600'
                         : 'bg-red-50 text-red-600'
                     }`}
                   >
@@ -148,7 +148,7 @@ export function EstoqueMovimentacoesPage() {
                   </div>
                   <div
                     className={`text-sm font-medium ${
-                      isEntry ? 'text-emerald-700' : 'text-red-700'
+                      isEntry ? 'text-neutral-700' : 'text-red-700'
                     }`}
                   >
                     {isEntry ? '+' : ''}

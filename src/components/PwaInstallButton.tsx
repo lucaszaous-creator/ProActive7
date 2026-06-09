@@ -36,7 +36,7 @@ export function PwaInstallButton() {
         const choice = await prompt.userChoice;
         if (choice.outcome === 'accepted') setPrompt(null);
       }}
-      className="flex w-full items-center gap-3 rounded-lg bg-emerald-50 px-3 py-2.5 text-sm font-medium text-emerald-700 hover:bg-emerald-100"
+      className="flex w-full items-center gap-3 rounded-lg bg-neutral-50 px-3 py-2.5 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
     >
       <Download size={18} />
       Instalar app

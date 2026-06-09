@@ -128,7 +128,7 @@ export function RecebimentosPage() {
             type="checkbox"
             checked={onlyWithIssues}
             onChange={(e) => setOnlyWithIssues(e.target.checked)}
-            className="mb-3 h-5 w-5 accent-emerald-600"
+            className="mb-3 h-5 w-5 accent-neutral-600"
           />
           <span className="pb-3">Apenas com rejeição</span>
         </label>
@@ -168,7 +168,7 @@ export function RecebimentosPage() {
                       className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                         rejectedCount > 0
                           ? 'bg-amber-50 text-amber-600'
-                          : 'bg-emerald-50 text-emerald-600'
+                          : 'bg-neutral-50 text-neutral-600'
                       }`}
                     >
                       {rejectedCount > 0 ? (

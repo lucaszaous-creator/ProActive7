@@ -13,7 +13,7 @@ export const ASO_STATUS_LABELS: Record<AsoStatus, string> = {
 
 export const ASO_STATUS_COLOR: Record<AsoStatus, string> = {
   valid:
-    'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200',
+    'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200',
   expiring: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200',
   expired: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200',
   missing:

@@ -541,7 +541,7 @@ export function PrintWizardPage() {
                     i === 0
                       ? 'opacity-0'
                       : isDone || isActive
-                        ? 'bg-emerald-500'
+                        ? 'bg-neutral-500'
                         : 'bg-neutral-200 dark:bg-neutral-700'
                   }`}
                 />
@@ -552,9 +552,9 @@ export function PrintWizardPage() {
                   aria-label={meta.titleKey}
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 transition ${
                     isActive
-                      ? 'border-emerald-500 bg-emerald-500 text-white'
+                      ? 'border-neutral-500 bg-neutral-500 text-white'
                       : isDone
-                        ? 'border-emerald-500 bg-white text-emerald-600 hover:bg-emerald-50 dark:bg-slate-900'
+                        ? 'border-neutral-500 bg-white text-neutral-600 hover:bg-neutral-50 dark:bg-slate-900'
                         : 'border-neutral-200 bg-white text-neutral-400 dark:border-neutral-700 dark:bg-slate-900'
                   } ${canGoBack ? 'cursor-pointer' : 'cursor-default'}`}
                 >
@@ -566,7 +566,7 @@ export function PrintWizardPage() {
                     i === 4
                       ? 'opacity-0'
                       : isDone
-                        ? 'bg-emerald-500'
+                        ? 'bg-neutral-500'
                         : 'bg-neutral-200 dark:bg-neutral-700'
                   }`}
                 />
@@ -574,9 +574,9 @@ export function PrintWizardPage() {
               <span
                 className={`mt-1.5 hidden text-xs sm:inline ${
                   isActive
-                    ? 'font-medium text-emerald-700 dark:text-emerald-400'
+                    ? 'font-medium text-neutral-700 dark:text-neutral-400'
                     : isDone
-                      ? 'text-emerald-600'
+                      ? 'text-neutral-600'
                       : 'text-neutral-400'
                 }`}
               >
@@ -905,8 +905,8 @@ function Step1({
                 onClick={() => setResponsible(m.full_name)}
                 className={`flex items-center gap-3 rounded-xl border p-3 text-left transition ${
                   isSelected
-                    ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950'
-                    : 'border-neutral-200 bg-white hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700'
+                    ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
+                    : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700'
                 }`}
               >
                 <span
@@ -929,7 +929,7 @@ function Step1({
                   )}
                 </div>
                 {isSelected && (
-                  <Check size={18} className="shrink-0 text-emerald-600" />
+                  <Check size={18} className="shrink-0 text-neutral-600" />
                 )}
               </button>
             );
@@ -963,8 +963,8 @@ function Step2({
           onClick={() => setGroupId('all')}
           className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition ${
             groupId === 'all'
-              ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950'
-              : 'border-neutral-200 bg-white hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700'
+              ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
+              : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700'
           }`}
         >
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-200 text-neutral-700 dark:bg-slate-700 dark:text-neutral-200">
@@ -986,8 +986,8 @@ function Step2({
               onClick={() => setGroupId(g.id)}
               className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition ${
                 isSelected
-                  ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950'
-                  : 'border-neutral-200 bg-white hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700'
+                  ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
+                  : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700'
               }`}
             >
               <span
@@ -1047,7 +1047,7 @@ function Step3({
       </div>
       <button
         onClick={onSwitchToBatch}
-        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-emerald-300 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 dark:hover:bg-emerald-900"
+        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 bg-neutral-50 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-900"
       >
         <Layers size={16} />
         Imprimir vários produtos
@@ -1080,8 +1080,8 @@ function Step3({
                   onClick={() => setProductId(p.id)}
                   className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${
                     isSelected
-                      ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950'
-                      : 'border-neutral-200 bg-white hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700'
+                      ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
+                      : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700'
                   }`}
                 >
                   <span
@@ -1111,7 +1111,7 @@ function Step3({
                     </div>
                   </div>
                   {isSelected && (
-                    <Check size={18} className="shrink-0 text-emerald-600" />
+                    <Check size={18} className="shrink-0 text-neutral-600" />
                   )}
                 </button>
               </li>
@@ -1161,7 +1161,7 @@ function Step4({
   return (
     <Card>
       <div className="mb-3 flex items-center gap-3 rounded-xl bg-neutral-50 p-3 dark:bg-slate-800">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
           <Package size={18} />
         </span>
         <div className="min-w-0">
@@ -1169,7 +1169,7 @@ function Step4({
             {product.name}
           </p>
           {expiry && (
-            <p className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+            <p className="text-xs font-medium text-neutral-600 dark:text-neutral-400">
               Vence {formatDateTime(expiry)}
             </p>
           )}
@@ -1281,7 +1281,7 @@ function Step5({
     <Card>
       <div className="flex flex-col items-center gap-3">
         <div className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
-          <Check size={16} className="text-emerald-600" />
+          <Check size={16} className="text-neutral-600" />
           Confira a etiqueta
         </div>
         <div className="w-full max-w-full overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-800 dark:bg-slate-800">
@@ -1477,7 +1477,7 @@ function DirectPrintBlock({
         Nenhuma impressora térmica cadastrada. Vá em{' '}
         <Link
           to="/admin/impressoras"
-          className="font-medium text-emerald-700 dark:text-emerald-400"
+          className="font-medium text-neutral-700 dark:text-neutral-400"
         >
           Cadastros → Impressoras
         </Link>{' '}
@@ -1487,15 +1487,15 @@ function DirectPrintBlock({
   }
 
   return (
-    <div className="w-full space-y-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-900 dark:bg-emerald-950">
+    <div className="w-full space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-950">
       <div className="flex items-center justify-between gap-2 text-xs">
-        <span className="font-semibold uppercase text-emerald-800 dark:text-emerald-300">
+        <span className="font-semibold uppercase text-neutral-800 dark:text-neutral-300">
           Impressão direta
         </span>
         <span
           className={
             relayOnline
-              ? 'inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 font-medium text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200'
+              ? 'inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 font-medium text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200'
               : 'inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2 py-0.5 font-medium text-neutral-600 dark:bg-slate-700 dark:text-neutral-300'
           }
         >
@@ -1611,7 +1611,7 @@ function Step3Batch({
       </button>
 
       {batchItems.length > 0 && (
-        <div className="mb-3 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+        <div className="mb-3 rounded-lg bg-neutral-50 px-3 py-2 text-xs font-medium text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
           {batchItems.length}{' '}
           {batchItems.length === 1
             ? 'produto selecionado'
@@ -1649,7 +1649,7 @@ function Step3Batch({
                 <label
                   className={`flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 ${
                     isSelected
-                      ? 'bg-emerald-50 dark:bg-emerald-950'
+                      ? 'bg-neutral-50 dark:bg-neutral-950'
                       : 'hover:bg-neutral-50 dark:hover:bg-slate-800'
                   }`}
                 >
@@ -1658,7 +1658,7 @@ function Step3Batch({
                     checked={isSelected}
                     onChange={() => toggle(p.id)}
                     disabled={hasNoRule}
-                    className="h-5 w-5 shrink-0 accent-emerald-600 disabled:opacity-50"
+                    className="h-5 w-5 shrink-0 accent-neutral-600 disabled:opacity-50"
                   />
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">

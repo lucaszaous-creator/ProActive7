@@ -397,7 +397,7 @@ export function TemperaturePage() {
                         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                           outOfRange
                             ? 'bg-red-50 text-red-600'
-                            : 'bg-emerald-50 text-emerald-600'
+                            : 'bg-neutral-50 text-neutral-600'
                         }`}
                       >
                         {outOfRange ? (
@@ -421,7 +421,7 @@ export function TemperaturePage() {
                           type="button"
                           onClick={() => setViewingPhotoUrl(photoUrl)}
                           title="Ver foto"
-                          className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-neutral-200 transition hover:border-emerald-400"
+                          className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-neutral-200 transition hover:border-neutral-400"
                         >
                           <img
                             src={photoUrl}
@@ -505,7 +505,7 @@ export function TemperaturePage() {
               type="checkbox"
               checked={equipActive}
               onChange={(e) => setEquipActive(e.target.checked)}
-              className="h-5 w-5 accent-emerald-600"
+              className="h-5 w-5 accent-neutral-600"
             />
             Equipamento ativo
           </label>

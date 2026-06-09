@@ -235,7 +235,7 @@ export function OrganizationDetailPage() {
           <span
             className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
               org.status === 'active'
-                ? 'bg-emerald-50 text-emerald-700'
+                ? 'bg-neutral-50 text-neutral-700'
                 : 'bg-red-50 text-red-700'
             }`}
           >
@@ -261,7 +261,7 @@ export function OrganizationDetailPage() {
             className={
               org.status === 'active'
                 ? 'border-red-200 text-red-600 hover:bg-red-50'
-                : 'border-emerald-200 text-emerald-600 hover:bg-emerald-50'
+                : 'border-neutral-200 text-neutral-600 hover:bg-neutral-50'
             }
           >
             {org.status === 'active' ? 'Suspender' : 'Reativar'}
@@ -364,7 +364,7 @@ export function OrganizationDetailPage() {
               <span
                 className={`rounded-full px-2 py-0.5 font-medium ${
                   org.allow_impersonation
-                    ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
+                    ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300'
                     : 'bg-neutral-100 text-neutral-500 dark:bg-slate-800'
                 }`}
               >
@@ -419,7 +419,7 @@ export function OrganizationDetailPage() {
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                             c.active
-                              ? 'bg-emerald-50 text-emerald-700'
+                              ? 'bg-neutral-50 text-neutral-700'
                               : 'bg-neutral-100 text-neutral-500'
                           }`}
                         >
@@ -486,7 +486,7 @@ export function OrganizationDetailPage() {
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                             u.active
-                              ? 'bg-emerald-50 text-emerald-700'
+                              ? 'bg-neutral-50 text-neutral-700'
                               : 'bg-neutral-100 text-neutral-500'
                           }`}
                         >

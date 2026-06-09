@@ -363,7 +363,7 @@ export function CompaniesPage() {
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs ${
                             c.active
-                              ? 'bg-emerald-50 text-emerald-700'
+                              ? 'bg-neutral-50 text-neutral-700'
                               : 'bg-neutral-100 text-neutral-500'
                           }`}
                         >
@@ -386,7 +386,7 @@ export function CompaniesPage() {
                             }}
                             aria-label="Copiar link do selo público"
                             title="Copiar link do selo público de conformidade"
-                            className="rounded-lg p-2.5 text-emerald-600 hover:bg-emerald-50"
+                            className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50"
                           >
                             <ShieldCheck size={16} />
                           </button>
@@ -464,7 +464,7 @@ export function CompaniesPage() {
               type="checkbox"
               checked={active}
               onChange={(e) => setActive(e.target.checked)}
-              className="h-5 w-5 accent-emerald-600"
+              className="h-5 w-5 accent-neutral-600"
             />
             Empresa ativa
           </label>
@@ -537,7 +537,7 @@ export function CompaniesPage() {
             <div className="flex items-center gap-3">
               <input
                 type="color"
-                value={primaryColor || '#059669'}
+                value={primaryColor || '#262626'}
                 onChange={(e) => setPrimaryColor(e.target.value)}
                 className="h-10 w-12 cursor-pointer rounded border border-neutral-300"
                 aria-label="Cor primária"
@@ -546,7 +546,7 @@ export function CompaniesPage() {
                 type="text"
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
-                placeholder="#059669"
+                placeholder="#262626"
                 className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
               />
               {primaryColor ? (

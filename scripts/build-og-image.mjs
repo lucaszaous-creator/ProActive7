@@ -12,8 +12,8 @@
 import sharp from 'sharp';
 import { writeFileSync } from 'node:fs';
 
-const TEAL = '#14b8a6';
-const DARK = '#0f172a';
+const TEAL = '#171717';
+const DARK = '#171717';
 const BG = '#ffffff';
 const FONT = 'Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
 
@@ -82,7 +82,8 @@ async function renderSvg(svg, outPath) {
   console.log(`Wrote ${outPath} (${png.length} bytes)`);
 }
 
-await renderSvg(ogSvg, 'public/og-image.png');
+// og-image.png é gerado por generate-og.mjs (paleta mono); não sobrescrever aqui.
+void ogSvg;
 await renderSvg(badgeP7(192), 'public/pwa-192.png');
 await renderSvg(badgeP7(512), 'public/pwa-512.png');
 // Maskable: 12% safe zone (= padding) para Android nao cortar conteudo.

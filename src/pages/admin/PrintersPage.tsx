@@ -304,7 +304,7 @@ function AgentCard({
               {agent.name}
             </h2>
             {relayOnline ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-medium text-emerald-700">
+              <span className="inline-flex items-center gap-1 rounded-full bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700">
                 <CheckCircle2 size={12} /> Relay online
               </span>
             ) : (
@@ -633,7 +633,7 @@ function RelayLogList({ agentId }: { agentId: string }) {
         </span>
         <button
           onClick={() => void load()}
-          className="text-xs text-emerald-700 hover:underline"
+          className="text-xs text-neutral-700 hover:underline"
         >
           Atualizar
         </button>

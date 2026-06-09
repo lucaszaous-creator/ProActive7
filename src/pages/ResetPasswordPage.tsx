@@ -60,7 +60,7 @@ export function ResetPasswordPage() {
             Este link expirou ou é inválido. Volte ao{' '}
             <button
               onClick={() => navigate('/login')}
-              className="font-medium text-emerald-700 underline"
+              className="font-medium text-neutral-700 underline"
             >
               login
             </button>{' '}

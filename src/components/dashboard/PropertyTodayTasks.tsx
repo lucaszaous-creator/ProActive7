@@ -59,17 +59,17 @@ export function PropertyTodayTasks({
 
   if (allDone) {
     return (
-      <Card className="mb-5 border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950">
+      <Card className="mb-5 border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950">
         <div className="flex items-center gap-3">
           <CheckCircle2
             size={28}
-            className="shrink-0 text-emerald-600 dark:text-emerald-400"
+            className="shrink-0 text-neutral-600 dark:text-neutral-400"
           />
           <div className="min-w-0">
-            <p className="font-medium text-emerald-800 dark:text-emerald-200">
+            <p className="font-medium text-neutral-800 dark:text-neutral-200">
               Tudo em dia por hoje!
             </p>
-            <p className="text-xs text-emerald-700 dark:text-emerald-300">
+            <p className="text-xs text-neutral-700 dark:text-neutral-300">
               Sem checklists, temperaturas ou etiquetas pendentes no momento.
             </p>
           </div>
@@ -84,7 +84,7 @@ export function PropertyTodayTasks({
         <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
           <ClipboardCheck
             size={16}
-            className="text-emerald-600 dark:text-emerald-400"
+            className="text-neutral-600 dark:text-neutral-400"
           />
           Checklists pendentes hoje
         </h2>
@@ -103,7 +103,7 @@ export function PropertyTodayTasks({
                   <span className="min-w-0 flex-1 truncate text-neutral-800 dark:text-neutral-200">
                     {t.name}
                   </span>
-                  <span className="shrink-0 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+                  <span className="shrink-0 text-xs font-medium text-neutral-700 dark:text-neutral-400">
                     Executar →
                   </span>
                 </Link>

@@ -24,13 +24,13 @@ import { SkeletonCard } from './Skeleton';
 
 const TIER_BG: Record<ScoreTier, string> = {
   green:
-    'border-emerald-300 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-950',
+    'border-neutral-300 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-950',
   amber: 'border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950',
   red: 'border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-950',
 };
 
 const TIER_TEXT: Record<ScoreTier, string> = {
-  green: 'text-emerald-700 dark:text-emerald-200',
+  green: 'text-neutral-700 dark:text-neutral-200',
   amber: 'text-amber-700 dark:text-amber-200',
   red: 'text-red-700 dark:text-red-200',
 };
@@ -92,7 +92,7 @@ export function PortfolioSummary({
           <button
             type="button"
             onClick={() => setShowAll((v) => !v)}
-            className="self-start rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-teal-300 dark:border-neutral-800 dark:text-neutral-300 dark:hover:border-teal-700 sm:self-auto"
+            className="self-start rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-700 sm:self-auto"
           >
             {showAll
               ? 'Mostrar só críticas'
@@ -125,24 +125,24 @@ export function PortfolioSummary({
             </p>
             <Link
               to="/admin/empresas"
-              className="text-xs font-medium text-teal-700 hover:underline dark:text-teal-400"
+              className="text-xs font-medium text-neutral-700 hover:underline dark:text-neutral-400"
             >
               Cadastrar primeira empresa →
             </Link>
           </div>
         </Card>
       ) : allGreen && !showAll ? (
-        <Card className="border-emerald-200 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950">
+        <Card className="border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950">
           <div className="flex items-center gap-3">
             <CheckCircle2
               size={28}
-              className="shrink-0 text-emerald-600 dark:text-emerald-400"
+              className="shrink-0 text-neutral-600 dark:text-neutral-400"
             />
             <div className="min-w-0">
-              <p className="font-medium text-emerald-800 dark:text-emerald-200">
+              <p className="font-medium text-neutral-800 dark:text-neutral-200">
                 Todas as {companies.length} empresas em conformidade
               </p>
-              <p className="text-xs text-emerald-700 dark:text-emerald-300">
+              <p className="text-xs text-neutral-700 dark:text-neutral-300">
                 Nenhuma situação crítica no momento.
               </p>
             </div>
@@ -265,7 +265,7 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
               <Bug size={12} />
               CIP{' '}
               {r.has_pest_service_active ? (
-                <span className="text-emerald-700 dark:text-emerald-300">
+                <span className="text-neutral-700 dark:text-neutral-300">
                   em dia
                 </span>
               ) : r.has_pest_service_registered ? (

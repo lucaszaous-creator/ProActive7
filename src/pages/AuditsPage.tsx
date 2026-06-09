@@ -42,7 +42,7 @@ const STATUS_STYLE: Record<AuditStatus, { icon: typeof Clock; bg: string }> = {
   },
   completed: {
     icon: CheckCircle2,
-    bg: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200',
+    bg: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200',
   },
   cancelled: {
     icon: XCircle,
@@ -241,7 +241,7 @@ RDC 275/2002 — Regulamento Técnico de Procedimentos Operacionais Padronizados
               <Link
                 key={a.id}
                 to={`/visitas/${a.id}`}
-                className="block rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-emerald-300 hover:shadow-sm dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700 sm:p-5"
+                className="block rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700 sm:p-5"
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0 flex-1">

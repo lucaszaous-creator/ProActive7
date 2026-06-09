@@ -36,7 +36,7 @@ interface AuditEvent {
 const STATUS_DOT: Record<AuditStatus, string> = {
   scheduled: 'bg-blue-500',
   in_progress: 'bg-amber-500',
-  completed: 'bg-emerald-500',
+  completed: 'bg-neutral-500',
   cancelled: 'bg-neutral-400',
 };
 
@@ -169,7 +169,7 @@ export function AgendaPage() {
                       <p
                         className={`mb-1 text-xs font-medium ${
                           d.isToday
-                            ? 'text-emerald-600 dark:text-emerald-400'
+                            ? 'text-neutral-600 dark:text-neutral-400'
                             : 'text-neutral-500 dark:text-neutral-400'
                         }`}
                       >
@@ -237,7 +237,7 @@ export function AgendaPage() {
                       <span
                         className={`text-right text-[10px] font-semibold ${
                           d.isToday
-                            ? 'text-emerald-600 dark:text-emerald-400'
+                            ? 'text-neutral-600 dark:text-neutral-400'
                             : ''
                         }`}
                       >
