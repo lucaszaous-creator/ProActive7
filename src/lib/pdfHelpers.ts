@@ -73,7 +73,25 @@ export function drawPdfHeader(doc: jsPDF, info: PdfHeaderInfo): number {
   let y = bandH + 7;
   if (info.companyLogoDataUrl) {
     try {
-      doc.addImage(info.companyLogoDataUrl, 'PNG', M, y - 1, 14, 14);
+      // Encaixa o logo num quadrado de 14mm preservando a proporção
+      // (sem distorcer) e detecta o formato real (PNG/JPEG/etc.).
+      const box = 14;
+      const props = doc.getImageProperties(info.companyLogoDataUrl);
+      const ratio = props.width / props.height || 1;
+      let w = box;
+      let h = box;
+      if (ratio > 1) h = box / ratio;
+      else w = box * ratio;
+      const ox = M + (box - w) / 2;
+      const oy = y - 1 + (box - h) / 2;
+      doc.addImage(
+        info.companyLogoDataUrl,
+        props.fileType || 'PNG',
+        ox,
+        oy,
+        w,
+        h,
+      );
     } catch {
       /* ignore */
     }
