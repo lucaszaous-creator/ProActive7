@@ -35,17 +35,17 @@ export function ContatoPage() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-[#E8F1EA] bg-gradient-to-b from-[#E8F1EA] to-[#FAFAF7]">
+    <section className="relative overflow-hidden border-b border-[#e5e5e5] bg-gradient-to-b from-[#e5e5e5] to-[#fafafa]">
       <div className="mx-auto max-w-6xl px-5 py-16 text-center md:py-20">
-        <span className="inline-flex items-center gap-2 rounded-full border border-[#6FA68A]/40 bg-white px-3 py-1 text-xs font-medium text-[#2F5D3F]">
+        <span className="inline-flex items-center gap-2 rounded-full border border-[#737373]/40 bg-white px-3 py-1 text-xs font-medium text-[#262626]">
           <Leaf className="h-3.5 w-3.5" />
           Fale com a gente
         </span>
         <h1 className="mx-auto mt-4 max-w-3xl text-3xl font-semibold leading-[1.15] tracking-tight md:text-4xl">
           Bora conversar sobre a sua{' '}
-          <span className="text-[#2F5D3F]">operação</span>?
+          <span className="text-[#262626]">operação</span>?
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[#1A2A22]/70">
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[#171717]/70">
           Conte um pouco sobre o seu estabelecimento. A gente retorna pelo
           melhor canal para você.
         </p>
@@ -93,17 +93,17 @@ function ComoAtendemos() {
     },
   ];
   return (
-    <section className="bg-[#FAFAF7] py-16">
+    <section className="bg-[#fafafa] py-16">
       <div className="mx-auto max-w-6xl px-5">
         <Reveal>
           <div className="mx-auto max-w-2xl text-center">
-            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
               Como atendemos
             </span>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#171717] md:text-3xl">
               Da primeira mensagem à proposta — simples assim.
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-[#1A2A22]/65">
+            <p className="mt-3 text-sm leading-relaxed text-[#171717]/65">
               A primeira conversa é sempre sem compromisso. A gente só avança
               quando faz sentido para a sua operação.
             </p>
@@ -112,19 +112,19 @@ function ComoAtendemos() {
         <div className="mt-10 grid gap-5 md:grid-cols-3">
           {passos.map(({ icon: Icon, title, body }, i) => (
             <Reveal key={title} delay={i * 110}>
-              <div className="relative h-full rounded-2xl border border-[#E8F1EA] bg-white p-6">
+              <div className="relative h-full rounded-2xl border border-[#e5e5e5] bg-white p-6">
                 <div className="flex items-center justify-between">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2F5D3F] text-white">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#262626] text-white">
                     <Icon className="h-5 w-5" />
                   </span>
-                  <span className="font-mono text-2xl font-bold text-[#E8F1EA]">
+                  <span className="font-mono text-2xl font-bold text-[#e5e5e5]">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                 </div>
-                <h3 className="mt-4 text-base font-semibold text-[#1A2A22]">
+                <h3 className="mt-4 text-base font-semibold text-[#171717]">
                   {title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#1A2A22]/70">
+                <p className="mt-2 text-sm leading-relaxed text-[#171717]/70">
                   {body}
                 </p>
               </div>
@@ -145,19 +145,19 @@ function Mapa() {
     <section className="mx-auto max-w-6xl px-5 py-16">
       <Reveal>
         <div className="grid gap-6 lg:grid-cols-[1fr_1.4fr] lg:items-stretch">
-          <div className="flex flex-col justify-center rounded-3xl border border-[#E8F1EA] bg-white p-7">
-            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+          <div className="flex flex-col justify-center rounded-3xl border border-[#e5e5e5] bg-white p-7">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
               Onde estamos
             </span>
-            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#1A2A22]">
+            <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#171717]">
               Escritório em Imbetiba, Macaé.
             </h2>
-            <p className="mt-3 flex items-start gap-2 text-sm leading-relaxed text-[#1A2A22]/70">
-              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#2F5D3F]" />
+            <p className="mt-3 flex items-start gap-2 text-sm leading-relaxed text-[#171717]/70">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#262626]" />
               Rua Dr. Luiz Belegard, 407 — sala 704 · Imbetiba · Macaé / RJ
             </p>
-            <p className="mt-2 flex items-center gap-2 text-sm text-[#1A2A22]/70">
-              <ShieldCheck className="h-4 w-4 shrink-0 text-[#2F5D3F]" />
+            <p className="mt-2 flex items-center gap-2 text-sm text-[#171717]/70">
+              <ShieldCheck className="h-4 w-4 shrink-0 text-[#262626]" />
               Atendimento in-loco em toda a região mediante agendamento.
             </p>
             <a
@@ -166,13 +166,13 @@ function Mapa() {
               )}`}
               target="_blank"
               rel="noreferrer"
-              className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-[#2F5D3F] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#234731]"
+              className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-[#262626] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#404040]"
             >
               Abrir no Google Maps
               <MapPin className="h-4 w-4" />
             </a>
           </div>
-          <div className="overflow-hidden rounded-3xl border border-[#E8F1EA] shadow-[0_24px_60px_-30px_rgba(47,93,63,0.25)]">
+          <div className="overflow-hidden rounded-3xl border border-[#e5e5e5] shadow-[0_24px_60px_-30px_rgba(0,0,0,0.25)]">
             <iframe
               title="Mapa do escritório da ProActive7 em Macaé"
               src={`https://www.google.com/maps?q=${encodeURIComponent(
@@ -218,8 +218,8 @@ function ContactCard() {
         secondary="Atendimentos in-loco mediante agendamento"
       />
 
-      <div className="rounded-2xl border border-[#E8F1EA] bg-white p-6">
-        <h3 className="text-xs font-medium uppercase tracking-wider text-[#1A2A22]/50">
+      <div className="rounded-2xl border border-[#e5e5e5] bg-white p-6">
+        <h3 className="text-xs font-medium uppercase tracking-wider text-[#171717]/50">
           Acompanhe nas redes
         </h3>
         <div className="mt-3 flex flex-wrap gap-2">
@@ -261,22 +261,22 @@ function InfoBlock({
 }) {
   const body = (
     <div className="flex gap-4">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#e5e5e5] text-[#262626]">
         <Icon className="h-5 w-5" />
       </div>
       <div className="min-w-0">
-        <div className="text-xs font-medium uppercase tracking-wider text-[#1A2A22]/50">
+        <div className="text-xs font-medium uppercase tracking-wider text-[#171717]/50">
           {label}
         </div>
-        <div className="mt-1 text-sm font-medium text-[#1A2A22]">{primary}</div>
+        <div className="mt-1 text-sm font-medium text-[#171717]">{primary}</div>
         {secondary ? (
-          <div className="mt-0.5 text-xs text-[#1A2A22]/60">{secondary}</div>
+          <div className="mt-0.5 text-xs text-[#171717]/60">{secondary}</div>
         ) : null}
       </div>
     </div>
   );
   const cls =
-    'block rounded-2xl border border-[#E8F1EA] bg-white p-6 transition hover:border-[#6FA68A]/50';
+    'block rounded-2xl border border-[#e5e5e5] bg-white p-6 transition hover:border-[#737373]/50';
   return href ? (
     <a
       href={href}
@@ -305,7 +305,7 @@ function SocialPill({
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="inline-flex items-center gap-2 rounded-full border border-[#E8F1EA] bg-[#FAFAF7] px-3 py-1.5 text-xs font-medium text-[#1A2A22]/75 transition hover:border-[#6FA68A]/50 hover:text-[#2F5D3F]"
+      className="inline-flex items-center gap-2 rounded-full border border-[#e5e5e5] bg-[#fafafa] px-3 py-1.5 text-xs font-medium text-[#171717]/75 transition hover:border-[#737373]/50 hover:text-[#262626]"
     >
       <Icon className="h-3.5 w-3.5" />
       {label}
@@ -345,12 +345,12 @@ function ContatoForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-[#E8F1EA] bg-white p-7 shadow-[0_24px_60px_-30px_rgba(47,93,63,0.20)]"
+      className="rounded-2xl border border-[#e5e5e5] bg-white p-7 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.20)]"
     >
-      <h2 className="text-lg font-semibold tracking-tight text-[#1A2A22]">
+      <h2 className="text-lg font-semibold tracking-tight text-[#171717]">
         Envie uma mensagem
       </h2>
-      <p className="mt-1 text-sm text-[#1A2A22]/60">
+      <p className="mt-1 text-sm text-[#171717]/60">
         Respondemos pelo canal de sua preferência.
       </p>
 
@@ -384,7 +384,7 @@ function ContatoForm() {
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="mensagem"
-            className="text-xs font-medium uppercase tracking-wider text-[#1A2A22]/55"
+            className="text-xs font-medium uppercase tracking-wider text-[#171717]/55"
           >
             Mensagem
           </label>
@@ -395,7 +395,7 @@ function ContatoForm() {
             value={mensagem}
             onChange={(e) => setMensagem(e.target.value)}
             placeholder="Conte sobre seu estabelecimento e como podemos ajudar..."
-            className="rounded-xl border border-[#E8F1EA] bg-[#FAFAF7] px-3.5 py-2.5 text-sm text-[#1A2A22] outline-none transition placeholder:text-[#1A2A22]/35 focus:border-[#6FA68A] focus:bg-white focus:ring-2 focus:ring-[#6FA68A]/25"
+            className="rounded-xl border border-[#e5e5e5] bg-[#fafafa] px-3.5 py-2.5 text-sm text-[#171717] outline-none transition placeholder:text-[#171717]/35 focus:border-[#737373] focus:bg-white focus:ring-2 focus:ring-[#737373]/25"
           />
         </div>
       </div>
@@ -403,12 +403,12 @@ function ContatoForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#2F5D3F] px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#234731] disabled:opacity-60"
+        className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#262626] px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#404040] disabled:opacity-60"
       >
         Enviar pelo WhatsApp
         <Send className="h-4 w-4" />
       </button>
-      <p className="mt-3 text-center text-[11px] text-[#1A2A22]/50">
+      <p className="mt-3 text-center text-[11px] text-[#171717]/50">
         A mensagem abre o WhatsApp com seus dados — finalize o envio por lá.
       </p>
     </form>
@@ -436,7 +436,7 @@ function Field({
     <div className="flex flex-col gap-1.5">
       <label
         htmlFor={id}
-        className="text-xs font-medium uppercase tracking-wider text-[#1A2A22]/55"
+        className="text-xs font-medium uppercase tracking-wider text-[#171717]/55"
       >
         {label}
       </label>
@@ -447,7 +447,7 @@ function Field({
         value={value}
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-xl border border-[#E8F1EA] bg-[#FAFAF7] px-3.5 py-2.5 text-sm text-[#1A2A22] outline-none transition placeholder:text-[#1A2A22]/35 focus:border-[#6FA68A] focus:bg-white focus:ring-2 focus:ring-[#6FA68A]/25"
+        className="rounded-xl border border-[#e5e5e5] bg-[#fafafa] px-3.5 py-2.5 text-sm text-[#171717] outline-none transition placeholder:text-[#171717]/35 focus:border-[#737373] focus:bg-white focus:ring-2 focus:ring-[#737373]/25"
       />
     </div>
   );

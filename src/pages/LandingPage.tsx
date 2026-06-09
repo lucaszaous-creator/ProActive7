@@ -69,30 +69,30 @@ export function LandingPage() {
 function Faq() {
   if (!FAQ.length) return null;
   return (
-    <section className="border-t border-[#E8F1EA] bg-white">
+    <section className="border-t border-[#e5e5e5] bg-white">
       <div className="mx-auto max-w-3xl px-5 py-20">
         <Reveal>
           <div className="text-center">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#6FA68A]/40 bg-white px-3 py-1 text-xs font-medium text-[#2F5D3F]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#737373]/40 bg-white px-3 py-1 text-xs font-medium text-[#262626]">
               Perguntas frequentes
             </span>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
               Tudo sobre a ProActive7
             </h2>
-            <p className="mt-3 text-base leading-relaxed text-[#1A2A22]/65">
+            <p className="mt-3 text-base leading-relaxed text-[#171717]/65">
               O que é a ProActive7, onde atende e quem assina a
               responsabilidade técnica pela sua operação.
             </p>
           </div>
         </Reveal>
-        <div className="mt-10 divide-y divide-[#E8F1EA] overflow-hidden rounded-2xl border border-[#E8F1EA]">
+        <div className="mt-10 divide-y divide-[#e5e5e5] overflow-hidden rounded-2xl border border-[#e5e5e5]">
           {FAQ.map(({ q, a }) => (
-            <details key={q} className="group bg-white open:bg-[#FAFAF7]">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-left text-base font-medium text-[#1A2A22] [&::-webkit-details-marker]:hidden">
+            <details key={q} className="group bg-white open:bg-[#fafafa]">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-left text-base font-medium text-[#171717] [&::-webkit-details-marker]:hidden">
                 {q}
-                <Plus className="h-5 w-5 shrink-0 text-[#2F5D3F] transition-transform group-open:rotate-45" />
+                <Plus className="h-5 w-5 shrink-0 text-[#262626] transition-transform group-open:rotate-45" />
               </summary>
-              <p className="px-6 pb-5 text-sm leading-relaxed text-[#1A2A22]/70">
+              <p className="px-6 pb-5 text-sm leading-relaxed text-[#171717]/70">
                 {a}
               </p>
             </details>
@@ -186,14 +186,14 @@ function PillarsStrip() {
     { icon: Leaf, label: 'Boas práticas e meio ambiente' },
   ];
   return (
-    <div className="border-y border-[#E8F1EA] bg-white">
+    <div className="border-y border-[#e5e5e5] bg-white">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-5 py-6 md:grid-cols-4">
         {items.map(({ icon: Icon, label }) => (
           <div
             key={label}
-            className="flex items-center justify-center gap-2 text-xs font-medium text-[#1A2A22]/70"
+            className="flex items-center justify-center gap-2 text-xs font-medium text-[#171717]/70"
           >
-            <Icon className="h-4 w-4 text-[#2F5D3F]" />
+            <Icon className="h-4 w-4 text-[#262626]" />
             <span>{label}</span>
           </div>
         ))}
@@ -210,17 +210,17 @@ function Sobre() {
     <section className="mx-auto max-w-5xl px-5 py-20">
       <div className="grid items-center gap-12 md:grid-cols-[1fr_1.1fr]">
         <Reveal className="order-2 md:order-1">
-          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
             Quem somos
           </span>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
             Uma empresa de Macaé que <em>cuida</em> de quem alimenta gente.
           </h2>
-          <div className="mt-6 space-y-4 text-base leading-relaxed text-[#1A2A22]/75">
+          <div className="mt-6 space-y-4 text-base leading-relaxed text-[#171717]/75">
             <p>
               Nascemos como <strong>PERSONAL DIET</strong> em 2013 e em 2020
               passamos a ser{' '}
-              <strong className="text-[#2F5D3F]">PROACTIVE7</strong>,
+              <strong className="text-[#262626]">PROACTIVE7</strong>,
               fundada pela nutricionista{' '}
               <strong>Ariane Madureira</strong>. Mais de uma década entregando
               consultoria técnica em segurança alimentar, com método próprio:{' '}
@@ -235,7 +235,7 @@ function Sobre() {
           </div>
           <Link
             to="/perfil"
-            className="mt-7 inline-flex items-center gap-2 rounded-full border border-[#2F5D3F]/20 bg-white px-5 py-2.5 text-sm font-medium text-[#2F5D3F] hover:border-[#2F5D3F]/40"
+            className="mt-7 inline-flex items-center gap-2 rounded-full border border-[#262626]/20 bg-white px-5 py-2.5 text-sm font-medium text-[#262626] hover:border-[#262626]/40"
           >
             Nossa história completa
             <ArrowRight className="h-4 w-4" />
@@ -245,7 +245,7 @@ function Sobre() {
         {/* Card "estampa" com a missão da empresa — substitui o mockup
             de produto, fica fiel ao tom de empresa, não de software. */}
         <Reveal delay={120} className="relative order-1 md:order-2">
-          <div className="relative overflow-hidden rounded-3xl border border-[#E8F1EA] bg-gradient-to-br from-[#2F5D3F] to-[#1A3D27] p-8 text-white shadow-[0_25px_60px_-30px_rgba(47,93,63,0.45)] md:p-10">
+          <div className="relative overflow-hidden rounded-3xl border border-[#e5e5e5] bg-gradient-to-br from-[#262626] to-[#171717] p-8 text-white shadow-[0_25px_60px_-30px_rgba(0,0,0,0.45)] md:p-10">
             <Quote className="h-8 w-8 text-white/40" />
             <p className="mt-4 text-lg font-light italic leading-relaxed text-white/95">
               Atuar como prestadora de serviços em assessoria e consultoria
@@ -291,17 +291,17 @@ function Metodo() {
     },
   ];
   return (
-    <section className="bg-[#FAFAF7] py-20">
+    <section className="bg-[#fafafa] py-20">
       <div className="mx-auto max-w-6xl px-5">
         <Reveal>
           <div className="mx-auto max-w-2xl text-center">
-            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
               Nosso método
             </span>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
               Um jeito próprio de transformar a cozinha.
             </h2>
-            <p className="mt-3 text-base leading-relaxed text-[#1A2A22]/65">
+            <p className="mt-3 text-base leading-relaxed text-[#171717]/65">
               Quatro etapas que levam o estabelecimento do papel à prática — e
               mantêm a conformidade viva ao longo do tempo.
             </p>
@@ -310,25 +310,25 @@ function Metodo() {
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {etapas.map(({ icon: Icon, title, body }, i) => (
             <Reveal key={title} delay={i * 100}>
-              <div className="relative h-full rounded-2xl border border-[#E8F1EA] bg-white p-6">
+              <div className="relative h-full rounded-2xl border border-[#e5e5e5] bg-white p-6">
                 {i < etapas.length - 1 && (
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute right-[-14px] top-9 hidden h-px w-7 bg-[#6FA68A]/40 lg:block"
+                    className="pointer-events-none absolute right-[-14px] top-9 hidden h-px w-7 bg-[#737373]/40 lg:block"
                   />
                 )}
                 <div className="flex items-center justify-between">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
+                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e5e5e5] text-[#262626]">
                     <Icon className="h-5 w-5" />
                   </span>
-                  <span className="font-mono text-2xl font-bold text-[#E8F1EA]">
+                  <span className="font-mono text-2xl font-bold text-[#e5e5e5]">
                     {String(i + 1).padStart(2, '0')}
                   </span>
                 </div>
-                <h3 className="mt-4 text-base font-semibold text-[#1A2A22]">
+                <h3 className="mt-4 text-base font-semibold text-[#171717]">
                   {title}
                 </h3>
-                <p className="mt-2 text-sm leading-relaxed text-[#1A2A22]/70">
+                <p className="mt-2 text-sm leading-relaxed text-[#171717]/70">
                   {body}
                 </p>
               </div>
@@ -420,13 +420,13 @@ function ServicosResumo() {
     <section className="mx-auto max-w-6xl px-5 py-20">
       <Reveal>
         <div className="text-center">
-          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
             O que entregamos
           </span>
-          <h2 className="mx-auto mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+          <h2 className="mx-auto mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
             Consultoria que cabe na rotina do seu estabelecimento.
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-base text-[#1A2A22]/65">
+          <p className="mx-auto mt-3 max-w-2xl text-base text-[#171717]/65">
             Cada empresa tem um ritmo. Montamos o pacote certo para sua
             unidade — do treinamento da equipe à entrega de manuais
             assinados.
@@ -439,15 +439,15 @@ function ServicosResumo() {
           {items.map(({ icon: Icon, title, body }) => (
             <div
               key={title}
-              className="group h-full rounded-2xl border border-[#E8F1EA] bg-white p-6 transition hover:border-[#6FA68A]/50 hover:shadow-[0_12px_30px_-15px_rgba(47,93,63,0.20)]"
+              className="group h-full rounded-2xl border border-[#e5e5e5] bg-white p-6 transition hover:border-[#737373]/50 hover:shadow-[0_12px_30px_-15px_rgba(0,0,0,0.20)]"
             >
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#e5e5e5] text-[#262626]">
                 <Icon className="h-5 w-5" />
               </div>
-              <h3 className="mt-4 text-sm font-semibold text-[#1A2A22]">
+              <h3 className="mt-4 text-sm font-semibold text-[#171717]">
                 {title}
               </h3>
-              <p className="mt-2 text-xs leading-relaxed text-[#1A2A22]/65">
+              <p className="mt-2 text-xs leading-relaxed text-[#171717]/65">
                 {body}
               </p>
             </div>
@@ -458,7 +458,7 @@ function ServicosResumo() {
       <div className="mt-10 text-center">
         <Link
           to="/servicos"
-          className="inline-flex items-center gap-2 rounded-full bg-[#2F5D3F] px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#234731]"
+          className="inline-flex items-center gap-2 rounded-full bg-[#262626] px-6 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#404040]"
         >
           Ver todos os serviços em detalhe
           <ArrowRight className="h-4 w-4" />
@@ -498,16 +498,16 @@ function Diferenciais() {
     <section className="relative isolate overflow-hidden bg-[#0F1310] py-20 text-white">
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-40 top-0 h-96 w-96 rounded-full bg-[#2F5D3F]/40 blur-[120px]"
+        className="pointer-events-none absolute -right-40 top-0 h-96 w-96 rounded-full bg-[#262626]/40 blur-[120px]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-40 bottom-0 h-96 w-96 rounded-full bg-[#6FA68A]/20 blur-[120px]"
+        className="pointer-events-none absolute -left-40 bottom-0 h-96 w-96 rounded-full bg-[#737373]/20 blur-[120px]"
       />
       <div className="relative mx-auto max-w-6xl px-5">
         <Reveal>
           <div className="mx-auto max-w-2xl text-center">
-            <span className="text-xs font-medium uppercase tracking-wider text-[#A8D96A]">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#a3a3a3]">
               Por que a ProActive7
             </span>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
@@ -519,7 +519,7 @@ function Diferenciais() {
           {items.map(({ icon: Icon, title, body }, i) => (
             <Reveal key={title} delay={i * 90}>
               <div className="flex h-full gap-4 rounded-3xl border border-white/10 bg-white/5 p-7 backdrop-blur-sm transition hover:border-white/25 hover:bg-white/10">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-[#A8D96A]">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-[#a3a3a3]">
                   <Icon className="h-6 w-6" />
                 </span>
                 <div>
@@ -566,14 +566,14 @@ function Depoimentos() {
     },
   ];
   return (
-    <section className="bg-[#FAFAF7] py-20">
+    <section className="bg-[#fafafa] py-20">
       <div className="mx-auto max-w-6xl px-5">
         <Reveal>
           <div className="mb-10">
-            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
               Quem confia
             </span>
-            <h2 className="mt-2 max-w-xl text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+            <h2 className="mt-2 max-w-xl text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
               Histórias reais de quem entrega comida com segurança.
             </h2>
           </div>
@@ -583,13 +583,13 @@ function Depoimentos() {
           {items.map((d, i) => (
             <article
               key={i}
-              className="relative h-full rounded-3xl border border-[#E8F1EA] bg-white p-8 shadow-[0_18px_40px_-25px_rgba(47,93,63,0.18)]"
+              className="relative h-full rounded-3xl border border-[#e5e5e5] bg-white p-8 shadow-[0_18px_40px_-25px_rgba(0,0,0,0.18)]"
             >
-              <Quote className="h-7 w-7 text-[#6FA68A]/55" />
-              <p className="mt-4 text-base leading-relaxed text-[#1A2A22]/85">
+              <Quote className="h-7 w-7 text-[#737373]/55" />
+              <p className="mt-4 text-base leading-relaxed text-[#171717]/85">
                 "{d.quote}"
               </p>
-              <p className="mt-6 text-xs font-medium uppercase tracking-wider text-[#2F5D3F]">
+              <p className="mt-6 text-xs font-medium uppercase tracking-wider text-[#262626]">
                 {d.author}
               </p>
             </article>
@@ -619,18 +619,18 @@ function Atuacao() {
       <div className="grid items-start gap-12 md:grid-cols-[1fr_1fr]">
         <Reveal>
           <div>
-            <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
               Atuação
             </span>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
               Macaé, região dos Lagos e plataformas off-shore.
             </h2>
-            <p className="mt-5 text-base leading-relaxed text-[#1A2A22]/70">
+            <p className="mt-5 text-base leading-relaxed text-[#171717]/70">
               Atendemos estabelecimentos comerciais de variados segmentos —
               sempre alinhados ao Ministério da Saúde, ANVISA e à legislação
               municipal de cada operação.
             </p>
-            <div className="mt-7 flex items-center gap-2 text-sm font-medium text-[#2F5D3F]">
+            <div className="mt-7 flex items-center gap-2 text-sm font-medium text-[#262626]">
               <MapPin className="h-4 w-4" />
               Rua Dr. Luiz Bellegard, 407 — sala 704 · Imbetiba · Macaé / RJ
             </div>
@@ -641,7 +641,7 @@ function Atuacao() {
             {segmentos.map((s) => (
               <li
                 key={s}
-                className="rounded-xl border border-[#E8F1EA] bg-white px-4 py-3 text-[#1A2A22]/80"
+                className="rounded-xl border border-[#e5e5e5] bg-white px-4 py-3 text-[#171717]/80"
               >
                 {s}
               </li>
@@ -658,14 +658,14 @@ function Atuacao() {
  * ===================================================================== */
 function FinalCta() {
   return (
-    <section className="relative isolate overflow-hidden bg-[#2F5D3F] text-white">
+    <section className="relative isolate overflow-hidden bg-[#262626] text-white">
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-32 -top-32 h-80 w-80 rounded-full bg-[#6FA68A]/25 blur-3xl"
+        className="pointer-events-none absolute -right-32 -top-32 h-80 w-80 rounded-full bg-[#737373]/25 blur-3xl"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-[#A8D96A]/15 blur-3xl"
+        className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-[#a3a3a3]/15 blur-3xl"
       />
       <Reveal className="relative mx-auto max-w-3xl px-5 py-20 text-center md:py-24">
         <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
@@ -678,7 +678,7 @@ function FinalCta() {
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/contato"
-            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#2F5D3F] transition hover:bg-white/95"
+            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#262626] transition hover:bg-white/95"
           >
             Falar com a ProActive7
             <ArrowRight className="h-4 w-4" />

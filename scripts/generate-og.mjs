@@ -71,16 +71,16 @@ function svgFor(headline) {
   return `<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#2F5D3F"/>
+      <stop offset="0" stop-color="#262626"/>
       <stop offset="1" stop-color="#1C3727"/>
     </linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <circle cx="1090" cy="110" r="230" fill="#6FA68A" opacity="0.13"/>
-  <circle cx="1150" cy="560" r="150" fill="#6FA68A" opacity="0.10"/>
+  <circle cx="1090" cy="110" r="230" fill="#737373" opacity="0.13"/>
+  <circle cx="1150" cy="560" r="150" fill="#737373" opacity="0.10"/>
   <g>
-    <circle cx="96" cy="92" r="15" fill="#6FA68A"/>
-    <text x="124" y="102" font-family="${FONT}" font-size="32" font-weight="bold" fill="#E8F1EA" letter-spacing="1">ProActive7</text>
+    <circle cx="96" cy="92" r="15" fill="#737373"/>
+    <text x="124" y="102" font-family="${FONT}" font-size="32" font-weight="bold" fill="#e5e5e5" letter-spacing="1">ProActive7</text>
   </g>
   <text y="${blockTop}" font-family="${FONT}" font-size="64" font-weight="bold" fill="#FFFFFF">${tspans}</text>
   <text x="80" y="566" font-family="${FONT}" font-size="27" fill="#B9D3C2">${escapeXml(SUBTITLE)}</text>

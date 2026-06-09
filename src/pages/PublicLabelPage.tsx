@@ -112,7 +112,7 @@ export function PublicLabelPage() {
               className="h-8 object-contain"
             />
           ) : (
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-600 text-[10px] font-bold text-white">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-neutral-900 text-[10px] font-bold text-white">
               P7
             </span>
           )}

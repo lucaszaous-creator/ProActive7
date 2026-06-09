@@ -35,7 +35,7 @@ export function PublicLayout() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#FAFAF7] text-[#1A2A22]">
+    <div className="flex min-h-screen flex-col bg-[#fafafa] text-[#171717]">
       <PublicNav onOpenMenu={() => setMobileOpen(true)} />
 
       {/* Drawer fica FORA do header. O header tem backdrop-blur, que cria um
@@ -55,12 +55,12 @@ function PublicNav({ onOpenMenu }: { onOpenMenu: () => void }) {
   const linkCls = ({ isActive }: { isActive: boolean }) =>
     `text-sm transition ${
       isActive
-        ? 'text-[#2F5D3F] font-medium'
-        : 'text-[#1A2A22]/70 hover:text-[#2F5D3F]'
+        ? 'text-[#262626] font-medium'
+        : 'text-[#171717]/70 hover:text-[#262626]'
     }`;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[#E8F1EA] bg-[#FAFAF7]/92 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-[#e5e5e5] bg-[#fafafa]/92 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
         <Link to="/" className="flex shrink-0 items-center gap-2.5">
           <img
@@ -89,7 +89,7 @@ function PublicNav({ onOpenMenu }: { onOpenMenu: () => void }) {
           <SocialIcons className="hidden md:flex" />
           <Link
             to="/login"
-            className="ml-1 hidden items-center gap-1.5 rounded-full bg-[#2F5D3F] px-4 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-[#234731] md:inline-flex"
+            className="ml-1 hidden items-center gap-1.5 rounded-full bg-[#262626] px-4 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-[#404040] md:inline-flex"
           >
             Acessar sistema
             <ArrowRight className="h-3.5 w-3.5" />
@@ -97,7 +97,7 @@ function PublicNav({ onOpenMenu }: { onOpenMenu: () => void }) {
           <button
             onClick={onOpenMenu}
             aria-label="Abrir menu"
-            className="rounded-full p-2 text-[#2F5D3F] hover:bg-[#E8F1EA] lg:hidden"
+            className="rounded-full p-2 text-[#262626] hover:bg-[#e5e5e5] lg:hidden"
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -118,11 +118,11 @@ function MobileDrawer({
   return (
     <>
       <div
-        className="fixed inset-0 z-50 bg-[#1A2A22]/55 backdrop-blur-sm lg:hidden"
+        className="fixed inset-0 z-50 bg-[#171717]/55 backdrop-blur-sm lg:hidden"
         onClick={onClose}
       />
       <aside
-        className="fixed inset-y-0 right-0 z-50 flex w-[82%] max-w-xs flex-col bg-[#2F5D3F] text-white shadow-2xl lg:hidden"
+        className="fixed inset-y-0 right-0 z-50 flex w-[82%] max-w-xs flex-col bg-[#262626] text-white shadow-2xl lg:hidden"
         role="dialog"
         aria-modal="true"
       >
@@ -164,7 +164,7 @@ function MobileDrawer({
           <Link
             to="/login"
             onClick={onClose}
-            className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-full bg-white px-4 py-3 text-sm font-medium text-[#2F5D3F] shadow-sm transition hover:bg-[#E8F1EA]"
+            className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-full bg-white px-4 py-3 text-sm font-medium text-[#262626] shadow-sm transition hover:bg-[#e5e5e5]"
           >
             Acessar sistema
             <ArrowRight className="h-4 w-4" />
@@ -191,7 +191,7 @@ function SocialIcons({
 }) {
   const cls = dark
     ? 'flex h-9 w-9 items-center justify-center rounded-full text-white/65 transition hover:bg-white/10 hover:text-white'
-    : 'flex h-9 w-9 items-center justify-center rounded-full text-[#1A2A22]/55 transition hover:bg-[#E8F1EA] hover:text-[#2F5D3F]';
+    : 'flex h-9 w-9 items-center justify-center rounded-full text-[#171717]/55 transition hover:bg-[#e5e5e5] hover:text-[#262626]';
   return (
     <div className={`items-center gap-0.5 ${className}`}>
       <a
@@ -227,7 +227,7 @@ function SocialIcons({
 
 function PublicFooter() {
   return (
-    <footer className="border-t border-[#E8F1EA] bg-[#FAFAF7]">
+    <footer className="border-t border-[#e5e5e5] bg-[#fafafa]">
       <div className="mx-auto grid max-w-6xl gap-8 px-5 py-12 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-2.5">
@@ -237,36 +237,36 @@ function PublicFooter() {
               className="h-8 w-auto"
             />
           </div>
-          <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#1A2A22]/65">
+          <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#171717]/65">
             Assessoria e consultoria em segurança alimentar para
             estabelecimentos comerciais on-shore e off-shore.
           </p>
           <SocialIcons className="mt-5 flex" />
         </div>
         <div>
-          <h4 className="text-xs font-medium uppercase tracking-wider text-[#1A2A22]/50">
+          <h4 className="text-xs font-medium uppercase tracking-wider text-[#171717]/50">
             Navegação
           </h4>
-          <ul className="mt-3 space-y-2 text-sm text-[#1A2A22]/70">
+          <ul className="mt-3 space-y-2 text-sm text-[#171717]/70">
             {NAV_ITEMS.map((it) => (
               <li key={it.to}>
-                <Link to={it.to} className="hover:text-[#2F5D3F]">
+                <Link to={it.to} className="hover:text-[#262626]">
                   {it.label}
                 </Link>
               </li>
             ))}
             <li>
-              <Link to="/login" className="hover:text-[#2F5D3F]">
+              <Link to="/login" className="hover:text-[#262626]">
                 Acesso ao sistema
               </Link>
             </li>
           </ul>
         </div>
         <div>
-          <h4 className="text-xs font-medium uppercase tracking-wider text-[#1A2A22]/50">
+          <h4 className="text-xs font-medium uppercase tracking-wider text-[#171717]/50">
             Contato
           </h4>
-          <ul className="mt-3 space-y-2 text-sm text-[#1A2A22]/70">
+          <ul className="mt-3 space-y-2 text-sm text-[#171717]/70">
             <li>
               Rua Dr. Luiz Belegard, 407 — sala 704
               <br />
@@ -275,7 +275,7 @@ function PublicFooter() {
             <li>
               <a
                 href="mailto:contato@proactive7.com.br"
-                className="hover:text-[#2F5D3F]"
+                className="hover:text-[#262626]"
               >
                 contato@proactive7.com.br
               </a>
@@ -285,7 +285,7 @@ function PublicFooter() {
                 href={SOCIALS.whatsapp}
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-[#2F5D3F]"
+                className="hover:text-[#262626]"
               >
                 (22) 99766-2669
               </a>
@@ -293,8 +293,8 @@ function PublicFooter() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-[#E8F1EA]">
-        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-2 px-5 py-5 text-xs text-[#1A2A22]/50 md:flex-row md:items-center">
+      <div className="border-t border-[#e5e5e5]">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-2 px-5 py-5 text-xs text-[#171717]/50 md:flex-row md:items-center">
           <span>
             © {new Date().getFullYear()} ProActive7 · Todos os direitos
             reservados

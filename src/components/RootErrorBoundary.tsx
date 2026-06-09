@@ -38,7 +38,7 @@ export class RootErrorBoundary extends Component<Props, State> {
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
+          className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
         >
           Recarregar
         </button>

@@ -596,7 +596,7 @@ function StatCard({
   } as const;
   const activeRing = {
     emerald:
-      'border-emerald-300 ring-1 ring-emerald-200 dark:border-emerald-800 dark:ring-emerald-900',
+      'border-neutral-400 ring-1 ring-neutral-300 dark:border-neutral-600 dark:ring-neutral-700',
     amber:
       'border-amber-300 ring-1 ring-amber-200 dark:border-amber-800 dark:ring-amber-900',
     red: 'border-red-300 ring-1 ring-red-200 dark:border-red-800 dark:ring-red-900',
@@ -606,7 +606,7 @@ function StatCard({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-xl border bg-white p-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 dark:bg-slate-900 ${
+      className={`rounded-xl border bg-white p-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500 dark:bg-slate-900 ${
         active ? activeRing[tone] : 'border-neutral-200 dark:border-neutral-800'
       }`}
     >

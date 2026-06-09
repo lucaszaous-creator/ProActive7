@@ -24,7 +24,7 @@ interface CarouselProps {
 /**
  * Carrossel do site público (Embla). Setas de navegação + bullets,
  * arrasto no touch, snap por card. Segue o design system verde
- * (#2F5D3F / #E8F1EA). Use quando houver mais de 4 cards.
+ * (#262626 / #e5e5e5). Use quando houver mais de 4 cards.
  */
 export function Carousel({
   children,
@@ -80,7 +80,7 @@ export function Carousel({
             onClick={() => emblaApi?.scrollPrev()}
             disabled={!canPrev}
             aria-label="Anterior"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#2F5D3F]/20 bg-white text-[#2F5D3F] transition hover:border-[#2F5D3F]/50 disabled:cursor-not-allowed disabled:opacity-30"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#262626]/20 bg-white text-[#262626] transition hover:border-[#262626]/50 disabled:cursor-not-allowed disabled:opacity-30"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
@@ -94,8 +94,8 @@ export function Carousel({
                 aria-label={`Ir para o slide ${i + 1}`}
                 className={`h-2 rounded-full transition-all ${
                   i === selected
-                    ? 'w-6 bg-[#2F5D3F]'
-                    : 'w-2 bg-[#2F5D3F]/25 hover:bg-[#2F5D3F]/45'
+                    ? 'w-6 bg-[#262626]'
+                    : 'w-2 bg-[#262626]/25 hover:bg-[#262626]/45'
                 }`}
               />
             ))}
@@ -106,7 +106,7 @@ export function Carousel({
             onClick={() => emblaApi?.scrollNext()}
             disabled={!canNext}
             aria-label="Próximo"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#2F5D3F]/20 bg-white text-[#2F5D3F] transition hover:border-[#2F5D3F]/50 disabled:cursor-not-allowed disabled:opacity-30"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#262626]/20 bg-white text-[#262626] transition hover:border-[#262626]/50 disabled:cursor-not-allowed disabled:opacity-30"
           >
             <ChevronRight className="h-5 w-5" />
           </button>

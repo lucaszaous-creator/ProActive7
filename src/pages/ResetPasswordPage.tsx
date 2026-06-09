@@ -46,7 +46,7 @@ export function ResetPasswordPage() {
     <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4">
       <div className="w-full max-w-sm">
         <div className="mb-6 flex flex-col items-center gap-2">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-600 text-white">
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-neutral-900 text-white">
             <Tag size={24} />
           </span>
           <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">

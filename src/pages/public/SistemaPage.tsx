@@ -35,7 +35,7 @@ import { MODULE_LABEL } from '@/lib/modules';
 import { Carousel } from '@/components/public/Carousel';
 import { Reveal } from '@/components/public/Reveal';
 
-const GREEN = '#2F5D3F';
+const GREEN = '#262626';
 
 interface PublicPlan {
   key: string;
@@ -257,7 +257,7 @@ export function SistemaPage() {
 
       {/* HERO */}
       <section className="relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#234731] via-[#2F5D3F] to-[#3A7350]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#404040] via-[#262626] to-[#3A7350]" />
         <div
           className="absolute inset-0 opacity-[0.07]"
           style={{
@@ -274,7 +274,7 @@ export function SistemaPage() {
             </span>
             <h1 className="mt-5 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
               A cozinha em conformidade,{' '}
-              <span className="text-[#BBE7C6]">no piloto automático</span>
+              <span className="text-[#d4d4d4]">no piloto automático</span>
             </h1>
             <p className="mt-5 max-w-md text-base leading-relaxed text-white/85">
               Etiquetas de validade, auditorias RDC, temperatura, ASO e dossiê
@@ -284,7 +284,7 @@ export function SistemaPage() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#2F5D3F] shadow-lg transition hover:-translate-y-0.5 hover:bg-[#E8F1EA]"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#262626] shadow-lg transition hover:-translate-y-0.5 hover:bg-[#e5e5e5]"
               >
                 Acessar sistema <ArrowRight className="h-4 w-4" />
               </Link>
@@ -322,10 +322,10 @@ export function SistemaPage() {
       {/* FUNCIONALIDADES */}
       <section className="mx-auto max-w-6xl px-5 py-20">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-[#1A2A22]">
+          <h2 className="text-3xl font-bold tracking-tight text-[#171717]">
             Tudo que a RDC exige, num lugar só
           </h2>
-          <p className="mt-3 text-[#1A2A22]/65">
+          <p className="mt-3 text-[#171717]/65">
             Nove módulos que trabalham juntos para manter a cozinha auditável o
             ano inteiro.
           </p>
@@ -338,15 +338,15 @@ export function SistemaPage() {
               return (
                 <div
                   key={f.title}
-                  className="group h-full rounded-2xl border border-[#E8F1EA] bg-white p-6 transition hover:-translate-y-1 hover:border-[#BBE7C6] hover:shadow-lg hover:shadow-[#2F5D3F]/5"
+                  className="group h-full rounded-2xl border border-[#e5e5e5] bg-white p-6 transition hover:-translate-y-1 hover:border-[#d4d4d4] hover:shadow-lg hover:shadow-[#262626]/5"
                 >
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E8F1EA] text-[#2F5D3F] transition group-hover:bg-[#2F5D3F] group-hover:text-white">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#e5e5e5] text-[#262626] transition group-hover:bg-[#262626] group-hover:text-white">
                     <Icon className="h-5 w-5" />
                   </span>
-                  <h3 className="mt-4 font-semibold text-[#1A2A22]">
+                  <h3 className="mt-4 font-semibold text-[#171717]">
                     {f.title}
                   </h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-[#1A2A22]/65">
+                  <p className="mt-1.5 text-sm leading-relaxed text-[#171717]/65">
                     {f.desc}
                   </p>
                 </div>
@@ -357,38 +357,38 @@ export function SistemaPage() {
       </section>
 
       {/* COMO FUNCIONA */}
-      <section className="border-y border-[#E8F1EA] bg-white py-20">
+      <section className="border-y border-[#e5e5e5] bg-white py-20">
         <div className="mx-auto max-w-6xl px-5">
           <Reveal className="mx-auto max-w-2xl text-center">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#2F5D3F]">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#262626]">
               Como funciona
             </span>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#1A2A22]">
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#171717]">
               Três passos, do cadastro à assinatura
             </h2>
-            <p className="mt-3 text-[#1A2A22]/65">
+            <p className="mt-3 text-[#171717]/65">
               Configura uma vez, a cozinha opera no automático e a RT mantém
               tudo auditável.
             </p>
           </Reveal>
 
           <div className="relative mt-14 grid gap-8 md:grid-cols-3">
-            <div className="absolute left-0 right-0 top-7 hidden h-px bg-gradient-to-r from-transparent via-[#BBE7C6] to-transparent md:block" />
+            <div className="absolute left-0 right-0 top-7 hidden h-px bg-gradient-to-r from-transparent via-[#d4d4d4] to-transparent md:block" />
             {STEPS.map((s, i) => {
               const Icon = s.icon;
               return (
                 <Reveal key={s.title} delay={i * 110} className="relative">
                   <div className="flex flex-col items-center text-center">
-                    <span className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[#2F5D3F] text-white shadow-lg shadow-[#2F5D3F]/20">
+                    <span className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[#262626] text-white shadow-lg shadow-[#262626]/20">
                       <Icon className="h-6 w-6" />
-                      <span className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#BBE7C6] text-xs font-bold text-[#234731] ring-2 ring-white">
+                      <span className="absolute -right-1.5 -top-1.5 flex h-6 w-6 items-center justify-center rounded-full bg-[#d4d4d4] text-xs font-bold text-[#404040] ring-2 ring-white">
                         {i + 1}
                       </span>
                     </span>
-                    <h3 className="mt-5 font-semibold text-[#1A2A22]">
+                    <h3 className="mt-5 font-semibold text-[#171717]">
                       {s.title}
                     </h3>
-                    <p className="mt-2 max-w-xs text-sm leading-relaxed text-[#1A2A22]/65">
+                    <p className="mt-2 max-w-xs text-sm leading-relaxed text-[#171717]/65">
                       {s.desc}
                     </p>
                   </div>
@@ -403,10 +403,10 @@ export function SistemaPage() {
       <section className="bg-[#F2F7F3] py-20">
         <div className="mx-auto max-w-6xl px-5">
           <Reveal className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-[#1A2A22]">
+            <h2 className="text-3xl font-bold tracking-tight text-[#171717]">
               Bonito de usar, fácil de operar
             </h2>
-            <p className="mt-3 text-[#1A2A22]/65">
+            <p className="mt-3 text-[#171717]/65">
               Da gestão da nutricionista ao chão da cozinha — telas pensadas
               para cada papel. (Dados ilustrativos.)
             </p>
@@ -430,13 +430,13 @@ export function SistemaPage() {
       {/* PARA CADA PAPEL */}
       <section className="mx-auto max-w-6xl px-5 py-20">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#2F5D3F]">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#262626]">
             Feito para cada papel
           </span>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#1A2A22]">
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#171717]">
             Da gestão técnica ao chão da cozinha
           </h2>
-          <p className="mt-3 text-[#1A2A22]/65">
+          <p className="mt-3 text-[#171717]/65">
             Cada pessoa vê só o que precisa, com a permissão certa.
           </p>
         </Reveal>
@@ -446,23 +446,23 @@ export function SistemaPage() {
             const Icon = p.icon;
             return (
               <Reveal key={p.role} delay={i * 90}>
-                <div className="flex h-full flex-col rounded-2xl border border-[#E8F1EA] bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-[#2F5D3F]/5">
+                <div className="flex h-full flex-col rounded-2xl border border-[#e5e5e5] bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-[#262626]/5">
                   <div className="flex items-center gap-3">
-                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#E8F1EA] text-[#2F5D3F]">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#e5e5e5] text-[#262626]">
                       <Icon className="h-5 w-5" />
                     </span>
                     <div>
-                      <h3 className="font-semibold leading-tight text-[#1A2A22]">
+                      <h3 className="font-semibold leading-tight text-[#171717]">
                         {p.role}
                       </h3>
-                      <p className="text-xs text-[#1A2A22]/55">{p.who}</p>
+                      <p className="text-xs text-[#171717]/55">{p.who}</p>
                     </div>
                   </div>
                   <ul className="mt-5 space-y-2.5 text-sm">
                     {p.points.map((pt) => (
                       <li key={pt} className="flex items-start gap-2">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#2F5D3F]" />
-                        <span className="text-[#1A2A22]/75">{pt}</span>
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#262626]" />
+                        <span className="text-[#171717]/75">{pt}</span>
                       </li>
                     ))}
                   </ul>
@@ -478,13 +478,13 @@ export function SistemaPage() {
         <div className="mx-auto max-w-6xl px-5">
           <div className="grid items-center gap-12 lg:grid-cols-[1fr_1.1fr]">
             <Reveal>
-              <span className="text-xs font-semibold uppercase tracking-wider text-[#2F5D3F]">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#262626]">
                 Impressão sem complicação
               </span>
-              <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#1A2A22]">
+              <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#171717]">
                 A etiqueta certa, num clique
               </h2>
-              <p className="mt-3 text-[#1A2A22]/65">
+              <p className="mt-3 text-[#171717]/65">
                 Validade calculada pela RDC, layout conforme a ANVISA e nada
                 para o operador digitar. Compatível com a impressora que a
                 cozinha já tem.
@@ -497,7 +497,7 @@ export function SistemaPage() {
                 ].map((t) => (
                   <span
                     key={t}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[#234731] ring-1 ring-[#BBE7C6]"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[#404040] ring-1 ring-[#d4d4d4]"
                   >
                     <Globe className="h-3.5 w-3.5" /> {t}
                   </span>
@@ -510,14 +510,14 @@ export function SistemaPage() {
                 const Icon = f.icon;
                 return (
                   <Reveal key={f.title} delay={(i % 2) * 90}>
-                    <div className="h-full rounded-2xl border border-[#E8F1EA] bg-white p-5">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#E8F1EA] text-[#2F5D3F]">
+                    <div className="h-full rounded-2xl border border-[#e5e5e5] bg-white p-5">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#e5e5e5] text-[#262626]">
                         <Icon className="h-5 w-5" />
                       </span>
-                      <h3 className="mt-3 text-sm font-semibold text-[#1A2A22]">
+                      <h3 className="mt-3 text-sm font-semibold text-[#171717]">
                         {f.title}
                       </h3>
-                      <p className="mt-1 text-xs leading-relaxed text-[#1A2A22]/65">
+                      <p className="mt-1 text-xs leading-relaxed text-[#171717]/65">
                         {f.desc}
                       </p>
                     </div>
@@ -532,13 +532,13 @@ export function SistemaPage() {
       {/* CONFORMIDADE & SEGURANÇA */}
       <section className="mx-auto max-w-6xl px-5 py-20">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#2F5D3F]">
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#262626]">
             Conformidade & segurança
           </span>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#1A2A22]">
+          <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#171717]">
             Pronto para a fiscalização — e para a LGPD
           </h2>
-          <p className="mt-3 text-[#1A2A22]/65">
+          <p className="mt-3 text-[#171717]/65">
             Não esconde score ruim, não decide pela RT e protege os dados de
             quem está na cozinha.
           </p>
@@ -549,8 +549,8 @@ export function SistemaPage() {
             const Icon = f.icon;
             return (
               <Reveal key={f.title} delay={(i % 4) * 70}>
-                <div className="flex h-full flex-col rounded-2xl bg-[#234731] p-6 text-white">
-                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-[#BBE7C6] ring-1 ring-white/15">
+                <div className="flex h-full flex-col rounded-2xl bg-[#404040] p-6 text-white">
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-[#d4d4d4] ring-1 ring-white/15">
                     <Icon className="h-5 w-5" />
                   </span>
                   <h3 className="mt-4 font-semibold">{f.title}</h3>
@@ -570,16 +570,16 @@ export function SistemaPage() {
         className="mx-auto max-w-6xl scroll-mt-20 px-5 py-20"
       >
         <Reveal className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-[#1A2A22]">
+          <h2 className="text-3xl font-bold tracking-tight text-[#171717]">
             Planos que crescem com você
           </h2>
-          <p className="mt-3 text-[#1A2A22]/65">
+          <p className="mt-3 text-[#171717]/65">
             Comece pequeno e libere módulos conforme a operação cresce.
           </p>
         </Reveal>
 
         {plans.length === 0 ? (
-          <p className="mt-12 text-center text-sm text-[#1A2A22]/50">
+          <p className="mt-12 text-center text-sm text-[#171717]/50">
             Carregando planos…
           </p>
         ) : (
@@ -596,12 +596,12 @@ export function SistemaPage() {
                   <div
                     className={`relative flex h-full flex-col rounded-3xl border p-7 transition hover:-translate-y-1 ${
                       featured
-                        ? 'border-transparent bg-[#2F5D3F] text-white shadow-xl shadow-[#2F5D3F]/20'
-                        : 'border-[#E8F1EA] bg-white text-[#1A2A22] hover:shadow-lg'
+                        ? 'border-transparent bg-[#262626] text-white shadow-xl shadow-[#262626]/20'
+                        : 'border-[#e5e5e5] bg-white text-[#171717] hover:shadow-lg'
                     }`}
                   >
                     {featured && (
-                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#BBE7C6] px-3 py-1 text-xs font-semibold text-[#234731]">
+                      <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#d4d4d4] px-3 py-1 text-xs font-semibold text-[#404040]">
                         Mais escolhido
                       </span>
                     )}
@@ -610,14 +610,14 @@ export function SistemaPage() {
                       <span className="text-3xl font-bold">{price.value}</span>
                       {price.suffix && (
                         <span
-                          className={`pb-1 text-sm ${featured ? 'text-white/70' : 'text-[#1A2A22]/55'}`}
+                          className={`pb-1 text-sm ${featured ? 'text-white/70' : 'text-[#171717]/55'}`}
                         >
                           {price.suffix}
                         </span>
                       )}
                     </div>
                     <p
-                      className={`mt-2 text-sm ${featured ? 'text-white/75' : 'text-[#1A2A22]/60'}`}
+                      className={`mt-2 text-sm ${featured ? 'text-white/75' : 'text-[#171717]/60'}`}
                     >
                       {p.company_limit === null
                         ? 'Empresas ilimitadas'
@@ -639,8 +639,8 @@ export function SistemaPage() {
                       to="/login"
                       className={`mt-7 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
                         featured
-                          ? 'bg-white text-[#2F5D3F] hover:bg-[#E8F1EA]'
-                          : 'bg-[#2F5D3F] text-white hover:bg-[#234731]'
+                          ? 'bg-white text-[#262626] hover:bg-[#e5e5e5]'
+                          : 'bg-[#262626] text-white hover:bg-[#404040]'
                       }`}
                     >
                       Começar agora <ArrowRight className="h-4 w-4" />
@@ -651,7 +651,7 @@ export function SistemaPage() {
             })}
           </div>
         )}
-        <p className="mt-6 text-center text-xs text-[#1A2A22]/45">
+        <p className="mt-6 text-center text-xs text-[#171717]/45">
           Valores e módulos sincronizados em tempo real com o painel. Fale com a
           gente para um plano sob medida.
         </p>
@@ -661,10 +661,10 @@ export function SistemaPage() {
       <section className="bg-[#F2F7F3] py-20">
         <div className="mx-auto max-w-3xl px-5">
           <Reveal className="text-center">
-            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#2F5D3F]">
+            <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#262626]">
               <HelpCircle className="h-4 w-4" /> Perguntas frequentes
             </span>
-            <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#1A2A22]">
+            <h2 className="mt-2 text-3xl font-bold tracking-tight text-[#171717]">
               Ainda na dúvida?
             </h2>
           </Reveal>
@@ -681,7 +681,7 @@ export function SistemaPage() {
 
       {/* CTA FINAL */}
       <section className="px-5 pb-20">
-        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-[#2F5D3F] px-6 py-14 text-center text-white sm:px-12">
+        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-[#262626] px-6 py-14 text-center text-white sm:px-12">
           <div
             className="absolute inset-0 opacity-10"
             style={{
@@ -701,7 +701,7 @@ export function SistemaPage() {
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#2F5D3F] transition hover:-translate-y-0.5 hover:bg-[#E8F1EA]"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#262626] transition hover:-translate-y-0.5 hover:bg-[#e5e5e5]"
               >
                 Acessar sistema <ArrowRight className="h-4 w-4" />
               </Link>
@@ -731,9 +731,9 @@ function PlanLine({
   return (
     <li className="flex items-start gap-2">
       <Check
-        className={`mt-0.5 h-4 w-4 shrink-0 ${featured ? 'text-[#BBE7C6]' : 'text-[#2F5D3F]'}`}
+        className={`mt-0.5 h-4 w-4 shrink-0 ${featured ? 'text-[#d4d4d4]' : 'text-[#262626]'}`}
       />
-      <span className={featured ? 'text-white/90' : 'text-[#1A2A22]/75'}>
+      <span className={featured ? 'text-white/90' : 'text-[#171717]/75'}>
         {children}
       </span>
     </li>
@@ -743,16 +743,16 @@ function PlanLine({
 function FaqItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="overflow-hidden rounded-2xl border border-[#E8F1EA] bg-white">
+    <div className="overflow-hidden rounded-2xl border border-[#e5e5e5] bg-white">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
       >
-        <span className="text-sm font-semibold text-[#1A2A22]">{q}</span>
+        <span className="text-sm font-semibold text-[#171717]">{q}</span>
         <ChevronDown
-          className={`h-4 w-4 shrink-0 text-[#2F5D3F] transition-transform duration-300 ${
+          className={`h-4 w-4 shrink-0 text-[#262626] transition-transform duration-300 ${
             open ? 'rotate-180' : ''
           }`}
         />
@@ -763,7 +763,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
         }`}
       >
         <div className="overflow-hidden">
-          <p className="px-5 pb-4 text-sm leading-relaxed text-[#1A2A22]/70">
+          <p className="px-5 pb-4 text-sm leading-relaxed text-[#171717]/70">
             {a}
           </p>
         </div>
@@ -776,7 +776,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
 
 function BrowserChrome({ children }: { children: ReactNode }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-2xl shadow-[#234731]/15">
+    <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-2xl shadow-[#404040]/15">
       <div className="flex items-center gap-1.5 border-b border-neutral-100 bg-neutral-50 px-4 py-2.5">
         <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
@@ -801,7 +801,7 @@ function DonutScore({ score }: { score: number }) {
         cy="32"
         r={r}
         fill="none"
-        stroke="#E8F1EA"
+        stroke="#e5e5e5"
         strokeWidth="7"
       />
       <circle
@@ -913,8 +913,8 @@ function MockDashboard({ wide = false }: { wide?: boolean }) {
 
 function MockLabel() {
   return (
-    <div className="rounded-2xl border border-[#E8F1EA] bg-white p-5 shadow-sm">
-      <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#2F5D3F]">
+    <div className="rounded-2xl border border-[#e5e5e5] bg-white p-5 shadow-sm">
+      <p className="mb-3 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#262626]">
         <Tag className="h-3.5 w-3.5" /> Etiqueta térmica
       </p>
       <div className="rounded-xl border-2 border-dashed border-neutral-200 p-3">
@@ -938,7 +938,7 @@ function MockLabel() {
           <div className="flex items-center gap-1 text-neutral-600">
             <Clock className="h-3 w-3" /> Manip.: 02/06 14:00
           </div>
-          <div className="flex items-center gap-1 font-semibold text-[#2F5D3F]">
+          <div className="flex items-center gap-1 font-semibold text-[#262626]">
             <Clock className="h-3 w-3" /> Val.: 09/06 14:00
           </div>
           <div className="text-neutral-500">Lote: L-2026-06-02</div>
@@ -958,8 +958,8 @@ function MockLabel() {
 const BARS = [40, 65, 52, 80, 72, 95, 60];
 function MockUsage() {
   return (
-    <div className="rounded-2xl border border-[#E8F1EA] bg-white p-5 shadow-sm">
-      <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#2F5D3F]">
+    <div className="rounded-2xl border border-[#e5e5e5] bg-white p-5 shadow-sm">
+      <p className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-[#262626]">
         <BarChart3 className="h-3.5 w-3.5" /> Etiquetas por dia
       </p>
       <p className="mb-4 text-[11px] text-neutral-400">últimos 7 dias</p>
@@ -967,7 +967,7 @@ function MockUsage() {
         {BARS.map((h, i) => (
           <div
             key={i}
-            className="flex-1 rounded-t bg-gradient-to-t from-[#2F5D3F] to-[#5FA875]"
+            className="flex-1 rounded-t bg-gradient-to-t from-[#262626] to-[#5FA875]"
             style={{ height: `${h}%` }}
           />
         ))}

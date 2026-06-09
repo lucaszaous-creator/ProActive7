@@ -576,7 +576,7 @@ export function ProductsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar por nome ou categoria"
-                className="w-full rounded-lg border border-neutral-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
+                className="w-full rounded-lg border border-neutral-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
               />
             </div>
             <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
@@ -771,7 +771,7 @@ export function ProductsPage() {
                         [c]: { ...prev[c], value: e.target.value },
                       }))
                     }
-                    className="w-20 rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                    className="w-20 rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
                   />
                   <select
                     value={shelf[c].unit}
@@ -784,7 +784,7 @@ export function ProductsPage() {
                         },
                       }))
                     }
-                    className="rounded-lg border border-neutral-300 bg-white px-2 py-2 text-sm outline-none focus:border-emerald-500"
+                    className="rounded-lg border border-neutral-300 bg-white px-2 py-2 text-sm outline-none focus:border-neutral-800"
                   >
                     <option value="days">dias</option>
                     <option value="hours">horas</option>
