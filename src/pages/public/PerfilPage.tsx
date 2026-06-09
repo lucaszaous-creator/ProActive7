@@ -267,10 +267,17 @@ function Fundadora() {
               Nutricionista · Fundadora da ProActive7
             </p>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#1A2A22]/75">
-              À frente da consultoria, Ariane é a responsável técnica perante a
-              ANVISA — nenhuma automação substitui o aval dela. Une formação
-              continuada e mais de uma década de prática para transformar a
-              rotina das cozinhas em conformidade real e duradoura.
+              Responsável técnica registrada no CRN, Ariane é quem assina e
+              responde por cada cozinha que a ProActive7 acompanha. São mais de
+              uma década traduzindo a legislação sanitária em rotina possível:
+              ela audita no local, capacita as equipes e conduz cada unidade até
+              a conformidade virar cultura — não um documento esquecido na
+              gaveta.
+            </p>
+            <p className="mt-3 max-w-2xl text-base leading-relaxed text-[#1A2A22]/75">
+              É o nome — e a assinatura — por trás da tranquilidade de quem
+              recebe a fiscalização sem surpresas. Quando a ProActive7 garante
+              uma cozinha em ordem, é a experiência da Ariane que está em jogo.
             </p>
             <ul className="mt-5 flex flex-wrap gap-2">
               {formacao.map((f) => (
