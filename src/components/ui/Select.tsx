@@ -24,7 +24,7 @@ export function Select({
       )}
       <select
         id={id}
-        className={`min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-base text-neutral-900 outline-none transition focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 disabled:bg-neutral-100 sm:text-sm dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100 dark:disabled:bg-slate-900 ${className}`}
+        className={`min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-base text-neutral-900 shadow-[0_1px_2px_rgba(0,0,0,0.03)] outline-none transition focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 disabled:bg-neutral-100 sm:text-sm dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100 dark:shadow-none dark:focus:border-neutral-300 dark:focus:ring-neutral-200/20 dark:disabled:bg-slate-900 ${className}`}
         {...rest}
       >
         {children}

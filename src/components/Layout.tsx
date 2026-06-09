@@ -626,8 +626,8 @@ function NavItem({ item, onClick }: { item: NavItemDef; onClick: () => void }) {
       className={({ isActive }) =>
         `fx-accent fx-press flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
           isActive
-            ? 'bg-neutral-200 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100'
-            : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
+            ? 'bg-neutral-900 text-white shadow-sm dark:bg-neutral-100 dark:text-neutral-900'
+            : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100'
         }`
       }
     >
@@ -800,19 +800,26 @@ export function Layout() {
         </nav>
 
         <div className="border-t border-neutral-200 p-3 dark:border-neutral-800">
-          <div className="mb-2 px-2">
-            <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">
-              {profile?.full_name ?? profile?.email}
-            </p>
-            <p className="text-xs text-neutral-500 dark:text-neutral-500">
-              {isPlatformAdmin
-                ? t('layout.master')
-                : isNutritionist
-                  ? 'Nutricionista'
-                  : isPropertyManager
-                    ? t('layout.propertyManager')
-                    : t('layout.property')}
-            </p>
+          <div className="mb-2 flex items-center gap-2.5 rounded-lg bg-neutral-50 px-2.5 py-2 dark:bg-neutral-800/60">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-xs font-semibold uppercase text-white dark:bg-neutral-100 dark:text-neutral-900">
+              {(profile?.full_name ?? profile?.email ?? '?')
+                .trim()
+                .charAt(0)}
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                {profile?.full_name ?? profile?.email}
+              </p>
+              <p className="truncate text-xs text-neutral-500 dark:text-neutral-500">
+                {isPlatformAdmin
+                  ? t('layout.master')
+                  : isNutritionist
+                    ? 'Nutricionista'
+                    : isPropertyManager
+                      ? t('layout.propertyManager')
+                      : t('layout.property')}
+              </p>
+            </div>
           </div>
           <div className="space-y-1">
             <ThemeToggle />
@@ -831,7 +838,7 @@ export function Layout() {
       </aside>
 
       <div className="flex min-w-0 w-full flex-1 flex-col">
-        <header className="flex w-full items-center gap-3 border-b border-neutral-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-slate-900 lg:hidden">
+        <header className="sticky top-0 z-20 flex w-full items-center gap-3 border-b border-neutral-200 bg-white/90 px-4 py-3 backdrop-blur dark:border-neutral-800 dark:bg-slate-900/90 lg:hidden">
           <button
             onClick={() => setMobileOpen(true)}
             aria-label={t('layout.openMenu')}
@@ -851,11 +858,13 @@ export function Layout() {
             (modo invisivel). O navegador so enfileira em print_jobs. */}
 
         <main className="w-full min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6">
-          <SubscriptionGate>
-            <RouteFade>
-              <Outlet />
-            </RouteFade>
-          </SubscriptionGate>
+          <div className="mx-auto w-full max-w-7xl">
+            <SubscriptionGate>
+              <RouteFade>
+                <Outlet />
+              </RouteFade>
+            </SubscriptionGate>
+          </div>
         </main>
       </div>
     </div>

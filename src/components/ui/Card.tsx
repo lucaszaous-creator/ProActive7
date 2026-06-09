@@ -13,7 +13,7 @@ export function Card({
 }) {
   return (
     <div
-      className={`rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-slate-900 sm:p-6 ${
+      className={`rounded-xl border border-neutral-200 bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:border-neutral-800 dark:bg-slate-900 dark:shadow-none sm:p-6 ${
         interactive ? 'fx-lift hover:border-neutral-300 dark:hover:border-neutral-700' : ''
       } ${className}`}
     >
