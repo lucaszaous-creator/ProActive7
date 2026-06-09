@@ -39,7 +39,7 @@ export function drawPdfHeader(doc: jsPDF, info: PdfHeaderInfo): number {
   // esquerda da faixa preservando a proporção (~2.15:1).
   try {
     const logoH = 14;
-    const logoW = logoH * 2.15;
+    const logoW = logoH * 2.286; // proporção 320:140
     doc.addImage(PDF_BRAND_LOGO, 'PNG', M, 5, logoW, logoH);
   } catch {
     // Fallback: texto, caso a imagem falhe.
