@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { Spinner } from '@/components/ui/Spinner';
+import { ListSkeleton } from '@/components/ui/Skeleton';
 import type {
   PestControlProvider,
   PestControlService,
@@ -475,9 +475,7 @@ export function PestControlPage() {
           </p>
         </Card>
       ) : loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner className="h-8 w-8" />
-        </div>
+        <ListSkeleton rows={5} />
       ) : tab === 'services' ? (
         services.length === 0 ? (
           <Card>
