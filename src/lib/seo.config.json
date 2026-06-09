@@ -41,6 +41,21 @@
           "addressRegion": "RJ",
           "addressCountry": "BR"
         },
+        "hasMap": "https://www.google.com/maps/search/?api=1&query=Rua+Dr.+Luiz+Belegard%2C+407%2C+Maca%C3%A9+-+RJ",
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday"
+            ],
+            "opens": "08:00",
+            "closes": "18:00"
+          }
+        ],
         "areaServed": [
           { "@type": "City", "name": "Macaé" },
           { "@type": "State", "name": "Rio de Janeiro" }
