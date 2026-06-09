@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Plus, Pencil, Eye } from 'lucide-react';
+import { Plus, Pencil, Eye, Building2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import type { Organization, Plan } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ListSkeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -200,11 +201,11 @@ export function OrganizationsPage() {
       {loading ? (
         <ListSkeleton rows={5} />
       ) : organizations.length === 0 ? (
-        <Card>
-          <p className="text-sm text-neutral-600">
-            Nenhuma organização cadastrada ainda.
-          </p>
-        </Card>
+        <EmptyState
+          icon={Building2}
+          title="Nenhuma organização cadastrada ainda"
+          description="Crie a primeira organização para começar a operar a plataforma."
+        />
       ) : (
         <Card className="!p-0">
           <div className="overflow-x-auto">
