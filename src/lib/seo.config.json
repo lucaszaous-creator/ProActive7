@@ -36,12 +36,13 @@
         "email": "contato@proactive7.com.br",
         "address": {
           "@type": "PostalAddress",
-          "streetAddress": "Rua Dr. Luiz Belegard, 407 — sala 704",
+          "streetAddress": "Rua Dr. Luiz Bellegard, 407 — sala 704, Imbetiba",
           "addressLocality": "Macaé",
           "addressRegion": "RJ",
+          "postalCode": "27913-260",
           "addressCountry": "BR"
         },
-        "hasMap": "https://www.google.com/maps/search/?api=1&query=Rua+Dr.+Luiz+Belegard%2C+407%2C+Maca%C3%A9+-+RJ",
+        "hasMap": "https://www.google.com/maps/search/?api=1&query=Rua+Dr.+Luiz+Bellegard%2C+407%2C+Imbetiba%2C+Maca%C3%A9+-+RJ%2C+27913-260",
         "openingHoursSpecification": [
           {
             "@type": "OpeningHoursSpecification",
