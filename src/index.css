@@ -393,6 +393,39 @@ body {
   }
 }
 
+/* 13. Entrada de modal/overlay — o fundo escurece em fade e o painel
+   sobe com leve escala. Mais suave que aparecer seco. */
+.fx-overlay-in {
+  animation: fxOverlayIn 0.2s ease-out;
+}
+@keyframes fxOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.fx-modal-in {
+  animation: fxModalIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes fxModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-overlay-in,
+  .fx-modal-in {
+    animation: none;
+  }
+}
+
 /* Impressao: a area da etiqueta/ficha eh montada via React Portal
    direto no <body>, como irma de #root. Aqui escondemos o app
    inteiro (#root) e mostramos somente o portal — evita paginas em

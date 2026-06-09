@@ -1,6 +1,8 @@
 import { Building2, Calendar, Gauge, AlertTriangle } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
 import type { PortfolioStats } from '@/lib/dashboardQueries';
+import { CountUp } from '@/components/ui/CountUp';
 
 interface MasterKPIsProps {
   stats: PortfolioStats;
@@ -14,7 +16,7 @@ function Kpi({
   tone = 'neutral',
 }: {
   label: string;
-  value: string;
+  value: ReactNode;
   hint?: string;
   icon: LucideIcon;
   tone?: 'neutral' | 'teal' | 'amber' | 'red' | 'green';
@@ -29,7 +31,7 @@ function Kpi({
       'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
   } as Record<string, string>;
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-slate-900 sm:p-5">
+    <div className="fx-lift rounded-xl border border-neutral-200 bg-white p-3 hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700 sm:p-5">
       <div className="flex items-center gap-2.5 sm:gap-3">
         <span
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg sm:h-10 sm:w-10 ${accent[tone]}`}
@@ -69,7 +71,11 @@ export function MasterKPIs({ stats }: MasterKPIsProps) {
       <Kpi
         label="Score médio"
         value={
-          stats.averageScore == null ? '—' : `${stats.averageScore.toFixed(0)}%`
+          stats.averageScore == null ? (
+            '—'
+          ) : (
+            <CountUp value={stats.averageScore} suffix="%" />
+          )
         }
         hint="Carteira inteira"
         icon={Gauge}
@@ -77,7 +83,7 @@ export function MasterKPIs({ stats }: MasterKPIsProps) {
       />
       <Kpi
         label="Empresas"
-        value={String(stats.total)}
+        value={<CountUp value={stats.total} />}
         hint={
           stats.critical === 0
             ? 'Todas em conformidade'
@@ -88,14 +94,14 @@ export function MasterKPIs({ stats }: MasterKPIsProps) {
       />
       <Kpi
         label="Próximas visitas"
-        value={String(stats.upcomingAudits14d)}
+        value={<CountUp value={stats.upcomingAudits14d} />}
         hint="Próximos 14 dias"
         icon={Calendar}
         tone="teal"
       />
       <Kpi
         label="Alertas hoje"
-        value={String(stats.alertsToday)}
+        value={<CountUp value={stats.alertsToday} />}
         hint="NCs, ASOs e CIP"
         icon={AlertTriangle}
         tone={stats.alertsToday === 0 ? 'green' : 'red'}
