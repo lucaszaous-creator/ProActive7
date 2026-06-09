@@ -10,7 +10,7 @@ import type { Supplier } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
-import { Spinner } from '@/components/ui/Spinner';
+import { ListSkeleton } from '@/components/ui/Skeleton';
 
 interface ReceivingRow {
   id: string;
@@ -141,9 +141,7 @@ export function RecebimentosPage() {
           </p>
         </Card>
       ) : loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner className="h-8 w-8" />
-        </div>
+        <ListSkeleton rows={5} />
       ) : filtered.length === 0 ? (
         <Card>
           <p className="text-sm text-neutral-500">
