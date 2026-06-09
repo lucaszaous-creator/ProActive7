@@ -91,7 +91,29 @@
         "boas práticas cozinha"
       ],
       "changefreq": "monthly",
-      "priority": "1.0"
+      "priority": "1.0",
+      "faq": [
+        {
+          "q": "O que é a ProActive7?",
+          "a": "A ProActive7 é uma empresa de consultoria nutricional e segurança alimentar sediada em Macaé/RJ. Atua como responsabilidade técnica (RT) para restaurantes, cozinhas industriais e serviços de alimentação, implantando boas práticas conforme a ANVISA RDC 216, além de oferecer um sistema próprio de etiquetas de validade, auditorias e compliance."
+        },
+        {
+          "q": "Onde a ProActive7 atende?",
+          "a": "A ProActive7 atende Macaé/RJ e região, com visitas técnicas presenciais, treinamentos in-company e acompanhamento periódico das boas práticas de manipulação de alimentos para serviços de alimentação on-shore e off-shore."
+        },
+        {
+          "q": "Quem é a responsável técnica da ProActive7?",
+          "a": "A responsável técnica (RT) é a nutricionista Ariane Madureira, que responde tecnicamente pelos estabelecimentos atendidos perante a ANVISA e a Vigilância Sanitária, assinando o Manual de Boas Práticas e os POPs."
+        },
+        {
+          "q": "A ProActive7 tem um sistema próprio?",
+          "a": "Sim. A ProActive7 oferece um sistema web para serviços de alimentação que gera etiquetas de validade automaticamente, registra temperaturas de equipamentos, controla POPs, auditorias RDC 216, manipuladores, pragas e não conformidades — com o conceito de zero digitação na cozinha."
+        },
+        {
+          "q": "Como entrar em contato com a ProActive7?",
+          "a": "O contato com a ProActive7 é feito pelo e-mail contato@proactive7.com.br, pelo WhatsApp no telefone +55 22 99766-2669 ou pelo Instagram @proactive.7."
+        }
+      ]
     },
     "/perfil": {
       "image": "https://www.proactive7.com.br/og/perfil.png",
