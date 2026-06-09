@@ -81,6 +81,205 @@ body {
   }
 }
 
+/* =====================================================================
+ * Mono FX — biblioteca de efeitos do design system preto/branco/cinza.
+ * Tudo CSS puro, custo zero, sem cor: trabalha só com luz, sombra,
+ * grão e movimento. Cada efeito respeita prefers-reduced-motion.
+ * ===================================================================== */
+
+/* 1. Spotlight que segue o cursor. O componente <Spotlight> seta as
+   variáveis --mx/--my (em %); aqui desenhamos um halo radial branco
+   suave que ilumina o ponto sob o mouse. Sem JS de animação — só
+   reposiciona via CSS custom properties. */
+.fx-spotlight::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    340px circle at var(--mx, 50%) var(--my, 0%),
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.04) 40%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.fx-spotlight[data-active='1']::before {
+  opacity: 1;
+}
+
+/* 2. Grade técnica sutil para fundos escuros — evoca planilha/etiqueta.
+   Mascarada nas bordas para sumir suave. */
+.fx-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 40%,
+    #000 40%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 40%,
+    #000 40%,
+    transparent 100%
+  );
+}
+
+/* 3. Grão de filme — textura orgânica por cima de superfícies chapadas.
+   Turbulência SVG em data-URI; anima um leve tremor para não parecer
+   estático. Opacidade baixíssima: sente, não vê. */
+.fx-grain::after {
+  content: '';
+  position: absolute;
+  inset: -150%;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grainShift 0.6s steps(2) infinite;
+}
+@keyframes grainShift {
+  0% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-3%, 2%);
+  }
+  100% {
+    transform: translate(2%, -2%);
+  }
+}
+
+/* 4. Shimmer prata no texto — uma faixa de luz varre o título. Funciona
+   sobre fundo escuro (texto claro) com brilho que passa devagar. */
+.fx-shimmer {
+  background: linear-gradient(
+    100deg,
+    #ffffff 0%,
+    #ffffff 35%,
+    #8a8a8a 50%,
+    #ffffff 65%,
+    #ffffff 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmerSweep 6s ease-in-out infinite;
+}
+@keyframes shimmerSweep {
+  0%,
+  100% {
+    background-position: 140% 0;
+  }
+  50% {
+    background-position: -40% 0;
+  }
+}
+
+/* 5. Sheen — reflexo diagonal que cruza o botão no hover (vidro/metal). */
+.fx-sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.fx-sheen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 70%
+  );
+  transform: translateX(-120%);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fx-sheen:hover::after {
+  transform: translateX(120%);
+}
+
+/* 6. Borda viva — anel cônico girando atrás de um cartão em destaque.
+   O cartão (bg sólido) fica por cima; só vaza a borda animada. */
+.fx-ring {
+  position: relative;
+  isolation: isolate;
+}
+.fx-ring::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--ring-a, 0deg),
+    transparent 0deg,
+    rgba(255, 255, 255, 0.7) 40deg,
+    rgba(120, 120, 120, 0.15) 120deg,
+    transparent 220deg,
+    transparent 360deg
+  );
+  animation: ringSpin 5s linear infinite;
+}
+@property --ring-a {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+@keyframes ringSpin {
+  to {
+    --ring-a: 360deg;
+  }
+}
+
+/* 7. Flutuação leve — para selos/ícones ganharem vida. */
+.fx-float {
+  animation: floatY 6s ease-in-out infinite;
+}
+@keyframes floatY {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+/* 8. Lift de cartão — sobe e ganha sombra+borda no hover. */
+.fx-lift {
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+}
+.fx-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 50px -28px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-grain::after,
+  .fx-shimmer,
+  .fx-ring::before,
+  .fx-float {
+    animation: none;
+  }
+  .fx-sheen::after {
+    transition: none;
+  }
+  .fx-shimmer {
+    color: #fff;
+  }
+}
+
 /* Impressao: a area da etiqueta/ficha eh montada via React Portal
    direto no <body>, como irma de #root. Aqui escondemos o app
    inteiro (#root) e mostramos somente o portal — evita paginas em
