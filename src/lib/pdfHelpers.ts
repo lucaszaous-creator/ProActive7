@@ -1,6 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { supabase } from './supabase';
 import { BRAND, PRINT_RGB, scoreTier, tierLabel, tierRgb } from './printTheme';
+import { PDF_BRAND_LOGO } from './pdfBrandLogo';
 
 const M = 14; // margem lateral (mm)
 
@@ -34,15 +35,23 @@ export function drawPdfHeader(doc: jsPDF, info: PdfHeaderInfo): number {
   doc.setFillColor(...PRINT_RGB.green);
   doc.rect(0, bandH - 1.2, pw, 1.2, 'F');
 
-  // Marca
-  doc.setTextColor(...PRINT_RGB.white);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.text(BRAND.name, M, 13);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(7.5);
-  doc.setTextColor(180, 220, 205);
-  doc.text(BRAND.tagline.toUpperCase(), M, 18);
+  // Marca — logo gráfica (wordmark + tagline) em branco, encaixada à
+  // esquerda da faixa preservando a proporção (~2.15:1).
+  try {
+    const logoH = 14;
+    const logoW = logoH * 2.15;
+    doc.addImage(PDF_BRAND_LOGO, 'PNG', M, 5, logoW, logoH);
+  } catch {
+    // Fallback: texto, caso a imagem falhe.
+    doc.setTextColor(...PRINT_RGB.white);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(16);
+    doc.text(BRAND.name, M, 13);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    doc.setTextColor(...PRINT_RGB.faint);
+    doc.text(BRAND.tagline.toUpperCase(), M, 18);
+  }
 
   // Título do documento (na faixa, à esquerda, abaixo da marca)
   doc.setTextColor(...PRINT_RGB.white);
