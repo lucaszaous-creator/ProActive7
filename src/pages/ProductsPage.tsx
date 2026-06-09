@@ -40,6 +40,7 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListSkeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { ProductCsvImport } from '@/components/ProductCsvImport';
 import { LibraryBrowser } from '@/components/LibraryBrowser';
 import { BookOpen } from 'lucide-react';
@@ -556,11 +557,11 @@ export function ProductsPage() {
       ) : loading ? (
         <ListSkeleton rows={6} />
       ) : products.length === 0 ? (
-        <Card>
-          <p className="text-sm text-neutral-600">
-            Nenhum produto cadastrado ainda.
-          </p>
-        </Card>
+        <EmptyState
+          icon={PackageSearch}
+          title="Nenhum produto cadastrado ainda"
+          description="Cadastre seus produtos para gerar etiquetas de validade automaticamente, com os prazos da RDC 216."
+        />
       ) : (
         <>
           <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

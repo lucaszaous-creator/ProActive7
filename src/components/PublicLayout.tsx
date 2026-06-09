@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
+import { RouteFade } from './RouteFade';
 import {
   Menu,
   X,
@@ -44,7 +45,9 @@ export function PublicLayout() {
       <MobileDrawer open={mobileOpen} onClose={() => setMobileOpen(false)} />
 
       <main className="flex-1">
-        <Outlet />
+        <RouteFade>
+          <Outlet />
+        </RouteFade>
       </main>
       <PublicFooter />
     </div>

@@ -426,6 +426,27 @@ body {
   }
 }
 
+/* 14. Transição de rota — o conteúdo principal entra com fade + leve
+   slide a cada navegação. Aplicado por um wrapper keyado na pathname. */
+.fx-page-in {
+  animation: fxPageIn 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes fxPageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-page-in {
+    animation: none;
+  }
+}
+
 /* Impressao: a area da etiqueta/ficha eh montada via React Portal
    direto no <body>, como irma de #root. Aqui escondemos o app
    inteiro (#root) e mostramos somente o portal — evita paginas em
