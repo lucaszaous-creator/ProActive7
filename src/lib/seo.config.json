@@ -43,6 +43,11 @@
           "addressCountry": "BR"
         },
         "hasMap": "https://www.google.com/maps/search/?api=1&query=Rua+Dr.+Luiz+Bellegard%2C+407%2C+Imbetiba%2C+Maca%C3%A9+-+RJ%2C+27913-260",
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": -22.3805238,
+          "longitude": -41.7736929
+        },
         "openingHoursSpecification": [
           {
             "@type": "OpeningHoursSpecification",
