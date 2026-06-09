@@ -100,7 +100,7 @@ function Kpi({
       'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
   }[tone];
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-slate-900">
+    <div className="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
       <div className="flex items-center gap-3">
         <span
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${accent}`}

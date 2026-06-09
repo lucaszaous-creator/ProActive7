@@ -103,7 +103,7 @@ export function PortfolioSummary({
       </div>
 
       {showAll ? (
-        <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-slate-900">
+        <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-neutral-900">
           <Search
             size={16}
             className="shrink-0 text-neutral-400 dark:text-neutral-500"
@@ -172,7 +172,7 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
   const tier = r.tier;
   const bgClass = tier
     ? TIER_BG[tier]
-    : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-slate-900';
+    : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900';
   const textClass = tier
     ? TIER_TEXT[tier]
     : 'text-neutral-500 dark:text-neutral-400';

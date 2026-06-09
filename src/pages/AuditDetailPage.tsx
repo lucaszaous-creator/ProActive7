@@ -61,7 +61,7 @@ const RESULT_OPTIONS: {
     label: 'C',
     icon: Check,
     classes:
-      'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-slate-800',
+      'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800',
     activeClasses: 'border-neutral-500 bg-neutral-50 text-neutral-700',
   },
   {
@@ -69,7 +69,7 @@ const RESULT_OPTIONS: {
     label: 'NC',
     icon: XIcon,
     classes:
-      'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-slate-800',
+      'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800',
     activeClasses: 'border-red-500 bg-red-50 text-red-700',
   },
   {
@@ -77,7 +77,7 @@ const RESULT_OPTIONS: {
     label: 'NA',
     icon: MinusCircle,
     classes:
-      'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-slate-800',
+      'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800',
     activeClasses: 'border-neutral-500 bg-neutral-100 text-neutral-700',
   },
 ];
@@ -792,7 +792,7 @@ export function AuditDetailPage() {
                         onChange={(e) => setNote(it.id, e.target.value)}
                         placeholder="Observacao / plano de acao..."
                         rows={2}
-                        className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
+                        className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
                       />
                     ) : null}
                   </div>
@@ -815,7 +815,7 @@ export function AuditDetailPage() {
             disabled={locked}
             onChange={(e) => setNotes(e.target.value)}
             rows={4}
-            className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
+            className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
           />
         </Card>
       </div>
@@ -853,7 +853,7 @@ export function AuditDetailPage() {
             com seus dados profissionais ({profile?.full_name}
             {profile?.crn ? ` - CRN ${profile.crn}` : ''}).
           </p>
-          <div className="overflow-hidden rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-slate-800">
+          <div className="overflow-hidden rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-800">
             <SignatureCanvas
               ref={sigRef}
               penColor="black"

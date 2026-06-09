@@ -14,7 +14,7 @@ const variants: Record<Variant, string> = {
   primary:
     'fx-sheen bg-neutral-900 text-white shadow-sm hover:bg-neutral-800 disabled:bg-neutral-400 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white dark:disabled:bg-neutral-600 dark:disabled:text-neutral-400',
   secondary:
-    'bg-white text-neutral-700 border border-neutral-300 shadow-sm hover:bg-neutral-50 hover:border-neutral-400 disabled:opacity-50 dark:bg-slate-800 dark:text-neutral-200 dark:border-neutral-700 dark:hover:bg-slate-700 dark:hover:border-neutral-600',
+    'bg-white text-neutral-700 border border-neutral-300 shadow-sm hover:bg-neutral-50 hover:border-neutral-400 disabled:opacity-50 dark:bg-neutral-800 dark:text-neutral-200 dark:border-neutral-700 dark:hover:bg-neutral-700 dark:hover:border-neutral-600',
   danger:
     'fx-sheen bg-red-600 text-white shadow-sm hover:bg-red-700 disabled:bg-red-300',
   ghost:

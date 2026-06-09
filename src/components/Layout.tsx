@@ -752,7 +752,7 @@ export function Layout() {
   }
 
   return (
-    <div className="relative flex min-h-screen w-full overflow-x-hidden bg-slate-50 dark:bg-slate-950">
+    <div className="relative flex min-h-screen w-full overflow-x-hidden bg-slate-50 dark:bg-neutral-950">
       {mobileOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/40 lg:hidden"
@@ -761,16 +761,20 @@ export function Layout() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-neutral-200 bg-white transition-transform dark:border-neutral-800 dark:bg-slate-900 lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-neutral-200 bg-white transition-transform dark:border-white/10 dark:bg-neutral-950 lg:static lg:translate-x-0 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="group relative flex items-center justify-center border-b border-neutral-200 bg-white px-4 py-4 dark:border-neutral-800 dark:bg-white">
-          <img
-            src="/proactive7-logo.svg"
-            alt="ProActive7 — Boa alimentação, bem-estar e saúde!"
-            className="h-12 w-auto max-w-full transition-transform duration-300 group-hover:scale-105"
-          />
+        <div className="group relative flex items-center justify-center border-b border-neutral-200 bg-white px-4 py-4 dark:border-white/10 dark:bg-neutral-950">
+          {/* No dark, o logo (colorido) vive numa pílula branca compacta em
+              vez de uma faixa branca inteira gritando no tema escuro. */}
+          <span className="rounded-xl bg-white px-3 py-1.5 transition-transform duration-300 group-hover:scale-105">
+            <img
+              src="/proactive7-logo.svg"
+              alt="ProActive7 — Boa alimentação, bem-estar e saúde!"
+              className="h-12 w-auto max-w-full"
+            />
+          </span>
           <button
             onClick={closeMobile}
             aria-label="Fechar menu"
@@ -837,8 +841,14 @@ export function Layout() {
         </div>
       </aside>
 
-      <div className="flex min-w-0 w-full flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex w-full items-center gap-3 border-b border-neutral-200 bg-white/90 px-4 py-3 backdrop-blur dark:border-neutral-800 dark:bg-slate-900/90 lg:hidden">
+      <div className="relative flex min-w-0 w-full flex-1 flex-col">
+        {/* Dark v2: halo de luz no topo do conteúdo — profundidade sutil
+            no preto chapado, só no tema escuro. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 hidden h-72 bg-[radial-gradient(640px_220px_at_50%_-60px,rgba(255,255,255,0.07),transparent_70%)] dark:block"
+        />
+        <header className="sticky top-0 z-20 flex w-full items-center gap-3 border-b border-neutral-200 bg-white/90 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-neutral-950/90 lg:hidden">
           <button
             onClick={() => setMobileOpen(true)}
             aria-label={t('layout.openMenu')}

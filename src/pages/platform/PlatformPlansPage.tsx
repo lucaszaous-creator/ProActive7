@@ -125,7 +125,7 @@ export function PlatformPlansPage() {
           {plans.map((p) => (
             <div
               key={p.key}
-              className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-slate-900"
+              className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
@@ -141,18 +141,18 @@ export function PlatformPlansPage() {
                   onClick={() => openEdit(p)}
                   aria-label="Editar"
                   title="Editar"
-                  className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-slate-800"
+                  className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 >
                   <Pencil size={16} />
                 </button>
               </div>
               <div className="flex flex-wrap gap-1.5 text-xs">
-                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-neutral-600 dark:bg-slate-800 dark:text-neutral-300">
+                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
                   {p.company_limit === null
                     ? 'Empresas: ilimitado'
                     : `Empresas: ${p.company_limit}`}
                 </span>
-                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-neutral-600 dark:bg-slate-800 dark:text-neutral-300">
+                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
                   {(p.allowed_modules ?? []).length} módulos
                 </span>
                 {!p.active && (

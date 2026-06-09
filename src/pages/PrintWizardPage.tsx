@@ -551,8 +551,8 @@ export function PrintWizardPage() {
                     isActive
                       ? 'border-neutral-500 bg-neutral-500 text-white'
                       : isDone
-                        ? 'border-neutral-500 bg-white text-neutral-600 hover:bg-neutral-50 dark:bg-slate-900'
-                        : 'border-neutral-200 bg-white text-neutral-400 dark:border-neutral-700 dark:bg-slate-900'
+                        ? 'border-neutral-500 bg-white text-neutral-600 hover:bg-neutral-50 dark:bg-neutral-900'
+                        : 'border-neutral-200 bg-white text-neutral-400 dark:border-neutral-700 dark:bg-neutral-900'
                   } ${canGoBack ? 'cursor-pointer' : 'cursor-default'}`}
                 >
                   {isDone ? <Check size={16} /> : <Icon size={16} />}
@@ -903,14 +903,14 @@ function Step1({
                 className={`flex items-center gap-3 rounded-xl border p-3 text-left transition ${
                   isSelected
                     ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
-                    : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700'
+                    : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
                 }`}
               >
                 <span
                   className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
                     isSelected
                       ? 'bg-neutral-900 text-white'
-                      : 'bg-neutral-100 text-neutral-600 dark:bg-slate-800 dark:text-neutral-300'
+                      : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300'
                   }`}
                 >
                   {initials(m.full_name)}
@@ -961,10 +961,10 @@ function Step2({
           className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition ${
             groupId === 'all'
               ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
-              : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700'
+              : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
           }`}
         >
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-200 text-neutral-700 dark:bg-slate-700 dark:text-neutral-200">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
             <Layers size={18} />
           </span>
           <span className="text-sm font-medium text-neutral-800 dark:text-neutral-100">
@@ -984,7 +984,7 @@ function Step2({
               className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition ${
                 isSelected
                   ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
-                  : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700'
+                  : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
               }`}
             >
               <span
@@ -1038,7 +1038,7 @@ function Step3({
         <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
           Produto
         </h2>
-        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500 dark:bg-slate-800 dark:text-neutral-300">
+        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300">
           {groupName}
         </span>
       </div>
@@ -1059,7 +1059,7 @@ function Step3({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar produto"
-          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 sm:text-sm dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
+          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 sm:text-sm dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
         />
       </div>
       {products.length === 0 ? (
@@ -1078,14 +1078,14 @@ function Step3({
                   className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${
                     isSelected
                       ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
-                      : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700'
+                      : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
                   }`}
                 >
                   <span
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                       isSelected
                         ? 'bg-neutral-900 text-white'
-                        : 'bg-neutral-100 text-neutral-500 dark:bg-slate-800 dark:text-neutral-300'
+                        : 'bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300'
                     }`}
                   >
                     <Package size={16} />
@@ -1157,7 +1157,7 @@ function Step4({
 }) {
   return (
     <Card>
-      <div className="mb-3 flex items-center gap-3 rounded-xl bg-neutral-50 p-3 dark:bg-slate-800">
+      <div className="mb-3 flex items-center gap-3 rounded-xl bg-neutral-50 p-3 dark:bg-neutral-800">
         <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
           <Package size={18} />
         </span>
@@ -1227,7 +1227,7 @@ function Step4({
           placeholder='Ex.: "500 g"'
         />
 
-        <details className="rounded-lg border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-slate-800">
+        <details className="rounded-lg border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800">
           <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-neutral-500">
             Lote / fornecedor (opcional)
           </summary>
@@ -1281,7 +1281,7 @@ function Step5({
           <Check size={16} className="text-neutral-600" />
           Confira a etiqueta
         </div>
-        <div className="w-full max-w-full overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-800 dark:bg-slate-800">
+        <div className="w-full max-w-full overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-800 dark:bg-neutral-800">
           <div className="mx-auto w-fit rounded-md bg-white shadow-sm ring-1 ring-neutral-200">
             <LabelPreview data={labelData} widthMm={size.w} heightMm={size.h} />
           </div>
@@ -1470,7 +1470,7 @@ function DirectPrintBlock({
 
   if (agents.length === 0) {
     return (
-      <div className="w-full rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-3 text-xs text-neutral-600 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-300">
+      <div className="w-full rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-3 text-xs text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
         Nenhuma impressora térmica cadastrada. Vá em{' '}
         <Link
           to="/admin/impressoras"
@@ -1493,7 +1493,7 @@ function DirectPrintBlock({
           className={
             relayOnline
               ? 'inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 font-medium text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200'
-              : 'inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2 py-0.5 font-medium text-neutral-600 dark:bg-slate-700 dark:text-neutral-300'
+              : 'inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2 py-0.5 font-medium text-neutral-600 dark:bg-neutral-700 dark:text-neutral-300'
           }
         >
           {relayOnline ? 'Relay online' : 'Relay offline'}
@@ -1595,13 +1595,13 @@ function Step3Batch({
         <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
           Produtos do lote
         </h2>
-        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500 dark:bg-slate-800 dark:text-neutral-300">
+        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300">
           {groupName}
         </span>
       </div>
       <button
         onClick={onSwitchToSingle}
-        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-slate-800"
+        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
       >
         <X size={16} />
         Voltar para um produto só
@@ -1626,7 +1626,7 @@ function Step3Batch({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar produto"
-          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 sm:text-sm dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
+          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 sm:text-sm dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
         />
       </div>
 
@@ -1647,7 +1647,7 @@ function Step3Batch({
                   className={`flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 ${
                     isSelected
                       ? 'bg-neutral-50 dark:bg-neutral-950'
-                      : 'hover:bg-neutral-50 dark:hover:bg-slate-800'
+                      : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'
                   }`}
                 >
                   <input
@@ -1850,7 +1850,7 @@ function Step5Batch({
           Prévia da primeira etiqueta
         </p>
         {firstProd && firstRule && firstExpiry && manipDate && first && (
-          <div className="w-full max-w-full overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-800 dark:bg-slate-800">
+          <div className="w-full max-w-full overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-800 dark:bg-neutral-800">
             <div className="mx-auto w-fit rounded-md bg-white shadow-sm ring-1 ring-neutral-200">
               <LabelPreview
                 data={{

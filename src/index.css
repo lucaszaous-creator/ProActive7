@@ -26,6 +26,9 @@ body {
 body {
   margin: 0;
   background-color: #f8fafc;
+  /* Controles nativos (date picker, select dropdown, scrollbar) seguem o
+     tema — sem isso eles renderizam claros no meio do dark mode. */
+  color-scheme: light;
   /* Refinamento tipográfico global do design system Mono: suavização de
      fonte e ligaduras/kerning ativos. Mantém a system stack (custo zero). */
   -webkit-font-smoothing: antialiased;
@@ -34,7 +37,19 @@ body {
 }
 
 .dark body {
-  background-color: #0f172a;
+  /* Dark v2: preto neutro profundo (sem o azulado do slate). Cards em
+     neutral-900 ganham contraste real sobre este fundo. */
+  background-color: #0a0a0a;
+  color-scheme: dark;
+}
+
+::selection {
+  background: rgba(23, 23, 23, 0.9);
+  color: #fff;
+}
+.dark ::selection {
+  background: rgba(255, 255, 255, 0.9);
+  color: #171717;
 }
 
 /* Números tabulares para colunas de valores (tabelas, KPIs, contadores):

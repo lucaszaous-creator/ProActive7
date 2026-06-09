@@ -220,7 +220,7 @@ export function ValidadesPage() {
                     return (
                       <div
                         key={l.id}
-                        className={`rounded-lg border bg-white p-3 dark:bg-slate-900 ${
+                        className={`rounded-lg border bg-white p-3 dark:bg-neutral-900 ${
                           isToday
                             ? 'border-amber-300'
                             : 'border-neutral-200 dark:border-neutral-800'

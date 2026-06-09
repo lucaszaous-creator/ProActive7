@@ -36,7 +36,7 @@ function ActionTile({
   return (
     <Link
       to={to}
-      className="fx-lift fx-press group flex flex-col gap-1.5 rounded-xl border border-neutral-200 bg-white p-2.5 hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700 sm:min-h-[88px] sm:gap-2 sm:p-4"
+      className="fx-lift fx-press group flex flex-col gap-1.5 rounded-xl border border-neutral-200 bg-white p-2.5 hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700 sm:min-h-[88px] sm:gap-2 sm:p-4"
     >
       <span
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition group-hover:scale-110 sm:h-10 sm:w-10 ${ACCENT_BG[accent]}`}
@@ -97,7 +97,7 @@ export function QuickActions({ isMaster }: QuickActionsProps) {
         <div className="mt-3 flex justify-end">
           <Link
             to="/visitas"
-            className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:text-neutral-300 dark:hover:border-neutral-700"
+            className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:border-neutral-700"
           >
             <CalendarPlus size={14} />
             Agendar visita técnica

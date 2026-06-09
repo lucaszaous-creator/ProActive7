@@ -128,7 +128,7 @@ export function SubscriptionPage() {
                 className={`flex items-start gap-3 rounded-lg border p-3 ${
                   on
                     ? 'border-neutral-200 bg-neutral-50 dark:border-neutral-900 dark:bg-neutral-950'
-                    : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-slate-800'
+                    : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
                 }`}
               >
                 <span
@@ -152,7 +152,7 @@ export function SubscriptionPage() {
             );
           })}
         </ul>
-        <p className="mt-4 rounded-lg bg-neutral-50 px-3 py-2 text-xs text-neutral-500 dark:bg-slate-800 dark:text-neutral-400">
+        <p className="mt-4 rounded-lg bg-neutral-50 px-3 py-2 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
           Para fazer upgrade do plano ou liberar mais empresas, fale com o
           suporte do ProActive7.
         </p>
@@ -205,7 +205,7 @@ function SupportAccessCard({ orgId }: { orgId: string }) {
   return (
     <Card className="mt-4">
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-500 dark:bg-slate-800 dark:text-neutral-300">
+        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300">
           <ShieldCheck size={18} />
         </span>
         <div className="min-w-0 flex-1">

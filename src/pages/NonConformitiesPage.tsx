@@ -315,7 +315,7 @@ export function NonConformitiesPage() {
                   className={`flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition ${
                     active
                       ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
-                      : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700'
+                      : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
                   }`}
                   title={`Clique para ver só as NCs de ${c.company_name}`}
                 >

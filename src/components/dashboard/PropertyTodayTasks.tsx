@@ -98,7 +98,7 @@ export function PropertyTodayTasks({
               <li key={t.id}>
                 <Link
                   to="/checklists"
-                  className="flex items-center justify-between gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-slate-800"
+                  className="flex items-center justify-between gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 >
                   <span className="min-w-0 flex-1 truncate text-neutral-800 dark:text-neutral-200">
                     {t.name}
@@ -128,7 +128,7 @@ export function PropertyTodayTasks({
               <li key={e.id}>
                 <Link
                   to="/temperatura"
-                  className="flex items-center justify-between gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-slate-800"
+                  className="flex items-center justify-between gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 >
                   <span className="min-w-0 flex-1 truncate text-neutral-800 dark:text-neutral-200">
                     {e.name}

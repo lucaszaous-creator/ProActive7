@@ -345,7 +345,7 @@ export function OrganizationDetailPage() {
                   </p>
                 )}
               </div>
-              <div className="flex flex-col justify-center rounded-lg bg-neutral-50 px-3 py-2 dark:bg-slate-800">
+              <div className="flex flex-col justify-center rounded-lg bg-neutral-50 px-3 py-2 dark:bg-neutral-800">
                 <p className="text-xs font-medium uppercase text-neutral-500">
                   Empresas ativas
                 </p>
@@ -368,7 +368,7 @@ export function OrganizationDetailPage() {
                 className={`rounded-full px-2 py-0.5 font-medium ${
                   org.allow_impersonation
                     ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300'
-                    : 'bg-neutral-100 text-neutral-500 dark:bg-slate-800'
+                    : 'bg-neutral-100 text-neutral-500 dark:bg-neutral-800'
                 }`}
               >
                 {org.allow_impersonation
@@ -560,7 +560,7 @@ export function OrganizationDetailPage() {
               onChange={(e) => setPushBody(e.target.value)}
               rows={3}
               maxLength={240}
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-800 focus:outline-none dark:border-neutral-700 dark:bg-slate-800"
+              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-800 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
             />
           </div>
           <p className="text-xs text-neutral-500">

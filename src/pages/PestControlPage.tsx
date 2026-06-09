@@ -417,7 +417,7 @@ export function PestControlPage() {
 
       {/* Tabs */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-800 dark:bg-slate-900">
+        <div className="inline-flex rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-800 dark:bg-neutral-900">
           <button
             onClick={() => setTab('services')}
             className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${

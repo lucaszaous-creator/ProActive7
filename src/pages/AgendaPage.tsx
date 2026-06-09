@@ -178,7 +178,7 @@ export function AgendaPage() {
                           <li key={ev.id}>
                             <Link
                               to={`/visitas/${ev.id}`}
-                              className="flex items-center gap-2 rounded-lg bg-neutral-50 px-2 py-1.5 text-xs hover:bg-neutral-100 dark:bg-slate-800 dark:hover:bg-slate-700"
+                              className="flex items-center gap-2 rounded-lg bg-neutral-50 px-2 py-1.5 text-xs hover:bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-700"
                             >
                               <span
                                 className={`h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[ev.status]}`}
@@ -227,8 +227,8 @@ export function AgendaPage() {
                       key={d.iso}
                       className={`flex min-h-[5.5rem] flex-col gap-1 rounded-lg border p-1 text-xs ${
                         d.inMonth
-                          ? 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-slate-900'
-                          : 'border-transparent bg-neutral-50 text-neutral-400 dark:bg-slate-950 dark:text-neutral-600'
+                          ? 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
+                          : 'border-transparent bg-neutral-50 text-neutral-400 dark:bg-neutral-950 dark:text-neutral-600'
                       } ${d.isToday ? 'ring-2 ring-neutral-900' : ''}`}
                     >
                       <span
@@ -244,7 +244,7 @@ export function AgendaPage() {
                         <Link
                           key={ev.id}
                           to={`/visitas/${ev.id}`}
-                          className="flex items-center gap-1 truncate rounded bg-neutral-100 px-1 py-0.5 text-[10px] text-neutral-700 hover:bg-neutral-200 dark:bg-slate-800 dark:text-neutral-300 dark:hover:bg-slate-700"
+                          className="flex items-center gap-1 truncate rounded bg-neutral-100 px-1 py-0.5 text-[10px] text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
                         >
                           <span
                             className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[ev.status]}`}
@@ -279,7 +279,7 @@ export function AgendaPage() {
               <li key={ev.id}>
                 <Link
                   to={`/visitas/${ev.id}`}
-                  className="flex items-center gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-slate-800"
+                  className="flex items-center gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 >
                   <span
                     className={`h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[ev.status]}`}

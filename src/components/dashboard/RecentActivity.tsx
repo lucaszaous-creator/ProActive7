@@ -58,7 +58,7 @@ export function RecentActivity({ loading, items }: RecentActivityProps) {
               <li key={`${it.kind}-${it.id}`}>
                 <Link
                   to={it.href}
-                  className="flex items-start gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-slate-800"
+                  className="flex items-start gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 >
                   <Icon
                     size={16}

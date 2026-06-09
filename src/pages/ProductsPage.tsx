@@ -111,7 +111,7 @@ function GroupChip({
       className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition ${
         active
           ? 'border-neutral-500 bg-neutral-50 font-medium text-neutral-700 dark:border-neutral-600 dark:bg-neutral-950 dark:text-neutral-300'
-          : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-slate-800'
+          : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800'
       }`}
     >
       {icon ?? (
@@ -144,7 +144,7 @@ function ProductCard({
   const rules = product.product_shelf_lives ?? [];
   const allergenCount = product.allergens?.length ?? 0;
   return (
-    <div className="flex flex-col gap-2.5 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700">
+    <div className="flex flex-col gap-2.5 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <h3 className="truncate font-medium text-neutral-800 dark:text-neutral-100">
@@ -161,7 +161,7 @@ function ProductCard({
             onClick={onEdit}
             aria-label="Editar"
             title="Editar"
-            className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-slate-800"
+            className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
           >
             <Pencil size={16} />
           </button>
@@ -178,7 +178,7 @@ function ProductCard({
 
       <div className="flex flex-wrap items-center gap-1.5">
         {group ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600 dark:bg-slate-800 dark:text-neutral-300">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
             <span
               className="h-2 w-2 rounded-full"
               style={{ backgroundColor: group.color ?? '#a3a3a3' }}
@@ -197,7 +197,7 @@ function ProductCard({
           </span>
         ) : null}
         {!product.active ? (
-          <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-500 dark:bg-slate-800">
+          <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-500 dark:bg-neutral-800">
             Inativo
           </span>
         ) : null}
@@ -572,7 +572,7 @@ export function ProductsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar por nome ou categoria"
-                className="w-full rounded-lg border border-neutral-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
+                className="w-full rounded-lg border border-neutral-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
               />
             </div>
             <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">

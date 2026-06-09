@@ -31,7 +31,7 @@ function Kpi({
       'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
   } as Record<string, string>;
   return (
-    <div className="fx-lift rounded-xl border border-neutral-200 bg-white p-3 hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700 sm:p-5">
+    <div className="fx-lift rounded-xl border border-neutral-200 bg-white p-3 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700 sm:p-5">
       <div className="flex items-center gap-2.5 sm:gap-3">
         <span
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg sm:h-10 sm:w-10 ${accent[tone]}`}
