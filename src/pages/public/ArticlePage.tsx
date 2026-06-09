@@ -97,29 +97,29 @@ export function ArticlePage() {
     <article className="mx-auto max-w-3xl px-5 py-14">
       <Link
         to="/novidades"
-        className="inline-flex items-center gap-2 text-sm font-medium text-[#2F5D3F] hover:underline"
+        className="inline-flex items-center gap-2 text-sm font-medium text-[#262626] hover:underline"
       >
         <ArrowLeft className="h-4 w-4" />
         Voltar para Novidades
       </Link>
 
       <header className="mt-6">
-        <h1 className="text-3xl font-semibold leading-tight tracking-tight text-[#1A2A22] md:text-4xl">
+        <h1 className="text-3xl font-semibold leading-tight tracking-tight text-[#171717] md:text-4xl">
           {article.title}
         </h1>
-        <p className="mt-3 text-sm text-[#1A2A22]/55">{dateLabel}</p>
+        <p className="mt-3 text-sm text-[#171717]/55">{dateLabel}</p>
       </header>
 
-      <div className="mt-8 space-y-5 text-base leading-relaxed text-[#1A2A22]/80">
+      <div className="mt-8 space-y-5 text-base leading-relaxed text-[#171717]/80">
         <ReactMarkdown
           components={{
             h2: ({ children }) => (
-              <h2 className="pt-2 text-xl font-semibold tracking-tight text-[#1A2A22]">
+              <h2 className="pt-2 text-xl font-semibold tracking-tight text-[#171717]">
                 {children}
               </h2>
             ),
             h3: ({ children }) => (
-              <h3 className="pt-1 text-lg font-semibold text-[#1A2A22]">
+              <h3 className="pt-1 text-lg font-semibold text-[#171717]">
                 {children}
               </h3>
             ),
@@ -132,7 +132,7 @@ export function ArticlePage() {
             ),
             li: ({ children }) => <li>{children}</li>,
             strong: ({ children }) => (
-              <strong className="font-semibold text-[#1A2A22]">
+              <strong className="font-semibold text-[#171717]">
                 {children}
               </strong>
             ),
@@ -143,7 +143,7 @@ export function ArticlePage() {
               return (
                 <a
                   href={href}
-                  className="text-[#2F5D3F] underline"
+                  className="text-[#262626] underline"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -158,11 +158,11 @@ export function ArticlePage() {
       </div>
 
       {article.tags.length > 0 && (
-        <div className="mt-10 flex flex-wrap gap-2 border-t border-[#E8F1EA] pt-6">
+        <div className="mt-10 flex flex-wrap gap-2 border-t border-[#e5e5e5] pt-6">
           {article.tags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center gap-1 rounded-full bg-[#E8F1EA] px-3 py-1 text-xs font-medium text-[#2F5D3F]"
+              className="inline-flex items-center gap-1 rounded-full bg-[#e5e5e5] px-3 py-1 text-xs font-medium text-[#262626]"
             >
               <Hash className="h-3 w-3" />
               {tag}

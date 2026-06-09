@@ -130,7 +130,7 @@ export function ProductCsvImport({
           </p>
         </div>
 
-        <label className="inline-flex cursor-pointer items-center justify-center gap-2 self-start rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700">
+        <label className="inline-flex cursor-pointer items-center justify-center gap-2 self-start rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800">
           <Upload size={16} />
           Escolher arquivo CSV
           <input

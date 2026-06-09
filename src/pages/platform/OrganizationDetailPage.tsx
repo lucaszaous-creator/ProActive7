@@ -557,7 +557,7 @@ export function OrganizationDetailPage() {
               onChange={(e) => setPushBody(e.target.value)}
               rows={3}
               maxLength={240}
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none dark:border-neutral-700 dark:bg-slate-800"
+              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-800 focus:outline-none dark:border-neutral-700 dark:bg-slate-800"
             />
           </div>
           <p className="text-xs text-neutral-500">

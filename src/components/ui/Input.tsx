@@ -24,7 +24,7 @@ export function Input({
       )}
       <input
         id={id}
-        className={`min-h-[44px] w-full min-w-0 rounded-lg border bg-white px-3 py-2.5 text-base text-neutral-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 disabled:bg-neutral-100 sm:text-sm dark:bg-slate-800 dark:text-neutral-100 dark:disabled:bg-slate-900 ${
+        className={`min-h-[44px] w-full min-w-0 rounded-lg border bg-white px-3 py-2.5 text-base text-neutral-900 outline-none transition focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 disabled:bg-neutral-100 sm:text-sm dark:bg-slate-800 dark:text-neutral-100 dark:disabled:bg-slate-900 ${
           error
             ? 'border-red-400'
             : 'border-neutral-300 dark:border-neutral-700'

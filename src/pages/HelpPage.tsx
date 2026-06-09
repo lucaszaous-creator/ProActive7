@@ -328,7 +328,7 @@ function MethodologySection({ meth }: { meth: Methodology }) {
   const [open, setOpen] = useState<string | null>(null);
   return (
     <section className="mt-10">
-      <div className="mb-4 rounded-2xl bg-emerald-700 p-5 text-white dark:bg-emerald-900">
+      <div className="mb-4 rounded-2xl bg-neutral-800 p-5 text-white dark:bg-neutral-900">
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-100">
           <BarChart3 size={14} />
           Parte especial

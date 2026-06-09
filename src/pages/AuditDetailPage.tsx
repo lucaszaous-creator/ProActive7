@@ -793,7 +793,7 @@ export function AuditDetailPage() {
                         onChange={(e) => setNote(it.id, e.target.value)}
                         placeholder="Observacao / plano de acao..."
                         rows={2}
-                        className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-900 outline-none focus:border-emerald-500 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
+                        className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
                       />
                     ) : null}
                   </div>
@@ -816,7 +816,7 @@ export function AuditDetailPage() {
             disabled={locked}
             onChange={(e) => setNotes(e.target.value)}
             rows={4}
-            className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-emerald-500 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
+            className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
           />
         </Card>
       </div>

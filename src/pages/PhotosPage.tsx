@@ -159,7 +159,7 @@ export function PhotosPage() {
           </p>
         </div>
         <label
-          className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 ${
+          className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 ${
             uploading || !companyId ? 'pointer-events-none opacity-60' : ''
           }`}
         >

@@ -227,7 +227,7 @@ function SupportAccessCard({ orgId }: { orgId: string }) {
               disabled={allow === null || saving}
               aria-pressed={allow === true}
               className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition disabled:opacity-50 ${
-                allow ? 'bg-emerald-600' : 'bg-neutral-300 dark:bg-neutral-700'
+                allow ? 'bg-neutral-900' : 'bg-neutral-300 dark:bg-neutral-700'
               }`}
             >
               <span

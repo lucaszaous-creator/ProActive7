@@ -912,7 +912,7 @@ function Step1({
                 <span
                   className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
                     isSelected
-                      ? 'bg-emerald-600 text-white'
+                      ? 'bg-neutral-900 text-white'
                       : 'bg-neutral-100 text-neutral-600 dark:bg-slate-800 dark:text-neutral-300'
                   }`}
                 >
@@ -1062,7 +1062,7 @@ function Step3({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar produto"
-          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:text-sm dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
+          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 sm:text-sm dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
         />
       </div>
       {products.length === 0 ? (
@@ -1087,7 +1087,7 @@ function Step3({
                   <span
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                       isSelected
-                        ? 'bg-emerald-600 text-white'
+                        ? 'bg-neutral-900 text-white'
                         : 'bg-neutral-100 text-neutral-500 dark:bg-slate-800 dark:text-neutral-300'
                     }`}
                   >
@@ -1629,7 +1629,7 @@ function Step3Batch({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar produto"
-          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:text-sm dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
+          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 sm:text-sm dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
         />
       </div>
 

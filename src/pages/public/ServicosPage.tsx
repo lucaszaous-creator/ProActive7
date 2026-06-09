@@ -143,24 +143,24 @@ export function ServicosPage() {
 function Faq() {
   if (!FAQ.length) return null;
   return (
-    <section className="border-t border-[#E8F1EA] bg-white">
+    <section className="border-t border-[#e5e5e5] bg-white">
       <div className="mx-auto max-w-3xl px-5 py-16">
         <div className="text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#6FA68A]/40 bg-white px-3 py-1 text-xs font-medium text-[#2F5D3F]">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#737373]/40 bg-white px-3 py-1 text-xs font-medium text-[#262626]">
             Perguntas frequentes
           </span>
           <h2 className="mt-4 text-2xl font-semibold tracking-tight md:text-3xl">
             Dúvidas comuns sobre consultoria e ANVISA
           </h2>
         </div>
-        <div className="mt-8 divide-y divide-[#E8F1EA] overflow-hidden rounded-2xl border border-[#E8F1EA]">
+        <div className="mt-8 divide-y divide-[#e5e5e5] overflow-hidden rounded-2xl border border-[#e5e5e5]">
           {FAQ.map(({ q, a }) => (
-            <details key={q} className="group bg-white open:bg-[#FAFAF7]">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-left text-base font-medium text-[#1A2A22] [&::-webkit-details-marker]:hidden">
+            <details key={q} className="group bg-white open:bg-[#fafafa]">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-left text-base font-medium text-[#171717] [&::-webkit-details-marker]:hidden">
                 {q}
-                <Plus className="h-5 w-5 shrink-0 text-[#2F5D3F] transition-transform group-open:rotate-45" />
+                <Plus className="h-5 w-5 shrink-0 text-[#262626] transition-transform group-open:rotate-45" />
               </summary>
-              <p className="px-6 pb-5 text-sm leading-relaxed text-[#1A2A22]/70">
+              <p className="px-6 pb-5 text-sm leading-relaxed text-[#171717]/70">
                 {a}
               </p>
             </details>
@@ -173,15 +173,15 @@ function Faq() {
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-[#E8F1EA] bg-gradient-to-b from-[#E8F1EA] to-[#FAFAF7]">
+    <section className="relative overflow-hidden border-b border-[#e5e5e5] bg-gradient-to-b from-[#e5e5e5] to-[#fafafa]">
       <div className="mx-auto max-w-6xl px-5 py-16 text-center md:py-20">
-        <span className="inline-flex items-center gap-2 rounded-full border border-[#6FA68A]/40 bg-white px-3 py-1 text-xs font-medium text-[#2F5D3F]">
+        <span className="inline-flex items-center gap-2 rounded-full border border-[#737373]/40 bg-white px-3 py-1 text-xs font-medium text-[#262626]">
           Nossos serviços
         </span>
         <h1 className="mx-auto mt-4 max-w-3xl text-3xl font-semibold leading-[1.15] tracking-tight md:text-4xl">
           O que entregamos para a sua operação.
         </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[#1A2A22]/70">
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[#171717]/70">
           Listamos abaixo os serviços oferecidos e alguns detalhes — todos
           alinhados às legislações federais, estaduais e municipais vigentes.
         </p>
@@ -211,8 +211,8 @@ function ServiceShowcase() {
       {/* Fundo aurora (liquid glass backdrop) */}
       <div className="absolute inset-0 -z-10 bg-[#0d1f15]" />
       <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="animate-aurora absolute -left-24 -top-24 h-[30rem] w-[30rem] rounded-full bg-[#3C7350]/45 blur-[120px]" />
-        <div className="animate-aurora absolute right-[-6rem] top-1/4 h-[28rem] w-[28rem] rounded-full bg-[#6FA68A]/35 blur-[130px] [animation-delay:-7s]" />
+        <div className="animate-aurora absolute -left-24 -top-24 h-[30rem] w-[30rem] rounded-full bg-[#525252]/45 blur-[120px]" />
+        <div className="animate-aurora absolute right-[-6rem] top-1/4 h-[28rem] w-[28rem] rounded-full bg-[#737373]/35 blur-[130px] [animation-delay:-7s]" />
         <div className="animate-aurora absolute bottom-[-8rem] left-1/3 h-[26rem] w-[26rem] rounded-full bg-[#1f6f5c]/40 blur-[120px] [animation-delay:-14s]" />
         {/* véu sutil para uniformizar o contraste do texto */}
         <div className="absolute inset-0 bg-[#0d1f15]/30" />
@@ -336,7 +336,7 @@ function ServiceShowcase() {
 function SistemaBanner() {
   return (
     <section className="mx-auto max-w-6xl px-5 py-12">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#234731] via-[#2F5D3F] to-[#3C7350] p-8 text-white shadow-[0_24px_60px_-25px_rgba(47,93,63,0.55)] md:p-12">
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#404040] via-[#262626] to-[#525252] p-8 text-white shadow-[0_24px_60px_-25px_rgba(0,0,0,0.55)] md:p-12">
         {/* círculos decorativos */}
         <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-white/5" />
         <div className="pointer-events-none absolute -bottom-24 -left-12 h-56 w-56 rounded-full bg-white/5" />
@@ -359,7 +359,7 @@ function SistemaBanner() {
             </p>
             <Link
               to="/sistema"
-              className="mt-7 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-medium text-[#2F5D3F] shadow-sm transition hover:bg-[#E8F1EA]"
+              className="mt-7 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-medium text-[#262626] shadow-sm transition hover:bg-[#e5e5e5]"
             >
               Conhecer a plataforma
               <ArrowRight className="h-4 w-4" />
@@ -419,13 +419,13 @@ function ComoFunciona() {
       },
     ];
   return (
-    <section className="border-t border-[#E8F1EA] bg-white py-16">
+    <section className="border-t border-[#e5e5e5] bg-white py-16">
       <div className="mx-auto max-w-6xl px-5">
         <div className="mb-10">
-          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
             Como trabalhamos
           </span>
-          <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
+          <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#171717] md:text-3xl">
             Do diagnóstico à fiscalização — sem improviso.
           </h2>
         </div>
@@ -434,27 +434,27 @@ function ComoFunciona() {
           {passos.map(({ icon: Icon, step, title, body }, i) => (
             <li
               key={step}
-              className="relative rounded-2xl border border-[#E8F1EA] bg-[#FAFAF7] p-6"
+              className="relative rounded-2xl border border-[#e5e5e5] bg-[#fafafa] p-6"
             >
               {/* conector entre cards no desktop */}
               {i < passos.length - 1 && (
                 <span
-                  className="pointer-events-none absolute right-[-14px] top-10 hidden h-px w-7 bg-[#6FA68A]/40 lg:block"
+                  className="pointer-events-none absolute right-[-14px] top-10 hidden h-px w-7 bg-[#737373]/40 lg:block"
                   aria-hidden="true"
                 />
               )}
               <div className="flex items-center justify-between">
-                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#2F5D3F] text-white">
+                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#262626] text-white">
                   <Icon className="h-5 w-5" />
                 </span>
-                <span className="font-mono text-2xl font-bold text-[#E8F1EA]">
+                <span className="font-mono text-2xl font-bold text-[#e5e5e5]">
                   {step}
                 </span>
               </div>
-              <h3 className="mt-4 text-base font-semibold text-[#1A2A22]">
+              <h3 className="mt-4 text-base font-semibold text-[#171717]">
                 {title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#1A2A22]/70">
+              <p className="mt-2 text-sm leading-relaxed text-[#171717]/70">
                 {body}
               </p>
             </li>
@@ -490,13 +490,13 @@ function Segmentos() {
     },
   ];
   return (
-    <section className="bg-[#FAFAF7] py-16">
+    <section className="bg-[#fafafa] py-16">
       <div className="mx-auto max-w-6xl px-5">
         <div className="mb-8">
-          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
             Quem atendemos
           </span>
-          <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
+          <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#171717] md:text-3xl">
             Segmentos com necessidades distintas — mesma exigência técnica.
           </h2>
         </div>
@@ -508,16 +508,16 @@ function Segmentos() {
           {items.map(({ icon: Icon, label, sub }) => (
             <article
               key={label}
-              className="flex h-full flex-col gap-3 rounded-3xl border border-[#E8F1EA] bg-white p-6"
+              className="flex h-full flex-col gap-3 rounded-3xl border border-[#e5e5e5] bg-white p-6"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F1EA] text-[#2F5D3F]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e5e5e5] text-[#262626]">
                 <Icon className="h-5 w-5" />
               </div>
               <div>
-                <h3 className="text-base font-semibold text-[#1A2A22]">
+                <h3 className="text-base font-semibold text-[#171717]">
                   {label}
                 </h3>
-                <p className="mt-1 text-xs text-[#1A2A22]/60">{sub}</p>
+                <p className="mt-1 text-xs text-[#171717]/60">{sub}</p>
               </div>
             </article>
           ))}
@@ -555,13 +555,13 @@ function Depoimentos() {
     },
   ];
   return (
-    <section className="border-t border-[#E8F1EA] bg-white py-16">
+    <section className="border-t border-[#e5e5e5] bg-white py-16">
       <div className="mx-auto max-w-6xl px-5">
         <div className="text-center">
-          <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
             Quem confia
           </span>
-          <h2 className="mx-auto mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#1A2A22] md:text-3xl">
+          <h2 className="mx-auto mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#171717] md:text-3xl">
             O que os clientes dizem.
           </h2>
         </div>
@@ -570,13 +570,13 @@ function Depoimentos() {
             {items.map((d, i) => (
               <article
                 key={i}
-                className="relative h-full rounded-3xl border border-[#E8F1EA] bg-[#FAFAF7] p-7"
+                className="relative h-full rounded-3xl border border-[#e5e5e5] bg-[#fafafa] p-7"
               >
-                <Quote className="h-7 w-7 text-[#6FA68A]/55" />
-                <p className="mt-3 text-sm leading-relaxed text-[#1A2A22]/85">
+                <Quote className="h-7 w-7 text-[#737373]/55" />
+                <p className="mt-3 text-sm leading-relaxed text-[#171717]/85">
                   "{d.quote}"
                 </p>
-                <p className="mt-5 text-xs font-medium uppercase tracking-wider text-[#2F5D3F]">
+                <p className="mt-5 text-xs font-medium uppercase tracking-wider text-[#262626]">
                   {d.author}
                 </p>
               </article>
@@ -590,26 +590,26 @@ function Depoimentos() {
 
 function CTA() {
   return (
-    <section className="bg-[#E8F1EA]/60">
+    <section className="bg-[#e5e5e5]/60">
       <div className="mx-auto max-w-3xl px-5 py-16 text-center">
         <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
           Quer conversar sobre o que faz sentido para o seu negócio?
         </h2>
-        <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-[#1A2A22]/70">
+        <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-[#171717]/70">
           Cada operação tem um ritmo. A gente avalia o que sua unidade precisa e
           monta o pacote certo.
         </p>
         <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/contato"
-            className="inline-flex items-center gap-2 rounded-full bg-[#2F5D3F] px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#234731]"
+            className="inline-flex items-center gap-2 rounded-full bg-[#262626] px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-[#404040]"
           >
             Falar com a ProActive7
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             to="/perfil"
-            className="inline-flex items-center gap-2 rounded-full border border-[#2F5D3F]/20 bg-white px-5 py-3 text-sm font-medium text-[#2F5D3F] hover:border-[#2F5D3F]/40"
+            className="inline-flex items-center gap-2 rounded-full border border-[#262626]/20 bg-white px-5 py-3 text-sm font-medium text-[#262626] hover:border-[#262626]/40"
           >
             Conhecer a empresa
           </Link>
