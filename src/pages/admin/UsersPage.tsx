@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Trash2, Search, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, X, Users } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/context/AuthContext';
 import { extractInvokeError } from '@/lib/edgeFunction';
@@ -12,6 +12,7 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListSkeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 interface ProfileRow {
   id: string;
@@ -278,11 +279,11 @@ export function UsersPage() {
       {loading ? (
         <ListSkeleton rows={5} />
       ) : users.length === 0 ? (
-        <Card>
-          <p className="text-sm text-neutral-600">
-            Nenhum usuário cadastrado ainda.
-          </p>
-        </Card>
+        <EmptyState
+          icon={Users}
+          title="Nenhum usuário cadastrado ainda"
+          description="Cadastre gerentes e responsáveis para dar acesso às unidades."
+        />
       ) : (
         <>
           <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
