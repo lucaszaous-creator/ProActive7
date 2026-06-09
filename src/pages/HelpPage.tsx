@@ -42,6 +42,7 @@ import {
   Tag,
   History,
   FileText,
+  GraduationCap,
   type LucideIcon,
 } from 'lucide-react';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -85,6 +86,7 @@ const ICONS: Record<string, LucideIcon> = {
   Tag,
   History,
   FileText,
+  GraduationCap,
 };
 
 interface Feature {

@@ -190,17 +190,15 @@
       "key": "platform_admin",
       "title": "Administrador da plataforma",
       "subtitle": "Quem opera o sistema ProActive7 (Lucas)",
-      "who": "É o dono operacional do SaaS. Cria organizações, gerencia planos, acompanha a saúde da operação inteira (uso, churn, performance), publica conteúdo (artigos, comunicados, biblioteca de modelos) e mantém a trilha de auditoria. Não substitui a nutricionista nas decisões técnicas; cuida da plataforma.",
+      "who": "É o dono operacional do SaaS. Cria organizações, gerencia planos, acompanha a saúde da operação inteira (uso, churn, performance), publica o conteúdo do site (cursos, clientes, artigos, comunicados, biblioteca de modelos) e mantém a trilha de auditoria. Não substitui a nutricionista nas decisões técnicas; cuida da plataforma.",
       "capabilities": [
         "Centro de controle: visão geral da operação",
         "Dashboard SaaS: métricas de uso e saúde das organizações",
         "Organizações: criar e gerenciar contas (clientes do SaaS)",
         "Planos: definir módulos liberados e limites por plano",
-        "Biblioteca global: publicar modelos de checklist e produtos seed",
-        "Comunicados: banner para todas as orgs",
+        "Conteúdo do site: cursos, clientes, artigos, biblioteca e comunicados",
         "Trilha de auditoria: histórico imutável de mudanças sensíveis",
-        "Lixeira: recuperação de itens excluídos por engano",
-        "Artigos do site: gestão do CMS público"
+        "Lixeira: recuperação de itens excluídos por engano"
       ],
       "features": [
         {
@@ -262,6 +260,34 @@
             "O plano vincula às orgs em Organizações; cobrar ainda é processo manual (sem gateway integrado)."
           ],
           "tip": "Evite explodir o número de planos. 3 a 4 níveis bem desenhados convertem mais que 8 opções."
+        },
+        {
+          "icon": "GraduationCap",
+          "title": "Cursos do site",
+          "subtitle": "Conteúdo da página pública /cursos",
+          "route": "/platform/cursos",
+          "what": "Gerencia os cursos e treinamentos exibidos na página pública /cursos. Cada curso tem imagem, título, resumo, descrição completa, duração, nível/público, investimento (texto livre) e link de inscrição.",
+          "how": [
+            "Clique em Novo curso, suba a imagem e preencha os campos.",
+            "Use Ordem para definir a sequência e o seletor Ativo para mostrar/ocultar sem apagar.",
+            "O site público reflete na hora — não precisa republicar nada.",
+            "Sem cursos cadastrados, a página mostra um estado 'em breve' elegante com CTA de contato."
+          ],
+          "tip": "Capriche na frase de Resumo: é ela que aparece no card e convida à inscrição."
+        },
+        {
+          "icon": "Building2",
+          "title": "Clientes do site",
+          "subtitle": "Prova social da página pública /clientes",
+          "route": "/platform/clientes",
+          "what": "Gerencia as empresas atendidas exibidas em /clientes, com logo, segmento, cidade, depoimento e link. Renderiza como mural de logos + seção de depoimentos no site.",
+          "how": [
+            "Clique em Novo cliente, suba o logo e preencha os dados.",
+            "Adicione um depoimento para o cliente aparecer também na seção de depoimentos.",
+            "Use Ativo para controlar a visibilidade e Ordem para a sequência no mural.",
+            "Peça autorização ao cliente antes de exibir logo e depoimento (boa prática de imagem e LGPD)."
+          ],
+          "tip": "Logos em PNG com fundo transparente ficam muito melhores no mural."
         },
         {
           "icon": "BookOpen",
