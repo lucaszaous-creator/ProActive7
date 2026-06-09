@@ -47,6 +47,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/context/AuthContext';
 import { moduleForPath } from '@/lib/modules';
 import { SubscriptionGate } from './SubscriptionGate';
+import { RouteFade } from './RouteFade';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { PwaInstallButton } from './PwaInstallButton';
 import { PushToggle } from './PushToggle';
@@ -701,11 +702,11 @@ export function Layout() {
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="relative flex items-center justify-center border-b border-neutral-200 bg-white px-4 py-4 dark:border-neutral-800 dark:bg-white">
+        <div className="group relative flex items-center justify-center border-b border-neutral-200 bg-white px-4 py-4 dark:border-neutral-800 dark:bg-white">
           <img
             src="/proactive7-logo.svg"
             alt="ProActive7 — Boa alimentação, bem-estar e saúde!"
-            className="h-12 w-auto max-w-full"
+            className="h-12 w-auto max-w-full transition-transform duration-300 group-hover:scale-105"
           />
           <button
             onClick={closeMobile}
@@ -788,7 +789,9 @@ export function Layout() {
 
         <main className="w-full min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6">
           <SubscriptionGate>
-            <Outlet />
+            <RouteFade>
+              <Outlet />
+            </RouteFade>
           </SubscriptionGate>
         </main>
       </div>

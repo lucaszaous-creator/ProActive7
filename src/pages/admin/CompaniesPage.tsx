@@ -9,6 +9,7 @@ import {
   Search,
   X,
   ShieldCheck,
+  Building2,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { softDelete } from '@/lib/supabaseHelpers';
@@ -20,6 +21,7 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListSkeleton } from '@/components/ui/Skeleton';
+import { EmptyState } from '@/components/ui/EmptyState';
 
 interface CompanyRow extends Company {
   organizations: {
@@ -289,11 +291,11 @@ export function CompaniesPage() {
       {loading ? (
         <ListSkeleton rows={5} />
       ) : companies.length === 0 ? (
-        <Card>
-          <p className="text-sm text-neutral-600">
-            Nenhuma empresa cadastrada ainda.
-          </p>
-        </Card>
+        <EmptyState
+          icon={Building2}
+          title="Nenhuma empresa cadastrada ainda"
+          description="Cadastre a primeira empresa para começar a gerar etiquetas, auditorias e controlar a conformidade da unidade."
+        />
       ) : (
         <>
           <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">

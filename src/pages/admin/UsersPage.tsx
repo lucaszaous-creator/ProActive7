@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { Spinner } from '@/components/ui/Spinner';
+import { ListSkeleton } from '@/components/ui/Skeleton';
 
 interface ProfileRow {
   id: string;
@@ -276,9 +276,7 @@ export function UsersPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner className="h-8 w-8" />
-        </div>
+        <ListSkeleton rows={5} />
       ) : users.length === 0 ? (
         <Card>
           <p className="text-sm text-neutral-600">
