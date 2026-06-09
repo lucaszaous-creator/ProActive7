@@ -6,6 +6,7 @@ import {
   drawKpiRow,
   drawSectionTitle,
   drawPdfFooter,
+  storageObjectToDataUrl,
 } from './pdfHelpers';
 import { PRINT_RGB } from './printTheme';
 import { calculateComplianceScore } from './complianceScore';
@@ -105,11 +106,17 @@ export async function generateComplianceReportPdf(
   const now = new Date();
   const monthLabel = `${MONTHS[now.getMonth()]} de ${now.getFullYear()}`;
 
+  // Logo da empresa (bucket branding) para o cabeçalho — opcional.
+  const companyLogoDataUrl = company.company_logo_path
+    ? await storageObjectToDataUrl('branding', company.company_logo_path)
+    : null;
+
   const doc = new jsPDF({ unit: 'mm', format: 'a4' });
 
   let y = drawPdfHeader(doc, {
     documentTitle: `Relatório de Conformidade — ${monthLabel}`,
     companyName: company.company_name,
+    companyLogoDataUrl,
     companyCnpj: (meta as { cnpj?: string } | null)?.cnpj ?? null,
     companyAddress: (meta as { address?: string } | null)?.address ?? null,
     companyPhone: (meta as { phone?: string } | null)?.phone ?? null,
