@@ -15,6 +15,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/Spinner';
 import { usePageTitle } from '@/lib/usePageTitle';
+import { PageHeader } from '@/components/ui/PageHeader';
 import {
   fetchOrgMetrics,
   fetchFeatureUsage,
@@ -204,33 +205,32 @@ export function PlatformDashboardPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100">
-            Dashboard SaaS
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Visão consolidada de todas as organizações.
-          </p>
-        </div>
-        <div className="flex gap-1">
-          <TabButton
-            active={tab === 'overview'}
-            onClick={() => setTab('overview')}
-          >
-            Visão geral
-          </TabButton>
-          <TabButton active={tab === 'health'} onClick={() => setTab('health')}>
-            Saúde das orgs
-          </TabButton>
-          <TabButton active={tab === 'usage'} onClick={() => setTab('usage')}>
-            Uso de features
-          </TabButton>
-          <TabButton active={tab === 'churn'} onClick={() => setTab('churn')}>
-            Risco de churn
-          </TabButton>
-        </div>
-      </div>
+      <PageHeader
+        title="Dashboard SaaS"
+        subtitle="Visão consolidada de todas as organizações."
+        actions={
+          <div className="flex gap-1">
+            <TabButton
+              active={tab === 'overview'}
+              onClick={() => setTab('overview')}
+            >
+              Visão geral
+            </TabButton>
+            <TabButton
+              active={tab === 'health'}
+              onClick={() => setTab('health')}
+            >
+              Saúde das orgs
+            </TabButton>
+            <TabButton active={tab === 'usage'} onClick={() => setTab('usage')}>
+              Uso de features
+            </TabButton>
+            <TabButton active={tab === 'churn'} onClick={() => setTab('churn')}>
+              Risco de churn
+            </TabButton>
+          </div>
+        }
+      />
 
       {tab === 'overview' ? (
         <>

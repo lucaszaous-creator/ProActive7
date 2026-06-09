@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { usePageTitle } from '@/lib/usePageTitle';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 type Tab = 'audit' | 'checklist' | 'products';
 
@@ -85,15 +86,10 @@ export function PlatformLibraryPage() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100">
-          Biblioteca global
-        </h1>
-        <p className="text-sm text-neutral-500">
-          Templates e produtos publicados aqui ficam disponíveis para todas as
-          organizações clonarem como modelo oficial.
-        </p>
-      </div>
+      <PageHeader
+        title="Biblioteca global"
+        subtitle="Templates e produtos publicados aqui ficam disponíveis para todas as organizações clonarem como modelo oficial."
+      />
 
       <div className="flex gap-1 overflow-x-auto">
         {[

@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { PhotoAttacher } from '@/components/PhotoAttacher';
 import type { NcSeverity, NcStatus, NonConformity } from '@/lib/types';
 import { NC_SEVERITY_LABELS, NC_STATUS_LABELS } from '@/lib/types';
@@ -275,20 +276,16 @@ export function NonConformitiesPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Nao-conformidades
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Plano de acao 5W2H para corrigir desvios encontrados.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Nova NC
-        </Button>
-      </div>
+      <PageHeader
+        title="Nao-conformidades"
+        subtitle="Plano de acao 5W2H para corrigir desvios encontrados."
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Nova NC
+          </Button>
+        }
+      />
 
       {isMaster && byCompany.length > 1 ? (
         <div className="mb-4">

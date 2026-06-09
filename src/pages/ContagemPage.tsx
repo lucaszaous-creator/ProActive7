@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { Card } from '@/components/ui/Card';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Select } from '@/components/ui/Select';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 
@@ -92,16 +93,10 @@ export function ContagemPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Contagem
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Quantas etiquetas, em quê e quando — diagnóstico de produção.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Contagem"
+        subtitle="Quantas etiquetas, em quê e quando — diagnóstico de produção."
+      />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {isMaster && companies.length > 0 && (

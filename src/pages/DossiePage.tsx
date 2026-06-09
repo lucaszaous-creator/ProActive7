@@ -25,6 +25,7 @@ import { scoreTier, tierLabel, tierHex, PRINT_HEX } from '@/lib/printTheme';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /** Estilo de impressão premium do dossiê (eleva todas as seções/tabelas). */
 const DOSSIE_STYLES = `
@@ -242,20 +243,16 @@ export function DossiePage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2 print:hidden">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Dossiê de Conformidade
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Tudo o que o fiscal precisa em uma página. Para salvar como PDF:
-            clique em imprimir e escolha “Salvar como PDF”.
-          </p>
-        </div>
-        <Button onClick={() => window.print()}>
-          <Printer size={16} /> Imprimir / Salvar PDF
-        </Button>
-      </div>
+      <PageHeader
+        className="print:hidden"
+        title="Dossiê de Conformidade"
+        subtitle="Tudo o que o fiscal precisa em uma página. Para salvar como PDF: clique em imprimir e escolha “Salvar como PDF”."
+        actions={
+          <Button onClick={() => window.print()}>
+            <Printer size={16} /> Imprimir / Salvar PDF
+          </Button>
+        }
+      />
 
       <style>{DOSSIE_STYLES}</style>
       <article className="dossie-doc space-y-5 overflow-hidden rounded-2xl border border-neutral-200 bg-white print:rounded-none print:border-0">

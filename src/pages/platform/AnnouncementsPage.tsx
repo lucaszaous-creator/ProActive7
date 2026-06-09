@@ -11,6 +11,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
@@ -160,19 +161,15 @@ export function AnnouncementsPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100">
-            Comunicados
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Banner exibido no topo do app para todos os usuários autenticados.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={16} /> Novo
-        </Button>
-      </div>
+      <PageHeader
+        title="Comunicados"
+        subtitle="Banner exibido no topo do app para todos os usuários autenticados."
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={16} /> Novo
+          </Button>
+        }
+      />
 
       {list.length === 0 ? (
         <Card>

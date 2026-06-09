@@ -15,6 +15,7 @@ import { formatDate } from '@/lib/dates';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 import {
   isoDate,
   monthGrid,
@@ -119,27 +120,23 @@ export function AgendaPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Agenda
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Visitas tecnicas agendadas e historico.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="secondary" size="sm" onClick={prevMonth}>
-            <ChevronLeft size={16} />
-          </Button>
-          <Button variant="secondary" size="sm" onClick={goToday}>
-            Hoje
-          </Button>
-          <Button variant="secondary" size="sm" onClick={nextMonth}>
-            <ChevronRight size={16} />
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Agenda"
+        subtitle="Visitas tecnicas agendadas e historico."
+        actions={
+          <>
+            <Button variant="secondary" size="sm" onClick={prevMonth}>
+              <ChevronLeft size={16} />
+            </Button>
+            <Button variant="secondary" size="sm" onClick={goToday}>
+              Hoje
+            </Button>
+            <Button variant="secondary" size="sm" onClick={nextMonth}>
+              <ChevronRight size={16} />
+            </Button>
+          </>
+        }
+      />
 
       <Card className="mb-4">
         <h2 className="mb-3 text-base font-semibold text-neutral-700 dark:text-neutral-200">

@@ -16,6 +16,7 @@ import {
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface BalanceRow extends StockBalance {
   product: { id: string; name: string } | null;
@@ -99,19 +100,17 @@ export function ControladosPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Produtos controlados
-          </h1>
-          <p className="text-sm text-neutral-500">
+      <PageHeader
+        title="Produtos controlados"
+        subtitle={
+          <>
             Saneantes, químicos e outros itens marcados como controlados. Aqui
             você vê o <b>cadastro</b> (saldo atual por lote) e o <b>uso</b>{' '}
             (últimas entradas e saídas) — registro exigido para fiscalização
             sanitária.
-          </p>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {isMaster && companies.length > 0 && (
         <div className="mb-4 max-w-xs">

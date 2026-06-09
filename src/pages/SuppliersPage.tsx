@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
@@ -128,21 +129,21 @@ export function SuppliersPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Fornecedores
-          </h1>
-          <p className="text-sm text-neutral-500">
+      <PageHeader
+        title="Fornecedores"
+        subtitle={
+          <>
             Cadastro central dos fornecedores que entregam mercadoria nas
             cozinhas.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Novo fornecedor
-        </Button>
-      </div>
+          </>
+        }
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Novo fornecedor
+          </Button>
+        }
+      />
 
       {loading ? (
         <div className="flex justify-center py-16">

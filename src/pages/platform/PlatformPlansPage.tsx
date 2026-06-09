@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { ListSkeleton } from '@/components/ui/Skeleton';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export function PlatformPlansPage() {
   usePageTitle('Planos');
@@ -100,21 +101,16 @@ export function PlatformPlansPage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl dark:text-neutral-100">
-            Planos
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Catálogo de planos: limite de empresas e módulos liberados. A
-            cobrança é controlada manualmente (sem gateway).
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Novo plano
-        </Button>
-      </div>
+      <PageHeader
+        title="Planos"
+        subtitle="Catálogo de planos: limite de empresas e módulos liberados. A cobrança é controlada manualmente (sem gateway)."
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Novo plano
+          </Button>
+        }
+      />
 
       {loading ? (
         <ListSkeleton rows={4} />

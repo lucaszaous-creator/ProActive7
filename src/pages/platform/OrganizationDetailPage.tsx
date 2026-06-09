@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface OrgProfile {
   id: string;
@@ -220,53 +221,55 @@ export function OrganizationDetailPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       {/* Header */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <button
-            onClick={() => navigate('/platform/organizacoes')}
-            className="mb-2 flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-700"
-          >
-            <ArrowLeft size={14} />
-            Organizações
-          </button>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            {org.name}
-          </h1>
-          <span
-            className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-              org.status === 'active'
-                ? 'bg-neutral-50 text-neutral-700'
-                : 'bg-red-50 text-red-700'
-            }`}
-          >
-            {org.status === 'active' ? 'Ativa' : 'Suspensa'}
-          </span>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="secondary" onClick={() => setPushOpen(true)}>
-            <Send size={14} /> Notificar
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => void handleExport()}
-            loading={exporting}
-            title="Backup LGPD: exporta tudo da org em JSON"
-          >
-            <Download size={14} /> Backup
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => void handleToggleStatus()}
-            loading={togglingStatus}
-            className={
-              org.status === 'active'
-                ? 'border-red-200 text-red-600 hover:bg-red-50'
-                : 'border-neutral-200 text-neutral-600 hover:bg-neutral-50'
-            }
-          >
-            {org.status === 'active' ? 'Suspender' : 'Reativar'}
-          </Button>
-        </div>
+      <div>
+        <button
+          onClick={() => navigate('/platform/organizacoes')}
+          className="mb-2 flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-700"
+        >
+          <ArrowLeft size={14} />
+          Organizações
+        </button>
+        <PageHeader
+          title={org.name}
+          subtitle={
+            <span
+              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                org.status === 'active'
+                  ? 'bg-neutral-50 text-neutral-700'
+                  : 'bg-red-50 text-red-700'
+              }`}
+            >
+              {org.status === 'active' ? 'Ativa' : 'Suspensa'}
+            </span>
+          }
+          actions={
+            <>
+              <Button variant="secondary" onClick={() => setPushOpen(true)}>
+                <Send size={14} /> Notificar
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => void handleExport()}
+                loading={exporting}
+                title="Backup LGPD: exporta tudo da org em JSON"
+              >
+                <Download size={14} /> Backup
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => void handleToggleStatus()}
+                loading={togglingStatus}
+                className={
+                  org.status === 'active'
+                    ? 'border-red-200 text-red-600 hover:bg-red-50'
+                    : 'border-neutral-200 text-neutral-600 hover:bg-neutral-50'
+                }
+              >
+                {org.status === 'active' ? 'Suspender' : 'Reativar'}
+              </Button>
+            </>
+          }
+        />
       </div>
 
       {/* Org info */}

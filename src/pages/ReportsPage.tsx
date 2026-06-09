@@ -7,6 +7,7 @@ import { STORAGE_CONDITION_LABELS, type StorageCondition } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /** Linha agregada vinda da RPC label_report (agregação feita no SQL). */
 interface ReportRow {
@@ -135,14 +136,10 @@ export function ReportsPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5">
-        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-          Relatórios
-        </h1>
-        <p className="text-sm text-neutral-500">
-          Etiquetas impressas no período selecionado.
-        </p>
-      </div>
+      <PageHeader
+        title="Relatórios"
+        subtitle="Etiquetas impressas no período selecionado."
+      />
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
         {isMaster && companies.length > 0 && (

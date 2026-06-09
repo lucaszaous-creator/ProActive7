@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { PhotoAttacher } from '@/components/PhotoAttacher';
 import { PhotoLightbox } from '@/components/PhotoLightbox';
 
@@ -240,20 +241,16 @@ export function TemperaturePage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Temperatura
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Registro de equipamentos e leituras de temperatura.
-          </p>
-        </div>
-        <Button onClick={openCreate} disabled={!companyId}>
-          <Plus size={18} />
-          Novo equipamento
-        </Button>
-      </div>
+      <PageHeader
+        title="Temperatura"
+        subtitle="Registro de equipamentos e leituras de temperatura."
+        actions={
+          <Button onClick={openCreate} disabled={!companyId}>
+            <Plus size={18} />
+            Novo equipamento
+          </Button>
+        }
+      />
 
       {isMaster && companies.length > 0 && (
         <div className="mb-4 max-w-xs">

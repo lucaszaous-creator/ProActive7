@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Select } from '@/components/ui/Select';
 import { ListSkeleton } from '@/components/ui/Skeleton';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface ReceivingRow {
   id: string;
@@ -79,23 +80,18 @@ export function RecebimentosPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Recebimentos
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Mercadoria que entrou na cozinha — fornecedor, lote, temperatura,
-            validade.
-          </p>
-        </div>
-        <Link to="/recebimentos/novo">
-          <Button disabled={!companyId}>
-            <Plus size={18} />
-            Novo recebimento
-          </Button>
-        </Link>
-      </div>
+      <PageHeader
+        title="Recebimentos"
+        subtitle="Mercadoria que entrou na cozinha — fornecedor, lote, temperatura, validade."
+        actions={
+          <Link to="/recebimentos/novo">
+            <Button disabled={!companyId}>
+              <Plus size={18} />
+              Novo recebimento
+            </Button>
+          </Link>
+        }
+      />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {isMaster && companies.length > 0 && (

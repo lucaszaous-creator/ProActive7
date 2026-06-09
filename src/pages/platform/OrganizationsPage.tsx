@@ -11,6 +11,7 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -183,20 +184,16 @@ export function OrganizationsPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Organizações
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Organizações de nutricionistas que gerenciam empresas.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Nova organização
-        </Button>
-      </div>
+      <PageHeader
+        title="Organizações"
+        subtitle="Organizações de nutricionistas que gerenciam empresas."
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Nova organização
+          </Button>
+        }
+      />
 
       {loading ? (
         <ListSkeleton rows={5} />

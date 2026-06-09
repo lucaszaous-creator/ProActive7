@@ -20,6 +20,7 @@ import { supabase } from '@/lib/supabase';
 import { usePageTitle, SITE_URL } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { computeExpiry, formatDateTime, toLocalInputValue } from '@/lib/dates';
 import {
   STORAGE_CONDITION_LABELS,
@@ -515,14 +516,10 @@ export function PrintWizardPage() {
   return (
     <div className="mx-auto max-w-2xl">
       {/* Header com progresso */}
-      <div className="mb-4">
-        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl dark:text-neutral-100">
-          Imprimir etiqueta
-        </h1>
-        <p className="text-sm text-neutral-500">
-          Passo {step} de 5 · nenhum campo precisa ser digitado.
-        </p>
-      </div>
+      <PageHeader
+        title="Imprimir etiqueta"
+        subtitle={<>Passo {step} de 5 · nenhum campo precisa ser digitado.</>}
+      />
 
       {/* Stepper visual com linha de progresso */}
       <div className="mb-5 flex items-start">

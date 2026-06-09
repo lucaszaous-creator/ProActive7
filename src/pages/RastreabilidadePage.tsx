@@ -16,6 +16,7 @@ import { usePageTitle } from '@/lib/usePageTitle';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDateTime } from '@/lib/dates';
 import { Card } from '@/components/ui/Card';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Spinner } from '@/components/ui/Spinner';
@@ -123,15 +124,15 @@ export function RastreabilidadePage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-4">
-      <header>
-        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-          Rastreabilidade
-        </h1>
-        <p className="text-sm text-neutral-500">
-          {companyName} — recall em 1 clique. Digite o lote pra ver tudo que o
-          envolve.
-        </p>
-      </header>
+      <PageHeader
+        title="Rastreabilidade"
+        subtitle={
+          <>
+            {companyName} — recall em 1 clique. Digite o lote pra ver tudo que
+            o envolve.
+          </>
+        }
+      />
 
       <Card>
         <form

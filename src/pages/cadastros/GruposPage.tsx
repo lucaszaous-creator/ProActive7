@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const DEFAULT_COLORS = [
   '#ef4444',
@@ -141,23 +142,18 @@ export function GruposPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Grupos de produtos
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Categorias usadas no cadastro de produtos e na hora de imprimir
-            etiqueta. Ex.: Carnes, Pescados, Vegetais.
-          </p>
-        </div>
-        {canEdit && (
-          <Button onClick={openCreate}>
-            <Plus size={18} />
-            Novo grupo
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        title="Grupos de produtos"
+        subtitle="Categorias usadas no cadastro de produtos e na hora de imprimir etiqueta. Ex.: Carnes, Pescados, Vegetais."
+        actions={
+          canEdit && (
+            <Button onClick={openCreate}>
+              <Plus size={18} />
+              Novo grupo
+            </Button>
+          )
+        }
+      />
 
       {loading ? (
         <div className="flex justify-center py-16">

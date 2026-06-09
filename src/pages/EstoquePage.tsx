@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface BalanceRow extends StockBalance {
   product: { id: string; name: string; category: string | null } | null;
@@ -228,33 +229,33 @@ export function EstoquePage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Estoque (matéria-prima)
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Saldo dos <b>itens recebidos</b> (NF / nota), por lote, ordenado por
-            validade (FIFO). Para acompanhar etiquetas de produção já feitas,
-            use <b>Produção</b>.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Link to="/estoque/movimentacoes">
-            <Button variant="secondary">
-              <History size={16} />
-              Movimentações
+      <PageHeader
+        title="Estoque (matéria-prima)"
+        subtitle={
+          <>
+            Saldo dos <b>itens recebidos</b> (NF / nota), por lote, ordenado
+            por validade (FIFO). Para acompanhar etiquetas de produção já
+            feitas, use <b>Produção</b>.
+          </>
+        }
+        actions={
+          <>
+            <Link to="/estoque/movimentacoes">
+              <Button variant="secondary">
+                <History size={16} />
+                Movimentações
+              </Button>
+            </Link>
+            <Button
+              onClick={() => openExit()}
+              disabled={!companyId || rows.length === 0}
+            >
+              <Minus size={18} />
+              Registrar saída
             </Button>
-          </Link>
-          <Button
-            onClick={() => openExit()}
-            disabled={!companyId || rows.length === 0}
-          >
-            <Minus size={18} />
-            Registrar saída
-          </Button>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {isMaster && companies.length > 0 && (

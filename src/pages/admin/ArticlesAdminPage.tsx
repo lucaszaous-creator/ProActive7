@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const textareaCls =
   'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-800 focus:outline-none dark:border-neutral-700 dark:bg-slate-800';
@@ -150,20 +151,15 @@ export function ArticlesAdminPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100">
-            Artigos do site
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Publique conteúdos na página Novidades do site público. Rascunhos
-            não aparecem para o público.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={16} /> Novo artigo
-        </Button>
-      </div>
+      <PageHeader
+        title="Artigos do site"
+        subtitle="Publique conteúdos na página Novidades do site público. Rascunhos não aparecem para o público."
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={16} /> Novo artigo
+          </Button>
+        }
+      />
 
       {list.length === 0 ? (
         <Card>

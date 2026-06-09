@@ -24,6 +24,7 @@ import {
   type ChecklistTemplate,
 } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -294,30 +295,26 @@ export function ChecklistsPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Checklists
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Procedimentos operacionais com histórico de execução.
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            onClick={() => setLibraryOpen(true)}
-            disabled={!companyId}
-          >
-            <BookOpen size={16} />
-            Biblioteca
-          </Button>
-          <Button onClick={openCreate} disabled={!companyId}>
-            <Plus size={18} />
-            Novo template
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Checklists"
+        subtitle="Procedimentos operacionais com histórico de execução."
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setLibraryOpen(true)}
+              disabled={!companyId}
+            >
+              <BookOpen size={16} />
+              Biblioteca
+            </Button>
+            <Button onClick={openCreate} disabled={!companyId}>
+              <Plus size={18} />
+              Novo template
+            </Button>
+          </>
+        }
+      />
 
       <LibraryBrowser
         open={libraryOpen}

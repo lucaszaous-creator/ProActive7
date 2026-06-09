@@ -17,6 +17,7 @@ import {
 } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
@@ -326,21 +327,16 @@ export function RecebimentoFormPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex items-center gap-3">
+      <div className="mb-4">
         <Button variant="ghost" onClick={() => navigate('/recebimentos')}>
           <ArrowLeft size={18} />
           Voltar
         </Button>
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Novo recebimento
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Registre a mercadoria que entrou: fornecedor, NF, itens, lote e
-            temperatura.
-          </p>
-        </div>
       </div>
+      <PageHeader
+        title="Novo recebimento"
+        subtitle="Registre a mercadoria que entrou: fornecedor, NF, itens, lote e temperatura."
+      />
 
       {noCompany ? (
         <Card>

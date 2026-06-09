@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { formatDateTime } from '@/lib/dates';
 import {
@@ -197,22 +198,18 @@ export function PlatformControlPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Centro de controle
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Saúde da plataforma, diagnóstico e atalhos de administrador.
-          </p>
-        </div>
-        <div
-          className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${healthTone}`}
-        >
-          <HealthIcon size={18} />
-          {healthLabel}
-        </div>
-      </div>
+      <PageHeader
+        title="Centro de controle"
+        subtitle="Saúde da plataforma, diagnóstico e atalhos de administrador."
+        actions={
+          <div
+            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${healthTone}`}
+          >
+            <HealthIcon size={18} />
+            {healthLabel}
+          </div>
+        }
+      />
 
       {loading ? (
         <ListSkeleton rows={5} />

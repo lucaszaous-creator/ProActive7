@@ -22,6 +22,7 @@ import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface CompanyRow extends Company {
   organizations: {
@@ -245,27 +246,23 @@ export function CompaniesPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Empresas
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Propriedades / clientes que usam o sistema.
-          </p>
-        </div>
-        <Button
-          onClick={openCreate}
-          disabled={
-            !isPlatformAdmin &&
-            subscription?.company_limit != null &&
-            activeCompanyCount >= subscription.company_limit
-          }
-        >
-          <Plus size={18} />
-          Nova empresa
-        </Button>
-      </div>
+      <PageHeader
+        title="Empresas"
+        subtitle="Propriedades / clientes que usam o sistema."
+        actions={
+          <Button
+            onClick={openCreate}
+            disabled={
+              !isPlatformAdmin &&
+              subscription?.company_limit != null &&
+              activeCompanyCount >= subscription.company_limit
+            }
+          >
+            <Plus size={18} />
+            Nova empresa
+          </Button>
+        }
+      />
 
       {!isPlatformAdmin && companyLimit != null ? (
         <div

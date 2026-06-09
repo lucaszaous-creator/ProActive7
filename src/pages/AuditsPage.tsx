@@ -21,6 +21,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ListSkeleton } from '@/components/ui/Skeleton';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { LibraryBrowser } from '@/components/LibraryBrowser';
 import type { Audit, AuditStatus, AuditTemplate, Company } from '@/lib/types';
 
@@ -155,12 +156,10 @@ export function AuditsPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Visitas técnicas
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+      <PageHeader
+        title="Visitas técnicas"
+        subtitle={
+          <>
             Inspeções sanitárias da RT.{' '}
             <span
               title="RDC 216/2004 — Regulamento Técnico de Boas Práticas para Serviços de Alimentação (cozinhas, restaurantes, lanchonetes etc.).
@@ -170,25 +169,27 @@ RDC 275/2002 — Regulamento Técnico de Procedimentos Operacionais Padronizados
               RDC 216 + RDC 275
             </span>
             .
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="secondary"
-            onClick={() => setLibraryOpen(true)}
-            disabled={!companyId && !isMaster}
-          >
-            <BookOpen size={16} />
-            Biblioteca
-          </Button>
-          {isMaster ? (
-            <Button onClick={openSchedule}>
-              <Plus size={18} />
-              Agendar visita
+          </>
+        }
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setLibraryOpen(true)}
+              disabled={!companyId && !isMaster}
+            >
+              <BookOpen size={16} />
+              Biblioteca
             </Button>
-          ) : null}
-        </div>
-      </div>
+            {isMaster ? (
+              <Button onClick={openSchedule}>
+                <Plus size={18} />
+                Agendar visita
+              </Button>
+            ) : null}
+          </>
+        }
+      />
 
       <LibraryBrowser
         open={libraryOpen}

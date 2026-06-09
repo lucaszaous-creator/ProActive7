@@ -28,6 +28,7 @@ import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { PageHeader } from '@/components/ui/PageHeader';
 import type {
   Audit,
   AuditItem,
@@ -606,18 +607,15 @@ export function AuditDetailPage() {
         Voltar
       </Link>
 
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            {selectedCompany?.name ??
-              companies.find((c) => c.id === audit.company_id)?.name ??
-              ''}
-          </h1>
-          <p className="truncate text-sm text-neutral-500 dark:text-neutral-400">
-            {template?.name}
-          </p>
-        </div>
-        <div className="flex flex-col items-stretch gap-2 sm:items-end">
+      <PageHeader
+        title={
+          selectedCompany?.name ??
+          companies.find((c) => c.id === audit.company_id)?.name ??
+          ''
+        }
+        subtitle={template?.name}
+        actions={
+          <div className="flex flex-col items-stretch gap-2 sm:items-end">
           {score != null ? (
             <span
               className={`rounded-full px-3 py-1 text-base font-bold ${
@@ -703,8 +701,9 @@ export function AuditDetailPage() {
               </>
             ) : null}
           </div>
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {!canEvaluate ? (
         <Card className="mb-4 border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40">

@@ -29,6 +29,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const LABEL_SIZES = [
   { w: 40, h: 40 },
@@ -112,19 +113,15 @@ export function PrintersPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-4">
-      <header className="flex items-center justify-between gap-2">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Impressoras térmicas
-          </h1>
-          <p className="text-sm text-neutral-500">
-            {companyName} — impressão automática via relay no PC.
-          </p>
-        </div>
-        <Button onClick={() => setShowForm((v) => !v)}>
-          <Plus size={16} /> Nova impressora
-        </Button>
-      </header>
+      <PageHeader
+        title="Impressoras térmicas"
+        subtitle={`${companyName} — impressão automática via relay no PC.`}
+        actions={
+          <Button onClick={() => setShowForm((v) => !v)}>
+            <Plus size={16} /> Nova impressora
+          </Button>
+        }
+      />
 
       {showAllCompanies && companies.length > 1 && (
         <Card>

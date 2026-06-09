@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const fieldCls =
   'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100';
@@ -154,22 +155,22 @@ export function SiteClientsPage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl dark:text-neutral-100">
-            Clientes do site
-          </h1>
-          <p className="text-sm text-neutral-500">
+      <PageHeader
+        title="Clientes do site"
+        subtitle={
+          <>
             Empresas atendidas exibidas na página pública{' '}
             <span className="font-medium">/clientes</span>, com logo e
             depoimento.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Novo cliente
-        </Button>
-      </div>
+          </>
+        }
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Novo cliente
+          </Button>
+        }
+      />
 
       {loading ? (
         <ListSkeleton rows={4} />

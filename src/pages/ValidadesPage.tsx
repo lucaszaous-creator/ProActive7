@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 function bucketOf(
   expiry: Date,
@@ -149,17 +150,15 @@ export function ValidadesPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Validades
-          </h1>
-          <p className="text-sm text-neutral-500">
+      <PageHeader
+        title="Validades"
+        subtitle={
+          <>
             Etiquetas vivas, ordenadas por quem vence primeiro. Use para evitar
             servir vencido e reduzir desperdício.
-          </p>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {isMaster && companies.length > 0 && (

@@ -7,6 +7,7 @@ import { usePageTitle } from '@/lib/usePageTitle';
 import { MODULES } from '@/lib/modules';
 import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 function fmtDate(s: string | null): string | null {
   if (!s) return null;
@@ -51,14 +52,10 @@ export function SubscriptionPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-5">
-        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl dark:text-neutral-100">
-          Minha assinatura
-        </h1>
-        <p className="text-sm text-neutral-500">
-          Plano atual da sua organização e recursos liberados.
-        </p>
-      </div>
+      <PageHeader
+        title="Minha assinatura"
+        subtitle="Plano atual da sua organização e recursos liberados."
+      />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>

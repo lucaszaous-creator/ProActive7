@@ -34,6 +34,7 @@ import {
 } from '@/lib/types';
 import { ALLERGENS } from '@/lib/allergens';
 import { Card } from '@/components/ui/Card';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -490,38 +491,34 @@ export function ProductsPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Produtos
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Cadastro de produtos e regras de validade.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            variant="secondary"
-            onClick={() => setLibraryOpen(true)}
-            disabled={!companyId}
-          >
-            <BookOpen size={18} />
-            Biblioteca
-          </Button>
-          <Button
-            variant="secondary"
-            onClick={() => setCsvOpen(true)}
-            disabled={!companyId}
-          >
-            <FileUp size={18} />
-            Importar CSV
-          </Button>
-          <Button onClick={openCreate} disabled={!companyId}>
-            <Plus size={18} />
-            Novo produto
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Produtos"
+        subtitle="Cadastro de produtos e regras de validade."
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setLibraryOpen(true)}
+              disabled={!companyId}
+            >
+              <BookOpen size={18} />
+              Biblioteca
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setCsvOpen(true)}
+              disabled={!companyId}
+            >
+              <FileUp size={18} />
+              Importar CSV
+            </Button>
+            <Button onClick={openCreate} disabled={!companyId}>
+              <Plus size={18} />
+              Novo produto
+            </Button>
+          </>
+        }
+      />
 
       <LibraryBrowser
         open={libraryOpen}

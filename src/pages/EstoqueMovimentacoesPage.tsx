@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Row extends StockMovement {
   product: { id: string; name: string } | null;
@@ -57,22 +58,20 @@ export function EstoqueMovimentacoesPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex items-center gap-3">
-        <Link to="/estoque">
-          <Button variant="ghost">
-            <ArrowLeft size={18} />
-            Voltar
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-3">
+            <Link to="/estoque">
+              <Button variant="ghost">
+                <ArrowLeft size={18} />
+                Voltar
+              </Button>
+            </Link>
             Movimentações de estoque
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Trilha completa de entradas, saídas, ajustes e descartes.
-          </p>
-        </div>
-      </div>
+          </span>
+        }
+        subtitle="Trilha completa de entradas, saídas, ajustes e descartes."
+      />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {isMaster && companies.length > 0 && (

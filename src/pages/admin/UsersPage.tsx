@@ -13,6 +13,7 @@ import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface ProfileRow {
   id: string;
@@ -261,20 +262,16 @@ export function UsersPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Usuários
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Acessos das empresas e do administrador.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Novo usuário
-        </Button>
-      </div>
+      <PageHeader
+        title="Usuários"
+        subtitle="Acessos das empresas e do administrador."
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Novo usuário
+          </Button>
+        }
+      />
 
       {loading ? (
         <ListSkeleton rows={5} />

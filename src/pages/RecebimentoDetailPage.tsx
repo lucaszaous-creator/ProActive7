@@ -18,6 +18,7 @@ import {
 } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Spinner } from '@/components/ui/Spinner';
 
 export function RecebimentoDetailPage() {
@@ -86,22 +87,16 @@ export function RecebimentoDetailPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex items-center gap-3">
+      <div className="mb-4">
         <Button variant="ghost" onClick={() => navigate('/recebimentos')}>
           <ArrowLeft size={18} />
           Voltar
         </Button>
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Recebimento
-          </h1>
-          {data && (
-            <p className="text-sm text-neutral-500">
-              {formatDateTime(data.received_at)}
-            </p>
-          )}
-        </div>
       </div>
+      <PageHeader
+        title="Recebimento"
+        subtitle={data ? formatDateTime(data.received_at) : undefined}
+      />
 
       {loading ? (
         <div className="flex justify-center py-16">

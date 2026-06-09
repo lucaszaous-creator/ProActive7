@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { buildLabelEscPos } from '@/lib/escpos';
 import { formatAllergenList } from '@/lib/allergens';
@@ -388,14 +389,10 @@ export function PrintLabelPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5">
-        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-          Imprimir Etiqueta
-        </h1>
-        <p className="text-sm text-neutral-500">
-          A etiqueta sai no tamanho exato pela impressora térmica.
-        </p>
-      </div>
+      <PageHeader
+        title="Imprimir Etiqueta"
+        subtitle="A etiqueta sai no tamanho exato pela impressora térmica."
+      />
 
       {noCompany ? (
         <Card>

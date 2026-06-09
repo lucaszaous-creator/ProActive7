@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const fieldCls =
   'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100';
@@ -163,22 +164,22 @@ export function SiteCoursesPage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl dark:text-neutral-100">
-            Cursos do site
-          </h1>
-          <p className="text-sm text-neutral-500">
+      <PageHeader
+        title="Cursos do site"
+        subtitle={
+          <>
             Gerencie os cursos exibidos na página pública{' '}
             <span className="font-medium">/cursos</span>. Adicione, edite e
             ordene — o site reflete na hora.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Novo curso
-        </Button>
-      </div>
+          </>
+        }
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Novo curso
+          </Button>
+        }
+      />
 
       {loading ? (
         <ListSkeleton rows={4} />

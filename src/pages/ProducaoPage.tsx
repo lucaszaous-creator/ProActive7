@@ -25,6 +25,7 @@ import {
   type LabelPrint,
 } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -268,18 +269,16 @@ export function ProducaoPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Produção (etiquetas em uso)
-          </h1>
-          <p className="text-sm text-neutral-500">
+      <PageHeader
+        title="Produção (etiquetas em uso)"
+        subtitle={
+          <>
             Etiquetas <b>já impressas</b> aguardando baixa — conforme o lote vai
             sendo usado, descartado ou vence. Para saldo de matéria-prima
             recebida, use <b>Estoque</b>.
-          </p>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {!noCompany && !loading && labels.length > 0 && (
         <div className="mb-4 grid grid-cols-3 gap-3">

@@ -11,6 +11,7 @@ import { formatDate } from '@/lib/dates';
 import type { Photo } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { PhotoLightbox } from '@/components/PhotoLightbox';
@@ -149,15 +150,12 @@ export function PhotosPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Fotos
-          </h1>
-          <p className="text-sm text-neutral-500">
-            As fotos são excluídas automaticamente após {RETENTION_DAYS} dias.
-          </p>
-        </div>
+      <PageHeader
+        title="Fotos"
+        subtitle={
+          <>As fotos são excluídas automaticamente após {RETENTION_DAYS} dias.</>
+        }
+        actions={
         <label
           className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 ${
             uploading || !companyId ? 'pointer-events-none opacity-60' : ''
@@ -180,7 +178,8 @@ export function PhotosPage() {
             }}
           />
         </label>
-      </div>
+        }
+      />
 
       {isMaster && companies.length > 0 && (
         <div className="mb-4 max-w-xs">

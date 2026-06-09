@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import type {
@@ -343,17 +344,10 @@ export function PestControlPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Controle de pragas
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Controle integrado (RDC 216 art. 4.4) — fornecedor licenciado,
-            aplicações e comprovantes.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Controle de pragas"
+        subtitle="Controle integrado (RDC 216 art. 4.4) — fornecedor licenciado, aplicações e comprovantes."
+      />
 
       {isMaster && companies.length > 0 ? (
         <div className="mb-4">
