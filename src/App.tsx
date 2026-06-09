@@ -21,13 +21,13 @@ const SistemaPage = lazy(() =>
   })),
 );
 const CursosPublicPage = lazy(() =>
-  import('./pages/public/ComingSoonPage').then((m) => ({
-    default: m.CursosPage,
+  import('./pages/public/CursosPublicPage').then((m) => ({
+    default: m.CursosPublicPage,
   })),
 );
 const ClientesPublicPage = lazy(() =>
-  import('./pages/public/ComingSoonPage').then((m) => ({
-    default: m.ClientesPage,
+  import('./pages/public/ClientesPublicPage').then((m) => ({
+    default: m.ClientesPublicPage,
   })),
 );
 const NovidadesPage = lazy(() =>
@@ -245,6 +245,16 @@ const PlatformPlansPage = lazy(() =>
     default: m.PlatformPlansPage,
   })),
 );
+const SiteCoursesPage = lazy(() =>
+  import('./pages/platform/SiteCoursesPage').then((m) => ({
+    default: m.SiteCoursesPage,
+  })),
+);
+const SiteClientsPage = lazy(() =>
+  import('./pages/platform/SiteClientsPage').then((m) => ({
+    default: m.SiteClientsPage,
+  })),
+);
 const SubscriptionPage = lazy(() =>
   import('./pages/SubscriptionPage').then((m) => ({
     default: m.SubscriptionPage,
@@ -383,6 +393,8 @@ export default function App() {
               element={<OrganizationDetailPage />}
             />
             <Route path="/platform/planos" element={<PlatformPlansPage />} />
+            <Route path="/platform/cursos" element={<SiteCoursesPage />} />
+            <Route path="/platform/clientes" element={<SiteClientsPage />} />
           </Route>
         </Route>
       </Routes>

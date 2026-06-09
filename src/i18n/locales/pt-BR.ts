@@ -47,6 +47,8 @@ const ptBR = {
     announcements: 'Comunicados',
     library: 'Biblioteca global',
     plans: 'Planos',
+    siteCourses: 'Cursos do site',
+    siteClients: 'Clientes do site',
     subscription: 'Minha assinatura',
     siteArticles: 'Artigos do site',
     help: 'Ajuda',
