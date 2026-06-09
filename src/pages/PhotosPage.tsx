@@ -12,7 +12,7 @@ import type { Photo } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { Spinner } from '@/components/ui/Spinner';
+import { ListSkeleton } from '@/components/ui/Skeleton';
 import { PhotoLightbox } from '@/components/PhotoLightbox';
 
 const RETENTION_DAYS = 30;
@@ -205,9 +205,7 @@ export function PhotosPage() {
           </p>
         </Card>
       ) : loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner className="h-8 w-8" />
-        </div>
+        <ListSkeleton rows={4} />
       ) : photos.length === 0 ? (
         <Card>
           <p className="text-sm text-neutral-600">

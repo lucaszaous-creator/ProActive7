@@ -3,7 +3,7 @@ import { toast } from 'sonner';
 import { Globe, EyeOff } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
-import { Spinner } from '@/components/ui/Spinner';
+import { ListSkeleton } from '@/components/ui/Skeleton';
 import { usePageTitle } from '@/lib/usePageTitle';
 
 type Tab = 'audit' | 'checklist' | 'products';
@@ -116,9 +116,7 @@ export function PlatformLibraryPage() {
       </div>
 
       {loading ? (
-        <div className="flex min-h-[200px] items-center justify-center">
-          <Spinner />
-        </div>
+        <ListSkeleton rows={5} />
       ) : (
         <Card>
           <p className="mb-3 text-xs text-neutral-500">

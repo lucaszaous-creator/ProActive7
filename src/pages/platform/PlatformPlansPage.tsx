@@ -9,7 +9,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
-import { Spinner } from '@/components/ui/Spinner';
+import { ListSkeleton } from '@/components/ui/Skeleton';
 
 export function PlatformPlansPage() {
   usePageTitle('Planos');
@@ -117,9 +117,7 @@ export function PlatformPlansPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner className="h-8 w-8" />
-        </div>
+        <ListSkeleton rows={4} />
       ) : plans.length === 0 ? (
         <Card>
           <p className="text-sm text-neutral-600 dark:text-neutral-300">
