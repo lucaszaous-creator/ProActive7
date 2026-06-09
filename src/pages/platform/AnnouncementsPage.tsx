@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
+import { ListSkeleton } from '@/components/ui/Skeleton';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { usePageTitle } from '@/lib/usePageTitle';
 
@@ -154,11 +155,7 @@ export function AnnouncementsPage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex min-h-[300px] items-center justify-center">
-        <Spinner />
-      </div>
-    );
+    return <ListSkeleton rows={4} />;
   }
 
   return (

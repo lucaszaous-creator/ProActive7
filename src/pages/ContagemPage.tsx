@@ -6,7 +6,7 @@ import { usePageTitle } from '@/lib/usePageTitle';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
-import { Spinner } from '@/components/ui/Spinner';
+import { ListSkeleton } from '@/components/ui/Skeleton';
 
 const PERIODS = [
   { value: '7', label: 'Últimos 7 dias' },
@@ -137,9 +137,7 @@ export function ContagemPage() {
           </p>
         </Card>
       ) : loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner className="h-8 w-8" />
-        </div>
+        <ListSkeleton rows={5} />
       ) : (
         <div className="flex flex-col gap-4">
           <div className="grid gap-3 sm:grid-cols-3">

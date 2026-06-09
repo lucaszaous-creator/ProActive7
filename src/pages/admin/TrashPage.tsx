@@ -15,7 +15,7 @@ import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { formatDateTime } from '@/lib/dates';
 import { Card } from '@/components/ui/Card';
-import { Spinner } from '@/components/ui/Spinner';
+import { ListSkeleton } from '@/components/ui/Skeleton';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import {
   hardDelete,
@@ -138,9 +138,7 @@ export function TrashPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner className="h-8 w-8" />
-        </div>
+        <ListSkeleton rows={5} />
       ) : rows.length === 0 ? (
         <Card>
           <div className="flex flex-col items-center gap-3 py-8 text-center">
