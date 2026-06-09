@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
+  GraduationCap,
   Crosshair,
   Package,
   Printer,
@@ -304,6 +305,18 @@ const ITEM = {
     labelKey: 'nav.plans',
     icon: CreditCard,
   } as NavItemDef,
+  siteCursos: {
+    kind: 'item',
+    to: '/platform/cursos',
+    labelKey: 'nav.siteCourses',
+    icon: GraduationCap,
+  } as NavItemDef,
+  siteClientes: {
+    kind: 'item',
+    to: '/platform/clientes',
+    labelKey: 'nav.siteClients',
+    icon: Building2,
+  } as NavItemDef,
   assinatura: {
     kind: 'item',
     to: '/admin/assinatura',
@@ -488,6 +501,8 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
       ITEM.platformDash,
       ITEM.orgs,
       ITEM.planos,
+      ITEM.siteCursos,
+      ITEM.siteClientes,
       ITEM.biblioteca,
       ITEM.comunicados,
       ITEM.artigos,

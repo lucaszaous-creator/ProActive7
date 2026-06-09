@@ -47,6 +47,8 @@ const en = {
     announcements: 'Announcements',
     library: 'Global library',
     plans: 'Plans',
+    siteCourses: 'Site courses',
+    siteClients: 'Site clients',
     subscription: 'My subscription',
     siteArticles: 'Site articles',
     help: 'Help',
