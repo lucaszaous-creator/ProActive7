@@ -15,6 +15,7 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { formatDate } from '@/lib/dates';
+import { CountUp } from '@/components/ui/CountUp';
 import type { EnrichedCompany } from '@/lib/dashboardQueries';
 import type { ScoreTier } from '@/lib/complianceScore';
 import { generateComplianceReportPdf } from '@/lib/complianceReport';
@@ -204,7 +205,7 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
             <p
               className={`text-xl font-bold leading-none sm:text-2xl ${textClass}`}
             >
-              {r.score != null ? `${r.score.toFixed(0)}%` : '—'}
+              {r.score != null ? <CountUp value={r.score} suffix="%" /> : '—'}
             </p>
             <p className="text-[10px] text-neutral-500 dark:text-neutral-400 sm:text-xs">
               score
