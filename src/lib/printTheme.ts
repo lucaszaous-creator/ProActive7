@@ -18,13 +18,13 @@ export const PRINT_HEX = {
   brandDeep: '#0a0a0a', // neutral-950
   brandSoft: '#f5f5f5', // neutral-100
   ink: '#171717', // neutral-900
-  body: '#404040', // neutral-700
-  muted: '#737373', // neutral-500
-  faint: '#a3a3a3', // neutral-400
-  hair: '#e5e5e5', // neutral-200
+  body: '#373737', // legível no papel
+  muted: '#646464', // neutral-ish, contraste maior
+  faint: '#787878', // antes #a3a3a3 (claro demais)
+  hair: '#dedede',
   paper: '#ffffff',
-  green: '#404040',
-  greenSoft: '#f5f5f5',
+  green: '#15803d', // verde-700 — semáforo "conforme" volta a aparecer
+  greenSoft: '#dcfce7', // verde-100 — fundo do selo conforme
   amber: '#d97706',
   amberSoft: '#fffbeb',
   red: '#dc2626',
@@ -38,12 +38,12 @@ export const PRINT_RGB = {
   brandDeep: [10, 10, 10],
   brandSoft: [245, 245, 245],
   ink: [23, 23, 23],
-  body: [64, 64, 64],
-  muted: [115, 115, 115],
-  faint: [163, 163, 163],
-  hair: [229, 229, 229],
+  body: [55, 55, 55],
+  muted: [100, 100, 100],
+  faint: [120, 120, 120],
+  hair: [222, 222, 222],
   white: [255, 255, 255],
-  green: [64, 64, 64],
+  green: [21, 128, 61],
   amber: [217, 119, 6],
   red: [220, 38, 38],
 } as const satisfies Record<string, readonly [number, number, number]>;

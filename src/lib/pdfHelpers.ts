@@ -30,8 +30,8 @@ export function drawPdfHeader(doc: jsPDF, info: PdfHeaderInfo): number {
   // Faixa da marca
   doc.setFillColor(...PRINT_RGB.brandDeep);
   doc.rect(0, 0, pw, bandH, 'F');
-  // Acento mais claro na base da faixa
-  doc.setFillColor(...PRINT_RGB.brand);
+  // Acento de conformidade na base da faixa (verde do semáforo)
+  doc.setFillColor(...PRINT_RGB.green);
   doc.rect(0, bandH - 1.2, pw, 1.2, 'F');
 
   // Marca
@@ -195,28 +195,40 @@ export function drawKpiRow(
   const gap = 4;
   const w = (pw - M * 2 - gap * (items.length - 1)) / items.length;
   const h = 16;
+  // Cor forte (texto/acento) e suave (fundo) por tom.
+  const STRONG: Record<string, readonly [number, number, number]> = {
+    green: PRINT_RGB.green,
+    amber: PRINT_RGB.amber,
+    red: PRINT_RGB.red,
+    ink: PRINT_RGB.ink,
+  };
+  const SOFT: Record<string, readonly [number, number, number]> = {
+    green: [220, 252, 231], // verde-100
+    amber: [254, 243, 199], // âmbar-100
+    red: [254, 226, 226], // vermelho-100
+    ink: [245, 245, 245], // neutro-100
+  };
   items.forEach((it, i) => {
     const x = M + i * (w + gap);
-    doc.setFillColor(...PRINT_RGB.white);
+    const key = it.tone ?? 'ink';
+    const strong = STRONG[key];
+    const soft = SOFT[key];
+    // Fundo tonal suave + contorno
+    doc.setFillColor(soft[0], soft[1], soft[2]);
     doc.setDrawColor(...PRINT_RGB.hair);
     doc.setLineWidth(0.3);
     doc.roundedRect(x, y, w, h, 2, 2, 'FD');
+    // Barra-acento colorida à esquerda
+    doc.setFillColor(strong[0], strong[1], strong[2]);
+    doc.roundedRect(x, y, 1.6, h, 0.8, 0.8, 'F');
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(6.8);
     doc.setTextColor(...PRINT_RGB.muted);
-    doc.text(it.label.toUpperCase(), x + 3, y + 5);
-    const tone =
-      it.tone === 'green'
-        ? PRINT_RGB.green
-        : it.tone === 'amber'
-          ? PRINT_RGB.amber
-          : it.tone === 'red'
-            ? PRINT_RGB.red
-            : PRINT_RGB.ink;
+    doc.text(it.label.toUpperCase(), x + 4.5, y + 5);
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(13);
-    doc.setTextColor(tone[0], tone[1], tone[2]);
-    doc.text(it.value, x + 3, y + 12.5);
+    doc.setTextColor(strong[0], strong[1], strong[2]);
+    doc.text(it.value, x + 4.5, y + 12.5);
   });
   doc.setTextColor(...PRINT_RGB.ink);
   return y + h + 8;
