@@ -12,6 +12,7 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { FullPageSpinner } from '@/components/ui/Spinner';
+import { Spotlight } from '@/components/public/Spotlight';
 
 export function LoginPage() {
   usePageTitle('Entrar');
@@ -86,28 +87,28 @@ export function LoginPage() {
       </header>
 
       <main className="mx-auto grid min-h-[calc(100vh-65px)] max-w-6xl items-stretch gap-0 px-5 md:grid-cols-[1.1fr_1fr]">
-        {/* Lado esquerdo — copy de boas-vindas (some no mobile) */}
-        <section className="relative hidden flex-col justify-between py-14 pr-12 md:flex">
+        {/* Lado esquerdo — hero escuro com spotlight (some no mobile) */}
+        <Spotlight className="fx-grain relative my-6 hidden flex-col justify-between overflow-hidden rounded-3xl bg-[#111111] p-12 text-white md:flex">
           <div
             aria-hidden
-            className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-[#737373]/15 blur-3xl"
+            className="absolute inset-0 -z-10 bg-[radial-gradient(70%_55%_at_30%_20%,#1f1f1f_0%,#111111_60%,#050505_100%)]"
           />
-          <div className="relative">
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#737373]/40 bg-white px-3 py-1 text-xs font-medium text-[#262626]">
+          <div aria-hidden className="fx-grid absolute inset-0 -z-10" />
+          <div className="relative z-[2]">
+            <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur">
               <Leaf className="h-3.5 w-3.5" />
               Bem-vinda de volta
             </span>
-            <h1 className="mt-5 text-4xl font-semibold leading-[1.1] tracking-tight text-[#171717]">
-              Sua consultoria,{' '}
-              <span className="text-[#262626]">no controle</span>.
+            <h1 className="fx-shimmer mt-5 text-4xl font-semibold leading-[1.1] tracking-tight">
+              Sua consultoria, no controle.
             </h1>
-            <p className="mt-4 max-w-md text-base leading-relaxed text-[#171717]/65">
+            <p className="mt-4 max-w-md text-base leading-relaxed text-white/70">
               Acesse o ProActive7 para acompanhar suas unidades, etiquetas,
               auditorias e tudo que mantém sua rotina em conformidade.
             </p>
           </div>
 
-          <ul className="relative mt-10 space-y-3.5">
+          <ul className="relative z-[2] mt-10 space-y-3.5">
             {[
               { icon: Tag, label: 'Etiquetas RDC 216 em segundos' },
               {
@@ -118,16 +119,16 @@ export function LoginPage() {
             ].map(({ icon: Icon, label }) => (
               <li
                 key={label}
-                className="flex items-center gap-3 text-sm text-[#171717]/75"
+                className="flex items-center gap-3 text-sm text-white/80"
               >
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-[#262626] shadow-sm ring-1 ring-[#e5e5e5]">
+                <span className="fx-lift flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-white shadow-sm ring-1 ring-white/15">
                   <Icon className="h-4 w-4" />
                 </span>
                 {label}
               </li>
             ))}
           </ul>
-        </section>
+        </Spotlight>
 
         {/* Lado direito — card de login */}
         <section className="flex items-center justify-center py-10 md:py-14">
