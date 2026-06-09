@@ -39,7 +39,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { Spinner } from '@/components/ui/Spinner';
+import { ListSkeleton } from '@/components/ui/Skeleton';
 import { ProductCsvImport } from '@/components/ProductCsvImport';
 import { LibraryBrowser } from '@/components/LibraryBrowser';
 import { BookOpen } from 'lucide-react';
@@ -554,9 +554,7 @@ export function ProductsPage() {
           </p>
         </Card>
       ) : loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner className="h-8 w-8" />
-        </div>
+        <ListSkeleton rows={6} />
       ) : products.length === 0 ? (
         <Card>
           <p className="text-sm text-neutral-600">

@@ -136,10 +136,11 @@ function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`rounded-lg px-3 py-2 text-sm font-medium transition ${
+      data-active={active ? '1' : '0'}
+      className={`fx-underline fx-press rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
         active
-          ? 'bg-neutral-900 text-white'
-          : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
+          ? 'text-neutral-900 dark:text-neutral-100'
+          : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
       }`}
     >
       {children}

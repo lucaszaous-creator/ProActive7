@@ -46,7 +46,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <AuthProvider>
             <App />
           </AuthProvider>
-          <Toaster richColors position="top-right" />
+          <Toaster
+            richColors
+            closeButton
+            position="top-right"
+            toastOptions={{ duration: 4000 }}
+          />
         </BrowserRouter>
       </ThemeProvider>
     </RootErrorBoundary>

@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { Spinner } from '@/components/ui/Spinner';
+import { ListSkeleton } from '@/components/ui/Skeleton';
 
 interface CompanyRow extends Company {
   organizations: {
@@ -287,9 +287,7 @@ export function CompaniesPage() {
       ) : null}
 
       {loading ? (
-        <div className="flex justify-center py-16">
-          <Spinner className="h-8 w-8" />
-        </div>
+        <ListSkeleton rows={5} />
       ) : companies.length === 0 ? (
         <Card>
           <p className="text-sm text-neutral-600">
