@@ -257,7 +257,7 @@ export function SistemaPage() {
 
       {/* HERO */}
       <section className="relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#404040] via-[#262626] to-[#3A7350]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#404040] via-[#262626] to-[#525252]" />
         <div
           className="absolute inset-0 opacity-[0.07]"
           style={{
@@ -780,7 +780,7 @@ function BrowserChrome({ children }: { children: ReactNode }) {
       <div className="flex items-center gap-1.5 border-b border-neutral-100 bg-neutral-50 px-4 py-2.5">
         <span className="h-2.5 w-2.5 rounded-full bg-[#FF5F57]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#FEBC2E]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#28C840]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#737373]" />
         <span className="ml-3 truncate rounded-md bg-white px-2 py-0.5 text-[10px] text-neutral-400 ring-1 ring-neutral-200">
           app.proactive7.com.br/painel
         </span>
@@ -837,7 +837,7 @@ const FAKE_COMPANIES = [
 ];
 
 const TIER_CHIP: Record<'green' | 'amber' | 'red', string> = {
-  green: 'bg-emerald-50 text-emerald-700',
+  green: 'bg-neutral-50 text-neutral-700',
   amber: 'bg-amber-50 text-amber-700',
   red: 'bg-red-50 text-red-700',
 };
@@ -853,7 +853,7 @@ function MockDashboard({ wide = false }: { wide?: boolean }) {
               Carteira · 3 empresas
             </p>
           </div>
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 text-[10px] font-medium text-emerald-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-neutral-50 px-2 py-1 text-[10px] font-medium text-neutral-700">
             <TrendingUp className="h-3 w-3" /> +6% no mês
           </span>
         </div>
@@ -967,7 +967,7 @@ function MockUsage() {
         {BARS.map((h, i) => (
           <div
             key={i}
-            className="flex-1 rounded-t bg-gradient-to-t from-[#262626] to-[#5FA875]"
+            className="flex-1 rounded-t bg-gradient-to-t from-[#262626] to-[#a3a3a3]"
             style={{ height: `${h}%` }}
           />
         ))}

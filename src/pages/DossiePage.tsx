@@ -272,7 +272,7 @@ export function DossiePage() {
             <p className="text-base font-bold leading-none">{BRAND_NAME}</p>
             <p
               className="mt-1 text-[9px] font-medium uppercase tracking-wider"
-              style={{ color: '#a7f3d0' }}
+              style={{ color: '#d4d4d4' }}
             >
               {BRAND_TAGLINE}
             </p>
@@ -280,11 +280,11 @@ export function DossiePage() {
           <div className="text-right">
             <p
               className="text-[9px] font-semibold uppercase tracking-wider"
-              style={{ color: '#a7f3d0' }}
+              style={{ color: '#d4d4d4' }}
             >
               Dossiê de Conformidade
             </p>
-            <p className="text-[10px]" style={{ color: '#d1fae5' }}>
+            <p className="text-[10px]" style={{ color: '#e5e5e5' }}>
               RDC 216 · ANVISA
             </p>
           </div>
@@ -452,7 +452,7 @@ export function DossiePage() {
               Não-conformidades em aberto ({ncs.length})
             </h3>
             {ncs.length === 0 ? (
-              <p className="mt-1 text-xs text-emerald-700">
+              <p className="mt-1 text-xs text-neutral-700">
                 Nenhuma NC em aberto.
               </p>
             ) : (

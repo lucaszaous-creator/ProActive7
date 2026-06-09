@@ -316,7 +316,7 @@ function Pilares() {
     'Trabalho em equipe',
   ];
   return (
-    <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#173a27] py-16 text-white md:py-20">
+    <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#1f1f1f] py-16 text-white md:py-20">
       {/* Aurora de fundo */}
       <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
         <div className="animate-aurora absolute -left-24 -top-24 h-[28rem] w-[28rem] rounded-full bg-[#525252]/45 blur-[120px]" />

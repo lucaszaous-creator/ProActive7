@@ -146,7 +146,7 @@ export function PhotoAttacher({
             type="button"
             onClick={() => setLightboxOpen(true)}
             title="Clique para expandir"
-            className="group relative block overflow-hidden rounded-lg border border-neutral-200 transition hover:border-emerald-400 dark:border-neutral-700"
+            className="group relative block overflow-hidden rounded-lg border border-neutral-200 transition hover:border-neutral-400 dark:border-neutral-700"
           >
             <img
               src={previewUrl}
@@ -177,7 +177,7 @@ export function PhotoAttacher({
         </div>
       ) : (
         <label
-          className={`inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-dashed border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:border-emerald-300 hover:bg-emerald-50 dark:border-neutral-700 dark:bg-slate-900 dark:text-neutral-200 dark:hover:bg-slate-800 ${
+          className={`inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-dashed border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:border-neutral-300 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-slate-900 dark:text-neutral-200 dark:hover:bg-slate-800 ${
             disabled || uploading || !companyId
               ? 'pointer-events-none opacity-60'
               : ''

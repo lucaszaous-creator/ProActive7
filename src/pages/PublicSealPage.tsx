@@ -30,7 +30,7 @@ function tierLabel(t: Tier): string {
   return t === 'green' ? 'EXCELENTE' : t === 'amber' ? 'BOM' : 'EM ATENÇÃO';
 }
 function tierClasses(t: Tier): string {
-  if (t === 'green') return 'bg-emerald-500 text-white';
+  if (t === 'green') return 'bg-neutral-500 text-white';
   if (t === 'amber') return 'bg-amber-500 text-white';
   return 'bg-red-500 text-white';
 }

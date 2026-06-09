@@ -363,7 +363,7 @@ export function ChecklistsPage() {
               {templates.length === 0 ? (
                 <button
                   onClick={seedDefaults}
-                  className="text-xs text-emerald-700 hover:underline"
+                  className="text-xs text-neutral-700 hover:underline"
                 >
                   Adicionar padrões
                 </button>
@@ -384,7 +384,7 @@ export function ChecklistsPage() {
                       <p className="truncate text-sm font-medium text-neutral-800">
                         {t.name}
                         {t.is_global ? (
-                          <span className="ml-2 inline-block rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+                          <span className="ml-2 inline-block rounded-full bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
                             Modelo oficial
                           </span>
                         ) : null}
@@ -400,7 +400,7 @@ export function ChecklistsPage() {
                         <button
                           onClick={() => openRun(t)}
                           aria-label="Executar"
-                          className="rounded-lg p-2.5 text-emerald-600 hover:bg-emerald-50"
+                          className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50"
                         >
                           <Play size={16} />
                         </button>
@@ -440,7 +440,7 @@ export function ChecklistsPage() {
                   const done = r.items.filter((i) => i.checked).length;
                   return (
                     <li key={r.id} className="flex items-center gap-3 py-2">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-50 text-neutral-600">
                         <ClipboardCheck size={16} />
                       </span>
                       <div className="min-w-0 flex-1">
@@ -545,24 +545,24 @@ export function ChecklistsPage() {
               type="checkbox"
               checked={tplActive}
               onChange={(e) => setTplActive(e.target.checked)}
-              className="h-5 w-5 accent-emerald-600"
+              className="h-5 w-5 accent-neutral-600"
             />
             Template ativo
           </label>
 
           {isPlatformAdmin ? (
-            <label className="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-2 text-sm dark:border-emerald-900 dark:bg-emerald-950">
+            <label className="flex items-start gap-2 rounded-lg border border-neutral-200 bg-neutral-50 p-2 text-sm dark:border-neutral-900 dark:bg-neutral-950">
               <input
                 type="checkbox"
                 checked={tplIsGlobal}
                 onChange={(e) => setTplIsGlobal(e.target.checked)}
-                className="mt-0.5 h-5 w-5 accent-emerald-600"
+                className="mt-0.5 h-5 w-5 accent-neutral-600"
               />
               <span>
-                <span className="font-medium text-emerald-700 dark:text-emerald-300">
+                <span className="font-medium text-neutral-700 dark:text-neutral-300">
                   Publicar como modelo oficial
                 </span>
-                <span className="block text-xs text-emerald-600 dark:text-emerald-400">
+                <span className="block text-xs text-neutral-600 dark:text-neutral-400">
                   Visível para todas as orgs como leitura. Elas podem clonar.
                 </span>
               </span>
@@ -605,7 +605,7 @@ export function ChecklistsPage() {
                           [i.id]: e.target.checked,
                         }))
                       }
-                      className="mt-0.5 h-5 w-5 accent-emerald-600"
+                      className="mt-0.5 h-5 w-5 accent-neutral-600"
                     />
                     {i.text}
                   </label>

@@ -161,7 +161,7 @@ export function HelpPage() {
     <div className="mx-auto max-w-5xl">
       {/* Cabeçalho */}
       <div className="mb-5 flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-50 text-neutral-600 dark:bg-neutral-950 dark:text-neutral-400">
           <LifeBuoy size={22} />
         </span>
         <div>
@@ -192,7 +192,7 @@ export function HelpPage() {
         return (
           <section key={role.key} className="mb-8">
             {visibleRoles.length > 1 ? (
-              <div className="mb-3 border-l-4 border-emerald-500 pl-3">
+              <div className="mb-3 border-l-4 border-neutral-500 pl-3">
                 <h2 className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
                   {role.title}
                 </h2>
@@ -216,8 +216,8 @@ export function HelpPage() {
                       }
                       className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                         activeId === id
-                          ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-600 dark:bg-emerald-950 dark:text-emerald-300'
-                          : 'border-neutral-200 text-neutral-600 hover:border-emerald-300 dark:border-neutral-800 dark:text-neutral-300'
+                          ? 'border-neutral-500 bg-neutral-50 text-neutral-700 dark:border-neutral-600 dark:bg-neutral-950 dark:text-neutral-300'
+                          : 'border-neutral-200 text-neutral-600 hover:border-neutral-300 dark:border-neutral-800 dark:text-neutral-300'
                       }`}
                     >
                       <Icon size={13} />
@@ -236,7 +236,7 @@ export function HelpPage() {
                 return (
                   <Card key={id}>
                     <div className="flex items-start gap-3">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-50 text-neutral-600 dark:bg-neutral-950 dark:text-neutral-400">
                         <Icon size={18} />
                       </span>
                       <div className="min-w-0 flex-1">
@@ -251,7 +251,7 @@ export function HelpPage() {
                           </div>
                           <Link
                             to={f.route}
-                            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300"
                           >
                             Abrir
                             <ArrowRight size={12} />
@@ -265,7 +265,7 @@ export function HelpPage() {
                             </p>
 
                             <div>
-                              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700 dark:text-neutral-400">
                                 Como usar
                               </p>
                               <ul className="space-y-1.5">
@@ -276,7 +276,7 @@ export function HelpPage() {
                                   >
                                     <CheckCircle2
                                       size={14}
-                                      className="mt-0.5 shrink-0 text-emerald-500"
+                                      className="mt-0.5 shrink-0 text-neutral-500"
                                     />
                                     <span>{step}</span>
                                   </li>
@@ -284,10 +284,10 @@ export function HelpPage() {
                               </ul>
                             </div>
 
-                            <div className="flex items-start gap-2 rounded-lg border-l-4 border-emerald-500 bg-emerald-50 p-3 dark:bg-emerald-950/50">
+                            <div className="flex items-start gap-2 rounded-lg border-l-4 border-neutral-500 bg-neutral-50 p-3 dark:bg-neutral-950/50">
                               <Lightbulb
                                 size={15}
-                                className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400"
+                                className="mt-0.5 shrink-0 text-neutral-600 dark:text-neutral-400"
                               />
                               <p className="text-xs italic leading-relaxed text-neutral-700 dark:text-neutral-300">
                                 {f.tip}
@@ -329,12 +329,12 @@ function MethodologySection({ meth }: { meth: Methodology }) {
   return (
     <section className="mt-10">
       <div className="mb-4 rounded-2xl bg-neutral-800 p-5 text-white dark:bg-neutral-900">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-emerald-100">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-100">
           <BarChart3 size={14} />
           Parte especial
         </div>
         <h2 className="mt-1 text-lg font-semibold sm:text-xl">{meth.title}</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-emerald-50">
+        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-neutral-50">
           {meth.intro}
         </p>
       </div>
@@ -352,7 +352,7 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                   <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
                     {m.title}
                   </h3>
-                  <p className="text-xs italic text-emerald-700 dark:text-emerald-400">
+                  <p className="text-xs italic text-neutral-700 dark:text-neutral-400">
                     {m.tagline}
                   </p>
                   <p className="mt-0.5 text-[11px] text-neutral-400">
@@ -375,7 +375,7 @@ function MethodologySection({ meth }: { meth: Methodology }) {
 
                   {m.calc?.length ? (
                     <div>
-                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700 dark:text-neutral-400">
                         Como é calculado
                       </p>
                       <ul className="space-y-1.5">
@@ -386,7 +386,7 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                           >
                             <CheckCircle2
                               size={14}
-                              className="mt-0.5 shrink-0 text-emerald-500"
+                              className="mt-0.5 shrink-0 text-neutral-500"
                             />
                             <span>{c}</span>
                           </li>
@@ -406,7 +406,7 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                           : 'Distribuição';
                       return (
                         <div>
-                          <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                          <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700 dark:text-neutral-400">
                             {m.breakdownTitle ?? defaultTitle}
                           </p>
                           <div className="space-y-1.5">
@@ -420,13 +420,13 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                                 </span>
                                 <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
                                   <div
-                                    className="h-full rounded-full bg-emerald-500"
+                                    className="h-full rounded-full bg-neutral-500"
                                     style={{
                                       width: `${(p.points / max) * 100}%`,
                                     }}
                                   />
                                 </div>
-                                <span className="w-16 shrink-0 text-right text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                                <span className="w-16 shrink-0 text-right text-xs font-semibold text-neutral-700 dark:text-neutral-400">
                                   {p.points} {unit}
                                 </span>
                               </div>
@@ -467,7 +467,7 @@ function MethodologySection({ meth }: { meth: Methodology }) {
 
                   {m.howToRead?.length ? (
                     <div>
-                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-700 dark:text-emerald-400">
+                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700 dark:text-neutral-400">
                         Como ler o resultado
                       </p>
                       <ul className="space-y-1">
@@ -478,7 +478,7 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                           >
                             <span
                               className={`mt-1 h-3 w-3 shrink-0 rounded-sm ${
-                                ['bg-emerald-500', 'bg-amber-500', 'bg-red-500'][
+                                ['bg-neutral-500', 'bg-amber-500', 'bg-red-500'][
                                   i
                                 ] ?? 'bg-neutral-400'
                               }`}
@@ -491,10 +491,10 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                   ) : null}
 
                   {m.whyMatters ? (
-                    <div className="flex items-start gap-2 rounded-lg border-l-4 border-emerald-500 bg-emerald-50 p-3 dark:bg-emerald-950/50">
+                    <div className="flex items-start gap-2 rounded-lg border-l-4 border-neutral-500 bg-neutral-50 p-3 dark:bg-neutral-950/50">
                       <Lightbulb
                         size={15}
-                        className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400"
+                        className="mt-0.5 shrink-0 text-neutral-600 dark:text-neutral-400"
                       />
                       <p className="text-xs italic leading-relaxed text-neutral-700 dark:text-neutral-300">
                         <span className="font-semibold not-italic">

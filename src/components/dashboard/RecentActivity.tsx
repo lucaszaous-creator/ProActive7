@@ -18,7 +18,7 @@ const ICON: Record<ActivityKind, LucideIcon> = {
 
 const ICON_COLOR: Record<ActivityKind, string> = {
   nc_opened: 'text-red-600 dark:text-red-400',
-  audit_completed: 'text-emerald-600 dark:text-emerald-400',
+  audit_completed: 'text-neutral-600 dark:text-neutral-400',
   doc_published: 'text-blue-600 dark:text-blue-400',
 };
 
@@ -37,7 +37,7 @@ export function RecentActivity({ loading, items }: RecentActivityProps) {
   return (
     <Card>
       <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
-        <Activity size={16} className="text-teal-600 dark:text-teal-400" />
+        <Activity size={16} className="text-neutral-600 dark:text-neutral-400" />
         Atividade recente
       </h2>
       {loading ? (

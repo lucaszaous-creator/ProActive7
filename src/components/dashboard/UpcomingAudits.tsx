@@ -14,7 +14,7 @@ export function UpcomingAudits({ loading, items }: UpcomingAuditsProps) {
   return (
     <Card>
       <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
-        <CalendarCheck size={16} className="text-teal-600 dark:text-teal-400" />
+        <CalendarCheck size={16} className="text-neutral-600 dark:text-neutral-400" />
         Próximas visitas
       </h2>
       {loading ? (
@@ -30,7 +30,7 @@ export function UpcomingAudits({ loading, items }: UpcomingAuditsProps) {
           </p>
           <Link
             to="/visitas"
-            className="inline-flex items-center gap-1 text-xs font-medium text-teal-700 hover:underline dark:text-teal-400"
+            className="inline-flex items-center gap-1 text-xs font-medium text-neutral-700 hover:underline dark:text-neutral-400"
           >
             <CalendarPlus size={12} />
             Agendar visita

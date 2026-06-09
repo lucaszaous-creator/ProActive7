@@ -108,14 +108,14 @@ function Faq() {
  * ===================================================================== */
 function Hero() {
   return (
-    <section className="relative isolate overflow-hidden bg-[#0F1310] text-white">
+    <section className="relative isolate overflow-hidden bg-[#111111] text-white">
       {/* Imagem de fundo: cozinha profissional, em B&W, escurecida.
           Sem network: usa um SVG inline em data URI com gradiente que
           mimetiza o clima escuro/ambiente da foto que a cliente
           enviou — preserva custo zero (sem CDN nem upload de foto). */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-[radial-gradient(60%_45%_at_50%_30%,#1f2924_0%,#0F1310_55%,#070906_100%)]"
+        className="absolute inset-0 -z-10 bg-[radial-gradient(60%_45%_at_50%_30%,#1f1f1f_0%,#111111_55%,#050505_100%)]"
       />
       <div
         aria-hidden
@@ -157,7 +157,7 @@ function Hero() {
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/servicos"
-            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#0F1310] transition hover:bg-white/90"
+            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#111111] transition hover:bg-white/90"
           >
             Conhecer nossos serviços
             <ArrowRight className="h-4 w-4" />
@@ -351,7 +351,7 @@ function Numeros() {
     { value: 'On & off-shore', label: 'cozinhas atendidas' },
   ];
   return (
-    <section className="bg-[#0F1310] py-16 text-white">
+    <section className="bg-[#111111] py-16 text-white">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-5 md:grid-cols-4">
         {stats.map((s, i) => (
           <Reveal key={s.label} delay={i * 90}>
@@ -495,7 +495,7 @@ function Diferenciais() {
     },
   ];
   return (
-    <section className="relative isolate overflow-hidden bg-[#0F1310] py-20 text-white">
+    <section className="relative isolate overflow-hidden bg-[#111111] py-20 text-white">
       <div
         aria-hidden
         className="pointer-events-none absolute -right-40 top-0 h-96 w-96 rounded-full bg-[#262626]/40 blur-[120px]"

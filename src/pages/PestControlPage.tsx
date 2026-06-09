@@ -428,7 +428,7 @@ export function PestControlPage() {
             onClick={() => setTab('services')}
             className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
               tab === 'services'
-                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
+                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-400'
                 : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
             }`}
           >
@@ -438,7 +438,7 @@ export function PestControlPage() {
             onClick={() => setTab('providers')}
             className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
               tab === 'providers'
-                ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-400'
+                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-400'
                 : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
             }`}
           >
@@ -467,7 +467,7 @@ export function PestControlPage() {
             Nenhuma empresa cadastrada. Crie uma empresa em{' '}
             <a
               href="/admin/empresas"
-              className="font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+              className="font-medium text-neutral-700 hover:underline dark:text-neutral-400"
             >
               Empresas
             </a>{' '}
@@ -541,7 +541,7 @@ export function PestControlPage() {
                           onClick={() =>
                             void openSignedFile(s.certificate_path!)
                           }
-                          className="mt-2 inline-flex items-center gap-1 text-xs text-emerald-700 hover:underline dark:text-emerald-400"
+                          className="mt-2 inline-flex items-center gap-1 text-xs text-neutral-700 hover:underline dark:text-neutral-400"
                         >
                           <FileTextIcon size={12} />
                           Abrir documento da empresa
@@ -716,7 +716,7 @@ export function PestControlPage() {
               onChange={(e) =>
                 setProvForm({ ...provForm, active: e.target.checked })
               }
-              className="h-5 w-5 accent-emerald-600"
+              className="h-5 w-5 accent-neutral-600"
             />
             Ativo
           </label>

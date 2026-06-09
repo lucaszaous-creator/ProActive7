@@ -50,7 +50,7 @@ const ACTION_LABEL: Record<AuditLogRow['action'], string> = {
 
 const ACTION_COLOR: Record<AuditLogRow['action'], string> = {
   INSERT:
-    'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+    'bg-neutral-100 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
   UPDATE: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
   DELETE: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
 };

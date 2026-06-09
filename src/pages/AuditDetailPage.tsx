@@ -61,7 +61,7 @@ const RESULT_OPTIONS: {
     icon: Check,
     classes:
       'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-slate-800',
-    activeClasses: 'border-emerald-500 bg-emerald-50 text-emerald-700',
+    activeClasses: 'border-neutral-500 bg-neutral-50 text-neutral-700',
   },
   {
     value: 'NC',
@@ -622,7 +622,7 @@ export function AuditDetailPage() {
             <span
               className={`rounded-full px-3 py-1 text-base font-bold ${
                 score >= 85
-                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200'
+                  ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200'
                   : score >= 70
                     ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200'
                     : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200'
@@ -690,7 +690,7 @@ export function AuditDetailPage() {
             {isCompleted ? (
               <>
                 <span
-                  className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200"
+                  className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200"
                   title="O status de uma visita finalizada não pode ser revertido — assinada pela RT, ela passa a fazer parte da trilha de auditoria."
                 >
                   <Lock size={12} />
@@ -871,7 +871,7 @@ export function AuditDetailPage() {
               type="checkbox"
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
-              className="h-5 w-5 accent-emerald-600"
+              className="h-5 w-5 accent-neutral-600"
             />
             Li e revisei todas as respostas e observacoes.
           </label>

@@ -136,7 +136,7 @@ export function PlatformPlansPage() {
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <CreditCard size={16} className="text-emerald-600" />
+                    <CreditCard size={16} className="text-neutral-600" />
                     <p className="truncate font-medium text-neutral-800 dark:text-neutral-100">
                       {p.name}
                     </p>
@@ -258,7 +258,7 @@ export function PlatformPlansPage() {
                             : prev.filter((k) => k !== m.key),
                         )
                       }
-                      className="mt-0.5 h-4 w-4 accent-emerald-600"
+                      className="mt-0.5 h-4 w-4 accent-neutral-600"
                     />
                     {m.label}
                   </label>
@@ -272,7 +272,7 @@ export function PlatformPlansPage() {
               type="checkbox"
               checked={active}
               onChange={(e) => setActive(e.target.checked)}
-              className="h-5 w-5 accent-emerald-600"
+              className="h-5 w-5 accent-neutral-600"
             />
             Plano ativo
           </label>

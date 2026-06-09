@@ -13,18 +13,18 @@ export const BRAND = {
 
 /** Paleta em HEX (CSS) — espelha as tuplas RGB abaixo. */
 export const PRINT_HEX = {
-  brand: '#059669', // emerald-600
-  brandDark: '#047857', // emerald-700
-  brandDeep: '#064e3b', // emerald-900
-  brandSoft: '#ecfdf5', // emerald-50
-  ink: '#0f172a', // slate-900
-  body: '#334155', // slate-700
-  muted: '#64748b', // slate-500
-  faint: '#94a3b8', // slate-400
-  hair: '#e2e8f0', // slate-200
+  brand: '#262626', // neutral-800
+  brandDark: '#171717', // neutral-900
+  brandDeep: '#0a0a0a', // neutral-950
+  brandSoft: '#f5f5f5', // neutral-100
+  ink: '#171717', // neutral-900
+  body: '#404040', // neutral-700
+  muted: '#737373', // neutral-500
+  faint: '#a3a3a3', // neutral-400
+  hair: '#e5e5e5', // neutral-200
   paper: '#ffffff',
-  green: '#059669',
-  greenSoft: '#ecfdf5',
+  green: '#404040',
+  greenSoft: '#f5f5f5',
   amber: '#d97706',
   amberSoft: '#fffbeb',
   red: '#dc2626',
@@ -33,17 +33,17 @@ export const PRINT_HEX = {
 
 /** Mesma paleta em tupla [r,g,b] — para `doc.setFillColor(...c)` no jsPDF. */
 export const PRINT_RGB = {
-  brand: [5, 150, 105],
-  brandDark: [4, 120, 87],
-  brandDeep: [6, 78, 59],
-  brandSoft: [236, 253, 245],
-  ink: [15, 23, 42],
-  body: [51, 65, 85],
-  muted: [100, 116, 139],
-  faint: [148, 163, 184],
-  hair: [226, 232, 240],
+  brand: [38, 38, 38],
+  brandDark: [23, 23, 23],
+  brandDeep: [10, 10, 10],
+  brandSoft: [245, 245, 245],
+  ink: [23, 23, 23],
+  body: [64, 64, 64],
+  muted: [115, 115, 115],
+  faint: [163, 163, 163],
+  hair: [229, 229, 229],
   white: [255, 255, 255],
-  green: [5, 150, 105],
+  green: [64, 64, 64],
   amber: [217, 119, 6],
   red: [220, 38, 38],
 } as const satisfies Record<string, readonly [number, number, number]>;

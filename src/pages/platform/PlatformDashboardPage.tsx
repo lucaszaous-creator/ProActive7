@@ -92,11 +92,11 @@ function Kpi({
   const accent = {
     neutral:
       'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
-    teal: 'bg-teal-50 text-teal-700 dark:bg-teal-950 dark:text-teal-300',
+    teal: 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
     amber: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
     red: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300',
     green:
-      'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300',
+      'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
   }[tone];
   return (
     <div className="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-slate-900">
@@ -293,7 +293,7 @@ export function PlatformDashboardPage() {
                         <td className="py-2">
                           <Link
                             to={`/platform/organizacoes/${o.organization_id}`}
-                            className="text-emerald-700 hover:underline dark:text-emerald-400"
+                            className="text-neutral-700 hover:underline dark:text-neutral-400"
                           >
                             {o.organization_name}
                           </Link>
@@ -377,7 +377,7 @@ export function PlatformDashboardPage() {
                         <td className="py-2">
                           <Link
                             to={`/platform/organizacoes/${o.organization_id}`}
-                            className="text-emerald-700 hover:underline dark:text-emerald-400"
+                            className="text-neutral-700 hover:underline dark:text-neutral-400"
                           >
                             {o.organization_name}
                           </Link>
@@ -465,7 +465,7 @@ export function PlatformDashboardPage() {
             nos últimos 30 dias. As mais críticas aparecem primeiro.
           </p>
           {churnRows.length === 0 ? (
-            <p className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300">
+            <p className="rounded-lg bg-neutral-50 px-3 py-2 text-sm text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
               Nenhuma organização em risco no momento.
             </p>
           ) : (
@@ -508,7 +508,7 @@ export function PlatformDashboardPage() {
                       <td className="py-2 text-right">
                         <Link
                           to={`/platform/organizacoes/${org.organization_id}`}
-                          className="text-xs font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+                          className="text-xs font-medium text-neutral-700 hover:underline dark:text-neutral-400"
                         >
                           Abrir
                         </Link>

@@ -17,9 +17,9 @@ interface ActionProps {
 }
 
 const ACCENT_BG: Record<NonNullable<ActionProps['accent']>, string> = {
-  teal: 'bg-teal-50 text-teal-700 group-hover:bg-teal-100 dark:bg-teal-950 dark:text-teal-300 dark:group-hover:bg-teal-900',
+  teal: 'bg-neutral-50 text-neutral-700 group-hover:bg-neutral-100 dark:bg-neutral-950 dark:text-neutral-300 dark:group-hover:bg-neutral-900',
   emerald:
-    'bg-emerald-50 text-emerald-700 group-hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-300 dark:group-hover:bg-emerald-900',
+    'bg-neutral-50 text-neutral-700 group-hover:bg-neutral-100 dark:bg-neutral-950 dark:text-neutral-300 dark:group-hover:bg-neutral-900',
   amber:
     'bg-amber-50 text-amber-700 group-hover:bg-amber-100 dark:bg-amber-950 dark:text-amber-300 dark:group-hover:bg-amber-900',
   red: 'bg-red-50 text-red-600 group-hover:bg-red-100 dark:bg-red-950 dark:text-red-300 dark:group-hover:bg-red-900',
@@ -36,7 +36,7 @@ function ActionTile({
   return (
     <Link
       to={to}
-      className="group flex flex-col gap-1.5 rounded-xl border border-neutral-200 bg-white p-2.5 transition hover:border-teal-300 hover:shadow-sm dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-teal-700 sm:min-h-[88px] sm:gap-2 sm:p-4"
+      className="group flex flex-col gap-1.5 rounded-xl border border-neutral-200 bg-white p-2.5 transition hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700 sm:min-h-[88px] sm:gap-2 sm:p-4"
     >
       <span
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition sm:h-10 sm:w-10 ${ACCENT_BG[accent]}`}
@@ -97,7 +97,7 @@ export function QuickActions({ isMaster }: QuickActionsProps) {
         <div className="mt-3 flex justify-end">
           <Link
             to="/visitas"
-            className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-teal-300 dark:border-neutral-800 dark:bg-slate-900 dark:text-neutral-300 dark:hover:border-teal-700"
+            className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:text-neutral-300 dark:hover:border-neutral-700"
           >
             <CalendarPlus size={14} />
             Agendar visita técnica

@@ -209,7 +209,7 @@ export function AnnouncementsPage() {
                       <span
                         className={
                           showing
-                            ? 'font-medium text-emerald-600'
+                            ? 'font-medium text-neutral-600'
                             : 'text-neutral-500'
                         }
                       >

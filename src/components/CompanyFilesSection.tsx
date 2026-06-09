@@ -262,7 +262,7 @@ export function CompanyFilesSection({ companyId }: Props) {
             onClick={() => void openFile(f)}
             aria-label="Abrir"
             title="Abrir"
-            className="rounded-lg p-2 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+            className="rounded-lg p-2 text-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-950"
           >
             <Download size={14} />
           </button>
@@ -305,7 +305,7 @@ export function CompanyFilesSection({ companyId }: Props) {
             <span
               className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
                 has
-                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300'
+                  ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300'
                   : 'bg-neutral-100 text-neutral-400 dark:bg-neutral-800'
               }`}
             >
@@ -324,7 +324,7 @@ export function CompanyFilesSection({ companyId }: Props) {
           </div>
           <button
             onClick={() => openUpload(catKey)}
-            className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-emerald-50 px-2.5 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-100 dark:bg-emerald-950 dark:text-emerald-400 dark:hover:bg-emerald-900"
+            className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-neutral-50 px-2.5 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100 dark:bg-neutral-950 dark:text-neutral-400 dark:hover:bg-neutral-900"
           >
             <Plus size={12} />
             {has ? 'Adicionar' : 'Carregar'}
@@ -373,7 +373,7 @@ export function CompanyFilesSection({ companyId }: Props) {
         </div>
         <div className="mt-3 h-2 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
           <div
-            className="h-full rounded-full bg-emerald-500 transition-all"
+            className="h-full rounded-full bg-neutral-500 transition-all"
             style={{
               width: `${
                 progress.total > 0

@@ -376,10 +376,10 @@ export function ManipulatorsPage() {
             </p>
           </Card>
           <Card>
-            <p className="text-xs text-emerald-600 dark:text-emerald-400">
+            <p className="text-xs text-neutral-600 dark:text-neutral-400">
               ASO em dia
             </p>
-            <p className="text-2xl font-semibold text-emerald-700 dark:text-emerald-200">
+            <p className="text-2xl font-semibold text-neutral-700 dark:text-neutral-200">
               {summary.valid}
             </p>
           </Card>
@@ -414,7 +414,7 @@ export function ManipulatorsPage() {
             Nenhuma empresa cadastrada. Crie uma empresa em{' '}
             <a
               href="/admin/empresas"
-              className="font-medium text-emerald-700 hover:underline dark:text-emerald-400"
+              className="font-medium text-neutral-700 hover:underline dark:text-neutral-400"
             >
               Empresas
             </a>{' '}
@@ -492,7 +492,7 @@ export function ManipulatorsPage() {
                         onClick={() =>
                           void openSignedFile(aso.latest!.file_path!)
                         }
-                        className="mt-2 inline-flex items-center gap-1 text-xs text-emerald-700 hover:underline dark:text-emerald-400"
+                        className="mt-2 inline-flex items-center gap-1 text-xs text-neutral-700 hover:underline dark:text-neutral-400"
                       >
                         <FileTextIcon size={12} />
                         Abrir ASO atual
@@ -505,7 +505,7 @@ export function ManipulatorsPage() {
                         onClick={() => openAsoModal(m)}
                         aria-label="Registrar ASO"
                         title="Registrar ASO"
-                        className="rounded-lg p-2.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                        className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-950"
                       >
                         <FileCheck2 size={16} />
                       </button>
@@ -598,7 +598,7 @@ export function ManipulatorsPage() {
               type="checkbox"
               checked={form.active}
               onChange={(e) => setForm({ ...form, active: e.target.checked })}
-              className="h-5 w-5 accent-emerald-600"
+              className="h-5 w-5 accent-neutral-600"
             />
             Ativo
           </label>

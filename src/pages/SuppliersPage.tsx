@@ -159,7 +159,7 @@ export function SuppliersPage() {
           <ul className="divide-y divide-neutral-100">
             {suppliers.map((s) => (
               <li key={s.id} className="flex items-center gap-3 py-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-50 text-neutral-600">
                   <Truck size={16} />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -256,7 +256,7 @@ export function SuppliersPage() {
               type="checkbox"
               checked={active}
               onChange={(e) => setActive(e.target.checked)}
-              className="h-5 w-5 accent-emerald-600"
+              className="h-5 w-5 accent-neutral-600"
             />
             Fornecedor ativo
           </label>

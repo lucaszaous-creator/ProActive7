@@ -36,7 +36,7 @@ const STATUS_COLOR: Record<NcStatus, string> = {
   in_progress:
     'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200',
   closed:
-    'bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-200',
+    'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200',
   cancelled:
     'bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400',
 };
@@ -317,8 +317,8 @@ export function NonConformitiesPage() {
                   }
                   className={`flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition ${
                     active
-                      ? 'border-emerald-500 bg-emerald-50 dark:border-emerald-600 dark:bg-emerald-950'
-                      : 'border-neutral-200 bg-white hover:border-emerald-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-emerald-700'
+                      ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
+                      : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700'
                   }`}
                   title={`Clique para ver só as NCs de ${c.company_name}`}
                 >
@@ -473,7 +473,7 @@ export function NonConformitiesPage() {
                       <button
                         onClick={() => void handleQuickClose(nc)}
                         aria-label="Fechar NC"
-                        className="rounded-lg p-2.5 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+                        className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-950"
                       >
                         <CheckCircle2 size={16} />
                       </button>

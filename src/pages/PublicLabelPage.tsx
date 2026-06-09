@@ -133,7 +133,7 @@ export function PublicLabelPage() {
             className={`mb-4 rounded-lg p-3 text-sm ${
               expired
                 ? 'bg-red-50 text-red-700'
-                : 'bg-emerald-50 text-emerald-700'
+                : 'bg-neutral-50 text-neutral-700'
             }`}
           >
             <p className="font-medium">

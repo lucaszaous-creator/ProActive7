@@ -179,7 +179,7 @@ export function ArticlesAdminPage() {
                 <span
                   className={`mt-0.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
                     a.published
-                      ? 'bg-emerald-100 text-emerald-700'
+                      ? 'bg-neutral-100 text-neutral-700'
                       : 'bg-neutral-100 text-neutral-500'
                   }`}
                 >

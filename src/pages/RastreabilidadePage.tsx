@@ -266,7 +266,7 @@ export function RastreabilidadePage() {
                                 vencida
                               </span>
                             ) : (
-                              <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700">
+                              <span className="rounded-full bg-neutral-50 px-2 py-0.5 font-medium text-neutral-700">
                                 ativa
                               </span>
                             )}
@@ -296,7 +296,7 @@ function Stat({
 }) {
   const colors = {
     sky: 'bg-sky-50 text-sky-800',
-    emerald: 'bg-emerald-50 text-emerald-800',
+    emerald: 'bg-neutral-50 text-neutral-800',
     red: 'bg-red-50 text-red-800',
     neutral: 'bg-neutral-100 text-neutral-700',
   }[tone];

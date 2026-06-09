@@ -147,7 +147,7 @@ export function ProductCsvImport({
         {parsed ? (
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
-              <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-emerald-700">
+              <span className="rounded-full bg-neutral-50 px-2 py-0.5 text-neutral-700">
                 {parsed.rows.length} válidos
               </span>
               {parsed.errors.length > 0 ? (

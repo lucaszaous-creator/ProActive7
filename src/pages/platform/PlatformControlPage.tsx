@@ -97,7 +97,7 @@ const ACTIONS: {
 ];
 
 const TONE_BG: Record<string, string> = {
-  emerald: 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100',
+  emerald: 'bg-neutral-50 text-neutral-700 hover:bg-neutral-100',
   blue: 'bg-blue-50 text-blue-700 hover:bg-blue-100',
   amber: 'bg-amber-50 text-amber-700 hover:bg-amber-100',
   red: 'bg-red-50 text-red-700 hover:bg-red-100',
@@ -189,7 +189,7 @@ export function PlatformControlPage() {
       : `${issues.length} ${issues.length === 1 ? 'problema detectado' : 'problemas detectados'}`;
   const healthTone =
     issues.length === 0
-      ? 'bg-emerald-50 text-emerald-700'
+      ? 'bg-neutral-50 text-neutral-700'
       : issues.some((i) => i.level === 'error')
         ? 'bg-red-50 text-red-700'
         : 'bg-amber-50 text-amber-700';
@@ -269,7 +269,7 @@ export function PlatformControlPage() {
             </h2>
             {issues.length === 0 ? (
               <Card>
-                <div className="flex items-center gap-3 text-sm text-emerald-700">
+                <div className="flex items-center gap-3 text-sm text-neutral-700">
                   <CheckCircle2 size={18} />
                   Nenhum problema detectado nas verificações automáticas.
                 </div>
@@ -350,7 +350,7 @@ export function PlatformControlPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <Card>
                 <div className="flex items-start gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-neutral-50 text-neutral-600">
                     <Send size={18} />
                   </span>
                   <div className="flex-1">
@@ -465,7 +465,7 @@ export function PlatformControlPage() {
                       <span
                         className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
                           e.op === 'INSERT'
-                            ? 'bg-emerald-100 text-emerald-700'
+                            ? 'bg-neutral-100 text-neutral-700'
                             : e.op === 'UPDATE'
                               ? 'bg-blue-100 text-blue-700'
                               : 'bg-red-100 text-red-700'
@@ -563,7 +563,7 @@ function KpiCard({
 }) {
   const toneClasses =
     tone === 'emerald'
-      ? 'bg-emerald-50 text-emerald-600'
+      ? 'bg-neutral-50 text-neutral-600'
       : 'bg-blue-50 text-blue-600';
   return (
     <Card>

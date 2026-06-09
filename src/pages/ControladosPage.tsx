@@ -218,7 +218,7 @@ export function ControladosPage() {
                     <span
                       className={`text-sm font-medium ${
                         m.quantity_delta > 0
-                          ? 'text-emerald-700'
+                          ? 'text-neutral-700'
                           : 'text-red-700'
                       }`}
                     >

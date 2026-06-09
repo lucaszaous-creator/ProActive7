@@ -412,7 +412,7 @@ export function PrintLabelPage() {
           <Card>
             <div className="flex flex-col gap-4">
               {prefillFromReceivingId && (
-                <div className="flex items-center justify-between rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700">
+                <div className="flex items-center justify-between rounded-lg bg-neutral-50 px-3 py-2 text-xs text-neutral-700">
                   <span>
                     Preenchido a partir do recebimento #
                     {prefillFromReceivingId.slice(0, 8)}.
@@ -423,7 +423,7 @@ export function PrintLabelPage() {
                       setPrefillFromReceivingId(null);
                       setSearchParams({}, { replace: true });
                     }}
-                    className="rounded px-2 py-0.5 text-emerald-700 hover:bg-emerald-100"
+                    className="rounded px-2 py-0.5 text-neutral-700 hover:bg-neutral-100"
                   >
                     Fechar
                   </button>
@@ -602,7 +602,7 @@ export function PrintLabelPage() {
                       name="output"
                       checked={outputMode === 'system'}
                       onChange={() => setOutputMode('system')}
-                      className="accent-emerald-600"
+                      className="accent-neutral-600"
                     />
                     Impressora do sistema (diálogo)
                   </label>
@@ -617,7 +617,7 @@ export function PrintLabelPage() {
                       checked={outputMode === 'bluetooth'}
                       onChange={() => setOutputMode('bluetooth')}
                       disabled={!btSupported}
-                      className="accent-emerald-600"
+                      className="accent-neutral-600"
                     />
                     Bluetooth térmica
                   </label>
@@ -628,7 +628,7 @@ export function PrintLabelPage() {
                     <span className="flex items-center gap-1 text-neutral-600">
                       {printerName ? (
                         <>
-                          <Bluetooth size={14} className="text-emerald-600" />
+                          <Bluetooth size={14} className="text-neutral-600" />
                           {printerName}
                         </>
                       ) : (
