@@ -72,7 +72,7 @@ function svgFor(headline) {
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#262626"/>
-      <stop offset="1" stop-color="#1C3727"/>
+      <stop offset="1" stop-color="#171717"/>
     </linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
@@ -83,7 +83,7 @@ function svgFor(headline) {
     <text x="124" y="102" font-family="${FONT}" font-size="32" font-weight="bold" fill="#e5e5e5" letter-spacing="1">ProActive7</text>
   </g>
   <text y="${blockTop}" font-family="${FONT}" font-size="64" font-weight="bold" fill="#FFFFFF">${tspans}</text>
-  <text x="80" y="566" font-family="${FONT}" font-size="27" fill="#B9D3C2">${escapeXml(SUBTITLE)}</text>
+  <text x="80" y="566" font-family="${FONT}" font-size="27" fill="#c9c9c9">${escapeXml(SUBTITLE)}</text>
 </svg>`;
 }
 
@@ -95,4 +95,11 @@ for (const [path, page] of jobs) {
   await sharp(Buffer.from(svg)).png().toFile(outPath);
   console.log(`[generate-og] ${path} -> public/og/${slug}.png`);
 }
-console.log(`[generate-og] ${jobs.length} imagens geradas.`);
+// Imagem default (og-image.png na raiz) — usada pela home e fallback global.
+const homeTitle = config.pages?.['/']?.title || config.brand;
+await sharp(Buffer.from(svgFor(headlineFromTitle(homeTitle))))
+  .png()
+  .toFile(join(root, 'public/og-image.png'));
+console.log('[generate-og] / -> public/og-image.png');
+
+console.log(`[generate-og] ${jobs.length + 1} imagens geradas.`);
