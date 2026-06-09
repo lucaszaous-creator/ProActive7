@@ -22,10 +22,16 @@ import {
   BadgeCheck,
   Users,
   Laptop2,
+  Plus,
 } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
+import seoConfig from '@/lib/seo.config.json';
 import { Carousel } from '@/components/public/Carousel';
 import { Reveal } from '@/components/public/Reveal';
+
+/** FAQ da home — mesma fonte (seo.config.json) que alimenta o FAQPage do
+ *  schema, garantindo que o texto visível seja idêntico ao structured data. */
+const FAQ = (seoConfig.pages['/'].faq ?? []) as { q: string; a: string }[];
 
 /**
  * Página inicial — sobre a EMPRESA ProActive7 (consultoria nutricional
@@ -49,8 +55,51 @@ export function LandingPage() {
       <Diferenciais />
       <Depoimentos />
       <Atuacao />
+      <Faq />
       <FinalCta />
     </>
+  );
+}
+
+/* =====================================================================
+ * FAQ — perguntas frequentes (visível + alimenta o FAQPage do schema).
+ * Define a marca ("O que é a ProActive7?") para combater a confusão com
+ * o livro "7 Hábitos" e dar conteúdo citável a mecanismos de IA.
+ * ===================================================================== */
+function Faq() {
+  if (!FAQ.length) return null;
+  return (
+    <section className="border-t border-[#E8F1EA] bg-white">
+      <div className="mx-auto max-w-3xl px-5 py-20">
+        <Reveal>
+          <div className="text-center">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#6FA68A]/40 bg-white px-3 py-1 text-xs font-medium text-[#2F5D3F]">
+              Perguntas frequentes
+            </span>
+            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-[#1A2A22] md:text-4xl">
+              Tudo sobre a ProActive7
+            </h2>
+            <p className="mt-3 text-base leading-relaxed text-[#1A2A22]/65">
+              O que é a ProActive7, onde atende e quem assina a
+              responsabilidade técnica pela sua operação.
+            </p>
+          </div>
+        </Reveal>
+        <div className="mt-10 divide-y divide-[#E8F1EA] overflow-hidden rounded-2xl border border-[#E8F1EA]">
+          {FAQ.map(({ q, a }) => (
+            <details key={q} className="group bg-white open:bg-[#FAFAF7]">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 text-left text-base font-medium text-[#1A2A22] [&::-webkit-details-marker]:hidden">
+                {q}
+                <Plus className="h-5 w-5 shrink-0 text-[#2F5D3F] transition-transform group-open:rotate-45" />
+              </summary>
+              <p className="px-6 pb-5 text-sm leading-relaxed text-[#1A2A22]/70">
+                {a}
+              </p>
+            </details>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -583,7 +632,7 @@ function Atuacao() {
             </p>
             <div className="mt-7 flex items-center gap-2 text-sm font-medium text-[#2F5D3F]">
               <MapPin className="h-4 w-4" />
-              Rua Dr. Luiz Belegard, 407 — sala 704 · Imbetiba · Macaé / RJ
+              Rua Dr. Luiz Bellegard, 407 — sala 704 · Imbetiba · Macaé / RJ
             </div>
           </div>
         </Reveal>
