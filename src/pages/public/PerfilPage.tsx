@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Droplet,
@@ -205,10 +206,41 @@ function NossaHistoria() {
 }
 
 /**
+ * FundadoraAvatar — foto real da Ariane com fallback automático para o
+ * monograma "AM" caso o arquivo não exista (ou falhe ao carregar). Assim a
+ * página nunca quebra: basta soltar a foto em `public/equipe/ariane.jpg`
+ * que ela entra; sem a foto, mantém o monograma de custo zero.
+ */
+function FundadoraAvatar() {
+  const [erro, setErro] = useState(false);
+  const base =
+    'mx-auto h-32 w-32 shrink-0 rounded-3xl shadow-lg ring-4 ring-[#E8F1EA] md:mx-0';
+  if (erro) {
+    return (
+      <div
+        className={`${base} flex items-center justify-center bg-gradient-to-br from-[#2F5D3F] to-[#1A3D27] text-4xl font-semibold tracking-tight text-white`}
+      >
+        AM
+      </div>
+    );
+  }
+  return (
+    <img
+      src="/equipe/ariane.jpg"
+      alt="Ariane Madureira, nutricionista e responsável técnica da ProActive7"
+      width={128}
+      height={128}
+      loading="lazy"
+      onError={() => setErro(true)}
+      className={`${base} object-cover`}
+    />
+  );
+}
+
+/**
  * Fundadora — destaca a Ariane (RT registrada no CRN) como principal ativo
- * de confiança numa página institucional. Usa monograma em vez de foto
- * (custo zero; foto real pode entrar depois). Fatos reaproveitados do texto
- * já existente — sem inventar credenciais.
+ * de confiança numa página institucional. Fatos reaproveitados do texto já
+ * existente — sem inventar credenciais.
  */
 function Fundadora() {
   const formacao = [
@@ -221,10 +253,7 @@ function Fundadora() {
     <section className="mx-auto max-w-6xl px-5 py-16">
       <Reveal>
         <div className="grid gap-8 overflow-hidden rounded-3xl border border-[#E8F1EA] bg-white p-7 shadow-[0_24px_60px_-35px_rgba(47,93,63,0.3)] md:grid-cols-[auto_1fr] md:items-center md:p-10">
-          {/* Monograma */}
-          <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-3xl bg-gradient-to-br from-[#2F5D3F] to-[#1A3D27] text-4xl font-semibold tracking-tight text-white shadow-lg md:mx-0">
-            AM
-          </div>
+          <FundadoraAvatar />
 
           <div>
             <span className="text-xs font-medium uppercase tracking-wider text-[#6FA68A]">
