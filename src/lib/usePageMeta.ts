@@ -148,6 +148,13 @@ export function usePageMeta(path: string): void {
     }
     if (page.faq?.length) blocks.push(buildFaqJsonLd(page.faq));
     if (page.extraJsonLd?.length) blocks.push(...page.extraJsonLd);
+    // Evita duplicar structured data: remove o JSON-LD já presente — tanto o
+    // estático gerado pelo prerender-seo (mesma rota) quanto o de uma navegação
+    // anterior — antes de injetar o conjunto correto desta rota. Sem isso, o
+    // Google (que renderiza JS) vê duas cópias de Organization/LocalBusiness/FAQ.
+    document.head
+      .querySelectorAll('script[type="application/ld+json"]')
+      .forEach((s) => s.remove());
     const scripts = blocks.map((block) => {
       const s = document.createElement('script');
       s.type = 'application/ld+json';
@@ -218,6 +225,10 @@ export function useDynamicMeta(meta: DynamicMeta | null): void {
       seoConfig.organizationJsonLd,
       ...(meta.jsonLd ?? []),
     ];
+    // Mesmo cuidado de deduplicação do usePageMeta (ver comentário acima).
+    document.head
+      .querySelectorAll('script[type="application/ld+json"]')
+      .forEach((s) => s.remove());
     const scripts = blocks.map((block) => {
       const s = document.createElement('script');
       s.type = 'application/ld+json';
