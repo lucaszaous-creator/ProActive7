@@ -259,7 +259,7 @@ export function GruposPage() {
                   onClick={() => setColor(c)}
                   className={`h-9 w-9 rounded-lg ring-2 transition ${
                     color === c
-                      ? 'ring-neutral-900'
+                      ? 'ring-neutral-900 dark:ring-neutral-100'
                       : 'ring-transparent hover:ring-neutral-300'
                   }`}
                   style={{ backgroundColor: c }}

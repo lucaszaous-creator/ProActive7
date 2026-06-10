@@ -110,7 +110,7 @@ function GroupChip({
       onClick={onClick}
       className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition ${
         active
-          ? 'border-neutral-500 bg-neutral-50 font-medium text-neutral-700 dark:border-neutral-600 dark:bg-neutral-950 dark:text-neutral-300'
+          ? 'border-neutral-500 bg-neutral-50 font-medium text-neutral-700 dark:border-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-300'
           : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800'
       }`}
     >
@@ -187,7 +187,7 @@ function ProductCard({
           </span>
         ) : null}
         {product.is_seed ? (
-          <span className="rounded-full bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
+          <span className="rounded-full bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300">
             Seed
           </span>
         ) : null}
@@ -839,7 +839,7 @@ export function ProductsPage() {
           </label>
 
           {isPlatformAdmin ? (
-            <label className="flex items-start gap-2 rounded-lg border border-neutral-200 bg-neutral-50 p-2 text-sm dark:border-neutral-900 dark:bg-neutral-950">
+            <label className="flex items-start gap-2 rounded-lg border border-neutral-200 bg-neutral-50 p-2 text-sm dark:border-neutral-900 dark:bg-neutral-800/60">
               <input
                 type="checkbox"
                 checked={isSeed}

@@ -163,7 +163,7 @@ export function HelpPage() {
     <div className="mx-auto max-w-5xl">
       {/* Cabeçalho */}
       <div className="mb-5 flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-50 text-neutral-600 dark:bg-neutral-950 dark:text-neutral-400">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-50 text-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-400">
           <LifeBuoy size={22} />
         </span>
         <div>
@@ -218,7 +218,7 @@ export function HelpPage() {
                       }
                       className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                         activeId === id
-                          ? 'border-neutral-500 bg-neutral-50 text-neutral-700 dark:border-neutral-600 dark:bg-neutral-950 dark:text-neutral-300'
+                          ? 'border-neutral-500 bg-neutral-50 text-neutral-700 dark:border-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-300'
                           : 'border-neutral-200 text-neutral-600 hover:border-neutral-300 dark:border-neutral-800 dark:text-neutral-300'
                       }`}
                     >
@@ -238,7 +238,7 @@ export function HelpPage() {
                 return (
                   <Card key={id}>
                     <div className="flex items-start gap-3">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-50 text-neutral-600 dark:bg-neutral-950 dark:text-neutral-400">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-50 text-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-400">
                         <Icon size={18} />
                       </span>
                       <div className="min-w-0 flex-1">
@@ -253,7 +253,7 @@ export function HelpPage() {
                           </div>
                           <Link
                             to={f.route}
-                            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300"
+                            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:border-neutral-800 dark:bg-neutral-800/60 dark:text-neutral-300"
                           >
                             Abrir
                             <ArrowRight size={12} />
@@ -286,7 +286,7 @@ export function HelpPage() {
                               </ul>
                             </div>
 
-                            <div className="flex items-start gap-2 rounded-lg border-l-4 border-neutral-500 bg-neutral-50 p-3 dark:bg-neutral-950/50">
+                            <div className="flex items-start gap-2 rounded-lg border-l-4 border-neutral-500 bg-neutral-50 p-3 dark:bg-neutral-800/60/50">
                               <Lightbulb
                                 size={15}
                                 className="mt-0.5 shrink-0 text-neutral-600 dark:text-neutral-400"
@@ -493,7 +493,7 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                   ) : null}
 
                   {m.whyMatters ? (
-                    <div className="flex items-start gap-2 rounded-lg border-l-4 border-neutral-500 bg-neutral-50 p-3 dark:bg-neutral-950/50">
+                    <div className="flex items-start gap-2 rounded-lg border-l-4 border-neutral-500 bg-neutral-50 p-3 dark:bg-neutral-800/60/50">
                       <Lightbulb
                         size={15}
                         className="mt-0.5 shrink-0 text-neutral-600 dark:text-neutral-400"

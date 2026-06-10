@@ -68,7 +68,7 @@ export function SubscriptionPage() {
           <span
             className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
               sub.status === 'active'
-                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300'
+                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300'
                 : 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
             }`}
           >
@@ -127,7 +127,7 @@ export function SubscriptionPage() {
                 key={m.key}
                 className={`flex items-start gap-3 rounded-lg border p-3 ${
                   on
-                    ? 'border-neutral-200 bg-neutral-50 dark:border-neutral-900 dark:bg-neutral-950'
+                    ? 'border-neutral-200 bg-neutral-50 dark:border-neutral-900 dark:bg-neutral-800/60'
                     : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
                 }`}
               >

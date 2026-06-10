@@ -367,7 +367,7 @@ export function OrganizationDetailPage() {
               <span
                 className={`rounded-full px-2 py-0.5 font-medium ${
                   org.allow_impersonation
-                    ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300'
+                    ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300'
                     : 'bg-neutral-100 text-neutral-500 dark:text-neutral-400 dark:bg-neutral-800'
                 }`}
               >

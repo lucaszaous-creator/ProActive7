@@ -102,7 +102,7 @@ export function PlatformLibraryPage() {
             onClick={() => setTab(t.id)}
             className={`shrink-0 rounded-lg px-3 py-2 text-sm font-medium transition ${
               tab === t.id
-                ? 'bg-neutral-900 text-white'
+                ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
                 : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
             }`}
           >
@@ -146,7 +146,7 @@ export function PlatformLibraryPage() {
                       </td>
                       <td className="py-2 text-right">
                         {r.is_flag ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300">
                             <Globe size={10} />
                             Global
                           </span>

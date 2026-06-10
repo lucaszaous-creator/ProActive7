@@ -229,7 +229,7 @@ export function AgendaPage() {
                         d.inMonth
                           ? 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
                           : 'border-transparent bg-neutral-50 text-neutral-400 dark:bg-neutral-950 dark:text-neutral-600'
-                      } ${d.isToday ? 'ring-2 ring-neutral-900' : ''}`}
+                      } ${d.isToday ? 'ring-2 ring-neutral-900 dark:ring-neutral-100' : ''}`}
                     >
                       <span
                         className={`text-right text-[10px] font-semibold ${

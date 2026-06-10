@@ -166,7 +166,7 @@ export function LibraryBrowser({
                 <button
                   onClick={() => void handleClone(r)}
                   disabled={cloning === r.id || !companyId}
-                  className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-neutral-900 px-2 py-1 text-xs text-white hover:bg-neutral-800 disabled:opacity-50"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-neutral-900 px-2 py-1 text-xs text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white disabled:opacity-50"
                 >
                   <Copy size={11} />
                   {cloning === r.id ? '...' : 'Usar como modelo'}

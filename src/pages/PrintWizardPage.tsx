@@ -902,7 +902,7 @@ function Step1({
                 onClick={() => setResponsible(m.full_name)}
                 className={`flex items-center gap-3 rounded-xl border p-3 text-left transition ${
                   isSelected
-                    ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
+                    ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800/60'
                     : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
                 }`}
               >
@@ -960,7 +960,7 @@ function Step2({
           onClick={() => setGroupId('all')}
           className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition ${
             groupId === 'all'
-              ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
+              ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800/60'
               : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
           }`}
         >
@@ -983,7 +983,7 @@ function Step2({
               onClick={() => setGroupId(g.id)}
               className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition ${
                 isSelected
-                  ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
+                  ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800/60'
                   : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
               }`}
             >
@@ -1044,7 +1044,7 @@ function Step3({
       </div>
       <button
         onClick={onSwitchToBatch}
-        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 bg-neutral-50 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-900"
+        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 bg-neutral-50 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-900"
       >
         <Layers size={16} />
         Imprimir vários produtos
@@ -1077,7 +1077,7 @@ function Step3({
                   onClick={() => setProductId(p.id)}
                   className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${
                     isSelected
-                      ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
+                      ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800/60'
                       : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
                   }`}
                 >
@@ -1158,7 +1158,7 @@ function Step4({
   return (
     <Card>
       <div className="mb-3 flex items-center gap-3 rounded-xl bg-neutral-50 p-3 dark:bg-neutral-800">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300">
           <Package size={18} />
         </span>
         <div className="min-w-0">
@@ -1484,7 +1484,7 @@ function DirectPrintBlock({
   }
 
   return (
-    <div className="w-full space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-950">
+    <div className="w-full space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-800/60">
       <div className="flex items-center justify-between gap-2 text-xs">
         <span className="font-semibold uppercase text-neutral-800 dark:text-neutral-300">
           Impressão direta
@@ -1608,7 +1608,7 @@ function Step3Batch({
       </button>
 
       {batchItems.length > 0 && (
-        <div className="mb-3 rounded-lg bg-neutral-50 px-3 py-2 text-xs font-medium text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
+        <div className="mb-3 rounded-lg bg-neutral-50 px-3 py-2 text-xs font-medium text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300">
           {batchItems.length}{' '}
           {batchItems.length === 1
             ? 'produto selecionado'
@@ -1646,7 +1646,7 @@ function Step3Batch({
                 <label
                   className={`flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 ${
                     isSelected
-                      ? 'bg-neutral-50 dark:bg-neutral-950'
+                      ? 'bg-neutral-50 dark:bg-neutral-800/60'
                       : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'
                   }`}
                 >

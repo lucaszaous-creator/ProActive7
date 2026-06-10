@@ -66,10 +66,10 @@ function expiryInfo(expiryAt: string, now: number) {
     key: 'ok' as ExpiryKey,
     label: `Vence em ${days}d`,
     badge:
-      'border-neutral-200 bg-neutral-50 text-neutral-700 dark:border-neutral-900 dark:bg-neutral-950 dark:text-neutral-300',
+      'border-neutral-200 bg-neutral-50 text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800/60 dark:text-neutral-300',
     ring: 'border-neutral-200 dark:border-neutral-800',
     iconBg:
-      'bg-neutral-50 text-neutral-600 dark:bg-neutral-950 dark:text-neutral-400',
+      'bg-neutral-50 text-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-400',
     expired: false,
     soon: false,
   };
@@ -587,7 +587,7 @@ function StatCard({
 }) {
   const tones = {
     emerald:
-      'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-400',
+      'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-400',
     amber: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
     red: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
   } as const;

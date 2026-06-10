@@ -93,11 +93,11 @@ function Kpi({
   const accent = {
     neutral:
       'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
-    teal: 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
+    teal: 'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300',
     amber: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
     red: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300',
     green:
-      'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
+      'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300',
   }[tone];
   return (
     <div className="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
@@ -466,7 +466,7 @@ export function PlatformDashboardPage() {
             nos últimos 30 dias. As mais críticas aparecem primeiro.
           </p>
           {churnRows.length === 0 ? (
-            <p className="rounded-lg bg-neutral-50 px-3 py-2 text-sm text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
+            <p className="rounded-lg bg-neutral-50 px-3 py-2 text-sm text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300">
               Nenhuma organização em risco no momento.
             </p>
           ) : (
