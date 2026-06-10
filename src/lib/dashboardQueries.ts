@@ -323,3 +323,66 @@ export async function fetchEquipmentWithoutReadingToday(
     (e) => !loggedIds.has(e.id),
   );
 }
+
+/* ------------------------------------------------------------------ */
+/* Série temporal do compliance score (compliance_snapshots)           */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Grava o snapshot de hoje para cada empresa com score calculado.
+ * Idempotente (upsert por company_id + snapshot_date) e fire-and-forget:
+ * falha silenciosa para nunca quebrar o carregamento do painel — a curva
+ * se constrói a cada dia em que a nutri/admin abre o dashboard.
+ */
+export async function saveComplianceSnapshots(
+  companies: EnrichedCompany[],
+): Promise<void> {
+  const rows = companies
+    .filter((c) => c.active && c.score !== null && c.tier !== null)
+    .map((c) => ({
+      company_id: c.company_id,
+      score: c.score,
+      tier: c.tier,
+    }));
+  if (rows.length === 0) return;
+  const { error } = await supabase
+    .from('compliance_snapshots')
+    .upsert(rows, { onConflict: 'company_id,snapshot_date' });
+  if (error) {
+    // Não interrompe o painel; só registra para debug.
+    console.warn('snapshot do compliance não gravado:', error.message);
+  }
+}
+
+export interface ScoreTrendPoint {
+  date: string; // YYYY-MM-DD
+  avgScore: number;
+  companies: number;
+}
+
+/** Média diária do score das empresas visíveis (RLS escopa a org). */
+export async function fetchScoreTrend(
+  days = 90,
+): Promise<ScoreTrendPoint[]> {
+  const since = new Date();
+  since.setDate(since.getDate() - days);
+  const { data, error } = await supabase
+    .from('compliance_snapshots')
+    .select('snapshot_date, score')
+    .gte('snapshot_date', since.toISOString().slice(0, 10))
+    .order('snapshot_date', { ascending: true })
+    .limit(10000);
+  if (error) throw error;
+  const byDate = new Map<string, { sum: number; n: number }>();
+  for (const r of (data ?? []) as { snapshot_date: string; score: number }[]) {
+    const cur = byDate.get(r.snapshot_date) ?? { sum: 0, n: 0 };
+    cur.sum += Number(r.score);
+    cur.n += 1;
+    byDate.set(r.snapshot_date, cur);
+  }
+  return Array.from(byDate.entries()).map(([date, { sum, n }]) => ({
+    date,
+    avgScore: Math.round((sum / n) * 10) / 10,
+    companies: n,
+  }));
+}
