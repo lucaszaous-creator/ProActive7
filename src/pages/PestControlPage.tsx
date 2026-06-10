@@ -544,7 +544,7 @@ export function PestControlPage() {
                       <button
                         onClick={() => openEditService(s)}
                         aria-label="Editar"
-                        className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                       >
                         <Pencil size={16} />
                       </button>
@@ -611,7 +611,7 @@ export function PestControlPage() {
                   <button
                     onClick={() => openEditProvider(p)}
                     aria-label="Editar"
-                    className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                    className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                   >
                     <Pencil size={16} />
                   </button>
@@ -818,7 +818,7 @@ export function PestControlPage() {
               Documento entregue pela empresa contratada{' '}
               {editingSvc ? '(substituir)' : ''}
             </p>
-            <p className="mb-2 text-xs text-neutral-500">
+            <p className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
               PDF ou foto do certificado/laudo/comprovante de aplicação que a
               empresa de controle de pragas deve entregar após cada serviço.
             </p>

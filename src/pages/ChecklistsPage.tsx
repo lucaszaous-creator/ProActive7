@@ -342,7 +342,7 @@ export function ChecklistsPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
@@ -354,31 +354,31 @@ export function ChecklistsPage() {
         <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
           <Card>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-neutral-700">
+              <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                 Templates
               </h2>
               {templates.length === 0 ? (
                 <button
                   onClick={seedDefaults}
-                  className="text-xs text-neutral-700 hover:underline"
+                  className="text-xs text-neutral-700 dark:text-neutral-200 hover:underline"
                 >
                   Adicionar padrões
                 </button>
               ) : null}
             </div>
             {templates.length === 0 ? (
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 Nenhum template ainda. Crie um do zero ou use os padrões.
               </p>
             ) : (
-              <ul className="divide-y divide-neutral-100">
+              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {templates.map((t) => (
                   <li
                     key={t.id}
                     className="flex items-center justify-between gap-2 py-2"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-neutral-800">
+                      <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                         {t.name}
                         {t.is_global ? (
                           <span className="ml-2 inline-block rounded-full bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
@@ -386,7 +386,7 @@ export function ChecklistsPage() {
                           </span>
                         ) : null}
                       </p>
-                      <p className="text-xs text-neutral-500">
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
                         {CHECKLIST_FREQUENCY_LABELS[t.frequency]} ·{' '}
                         {t.items.length} itens
                         {!t.active ? ' · inativo' : ''}
@@ -397,7 +397,7 @@ export function ChecklistsPage() {
                         <button
                           onClick={() => openRun(t)}
                           aria-label="Executar"
-                          className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50"
+                          className="rounded-lg p-2.5 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/60"
                         >
                           <Play size={16} />
                         </button>
@@ -405,7 +405,7 @@ export function ChecklistsPage() {
                       <button
                         onClick={() => openEdit(t)}
                         aria-label="Editar"
-                        className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
+                        className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                       >
                         <Pencil size={16} />
                       </button>
@@ -424,27 +424,27 @@ export function ChecklistsPage() {
           </Card>
 
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
               Últimas execuções
             </h2>
             {recentRuns.length === 0 ? (
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 Nenhuma execução ainda.
               </p>
             ) : (
-              <ul className="divide-y divide-neutral-100">
+              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {recentRuns.map((r) => {
                   const done = r.items.filter((i) => i.checked).length;
                   return (
                     <li key={r.id} className="flex items-center gap-3 py-2">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-50 text-neutral-600">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300">
                         <ClipboardCheck size={16} />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-neutral-800">
+                        <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                           {r.checklist_templates?.name ?? 'Template removido'}
                         </p>
-                        <p className="text-xs text-neutral-500">
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
                           {formatDateTime(r.ran_at)} · {done}/{r.items.length}{' '}
                           itens
                           {r.notes ? ` · ${r.notes}` : ''}
@@ -499,7 +499,7 @@ export function ChecklistsPage() {
           </Select>
 
           <div>
-            <p className="mb-2 text-sm font-medium text-neutral-700">Itens</p>
+            <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">Itens</p>
             <div className="flex flex-col gap-2">
               {tplItems.map((it, i) => (
                 <div key={i} className="flex gap-2">
@@ -512,7 +512,7 @@ export function ChecklistsPage() {
                       )
                     }
                     placeholder="Ex.: Bancada higienizada"
-                    className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
+                    className="flex-1 rounded-lg border border-neutral-300 dark:border-neutral-700 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
                   />
                   <button
                     type="button"
@@ -530,14 +530,14 @@ export function ChecklistsPage() {
               <button
                 type="button"
                 onClick={() => setTplItems((prev) => [...prev, ''])}
-                className="self-start rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200"
+                className="self-start rounded-lg bg-neutral-100 dark:bg-neutral-800 px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200"
               >
                 + Adicionar item
               </button>
             </div>
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-neutral-700">
+          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-200">
             <input
               type="checkbox"
               checked={tplActive}
@@ -592,7 +592,7 @@ export function ChecklistsPage() {
             <ul className="space-y-2">
               {runTemplate.items.map((i) => (
                 <li key={i.id}>
-                  <label className="flex items-start gap-2 text-sm text-neutral-700">
+                  <label className="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-200">
                     <input
                       type="checkbox"
                       checked={runChecks[i.id] ?? false}

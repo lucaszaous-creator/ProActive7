@@ -270,7 +270,7 @@ export function PlatformDashboardPage() {
               Top 10 orgs por etiquetas impressas (30 dias)
             </h2>
             {topByLabels.length === 0 ? (
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 Nenhuma etiqueta impressa nos últimos 30 dias.
               </p>
             ) : (
@@ -302,7 +302,7 @@ export function PlatformDashboardPage() {
                         <td className="py-2 text-right">{o.company_count}</td>
                         <td className="py-2 text-right">{o.labels_30d}</td>
                         <td className="py-2 text-right">{o.audits_30d}</td>
-                        <td className="py-2 text-right text-neutral-500">
+                        <td className="py-2 text-right text-neutral-500 dark:text-neutral-400">
                           {formatRelative(o.last_login_at)}
                         </td>
                       </tr>
@@ -411,7 +411,7 @@ export function PlatformDashboardPage() {
             Uso de features (últimos 30 dias)
           </h2>
           {usage.length === 0 ? (
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
               Nenhum evento registrado ainda. Os eventos são gravados quando
               usuários executam ações no app (imprimir etiqueta, salvar
               auditoria, etc.).
@@ -445,7 +445,7 @@ export function PlatformDashboardPage() {
               </table>
             </div>
           )}
-          <p className="mt-3 text-xs text-neutral-500">
+          <p className="mt-3 text-xs text-neutral-500 dark:text-neutral-400">
             <Printer size={12} className="mr-1 inline" />
             Para registrar eventos novos, chame{' '}
             <code className="rounded bg-neutral-100 px-1 dark:bg-neutral-800">
@@ -461,7 +461,7 @@ export function PlatformDashboardPage() {
           <h2 className="mb-1 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
             Risco de churn
           </h2>
-          <p className="mb-3 text-xs text-neutral-500">
+          <p className="mb-3 text-xs text-neutral-500 dark:text-neutral-400">
             Organizações sem login há mais de 14 dias ou sem nenhuma etiqueta
             nos últimos 30 dias. As mais críticas aparecem primeiro.
           </p>
@@ -503,7 +503,7 @@ export function PlatformDashboardPage() {
                         </div>
                       </td>
                       <td className="py-2 text-right">{org.labels_30d}</td>
-                      <td className="py-2 text-right text-neutral-500">
+                      <td className="py-2 text-right text-neutral-500 dark:text-neutral-400">
                         {formatRelative(org.last_login_at)}
                       </td>
                       <td className="py-2 text-right">

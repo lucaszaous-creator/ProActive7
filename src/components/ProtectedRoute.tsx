@@ -6,10 +6,10 @@ import { Button } from './ui/Button';
 function ProfileMissing({ onSignOut }: { onSignOut: () => void }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center">
-      <h1 className="text-lg font-semibold text-neutral-800">
+      <h1 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
         Conta sem perfil
       </h1>
-      <p className="max-w-sm text-sm text-neutral-600">
+      <p className="max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
         Seu usuário foi autenticado, mas ainda não está vinculado a uma empresa.
         Peça ao administrador para concluir o cadastro.
       </p>
@@ -23,10 +23,10 @@ function ProfileMissing({ onSignOut }: { onSignOut: () => void }) {
 function ProfileInactive({ onSignOut }: { onSignOut: () => void }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 p-6 text-center">
-      <h1 className="text-lg font-semibold text-neutral-800">
+      <h1 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
         Acesso desativado
       </h1>
-      <p className="max-w-sm text-sm text-neutral-600">
+      <p className="max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
         Seu usuário foi desativado. Procure o administrador para reativar o
         acesso.
       </p>

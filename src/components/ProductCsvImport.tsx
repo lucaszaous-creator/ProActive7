@@ -117,14 +117,14 @@ export function ProductCsvImport({
     >
       <div className="flex flex-col gap-4">
         <div>
-          <p className="mb-2 text-sm text-neutral-700">
+          <p className="mb-2 text-sm text-neutral-700 dark:text-neutral-200">
             Formato esperado (1ª linha = cabeçalho):
           </p>
-          <code className="block overflow-x-auto rounded-lg bg-neutral-100 p-2 text-xs">
+          <code className="block overflow-x-auto rounded-lg bg-neutral-100 dark:bg-neutral-800 p-2 text-xs">
             nome,categoria,condicao_padrao,validade_ambiente,unidade_ambiente,
             validade_refrigerado,unidade_refrigerado,validade_congelado,unidade_congelado,ativo
           </code>
-          <p className="mt-2 text-xs text-neutral-500">
+          <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
             condicao_padrao: ambiente | refrigerado | congelado. unidade_*: dias
             | horas. Campos de validade vazios são ignorados.
           </p>
@@ -147,7 +147,7 @@ export function ProductCsvImport({
         {parsed ? (
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
-              <span className="rounded-full bg-neutral-50 px-2 py-0.5 text-neutral-700">
+              <span className="rounded-full bg-neutral-50 dark:bg-neutral-800/60 px-2 py-0.5 text-neutral-700 dark:text-neutral-200">
                 {parsed.rows.length} válidos
               </span>
               {parsed.errors.length > 0 ? (
@@ -168,9 +168,9 @@ export function ProductCsvImport({
             ) : null}
 
             {parsed.rows.length > 0 ? (
-              <div className="max-h-48 overflow-auto rounded-lg border border-neutral-200">
+              <div className="max-h-48 overflow-auto rounded-lg border border-neutral-200 dark:border-neutral-800">
                 <table className="w-full min-w-[480px] text-xs">
-                  <thead className="bg-neutral-50 text-left">
+                  <thead className="bg-neutral-50 dark:bg-neutral-800/60 text-left">
                     <tr>
                       <th className="px-2 py-1">Nome</th>
                       <th className="px-2 py-1">Categoria</th>
@@ -180,15 +180,15 @@ export function ProductCsvImport({
                   </thead>
                   <tbody>
                     {parsed.rows.map((r, i) => (
-                      <tr key={i} className="border-t border-neutral-100">
+                      <tr key={i} className="border-t border-neutral-100 dark:border-neutral-800">
                         <td className="px-2 py-1">{r.name}</td>
-                        <td className="px-2 py-1 text-neutral-500">
+                        <td className="px-2 py-1 text-neutral-500 dark:text-neutral-400">
                           {r.category ?? '—'}
                         </td>
-                        <td className="px-2 py-1 text-neutral-500">
+                        <td className="px-2 py-1 text-neutral-500 dark:text-neutral-400">
                           {r.default_storage_condition}
                         </td>
-                        <td className="px-2 py-1 text-neutral-500">
+                        <td className="px-2 py-1 text-neutral-500 dark:text-neutral-400">
                           {r.shelf.length === 0
                             ? '—'
                             : r.shelf

@@ -255,7 +255,7 @@ export function AgendaPage() {
                         </Link>
                       ))}
                       {list.length > 3 ? (
-                        <span className="text-[10px] text-neutral-500">
+                        <span className="text-[10px] text-neutral-500 dark:text-neutral-400">
                           +{list.length - 3} mais
                         </span>
                       ) : null}

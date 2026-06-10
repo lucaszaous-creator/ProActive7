@@ -208,7 +208,7 @@ export function OrganizationsPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-sm">
               <thead>
-                <tr className="border-b border-neutral-200 text-left text-xs uppercase text-neutral-500">
+                <tr className="border-b border-neutral-200 dark:border-neutral-800 text-left text-xs uppercase text-neutral-500 dark:text-neutral-400">
                   <th className="px-4 py-3">Organização</th>
                   <th className="px-4 py-3">E-mail de contato</th>
                   <th className="px-4 py-3">Status</th>
@@ -220,26 +220,26 @@ export function OrganizationsPage() {
                 {organizations.map((org) => (
                   <tr
                     key={org.id}
-                    className="border-b border-neutral-100 last:border-0"
+                    className="border-b border-neutral-100 dark:border-neutral-800 last:border-0"
                   >
-                    <td className="px-4 py-3 font-medium text-neutral-800">
+                    <td className="px-4 py-3 font-medium text-neutral-800 dark:text-neutral-100">
                       {org.name}
                     </td>
-                    <td className="px-4 py-3 text-neutral-600">
+                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
                       {org.contact_email ?? '—'}
                     </td>
                     <td className="px-4 py-3">
                       <span
                         className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                           org.status === 'active'
-                            ? 'bg-neutral-50 text-neutral-700'
+                            ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200'
                             : 'bg-red-50 text-red-700'
                         }`}
                       >
                         {org.status === 'active' ? 'Ativa' : 'Suspensa'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-neutral-600">
+                    <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
                       {new Date(org.created_at).toLocaleDateString('pt-BR')}
                     </td>
                     <td className="px-4 py-3">
@@ -250,7 +250,7 @@ export function OrganizationsPage() {
                           }
                           aria-label="Ver detalhes"
                           title="Ver detalhes"
-                          className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
+                          className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                         >
                           <Eye size={16} />
                         </button>
@@ -258,7 +258,7 @@ export function OrganizationsPage() {
                           onClick={() => openEdit(org)}
                           aria-label="Editar"
                           title="Editar"
-                          className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
+                          className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                         >
                           <Pencil size={16} />
                         </button>
@@ -273,7 +273,7 @@ export function OrganizationsPage() {
                           className={`rounded-lg px-2.5 py-1.5 text-xs font-medium ${
                             org.status === 'active'
                               ? 'text-red-600 hover:bg-red-50'
-                              : 'text-neutral-600 hover:bg-neutral-50'
+                              : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/60'
                           }`}
                         >
                           {org.status === 'active' ? 'Suspender' : 'Reativar'}
@@ -340,8 +340,8 @@ export function OrganizationsPage() {
           </Select>
 
           {!editing && (
-            <div className="flex flex-col gap-4 border-t border-neutral-200 pt-4">
-              <p className="text-sm font-medium text-neutral-700">
+            <div className="flex flex-col gap-4 border-t border-neutral-200 dark:border-neutral-800 pt-4">
+              <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
                 Conta do nutricionista (responsável pela organização)
               </p>
               <Input
@@ -371,8 +371,8 @@ export function OrganizationsPage() {
           )}
 
           {!editing && (
-            <div className="flex flex-col gap-4 border-t border-neutral-200 pt-4">
-              <p className="text-sm font-medium text-neutral-700">
+            <div className="flex flex-col gap-4 border-t border-neutral-200 dark:border-neutral-800 pt-4">
+              <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
                 Plano contratado
               </p>
               <Select

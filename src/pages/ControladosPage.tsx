@@ -130,7 +130,7 @@ export function ControladosPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada.
           </p>
         </Card>
@@ -140,7 +140,7 @@ export function ControladosPage() {
         </div>
       ) : products.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nenhum produto controlado. Marque um produto como "controlado" em
             Cadastros → Produtos.
           </p>
@@ -148,18 +148,18 @@ export function ControladosPage() {
       ) : (
         <div className="flex flex-col gap-4">
           <Card>
-            <h2 className="mb-1 text-sm font-semibold text-neutral-700">
+            <h2 className="mb-1 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
               Cadastro · Saldo atual por lote
             </h2>
-            <p className="mb-3 text-xs text-neutral-500">
+            <p className="mb-3 text-xs text-neutral-500 dark:text-neutral-400">
               O que está em estoque agora — base para a contagem física.
             </p>
             {balances.length === 0 ? (
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 Sem saldo nos produtos controlados.
               </p>
             ) : (
-              <ul className="divide-y divide-neutral-100">
+              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {balances.map((b) => (
                   <li
                     key={`${b.product_id}-${b.batch}`}
@@ -169,18 +169,18 @@ export function ControladosPage() {
                       <ShieldAlert size={16} />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-neutral-800">
+                      <p className="text-sm font-medium text-neutral-800 dark:text-neutral-100">
                         {b.product?.name ?? '—'}{' '}
-                        <span className="text-xs font-normal text-neutral-500">
+                        <span className="text-xs font-normal text-neutral-500 dark:text-neutral-400">
                           · lote {b.batch}
                         </span>
                       </p>
                     </div>
-                    <span className="text-sm font-medium text-neutral-800">
+                    <span className="text-sm font-medium text-neutral-800 dark:text-neutral-100">
                       {Number(b.balance).toLocaleString('pt-BR', {
                         maximumFractionDigits: 3,
                       })}{' '}
-                      <span className="text-xs text-neutral-500">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400">
                         {RECEIVING_UNIT_LABELS[b.unit as ReceivingUnit]}
                       </span>
                     </span>
@@ -191,24 +191,24 @@ export function ControladosPage() {
           </Card>
 
           <Card>
-            <h2 className="mb-1 text-sm font-semibold text-neutral-700">
+            <h2 className="mb-1 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
               Uso · Últimas movimentações
             </h2>
-            <p className="mb-3 text-xs text-neutral-500">
+            <p className="mb-3 text-xs text-neutral-500 dark:text-neutral-400">
               Entradas (recebimento) e saídas (uso, descarte, vencimento) — a
               trilha que comprova o destino dos controlados.
             </p>
             {movements.length === 0 ? (
-              <p className="text-sm text-neutral-500">Sem movimentações.</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">Sem movimentações.</p>
             ) : (
-              <ul className="divide-y divide-neutral-100">
+              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {movements.map((m) => (
                   <li key={m.id} className="flex items-center gap-3 py-2">
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-neutral-800">
+                      <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                         {m.product?.name ?? '—'} · lote {m.batch}
                       </p>
-                      <p className="text-xs text-neutral-500">
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
                         {STOCK_MOVEMENT_KIND_LABELS[m.kind]} ·{' '}
                         {formatDateTime(m.moved_at)}
                         {m.reason ? ` · ${m.reason}` : ''}
@@ -217,7 +217,7 @@ export function ControladosPage() {
                     <span
                       className={`text-sm font-medium ${
                         m.quantity_delta > 0
-                          ? 'text-neutral-700'
+                          ? 'text-neutral-700 dark:text-neutral-200'
                           : 'text-red-700'
                       }`}
                     >
@@ -225,7 +225,7 @@ export function ControladosPage() {
                       {Number(m.quantity_delta).toLocaleString('pt-BR', {
                         maximumFractionDigits: 3,
                       })}{' '}
-                      <span className="text-xs text-neutral-500">
+                      <span className="text-xs text-neutral-500 dark:text-neutral-400">
                         {RECEIVING_UNIT_LABELS[m.unit as ReceivingUnit]}
                       </span>
                     </span>

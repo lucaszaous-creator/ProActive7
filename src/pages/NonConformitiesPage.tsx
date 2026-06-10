@@ -296,7 +296,7 @@ export function NonConformitiesPage() {
             {companyFilter !== 'all' ? (
               <button
                 onClick={() => setCompanyFilter('all')}
-                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
               >
                 <XCircle size={12} />
                 Limpar filtro
@@ -327,7 +327,7 @@ export function NonConformitiesPage() {
                     <span className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100">
                       {c.open}
                     </span>
-                    <span className="text-xs text-neutral-500">
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400">
                       em aberto · {c.total} total
                     </span>
                   </div>
@@ -462,7 +462,7 @@ export function NonConformitiesPage() {
                     <button
                       onClick={() => openEdit(nc)}
                       aria-label="Editar"
-                      className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                     >
                       <Pencil size={16} />
                     </button>
@@ -470,7 +470,7 @@ export function NonConformitiesPage() {
                       <button
                         onClick={() => void handleQuickClose(nc)}
                         aria-label="Fechar NC"
-                        className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-950"
+                        className="rounded-lg p-2.5 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-950"
                       >
                         <CheckCircle2 size={16} />
                       </button>

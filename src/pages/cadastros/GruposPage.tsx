@@ -161,7 +161,7 @@ export function GruposPage() {
         </div>
       ) : groups.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nenhum grupo cadastrado. Comece criando "Carnes", "Pescados",
             "Vegetais", etc.
           </p>
@@ -190,7 +190,7 @@ export function GruposPage() {
                       </span>
                     )}
                   </p>
-                  <p className="text-xs text-neutral-500">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
                     {count} produto{count === 1 ? '' : 's'} · ordem{' '}
                     {g.sort_order}
                   </p>
@@ -201,7 +201,7 @@ export function GruposPage() {
                       onClick={() => openEdit(g)}
                       aria-label="Editar"
                       title="Editar"
-                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                     >
                       <Pencil size={16} />
                     </button>

@@ -59,7 +59,7 @@ export function SubscriptionPage() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
+          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
             <CreditCard size={14} /> Plano
           </div>
           <p className="mt-1 text-lg font-semibold text-neutral-800 dark:text-neutral-100">
@@ -77,7 +77,7 @@ export function SubscriptionPage() {
         </Card>
 
         <Card>
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
+          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
             <Building2 size={14} /> Empresas
           </div>
           <p className="mt-1 text-lg font-semibold text-neutral-800 dark:text-neutral-100">
@@ -102,7 +102,7 @@ export function SubscriptionPage() {
         </Card>
 
         <Card>
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
+          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
             Vigência
           </div>
           <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">
@@ -132,7 +132,7 @@ export function SubscriptionPage() {
                 }`}
               >
                 <span
-                  className={`mt-0.5 shrink-0 ${on ? 'text-neutral-600' : 'text-neutral-400'}`}
+                  className={`mt-0.5 shrink-0 ${on ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-400'}`}
                 >
                   {on ? <Check size={16} /> : <Lock size={16} />}
                 </span>
@@ -141,12 +141,12 @@ export function SubscriptionPage() {
                     className={`text-sm font-medium ${
                       on
                         ? 'text-neutral-800 dark:text-neutral-100'
-                        : 'text-neutral-500'
+                        : 'text-neutral-500 dark:text-neutral-400'
                     }`}
                   >
                     {m.label}
                   </p>
-                  <p className="text-xs text-neutral-500">{m.description}</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">{m.description}</p>
                 </div>
               </li>
             );

@@ -294,7 +294,7 @@ export function EstoquePage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada.
           </p>
         </Card>
@@ -304,7 +304,7 @@ export function EstoquePage() {
         </div>
       ) : filtered.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Sem saldo. Registre recebimentos para começar.
           </p>
         </Card>
@@ -313,7 +313,7 @@ export function EstoquePage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-neutral-200 text-left text-xs font-medium uppercase tracking-wide text-neutral-500">
+                <tr className="border-b border-neutral-200 dark:border-neutral-800 text-left text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
                   <th className="px-2 py-2">Produto</th>
                   <th className="px-2 py-2">Lote</th>
                   <th className="px-2 py-2 text-right">Saldo</th>
@@ -329,27 +329,27 @@ export function EstoquePage() {
                   return (
                     <tr
                       key={`${r.product_id}-${r.batch}`}
-                      className="border-b border-neutral-100"
+                      className="border-b border-neutral-100 dark:border-neutral-800"
                     >
                       <td className="px-2 py-2">
                         <div className="flex items-center gap-2">
                           <Boxes size={14} className="text-neutral-400" />
-                          <span className="font-medium text-neutral-800">
+                          <span className="font-medium text-neutral-800 dark:text-neutral-100">
                             {r.product?.name ?? '—'}
                           </span>
                           {r.product?.category && (
-                            <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] text-neutral-500">
+                            <span className="rounded bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 text-[10px] text-neutral-500 dark:text-neutral-400">
                               {r.product.category}
                             </span>
                           )}
                         </div>
                       </td>
-                      <td className="px-2 py-2 text-neutral-600">{r.batch}</td>
-                      <td className="px-2 py-2 text-right font-medium text-neutral-800">
+                      <td className="px-2 py-2 text-neutral-600 dark:text-neutral-300">{r.batch}</td>
+                      <td className="px-2 py-2 text-right font-medium text-neutral-800 dark:text-neutral-100">
                         {Number(r.balance).toLocaleString('pt-BR', {
                           maximumFractionDigits: 3,
                         })}{' '}
-                        <span className="text-xs text-neutral-500">
+                        <span className="text-xs text-neutral-500 dark:text-neutral-400">
                           {RECEIVING_UNIT_LABELS[r.unit]}
                         </span>
                       </td>
@@ -361,7 +361,7 @@ export function EstoquePage() {
                                 ? 'text-red-600'
                                 : expiringSoon
                                   ? 'text-amber-600'
-                                  : 'text-neutral-600'
+                                  : 'text-neutral-600 dark:text-neutral-300'
                             }`}
                           >
                             {(expired || expiringSoon) && (
@@ -382,7 +382,7 @@ export function EstoquePage() {
                       <td className="px-2 py-2 text-right">
                         <button
                           onClick={() => openExit(r)}
-                          className="rounded-lg bg-neutral-100 px-2 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-200"
+                          className="rounded-lg bg-neutral-100 dark:bg-neutral-800 px-2 py-1 text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200"
                         >
                           Dar saída
                         </button>

@@ -185,7 +185,7 @@ export function ValidadesPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada.
           </p>
         </Card>
@@ -195,7 +195,7 @@ export function ValidadesPage() {
         </div>
       ) : filtered.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nenhuma etiqueta viva. Imprima etiquetas em /imprimir para começar.
           </p>
         </Card>
@@ -206,10 +206,10 @@ export function ValidadesPage() {
             if (items.length === 0) return null;
             return (
               <section key={bucket}>
-                <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold text-neutral-700">
+                <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                   <CalendarClock size={16} className="text-neutral-400" />
                   {BUCKET_LABELS[bucket]}
-                  <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs font-normal text-neutral-500">
+                  <span className="rounded bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 text-xs font-normal text-neutral-500 dark:text-neutral-400">
                     {items.length}
                   </span>
                 </h2>
@@ -232,7 +232,7 @@ export function ValidadesPage() {
                               {l.product_name_snapshot}
                             </p>
                             {l.supplier && (
-                              <p className="truncate text-xs text-neutral-500">
+                              <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
                                 {l.supplier}
                               </p>
                             )}
@@ -241,13 +241,13 @@ export function ValidadesPage() {
                             className={`shrink-0 rounded px-2 py-0.5 text-xs font-semibold ${
                               isToday
                                 ? 'bg-amber-100 text-amber-800'
-                                : 'bg-neutral-100 text-neutral-600'
+                                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300'
                             }`}
                           >
                             {countdownLabel(exp, now)}
                           </span>
                         </div>
-                        <p className="flex items-center gap-1 text-xs text-neutral-500">
+                        <p className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
                           {l.storage_condition === 'congelado' ? (
                             <Snowflake size={12} />
                           ) : l.storage_condition === 'refrigerado' ? (

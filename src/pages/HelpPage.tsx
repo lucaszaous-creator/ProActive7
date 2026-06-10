@@ -278,7 +278,7 @@ export function HelpPage() {
                                   >
                                     <CheckCircle2
                                       size={14}
-                                      className="mt-0.5 shrink-0 text-neutral-500"
+                                      className="mt-0.5 shrink-0 text-neutral-500 dark:text-neutral-400"
                                     />
                                     <span>{step}</span>
                                   </li>
@@ -388,7 +388,7 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                           >
                             <CheckCircle2
                               size={14}
-                              className="mt-0.5 shrink-0 text-neutral-500"
+                              className="mt-0.5 shrink-0 text-neutral-500 dark:text-neutral-400"
                             />
                             <span>{c}</span>
                           </li>

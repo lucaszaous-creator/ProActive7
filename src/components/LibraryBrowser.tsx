@@ -135,7 +135,7 @@ export function LibraryBrowser({
       }
     >
       <div className="space-y-2">
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-neutral-500 dark:text-neutral-400">
           <Globe size={11} className="mr-1 inline" />
           Modelos publicados pela plataforma. Clique em "Usar como modelo" para
           criar uma cópia editável dentro da sua empresa.
@@ -145,7 +145,7 @@ export function LibraryBrowser({
             <Spinner />
           </div>
         ) : rows.length === 0 ? (
-          <p className="py-4 text-center text-sm text-neutral-500">
+          <p className="py-4 text-center text-sm text-neutral-500 dark:text-neutral-400">
             Nenhum modelo oficial publicado nesta categoria ainda.
           </p>
         ) : (
@@ -158,7 +158,7 @@ export function LibraryBrowser({
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{r.name}</p>
                   {r.details ? (
-                    <p className="truncate text-xs text-neutral-500">
+                    <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
                       {r.details}
                     </p>
                   ) : null}

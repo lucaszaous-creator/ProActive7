@@ -115,12 +115,12 @@ export function PlatformLibraryPage() {
         <ListSkeleton rows={5} />
       ) : (
         <Card>
-          <p className="mb-3 text-xs text-neutral-500">
+          <p className="mb-3 text-xs text-neutral-500 dark:text-neutral-400">
             {globalCount} de {rows.length} marcados como{' '}
             {tab === 'products' ? 'seed' : 'global'}.
           </p>
           {rows.length === 0 ? (
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
               Nenhum item nesta categoria.
             </p>
           ) : (
@@ -141,7 +141,7 @@ export function PlatformLibraryPage() {
                       className="border-b border-neutral-100 dark:border-neutral-800"
                     >
                       <td className="py-2 font-medium">{r.name}</td>
-                      <td className="py-2 text-neutral-500">
+                      <td className="py-2 text-neutral-500 dark:text-neutral-400">
                         {r.company_id ? 'Org' : 'Plataforma'}
                       </td>
                       <td className="py-2 text-right">
@@ -151,7 +151,7 @@ export function PlatformLibraryPage() {
                             Global
                           </span>
                         ) : (
-                          <span className="text-xs text-neutral-500">—</span>
+                          <span className="text-xs text-neutral-500 dark:text-neutral-400">—</span>
                         )}
                       </td>
                       <td className="py-2 text-right">
@@ -161,7 +161,7 @@ export function PlatformLibraryPage() {
                           className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs disabled:opacity-50 ${
                             r.is_flag
                               ? 'border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900'
-                              : 'border-neutral-200 text-neutral-700 hover:bg-neutral-50 dark:border-neutral-900'
+                              : 'border-neutral-200 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:border-neutral-900'
                           }`}
                         >
                           {r.is_flag ? (

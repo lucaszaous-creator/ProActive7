@@ -62,7 +62,7 @@ const RESULT_OPTIONS: {
     icon: Check,
     classes:
       'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800',
-    activeClasses: 'border-neutral-500 bg-neutral-50 text-neutral-700',
+    activeClasses: 'border-neutral-500 bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200',
   },
   {
     value: 'NC',
@@ -78,7 +78,7 @@ const RESULT_OPTIONS: {
     icon: MinusCircle,
     classes:
       'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800',
-    activeClasses: 'border-neutral-500 bg-neutral-100 text-neutral-700',
+    activeClasses: 'border-neutral-500 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200',
   },
 ];
 
@@ -581,7 +581,7 @@ export function AuditDetailPage() {
   if (!audit) {
     return (
       <Card>
-        <p className="text-sm text-neutral-600">Visita nao encontrada.</p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-300">Visita nao encontrada.</p>
       </Card>
     );
   }

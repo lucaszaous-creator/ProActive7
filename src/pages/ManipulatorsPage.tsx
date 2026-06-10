@@ -500,7 +500,7 @@ export function ManipulatorsPage() {
                         onClick={() => openAsoModal(m)}
                         aria-label="Registrar ASO"
                         title="Registrar ASO"
-                        className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-950"
+                        className="rounded-lg p-2.5 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-950"
                       >
                         <FileCheck2 size={16} />
                       </button>
@@ -515,7 +515,7 @@ export function ManipulatorsPage() {
                       <button
                         onClick={() => openEdit(m)}
                         aria-label="Editar"
-                        className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                       >
                         <Pencil size={16} />
                       </button>

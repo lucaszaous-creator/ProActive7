@@ -232,7 +232,7 @@ export function SiteCoursesPage() {
                       {c.summary}
                     </p>
                   ) : null}
-                  <div className="mt-1 flex flex-wrap gap-1 text-[10px] text-neutral-500">
+                  <div className="mt-1 flex flex-wrap gap-1 text-[10px] text-neutral-500 dark:text-neutral-400">
                     {c.duration ? (
                       <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
                         {c.duration}
@@ -312,7 +312,7 @@ export function SiteCoursesPage() {
                 <button
                   type="button"
                   onClick={() => setImagePath(null)}
-                  className="w-fit text-xs text-neutral-500 hover:text-red-600"
+                  className="w-fit text-xs text-neutral-500 dark:text-neutral-400 hover:text-red-600"
                 >
                   Remover imagem
                 </button>

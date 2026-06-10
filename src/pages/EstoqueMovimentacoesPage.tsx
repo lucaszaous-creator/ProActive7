@@ -111,13 +111,13 @@ export function EstoqueMovimentacoesPage() {
         </div>
       ) : filtered.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Sem movimentações no período.
           </p>
         </Card>
       ) : (
         <Card>
-          <ul className="divide-y divide-neutral-100">
+          <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
             {filtered.map((r) => {
               const isEntry = r.quantity_delta > 0;
               return (
@@ -125,7 +125,7 @@ export function EstoqueMovimentacoesPage() {
                   <span
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                       isEntry
-                        ? 'bg-neutral-50 text-neutral-600'
+                        ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300'
                         : 'bg-red-50 text-red-600'
                     }`}
                   >
@@ -136,10 +136,10 @@ export function EstoqueMovimentacoesPage() {
                     )}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-neutral-800">
+                    <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                       {r.product?.name ?? '—'} · lote {r.batch}
                     </p>
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
                       {STOCK_MOVEMENT_KIND_LABELS[r.kind]} ·{' '}
                       {formatDateTime(r.moved_at)}
                       {r.reason ? ` · ${r.reason}` : ''}
@@ -147,14 +147,14 @@ export function EstoqueMovimentacoesPage() {
                   </div>
                   <div
                     className={`text-sm font-medium ${
-                      isEntry ? 'text-neutral-700' : 'text-red-700'
+                      isEntry ? 'text-neutral-700 dark:text-neutral-200' : 'text-red-700'
                     }`}
                   >
                     {isEntry ? '+' : ''}
                     {Number(r.quantity_delta).toLocaleString('pt-BR', {
                       maximumFractionDigits: 3,
                     })}{' '}
-                    <span className="text-xs text-neutral-500">
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400">
                       {RECEIVING_UNIT_LABELS[r.unit]}
                     </span>
                   </div>

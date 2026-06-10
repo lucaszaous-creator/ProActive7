@@ -348,7 +348,7 @@ export function ProducaoPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada.
           </p>
         </Card>
@@ -356,13 +356,13 @@ export function ProducaoPage() {
         <ListSkeleton rows={5} />
       ) : labels.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nenhuma etiqueta ativa. Imprima etiquetas em Etiquetas.
           </p>
         </Card>
       ) : filtered.length === 0 ? (
         <Card className="flex flex-col items-center gap-3 text-center">
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nenhum item para este filtro.
           </p>
           <Button

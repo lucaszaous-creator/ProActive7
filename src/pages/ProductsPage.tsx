@@ -151,7 +151,7 @@ function ProductCard({
             {product.name}
           </h3>
           {product.category ? (
-            <p className="truncate text-xs text-neutral-500">
+            <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
               {product.category}
             </p>
           ) : null}
@@ -161,7 +161,7 @@ function ProductCard({
             onClick={onEdit}
             aria-label="Editar"
             title="Editar"
-            className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
           >
             <Pencil size={16} />
           </button>
@@ -546,7 +546,7 @@ export function ProductsPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada. Crie uma empresa em Empresas para
             começar.
           </p>
@@ -736,14 +736,14 @@ export function ProductsPage() {
                 </option>
               ))}
             </Select>
-            <p className="mt-1 text-xs text-neutral-500">
+            <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
               Aplicado automaticamente no wizard de impressão — o cozinheiro
               não escolhe.
             </p>
           </div>
 
           <div>
-            <p className="mb-2 text-sm font-medium text-neutral-700">
+            <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
               Validade após manipulação / abertura
             </p>
             <div className="flex flex-col gap-2">
@@ -752,7 +752,7 @@ export function ProductsPage() {
                   key={c}
                   className="grid grid-cols-[1fr_auto_auto] items-center gap-2"
                 >
-                  <span className="text-sm text-neutral-600">
+                  <span className="text-sm text-neutral-600 dark:text-neutral-300">
                     {STORAGE_CONDITION_LABELS[c]}
                   </span>
                   <input
@@ -767,7 +767,7 @@ export function ProductsPage() {
                         [c]: { ...prev[c], value: e.target.value },
                       }))
                     }
-                    className="w-20 rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
+                    className="w-20 rounded-lg border border-neutral-300 dark:border-neutral-700 px-2 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
                   />
                   <select
                     value={shelf[c].unit}
@@ -780,7 +780,7 @@ export function ProductsPage() {
                         },
                       }))
                     }
-                    className="rounded-lg border border-neutral-300 bg-white px-2 py-2 text-sm outline-none focus:border-neutral-800"
+                    className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white px-2 py-2 text-sm outline-none focus:border-neutral-800"
                   >
                     <option value="days">dias</option>
                     <option value="hours">horas</option>
@@ -794,7 +794,7 @@ export function ProductsPage() {
           </div>
 
           <div>
-            <p className="mb-2 text-sm font-medium text-neutral-700">
+            <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
               Alergênicos (RDC 26/2015)
             </p>
             <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
@@ -803,7 +803,7 @@ export function ProductsPage() {
                 return (
                   <label
                     key={a.key}
-                    className="flex items-start gap-1.5 text-xs text-neutral-700"
+                    className="flex items-start gap-1.5 text-xs text-neutral-700 dark:text-neutral-200"
                   >
                     <input
                       type="checkbox"
@@ -828,7 +828,7 @@ export function ProductsPage() {
             </p>
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-neutral-700">
+          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-200">
             <input
               type="checkbox"
               checked={active}

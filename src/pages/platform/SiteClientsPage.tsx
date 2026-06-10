@@ -288,7 +288,7 @@ export function SiteClientsPage() {
                 <button
                   type="button"
                   onClick={() => setLogoPath(null)}
-                  className="w-fit text-xs text-neutral-500 hover:text-red-600"
+                  className="w-fit text-xs text-neutral-500 dark:text-neutral-400 hover:text-red-600"
                 >
                   Remover logo
                 </button>

@@ -199,7 +199,7 @@ export function PhotosPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
@@ -207,7 +207,7 @@ export function PhotosPage() {
         <ListSkeleton rows={4} />
       ) : photos.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma foto enviada ainda.
           </p>
         </Card>
@@ -220,7 +220,7 @@ export function PhotosPage() {
                 onClick={() => p.url && setViewing(p)}
                 disabled={!p.url}
                 title={p.url ? 'Clique para expandir' : ''}
-                className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-t-xl bg-neutral-100 transition hover:opacity-90 disabled:cursor-default"
+                className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-t-xl bg-neutral-100 dark:bg-neutral-800 transition hover:opacity-90 disabled:cursor-default"
               >
                 {p.url ? (
                   <img
@@ -234,7 +234,7 @@ export function PhotosPage() {
               </button>
               <div className="flex items-center justify-between gap-2 p-3">
                 <div className="min-w-0">
-                  <p className="truncate text-xs font-medium text-neutral-700">
+                  <p className="truncate text-xs font-medium text-neutral-700 dark:text-neutral-200">
                     {p.original_name ?? 'foto'}
                   </p>
                   <p className="text-xs text-neutral-400">
