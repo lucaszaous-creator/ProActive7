@@ -16,6 +16,11 @@ import {
   ShieldAlert,
   AlertTriangle,
   PackageSearch,
+  Package,
+  CalendarCheck,
+  CalendarX2,
+  FolderTree,
+  Download,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { softDelete } from '@/lib/supabaseHelpers';
@@ -42,6 +47,9 @@ import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { Badge } from '@/components/ui/Badge';
+import { StatCard } from '@/components/ui/charts';
+import { downloadCsv } from '@/lib/csv';
 import { ProductCsvImport } from '@/components/ProductCsvImport';
 import { LibraryBrowser } from '@/components/LibraryBrowser';
 import { BookOpen } from 'lucide-react';
@@ -63,6 +71,47 @@ interface GroupOption {
 
 const GROUP_ALL = 'all';
 const GROUP_NONE = 'none';
+
+type QuickFilter = 'all' | 'no_shelf' | 'no_group';
+
+function hasShelfLife(p: ProductWithShelfLives): boolean {
+  return (p.product_shelf_lives?.length ?? 0) > 0;
+}
+
+function QuickFilterChip({
+  label,
+  count,
+  active,
+  onClick,
+}: {
+  label: string;
+  count: number;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+        active
+          ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
+          : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+      }`}
+    >
+      {label}{' '}
+      <span
+        className={`tabular-nums text-xs ${
+          active
+            ? 'text-neutral-300 dark:text-neutral-600'
+            : 'text-neutral-400 dark:text-neutral-500'
+        }`}
+      >
+        {count}
+      </span>
+    </button>
+  );
+}
 
 interface ShelfForm {
   value: string;
@@ -205,9 +254,9 @@ function ProductCard({
 
       <div className="mt-auto flex flex-wrap gap-1.5 pt-1">
         {rules.length === 0 ? (
-          <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
-            <AlertTriangle size={12} /> Sem regra de validade
-          </span>
+          <Badge variant="warning" icon={AlertTriangle}>
+            Sem validade
+          </Badge>
         ) : (
           CONDITIONS.filter((c) =>
             rules.some((r) => r.storage_condition === c),
@@ -268,6 +317,7 @@ export function ProductsPage() {
 
   const [search, setSearch] = useState('');
   const [groupFilter, setGroupFilter] = useState<string>(GROUP_ALL);
+  const [quickFilter, setQuickFilter] = useState<QuickFilter>('all');
   const [showInactive, setShowInactive] = useState(false);
   const [csvOpen, setCsvOpen] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
@@ -458,7 +508,22 @@ export function ProductsPage() {
 
   const searchTerm = search.trim().toLowerCase();
 
-  // Busca + status (sem o filtro de grupo) — base para contar por grupo.
+  // KPIs do catálogo (sobre tudo que foi carregado, antes dos filtros).
+  const kpis = useMemo(() => {
+    const total = products.length;
+    const withShelf = products.filter(hasShelfLife).length;
+    const groupsInUse = new Set(
+      products.filter((p) => p.group_id).map((p) => p.group_id as string),
+    ).size;
+    return {
+      total,
+      withShelf,
+      withoutShelf: total - withShelf,
+      groupsInUse,
+    };
+  }, [products]);
+
+  // Busca + status (sem os filtros de grupo/rápido) — base para contar.
   const baseFiltered = useMemo(
     () =>
       products.filter((p) => {
@@ -472,22 +537,56 @@ export function ProductsPage() {
     [products, showInactive, searchTerm],
   );
 
+  const quickCounts = useMemo(
+    () => ({
+      all: baseFiltered.length,
+      noShelf: baseFiltered.filter((p) => !hasShelfLife(p)).length,
+      noGroup: baseFiltered.filter((p) => !p.group_id).length,
+    }),
+    [baseFiltered],
+  );
+
+  const quickFiltered = useMemo(() => {
+    if (quickFilter === 'no_shelf')
+      return baseFiltered.filter((p) => !hasShelfLife(p));
+    if (quickFilter === 'no_group')
+      return baseFiltered.filter((p) => !p.group_id);
+    return baseFiltered;
+  }, [baseFiltered, quickFilter]);
+
   const groupCounts = useMemo(() => {
     const counts = new Map<string, number>();
     let none = 0;
-    for (const p of baseFiltered) {
+    for (const p of quickFiltered) {
       if (p.group_id) counts.set(p.group_id, (counts.get(p.group_id) ?? 0) + 1);
       else none += 1;
     }
-    return { counts, none, all: baseFiltered.length };
-  }, [baseFiltered]);
+    return { counts, none, all: quickFiltered.length };
+  }, [quickFiltered]);
 
   const filtered = useMemo(() => {
-    if (groupFilter === GROUP_ALL) return baseFiltered;
+    if (groupFilter === GROUP_ALL) return quickFiltered;
     if (groupFilter === GROUP_NONE)
-      return baseFiltered.filter((p) => !p.group_id);
-    return baseFiltered.filter((p) => p.group_id === groupFilter);
-  }, [baseFiltered, groupFilter]);
+      return quickFiltered.filter((p) => !p.group_id);
+    return quickFiltered.filter((p) => p.group_id === groupFilter);
+  }, [quickFiltered, groupFilter]);
+
+  function exportCsv() {
+    downloadCsv(
+      'produtos',
+      ['Produto', 'Grupo', 'Prazos cadastrados'],
+      products.map((p) => [
+        p.name,
+        p.group_id ? (groupMap.get(p.group_id)?.name ?? '') : '',
+        (p.product_shelf_lives ?? [])
+          .map(
+            (r) =>
+              `${STORAGE_CONDITION_LABELS[r.storage_condition]}: ${r.validity_value} ${VALIDITY_UNIT_LABELS[r.validity_unit]}`,
+          )
+          .join(' | '),
+      ]),
+    );
+  }
 
   return (
     <div className="mx-auto max-w-5xl">
@@ -496,6 +595,14 @@ export function ProductsPage() {
         subtitle="Cadastro de produtos e regras de validade."
         actions={
           <>
+            <Button
+              variant="secondary"
+              onClick={exportCsv}
+              disabled={products.length === 0}
+            >
+              <Download size={18} />
+              Exportar CSV
+            </Button>
             <Button
               variant="secondary"
               onClick={() => setLibraryOpen(true)}
@@ -558,9 +665,63 @@ export function ProductsPage() {
           icon={PackageSearch}
           title="Nenhum produto cadastrado ainda"
           description="Cadastre seus produtos para gerar etiquetas de validade automaticamente, com os prazos da RDC 216."
+          action={
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button onClick={openCreate} disabled={!companyId}>
+                <Plus size={18} />
+                Novo produto
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => setLibraryOpen(true)}
+                disabled={!companyId}
+              >
+                <BookOpen size={18} />
+                Clonar da biblioteca
+              </Button>
+            </div>
+          }
         />
       ) : (
         <>
+          {/* KPIs do catálogo */}
+          <div className="mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard
+              icon={<Package size={17} />}
+              label="Total de produtos"
+              value={kpis.total.toLocaleString('pt-BR')}
+              tone="teal"
+            />
+            <StatCard
+              icon={<CalendarCheck size={17} />}
+              label="Com validade cadastrada"
+              value={kpis.withShelf.toLocaleString('pt-BR')}
+              tone="emerald"
+              hint={
+                kpis.total > 0
+                  ? `${Math.round((kpis.withShelf / kpis.total) * 100)}% do catálogo`
+                  : undefined
+              }
+            />
+            <StatCard
+              icon={<CalendarX2 size={17} />}
+              label="Sem validade"
+              value={kpis.withoutShelf.toLocaleString('pt-BR')}
+              tone={kpis.withoutShelf > 0 ? 'amber' : 'neutral'}
+              hint={
+                kpis.withoutShelf > 0
+                  ? 'etiqueta sem prazo automático'
+                  : undefined
+              }
+            />
+            <StatCard
+              icon={<FolderTree size={17} />}
+              label="Grupos em uso"
+              value={kpis.groupsInUse.toLocaleString('pt-BR')}
+              tone="blue"
+            />
+          </div>
+
           <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="relative max-w-xs flex-1">
               <Search
@@ -584,6 +745,28 @@ export function ProductsPage() {
               />
               Mostrar inativos
             </label>
+          </div>
+
+          {/* Filtros rápidos — pendências de cadastro */}
+          <div className="mb-3 flex flex-wrap gap-2">
+            <QuickFilterChip
+              label="Todos"
+              count={quickCounts.all}
+              active={quickFilter === 'all'}
+              onClick={() => setQuickFilter('all')}
+            />
+            <QuickFilterChip
+              label="Sem validade"
+              count={quickCounts.noShelf}
+              active={quickFilter === 'no_shelf'}
+              onClick={() => setQuickFilter('no_shelf')}
+            />
+            <QuickFilterChip
+              label="Sem grupo"
+              count={quickCounts.noGroup}
+              active={quickFilter === 'no_group'}
+              onClick={() => setQuickFilter('no_group')}
+            />
           </div>
 
           {/* Filtro por grupo — chips coloridos para localizar rápido */}
