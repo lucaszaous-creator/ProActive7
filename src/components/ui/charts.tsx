@@ -365,6 +365,128 @@ export function DonutChart({
 }
 
 /* ------------------------------------------------------------------ */
+/* TrendArea — linha com área preenchida (série temporal)              */
+/* ------------------------------------------------------------------ */
+export function TrendArea({
+  points,
+  height = 160,
+  color = '#14b8a6',
+  yMin,
+  yMax,
+  formatValue = (v: number) => v.toLocaleString('pt-BR'),
+  maxTicks = 8,
+}: {
+  points: { label: string; value: number }[];
+  height?: number;
+  color?: string;
+  /** Limites fixos do eixo Y (ex.: 0–100 para score). */
+  yMin?: number;
+  yMax?: number;
+  formatValue?: (v: number) => string;
+  maxTicks?: number;
+}) {
+  const [active, setActive] = useState<number | null>(null);
+  const W = 600;
+  const H = 200;
+  const PAD = 8;
+  const lo = yMin ?? Math.min(...points.map((p) => p.value));
+  const hi = yMax ?? Math.max(...points.map((p) => p.value));
+  const span = Math.max(1e-6, hi - lo);
+  const n = points.length;
+  const x = (i: number) =>
+    n <= 1 ? W / 2 : PAD + (i / (n - 1)) * (W - PAD * 2);
+  const y = (v: number) => PAD + (1 - (v - lo) / span) * (H - PAD * 2);
+  const line = points
+    .map((p, i) => `${i === 0 ? 'M' : 'L'}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`)
+    .join(' ');
+  const area = `${line} L${x(n - 1).toFixed(1)},${H - PAD} L${x(0).toFixed(1)},${H - PAD} Z`;
+  const gid = `trend-${color.replace(/[^a-z0-9]/gi, '')}`;
+  const labelEvery = Math.max(1, Math.ceil(n / maxTicks));
+  const last = points[n - 1];
+
+  if (n === 0) return null;
+  return (
+    <div>
+      <div className="relative" onMouseLeave={() => setActive(null)}>
+        {active !== null ? (
+          <div
+            className="pointer-events-none absolute -top-1 z-20 -translate-x-1/2 whitespace-nowrap rounded-lg bg-neutral-900 px-2 py-1 text-[10px] font-medium text-white shadow-lg dark:bg-neutral-100 dark:text-neutral-900"
+            style={{ left: `${(x(active) / W) * 100}%` }}
+          >
+            {points[active].label}:{' '}
+            <b className="tabular-nums">{formatValue(points[active].value)}</b>
+          </div>
+        ) : null}
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          style={{ height }}
+          className="w-full"
+          preserveAspectRatio="none"
+          onMouseMove={(e) => {
+            const rect = e.currentTarget.getBoundingClientRect();
+            const fx = ((e.clientX - rect.left) / rect.width) * W;
+            const i = Math.round(((fx - PAD) / (W - PAD * 2)) * (n - 1));
+            setActive(Math.max(0, Math.min(n - 1, i)));
+          }}
+        >
+          <defs>
+            <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={color} stopOpacity={0.28} />
+              <stop offset="100%" stopColor={color} stopOpacity={0.02} />
+            </linearGradient>
+          </defs>
+          <path d={area} fill={`url(#${gid})`} />
+          <path
+            d={line}
+            fill="none"
+            stroke={color}
+            strokeWidth={2.5}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            vectorEffect="non-scaling-stroke"
+          />
+          {active !== null ? (
+            <line
+              x1={x(active)}
+              y1={PAD}
+              x2={x(active)}
+              y2={H - PAD}
+              stroke={color}
+              strokeOpacity={0.35}
+              strokeWidth={1}
+              vectorEffect="non-scaling-stroke"
+            />
+          ) : null}
+          <circle
+            cx={x(active ?? n - 1)}
+            cy={y(points[active ?? n - 1].value)}
+            r={4}
+            fill={color}
+            className="stroke-white dark:stroke-neutral-900"
+            strokeWidth={2}
+          />
+        </svg>
+      </div>
+      <div className="mt-1 flex justify-between gap-1">
+        {points.map((p, i) => (
+          <span
+            key={p.label + i}
+            className="flex-1 truncate text-center text-[9px] text-neutral-400 dark:text-neutral-500"
+          >
+            {i % labelEvery === 0 || i === n - 1 ? p.label : ''}
+          </span>
+        ))}
+      </div>
+      {last ? (
+        <p className="mt-1 text-right text-xs text-neutral-500 dark:text-neutral-400">
+          último: <b className="tabular-nums text-neutral-900 dark:text-neutral-100">{formatValue(last.value)}</b>
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* Heatmap — grade de intensidade (ex.: hora × dia da semana)          */
 /* ------------------------------------------------------------------ */
 export function Heatmap({

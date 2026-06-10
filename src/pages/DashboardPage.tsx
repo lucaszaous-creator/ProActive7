@@ -12,6 +12,7 @@ import {
   fetchPortfolio,
   fetchRecentActivity,
   fetchUpcomingAudits,
+  saveComplianceSnapshots,
   type ActivityItem,
   type EnrichedCompany,
   type PendingChecklist,
@@ -26,6 +27,7 @@ import { UpcomingAudits } from '@/components/dashboard/UpcomingAudits';
 import { RecentActivity } from '@/components/dashboard/RecentActivity';
 import { PropertyTodayTasks } from '@/components/dashboard/PropertyTodayTasks';
 import { NutriAlerts } from '@/components/dashboard/NutriAlerts';
+import { ScoreTrend } from '@/components/dashboard/ScoreTrend';
 
 interface ExpiringLabel {
   id: string;
@@ -91,6 +93,9 @@ export function DashboardPage() {
         setUpcomingCount(count);
         setUpcomingAudits(upc);
         setActivity(act);
+        // Registra o snapshot diário do score (fire-and-forget) — alimenta
+        // a curva "Evolução do compliance" sem cron pago.
+        void saveComplianceSnapshots(pf);
       })
       .catch((e: Error) => {
         if (!cancelled) {
@@ -196,6 +201,7 @@ export function DashboardPage() {
       {showPortfolio ? (
         <>
           {stats ? <MasterKPIs stats={stats} /> : null}
+          <ScoreTrend />
           {isNutritionist && <NutriAlerts />}
           <PortfolioSummary
             loading={masterLoading}

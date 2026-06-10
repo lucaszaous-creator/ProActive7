@@ -2,8 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
   CalendarClock,
+  CalendarDays,
+  Clock3,
   AlertTriangle,
+  Download,
+  Printer,
   Snowflake,
+  Tag,
   ThermometerSnowflake,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -23,6 +28,9 @@ import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ColumnChart, DonutChart, StatCard } from '@/components/ui/charts';
+import { downloadCsv } from '@/lib/csv';
 
 function bucketOf(
   expiry: Date,
@@ -125,6 +133,74 @@ export function ValidadesPage() {
     return acc;
   }, [filtered, now]);
 
+  // KPIs sobre o conjunto completo carregado (não afetados pela busca).
+  const stats = useMemo(() => {
+    const acc = { today: 0, tomorrow: 0, week: 0, later: 0 };
+    labels.forEach((l) => {
+      acc[bucketOf(new Date(l.expiry_at), now)] += 1;
+    });
+    return {
+      today: acc.today,
+      tomorrow: acc.tomorrow,
+      next7: acc.today + acc.tomorrow + acc.week,
+      total: labels.length,
+    };
+  }, [labels, now]);
+
+  // Vencimentos por dia nos próximos 14 dias (eixo contínuo, com zeros).
+  const next14Days = useMemo(() => {
+    const start = new Date(now);
+    start.setHours(0, 0, 0, 0);
+    const days = Array.from({ length: 14 }, (_, i) => {
+      const d = new Date(start);
+      d.setDate(d.getDate() + i);
+      return d;
+    });
+    const counts = new Map<string, number>();
+    labels.forEach((l) => {
+      const d = new Date(l.expiry_at);
+      const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    });
+    return days.map((d) => {
+      const dd = d.getDate().toString().padStart(2, '0');
+      const mm = (d.getMonth() + 1).toString().padStart(2, '0');
+      return {
+        label: `${dd}/${mm}`,
+        value:
+          counts.get(`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`) ?? 0,
+        hint: `${dd}/${mm}`,
+      };
+    });
+  }, [labels, now]);
+
+  // Distribuição por condição de armazenamento.
+  const byCondition = useMemo(() => {
+    const counts = new Map<string, number>();
+    labels.forEach((l) => {
+      const label =
+        STORAGE_CONDITION_LABELS[l.storage_condition as StorageCondition] ??
+        'Outros';
+      counts.set(label, (counts.get(label) ?? 0) + 1);
+    });
+    return Array.from(counts, ([label, value]) => ({ label, value }));
+  }, [labels]);
+
+  function exportCsv() {
+    downloadCsv(
+      'validades',
+      ['Produto', 'Lote', 'Fornecedor', 'Condição', 'Vence em'],
+      filtered.map((l) => [
+        l.product_name_snapshot,
+        l.batch ?? '',
+        l.supplier ?? '',
+        STORAGE_CONDITION_LABELS[l.storage_condition as StorageCondition] ??
+          '',
+        formatDateTime(new Date(l.expiry_at)),
+      ]),
+    );
+  }
+
   async function handleDiscard() {
     if (!discarding) return;
     setDiscardBusy(true);
@@ -157,6 +233,17 @@ export function ValidadesPage() {
             Etiquetas vivas, ordenadas por quem vence primeiro. Use para evitar
             servir vencido e reduzir desperdício.
           </>
+        }
+        actions={
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={exportCsv}
+            disabled={filtered.length === 0}
+          >
+            <Download size={15} />
+            Exportar CSV
+          </Button>
         }
       />
 
@@ -194,13 +281,61 @@ export function ValidadesPage() {
           <Spinner className="h-8 w-8" />
         </div>
       ) : filtered.length === 0 ? (
-        <Card>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Nenhuma etiqueta viva. Imprima etiquetas em /imprimir para começar.
-          </p>
-        </Card>
+        <EmptyState
+          icon={Printer}
+          title="Nenhuma etiqueta viva"
+          description="Imprima etiquetas no wizard de impressão e o controle de validades aparece aqui em tempo real."
+        />
       ) : (
         <div className="flex flex-col gap-6">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard
+              icon={<AlertTriangle size={17} />}
+              label="Vencendo hoje"
+              value={stats.today.toLocaleString('pt-BR')}
+              tone={stats.today > 0 ? 'red' : 'neutral'}
+            />
+            <StatCard
+              icon={<Clock3 size={17} />}
+              label="Amanhã"
+              value={stats.tomorrow.toLocaleString('pt-BR')}
+              tone="amber"
+            />
+            <StatCard
+              icon={<CalendarDays size={17} />}
+              label="Próximos 7 dias"
+              value={stats.next7.toLocaleString('pt-BR')}
+              tone="blue"
+            />
+            <StatCard
+              icon={<Tag size={17} />}
+              label="Total ativo"
+              value={stats.total.toLocaleString('pt-BR')}
+              tone="teal"
+            />
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card>
+              <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+                Vencimentos nos próximos 14 dias
+              </h2>
+              <ColumnChart
+                data={next14Days}
+                height={160}
+                showAvg={false}
+                color="#f59e0b"
+              />
+            </Card>
+            {byCondition.length > 0 && (
+              <Card>
+                <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+                  Por condição de armazenamento
+                </h2>
+                <DonutChart items={byCondition} centerLabel="etiquetas" />
+              </Card>
+            )}
+          </div>
           {(['today', 'tomorrow', 'week', 'later'] as const).map((bucket) => {
             const items = grouped[bucket];
             if (items.length === 0) return null;

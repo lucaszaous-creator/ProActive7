@@ -229,6 +229,56 @@ export async function generateComplianceReportPdf(
     y += 12;
   }
 
+  // Evolução do score (compliance_snapshots — série construída pelo
+  // painel; só entra no PDF quando há pelo menos 2 dias de histórico).
+  const { data: snaps } = await supabase
+    .from('compliance_snapshots')
+    .select('snapshot_date, score')
+    .eq('company_id', company.company_id)
+    .order('snapshot_date', { ascending: true })
+    .limit(60);
+  const trend = ((snaps ?? []) as { snapshot_date: string; score: number }[])
+    .map((s) => ({ date: s.snapshot_date, score: Number(s.score) }));
+  if (trend.length >= 2) {
+    if (y > 215) {
+      doc.addPage();
+      y = 20;
+    }
+    y = drawSectionTitle(doc, 'Evolução do score', y);
+    const chartX = 14;
+    const chartW = doc.internal.pageSize.getWidth() - 28;
+    const chartH = 26;
+    const baseY = y + chartH;
+    const gap = 1;
+    const barW = Math.min(8, chartW / trend.length - gap);
+    // Linha-guia dos tiers (85 verde / 70 âmbar)
+    doc.setDrawColor(...PRINT_RGB.hair);
+    doc.setLineWidth(0.2);
+    doc.line(chartX, baseY - chartH * 0.85, chartX + chartW, baseY - chartH * 0.85);
+    doc.line(chartX, baseY - chartH * 0.7, chartX + chartW, baseY - chartH * 0.7);
+    trend.forEach((p, i) => {
+      const h = Math.max(0.8, (p.score / 100) * chartH);
+      const bx = chartX + (i * chartW) / trend.length;
+      if (p.score >= 85) doc.setFillColor(16, 185, 129);
+      else if (p.score >= 70) doc.setFillColor(245, 158, 11);
+      else doc.setFillColor(239, 68, 68);
+      doc.roundedRect(bx, baseY - h, barW, h, 0.6, 0.6, 'F');
+    });
+    doc.setFontSize(7);
+    doc.setTextColor(...PRINT_RGB.muted);
+    const fmt = (iso: string) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
+    doc.text(fmt(trend[0].date), chartX, baseY + 4);
+    doc.text(
+      `${fmt(trend[trend.length - 1].date)} — ${Math.round(
+        trend[trend.length - 1].score,
+      )} pts`,
+      chartX + chartW,
+      baseY + 4,
+      { align: 'right' },
+    );
+    y = baseY + 12;
+  }
+
   // Pendências e recomendações
   y = drawSectionTitle(doc, 'Pendências e recomendações', y);
   doc.setFontSize(9);
