@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { formatDateTime } from '@/lib/dates';
 import {
@@ -97,23 +98,23 @@ const ACTIONS: {
 ];
 
 const TONE_BG: Record<string, string> = {
-  emerald: 'bg-neutral-50 text-neutral-700 hover:bg-neutral-100',
-  blue: 'bg-blue-50 text-blue-700 hover:bg-blue-100',
-  amber: 'bg-amber-50 text-amber-700 hover:bg-amber-100',
-  red: 'bg-red-50 text-red-700 hover:bg-red-100',
-  neutral: 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200',
+  emerald: 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800',
+  blue: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-200 hover:bg-blue-100',
+  amber: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-200 hover:bg-amber-100',
+  red: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200 hover:bg-red-100',
+  neutral: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200',
 };
 
 const ISSUE_LEVEL_META: Record<
   SystemIssue['level'],
   { tone: string; icon: LucideIcon }
 > = {
-  error: { tone: 'bg-red-50 text-red-700 border-red-200', icon: AlertOctagon },
+  error: { tone: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200 border-red-200 dark:border-red-900', icon: AlertOctagon },
   warn: {
-    tone: 'bg-amber-50 text-amber-700 border-amber-200',
+    tone: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-200 border-amber-200 dark:border-amber-900',
     icon: AlertTriangle,
   },
-  info: { tone: 'bg-blue-50 text-blue-700 border-blue-200', icon: Info },
+  info: { tone: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-900', icon: Info },
 };
 
 export function PlatformControlPage() {
@@ -189,30 +190,26 @@ export function PlatformControlPage() {
       : `${issues.length} ${issues.length === 1 ? 'problema detectado' : 'problemas detectados'}`;
   const healthTone =
     issues.length === 0
-      ? 'bg-neutral-50 text-neutral-700'
+      ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200'
       : issues.some((i) => i.level === 'error')
-        ? 'bg-red-50 text-red-700'
-        : 'bg-amber-50 text-amber-700';
+        ? 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200'
+        : 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-200';
   const HealthIcon = issues.length === 0 ? CheckCircle2 : AlertTriangle;
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Centro de controle
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Saúde da plataforma, diagnóstico e atalhos de administrador.
-          </p>
-        </div>
-        <div
-          className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${healthTone}`}
-        >
-          <HealthIcon size={18} />
-          {healthLabel}
-        </div>
-      </div>
+      <PageHeader
+        title="Centro de controle"
+        subtitle="Saúde da plataforma, diagnóstico e atalhos de administrador."
+        actions={
+          <div
+            className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium ${healthTone}`}
+          >
+            <HealthIcon size={18} />
+            {healthLabel}
+          </div>
+        }
+      />
 
       {loading ? (
         <ListSkeleton rows={5} />
@@ -267,7 +264,7 @@ export function PlatformControlPage() {
             </h2>
             {issues.length === 0 ? (
               <Card>
-                <div className="flex items-center gap-3 text-sm text-neutral-700">
+                <div className="flex items-center gap-3 text-sm text-neutral-700 dark:text-neutral-200">
                   <CheckCircle2 size={18} />
                   Nenhum problema detectado nas verificações automáticas.
                 </div>
@@ -348,14 +345,14 @@ export function PlatformControlPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <Card>
                 <div className="flex items-start gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-neutral-50 text-neutral-600">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300">
                     <Send size={18} />
                   </span>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-neutral-800">
+                    <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
                       Push de teste para organização
                     </p>
-                    <p className="mb-2 text-xs text-neutral-500">
+                    <p className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
                       Confirma se as inscrições push estão funcionando para os
                       usuários da org.
                     </p>
@@ -368,14 +365,14 @@ export function PlatformControlPage() {
 
               <Card>
                 <div className="flex items-start gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
                     <Printer size={18} />
                   </span>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-neutral-800">
+                    <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
                       Testar impressão de etiqueta
                     </p>
-                    <p className="mb-2 text-xs text-neutral-500">
+                    <p className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
                       Abre o modo wizard com uma empresa selecionada para você
                       conferir como sai uma etiqueta em produção.
                     </p>
@@ -390,14 +387,14 @@ export function PlatformControlPage() {
 
               <Card>
                 <div className="flex items-start gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300">
                     <Truck size={18} />
                   </span>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-neutral-800">
+                    <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
                       Testar fluxo de recebimento
                     </p>
-                    <p className="mb-2 text-xs text-neutral-500">
+                    <p className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
                       Vai para o cadastro de fornecedores e em seguida ao
                       registro de recebimento para validar a cadeia até o
                       estoque.
@@ -413,14 +410,14 @@ export function PlatformControlPage() {
 
               <Card>
                 <div className="flex items-start gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-600">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
                     <Activity size={18} />
                   </span>
                   <div className="flex-1">
-                    <p className="text-sm font-semibold text-neutral-800">
+                    <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
                       Atualizar diagnóstico
                     </p>
-                    <p className="mb-2 text-xs text-neutral-500">
+                    <p className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
                       Reroda todas as verificações deste painel.
                     </p>
                     <Button
@@ -444,35 +441,35 @@ export function PlatformControlPage() {
               </h2>
               <Link
                 to="/admin/trilha"
-                className="flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-800"
+                className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-800"
               >
                 Ver tudo <ChevronRight size={14} />
               </Link>
             </div>
             {events.length === 0 ? (
               <Card>
-                <p className="text-sm text-neutral-500">
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">
                   Sem eventos registrados.
                 </p>
               </Card>
             ) : (
               <Card>
-                <ul className="divide-y divide-neutral-100">
+                <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
                   {events.map((e) => (
                     <li key={e.id} className="flex items-center gap-3 py-2">
                       <span
                         className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
                           e.op === 'INSERT'
-                            ? 'bg-neutral-100 text-neutral-700'
+                            ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200'
                             : e.op === 'UPDATE'
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-red-100 text-red-700'
+                              ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-200'
+                              : 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-200'
                         }`}
                       >
                         {e.op}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm text-neutral-800">
+                        <p className="truncate text-sm text-neutral-800 dark:text-neutral-100">
                           {e.table}{' '}
                           {e.actor && (
                             <span className="text-neutral-400">
@@ -538,7 +535,7 @@ export function PlatformControlPage() {
             value={pushBody}
             onChange={(e) => setPushBody(e.target.value)}
           />
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
             Vai para todos os usuários da organização que tenham push habilitado
             no app.
           </p>
@@ -561,8 +558,8 @@ function KpiCard({
 }) {
   const toneClasses =
     tone === 'emerald'
-      ? 'bg-neutral-50 text-neutral-600'
-      : 'bg-blue-50 text-blue-600';
+      ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300'
+      : 'bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300';
   return (
     <Card>
       <div className="flex items-center gap-3">
@@ -572,10 +569,10 @@ function KpiCard({
           <Icon size={18} />
         </span>
         <div>
-          <p className="text-xs uppercase tracking-wide text-neutral-500">
+          <p className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
             {label}
           </p>
-          <p className="text-2xl font-semibold text-neutral-800">
+          <p className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100">
             {value.toLocaleString('pt-BR')}
           </p>
         </div>

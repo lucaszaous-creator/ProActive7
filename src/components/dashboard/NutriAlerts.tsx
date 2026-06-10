@@ -58,9 +58,9 @@ function AlertCard({
   children: React.ReactNode;
 }) {
   const toneClasses: Record<typeof tone, string> = {
-    red: 'bg-red-50 text-red-700',
-    amber: 'bg-amber-50 text-amber-700',
-    blue: 'bg-blue-50 text-blue-700',
+    red: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200',
+    amber: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-200',
+    blue: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-200',
   };
   return (
     <Card>
@@ -75,7 +75,7 @@ function AlertCard({
             <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
               {title}
             </p>
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-neutral-500 dark:text-neutral-400">
               {loading
                 ? '...'
                 : count === 0
@@ -86,7 +86,7 @@ function AlertCard({
         </div>
         <Link
           to={to}
-          className="rounded p-1 text-neutral-400 hover:bg-neutral-100 hover:text-neutral-700"
+          className="rounded p-1 text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-700"
           aria-label="Ver tudo"
         >
           <ChevronRight size={18} />
@@ -168,9 +168,9 @@ export function NutriAlerts() {
             <Link
               key={c.company_id}
               to="/visitas"
-              className="flex items-center justify-between gap-2 rounded px-2 py-1 text-xs hover:bg-neutral-50"
+              className="flex items-center justify-between gap-2 rounded px-2 py-1 text-xs hover:bg-neutral-50 dark:hover:bg-neutral-800/60"
             >
-              <span className="truncate text-neutral-700">
+              <span className="truncate text-neutral-700 dark:text-neutral-200">
                 {c.company_name}
               </span>
               <span className="shrink-0 text-neutral-400">
@@ -197,14 +197,14 @@ export function NutriAlerts() {
               <Link
                 key={a.manipulator_id + a.expires_at}
                 to="/manipuladores"
-                className="flex items-center justify-between gap-2 rounded px-2 py-1 text-xs hover:bg-neutral-50"
+                className="flex items-center justify-between gap-2 rounded px-2 py-1 text-xs hover:bg-neutral-50 dark:hover:bg-neutral-800/60"
               >
-                <span className="truncate text-neutral-700">
+                <span className="truncate text-neutral-700 dark:text-neutral-200">
                   {a.manipulator_name}
                   <span className="text-neutral-400"> · {a.company_name}</span>
                 </span>
                 <span
-                  className={`shrink-0 ${d < 0 ? 'text-red-600' : 'text-amber-600'}`}
+                  className={`shrink-0 ${d < 0 ? 'text-red-600 dark:text-red-300' : 'text-amber-600 dark:text-amber-300'}`}
                 >
                   {d < 0 ? `vencido há ${-d}d` : `${d}d`}
                 </span>
@@ -226,15 +226,15 @@ export function NutriAlerts() {
             <Link
               key={n.id}
               to="/nao-conformidades"
-              className="flex items-center justify-between gap-2 rounded px-2 py-1 text-xs hover:bg-neutral-50"
+              className="flex items-center justify-between gap-2 rounded px-2 py-1 text-xs hover:bg-neutral-50 dark:hover:bg-neutral-800/60"
             >
-              <span className="truncate text-neutral-700">
+              <span className="truncate text-neutral-700 dark:text-neutral-200">
                 {n.description}
                 {n.company_name && (
                   <span className="text-neutral-400"> · {n.company_name}</span>
                 )}
               </span>
-              <span className="shrink-0 text-red-600">
+              <span className="shrink-0 text-red-600 dark:text-red-300">
                 {daysAgo(n.opened_at)}d
               </span>
             </Link>
@@ -254,12 +254,12 @@ export function NutriAlerts() {
             <Link
               key={p.company_id}
               to="/controle-pragas"
-              className="flex items-center justify-between gap-2 rounded px-2 py-1 text-xs hover:bg-neutral-50"
+              className="flex items-center justify-between gap-2 rounded px-2 py-1 text-xs hover:bg-neutral-50 dark:hover:bg-neutral-800/60"
             >
-              <span className="truncate text-neutral-700">
+              <span className="truncate text-neutral-700 dark:text-neutral-200">
                 {p.company_name}
               </span>
-              <span className="shrink-0 text-red-600">
+              <span className="shrink-0 text-red-600 dark:text-red-300">
                 venceu {formatDate(p.next_due_at)}
               </span>
             </Link>

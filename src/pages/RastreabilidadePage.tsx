@@ -16,6 +16,7 @@ import { usePageTitle } from '@/lib/usePageTitle';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDateTime } from '@/lib/dates';
 import { Card } from '@/components/ui/Card';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Spinner } from '@/components/ui/Spinner';
@@ -114,7 +115,7 @@ export function RastreabilidadePage() {
   if (!companyId) {
     return (
       <Card>
-        <p className="text-sm text-neutral-600">
+        <p className="text-sm text-neutral-600 dark:text-neutral-300">
           Selecione uma empresa primeiro.
         </p>
       </Card>
@@ -123,15 +124,15 @@ export function RastreabilidadePage() {
 
   return (
     <div className="mx-auto max-w-5xl space-y-4">
-      <header>
-        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-          Rastreabilidade
-        </h1>
-        <p className="text-sm text-neutral-500">
-          {companyName} — recall em 1 clique. Digite o lote pra ver tudo que o
-          envolve.
-        </p>
-      </header>
+      <PageHeader
+        title="Rastreabilidade"
+        subtitle={
+          <>
+            {companyName} — recall em 1 clique. Digite o lote pra ver tudo que
+            o envolve.
+          </>
+        }
+      />
 
       <Card>
         <form
@@ -171,7 +172,7 @@ export function RastreabilidadePage() {
               <Stat label="Vencidas" value={summary.expired} tone="red" />
             </div>
             {summary.labelsTotal === 0 && summary.recTotal === 0 && (
-              <p className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+              <p className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 p-3 text-sm text-amber-800 dark:text-amber-200">
                 <AlertTriangle size={16} className="mt-0.5 shrink-0" />
                 Nenhum recebimento ou etiqueta com este lote.
               </p>
@@ -180,12 +181,12 @@ export function RastreabilidadePage() {
 
           {receivings.length > 0 && (
             <Card>
-              <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold text-neutral-800">
+              <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold text-neutral-800 dark:text-neutral-100">
                 <Package size={16} /> Recebimentos ({receivings.length})
               </h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
-                  <thead className="border-b border-neutral-200 text-neutral-500">
+                  <thead className="border-b border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400">
                     <tr>
                       <th className="px-2 py-1 text-left">Quando</th>
                       <th className="px-2 py-1 text-left">Produto</th>
@@ -195,7 +196,7 @@ export function RastreabilidadePage() {
                   </thead>
                   <tbody>
                     {receivings.map((r) => (
-                      <tr key={r.id} className="border-b border-neutral-100">
+                      <tr key={r.id} className="border-b border-neutral-100 dark:border-neutral-800">
                         <td className="px-2 py-1.5">
                           {r.receiving?.received_at
                             ? formatDateTime(new Date(r.receiving.received_at))
@@ -220,12 +221,12 @@ export function RastreabilidadePage() {
 
           {labels.length > 0 && (
             <Card>
-              <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold text-neutral-800">
+              <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold text-neutral-800 dark:text-neutral-100">
                 <Tag size={16} /> Etiquetas impressas ({labels.length})
               </h2>
               <div className="overflow-x-auto">
                 <table className="w-full text-xs">
-                  <thead className="border-b border-neutral-200 text-neutral-500">
+                  <thead className="border-b border-neutral-200 dark:border-neutral-800 text-neutral-500 dark:text-neutral-400">
                     <tr>
                       <th className="px-2 py-1 text-left">Impressa</th>
                       <th className="px-2 py-1 text-left">Produto</th>
@@ -242,7 +243,7 @@ export function RastreabilidadePage() {
                       const isExpired =
                         !isConsumed && new Date(l.expiry_at).getTime() < now;
                       return (
-                        <tr key={l.id} className="border-b border-neutral-100">
+                        <tr key={l.id} className="border-b border-neutral-100 dark:border-neutral-800">
                           <td className="px-2 py-1.5">
                             {formatDateTime(new Date(l.printed_at))}
                           </td>
@@ -258,15 +259,15 @@ export function RastreabilidadePage() {
                           <td className="px-2 py-1.5">{l.responsible_name}</td>
                           <td className="px-2 py-1.5">
                             {isConsumed ? (
-                              <span className="rounded-full bg-neutral-100 px-2 py-0.5 font-medium text-neutral-600">
+                              <span className="rounded-full bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 font-medium text-neutral-600 dark:text-neutral-300">
                                 {l.consumed_reason ?? 'consumida'}
                               </span>
                             ) : isExpired ? (
-                              <span className="rounded-full bg-red-50 px-2 py-0.5 font-medium text-red-700">
+                              <span className="rounded-full bg-red-50 dark:bg-red-950/40 px-2 py-0.5 font-medium text-red-700 dark:text-red-200">
                                 vencida
                               </span>
                             ) : (
-                              <span className="rounded-full bg-neutral-50 px-2 py-0.5 font-medium text-neutral-700">
+                              <span className="rounded-full bg-neutral-50 dark:bg-neutral-800/60 px-2 py-0.5 font-medium text-neutral-700 dark:text-neutral-200">
                                 ativa
                               </span>
                             )}
@@ -296,9 +297,9 @@ function Stat({
 }) {
   const colors = {
     sky: 'bg-sky-50 text-sky-800',
-    emerald: 'bg-neutral-50 text-neutral-800',
-    red: 'bg-red-50 text-red-800',
-    neutral: 'bg-neutral-100 text-neutral-700',
+    emerald: 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-800 dark:text-neutral-100',
+    red: 'bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-200',
+    neutral: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200',
   }[tone];
   return (
     <div className={`rounded-lg p-3 text-center ${colors}`}>

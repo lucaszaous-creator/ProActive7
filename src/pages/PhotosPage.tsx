@@ -11,6 +11,7 @@ import { formatDate } from '@/lib/dates';
 import type { Photo } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { PhotoLightbox } from '@/components/PhotoLightbox';
@@ -149,17 +150,14 @@ export function PhotosPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Fotos
-          </h1>
-          <p className="text-sm text-neutral-500">
-            As fotos são excluídas automaticamente após {RETENTION_DAYS} dias.
-          </p>
-        </div>
+      <PageHeader
+        title="Fotos"
+        subtitle={
+          <>As fotos são excluídas automaticamente após {RETENTION_DAYS} dias.</>
+        }
+        actions={
         <label
-          className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 ${
+          className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white ${
             uploading || !companyId ? 'pointer-events-none opacity-60' : ''
           }`}
         >
@@ -180,7 +178,8 @@ export function PhotosPage() {
             }}
           />
         </label>
-      </div>
+        }
+      />
 
       {isMaster && companies.length > 0 && (
         <div className="mb-4 max-w-xs">
@@ -200,7 +199,7 @@ export function PhotosPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
@@ -208,7 +207,7 @@ export function PhotosPage() {
         <ListSkeleton rows={4} />
       ) : photos.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma foto enviada ainda.
           </p>
         </Card>
@@ -221,7 +220,7 @@ export function PhotosPage() {
                 onClick={() => p.url && setViewing(p)}
                 disabled={!p.url}
                 title={p.url ? 'Clique para expandir' : ''}
-                className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-t-xl bg-neutral-100 transition hover:opacity-90 disabled:cursor-default"
+                className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-t-xl bg-neutral-100 dark:bg-neutral-800 transition hover:opacity-90 disabled:cursor-default"
               >
                 {p.url ? (
                   <img
@@ -235,7 +234,7 @@ export function PhotosPage() {
               </button>
               <div className="flex items-center justify-between gap-2 p-3">
                 <div className="min-w-0">
-                  <p className="truncate text-xs font-medium text-neutral-700">
+                  <p className="truncate text-xs font-medium text-neutral-700 dark:text-neutral-200">
                     {p.original_name ?? 'foto'}
                   </p>
                   <p className="text-xs text-neutral-400">

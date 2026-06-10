@@ -4,6 +4,7 @@ import { useCompanyScope } from '@/lib/useCompanyScope';
 import { CompanyFilesSection } from '@/components/CompanyFilesSection';
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /**
  * Aba "Documentos" — central de arquivos do estabelecimento.
@@ -22,16 +23,10 @@ export function DocumentsPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5">
-        <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-          Documentos
-        </h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">
-          Carregue e organize os documentos de cada estabelecimento — Manual
-          de Boas Práticas, POPs (RDC 216 + RDC 275), ASO, laudos de controle
-          de pragas e alvarás.
-        </p>
-      </div>
+      <PageHeader
+        title="Documentos"
+        subtitle="Carregue e organize os documentos de cada estabelecimento — Manual de Boas Práticas, POPs (RDC 216 + RDC 275), ASO, laudos de controle de pragas e alvarás."
+      />
 
       {isMaster && companies.length > 0 ? (
         <div className="mb-4">

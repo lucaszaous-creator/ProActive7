@@ -11,6 +11,7 @@ import {
 import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
@@ -160,23 +161,19 @@ export function AnnouncementsPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100">
-            Comunicados
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Banner exibido no topo do app para todos os usuários autenticados.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={16} /> Novo
-        </Button>
-      </div>
+      <PageHeader
+        title="Comunicados"
+        subtitle="Banner exibido no topo do app para todos os usuários autenticados."
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={16} /> Novo
+          </Button>
+        }
+      />
 
       {list.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nenhum comunicado cadastrado.
           </p>
         </Card>
@@ -191,12 +188,12 @@ export function AnnouncementsPage() {
             return (
               <Card key={a.id}>
                 <div className="flex items-start gap-3">
-                  <Icon size={18} className="mt-1 shrink-0 text-neutral-500" />
+                  <Icon size={18} className="mt-1 shrink-0 text-neutral-500 dark:text-neutral-400" />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-neutral-800 dark:text-neutral-200">
                       {a.message}
                     </p>
-                    <p className="mt-1 text-xs text-neutral-500">
+                    <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                       {SEVERITY_LABEL[a.severity]} ·{' '}
                       {new Date(a.starts_at).toLocaleString('pt-BR')}
                       {a.ends_at
@@ -206,8 +203,8 @@ export function AnnouncementsPage() {
                       <span
                         className={
                           showing
-                            ? 'font-medium text-neutral-600'
-                            : 'text-neutral-500'
+                            ? 'font-medium text-neutral-600 dark:text-neutral-300'
+                            : 'text-neutral-500 dark:text-neutral-400'
                         }
                       >
                         {showing
@@ -221,7 +218,7 @@ export function AnnouncementsPage() {
                   <div className="flex gap-1">
                     <button
                       onClick={() => openEdit(a)}
-                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                       aria-label="Editar"
                     >
                       <Pencil size={14} />
@@ -258,14 +255,14 @@ export function AnnouncementsPage() {
       >
         <div className="space-y-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-600">
+            <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-300">
               Mensagem
             </label>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-800 focus:outline-none dark:border-neutral-700 dark:bg-slate-800"
+              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-800 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
             />
           </div>
           <Select

@@ -28,6 +28,7 @@ import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { PageHeader } from '@/components/ui/PageHeader';
 import type {
   Audit,
   AuditItem,
@@ -60,24 +61,24 @@ const RESULT_OPTIONS: {
     label: 'C',
     icon: Check,
     classes:
-      'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-slate-800',
-    activeClasses: 'border-neutral-500 bg-neutral-50 text-neutral-700',
+      'border-neutral-200 bg-white text-neutral-500 dark:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800',
+    activeClasses: 'border-neutral-500 bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200',
   },
   {
     value: 'NC',
     label: 'NC',
     icon: XIcon,
     classes:
-      'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-slate-800',
-    activeClasses: 'border-red-500 bg-red-50 text-red-700',
+      'border-neutral-200 bg-white text-neutral-500 dark:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800',
+    activeClasses: 'border-red-500 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200',
   },
   {
     value: 'NA',
     label: 'NA',
     icon: MinusCircle,
     classes:
-      'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-slate-800',
-    activeClasses: 'border-neutral-500 bg-neutral-100 text-neutral-700',
+      'border-neutral-200 bg-white text-neutral-500 dark:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800',
+    activeClasses: 'border-neutral-500 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200',
   },
 ];
 
@@ -580,7 +581,7 @@ export function AuditDetailPage() {
   if (!audit) {
     return (
       <Card>
-        <p className="text-sm text-neutral-600">Visita nao encontrada.</p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-300">Visita nao encontrada.</p>
       </Card>
     );
   }
@@ -606,18 +607,15 @@ export function AuditDetailPage() {
         Voltar
       </Link>
 
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            {selectedCompany?.name ??
-              companies.find((c) => c.id === audit.company_id)?.name ??
-              ''}
-          </h1>
-          <p className="truncate text-sm text-neutral-500 dark:text-neutral-400">
-            {template?.name}
-          </p>
-        </div>
-        <div className="flex flex-col items-stretch gap-2 sm:items-end">
+      <PageHeader
+        title={
+          selectedCompany?.name ??
+          companies.find((c) => c.id === audit.company_id)?.name ??
+          ''
+        }
+        subtitle={template?.name}
+        actions={
+          <div className="flex flex-col items-stretch gap-2 sm:items-end">
           {score != null ? (
             <span
               className={`rounded-full px-3 py-1 text-base font-bold ${
@@ -650,7 +648,7 @@ export function AuditDetailPage() {
                   onClick={() => setCancelOpen(true)}
                   disabled={saving || finalizing}
                   title="Cancelar esta visita"
-                  className="text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+                  className="text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950"
                 >
                   <XCircle size={14} />
                   Cancelar
@@ -703,8 +701,9 @@ export function AuditDetailPage() {
               </>
             ) : null}
           </div>
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {!canEvaluate ? (
         <Card className="mb-4 border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40">
@@ -793,7 +792,7 @@ export function AuditDetailPage() {
                         onChange={(e) => setNote(it.id, e.target.value)}
                         placeholder="Observacao / plano de acao..."
                         rows={2}
-                        className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
+                        className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
                       />
                     ) : null}
                   </div>
@@ -816,7 +815,7 @@ export function AuditDetailPage() {
             disabled={locked}
             onChange={(e) => setNotes(e.target.value)}
             rows={4}
-            className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100"
+            className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
           />
         </Card>
       </div>
@@ -854,7 +853,7 @@ export function AuditDetailPage() {
             com seus dados profissionais ({profile?.full_name}
             {profile?.crn ? ` - CRN ${profile.crn}` : ''}).
           </p>
-          <div className="overflow-hidden rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-slate-800">
+          <div className="overflow-hidden rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-800">
             <SignatureCanvas
               ref={sigRef}
               penColor="black"

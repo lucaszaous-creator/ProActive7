@@ -15,6 +15,7 @@ import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { formatDateTime } from '@/lib/dates';
 import { Card } from '@/components/ui/Card';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import {
@@ -126,16 +127,20 @@ export function TrashPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5">
-        <h1 className="flex items-center gap-2 text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-          <Trash size={22} />
-          Lixeira
-        </h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">
-          Itens excluídos ficam aqui por <strong>30 dias</strong> antes de serem
-          apagados definitivamente. Restaure ou apague de vez.
-        </p>
-      </div>
+      <PageHeader
+        title={
+          <span className="flex items-center gap-2">
+            <Trash size={22} />
+            Lixeira
+          </span>
+        }
+        subtitle={
+          <>
+            Itens excluídos ficam aqui por <strong>30 dias</strong> antes de
+            serem apagados definitivamente. Restaure ou apague de vez.
+          </>
+        }
+      />
 
       {loading ? (
         <ListSkeleton rows={5} />

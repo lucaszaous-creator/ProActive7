@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { PhotoAttacher } from '@/components/PhotoAttacher';
 import type { NcSeverity, NcStatus, NonConformity } from '@/lib/types';
 import { NC_SEVERITY_LABELS, NC_STATUS_LABELS } from '@/lib/types';
@@ -275,20 +276,16 @@ export function NonConformitiesPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Nao-conformidades
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Plano de acao 5W2H para corrigir desvios encontrados.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Nova NC
-        </Button>
-      </div>
+      <PageHeader
+        title="Nao-conformidades"
+        subtitle="Plano de acao 5W2H para corrigir desvios encontrados."
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Nova NC
+          </Button>
+        }
+      />
 
       {isMaster && byCompany.length > 1 ? (
         <div className="mb-4">
@@ -299,7 +296,7 @@ export function NonConformitiesPage() {
             {companyFilter !== 'all' ? (
               <button
                 onClick={() => setCompanyFilter('all')}
-                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
               >
                 <XCircle size={12} />
                 Limpar filtro
@@ -318,7 +315,7 @@ export function NonConformitiesPage() {
                   className={`flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition ${
                     active
                       ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
-                      : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700'
+                      : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
                   }`}
                   title={`Clique para ver só as NCs de ${c.company_name}`}
                 >
@@ -330,7 +327,7 @@ export function NonConformitiesPage() {
                     <span className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100">
                       {c.open}
                     </span>
-                    <span className="text-xs text-neutral-500">
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400">
                       em aberto · {c.total} total
                     </span>
                   </div>
@@ -465,7 +462,7 @@ export function NonConformitiesPage() {
                     <button
                       onClick={() => openEdit(nc)}
                       aria-label="Editar"
-                      className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                     >
                       <Pencil size={16} />
                     </button>
@@ -473,7 +470,7 @@ export function NonConformitiesPage() {
                       <button
                         onClick={() => void handleQuickClose(nc)}
                         aria-label="Fechar NC"
-                        className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-950"
+                        className="rounded-lg p-2.5 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-950"
                       >
                         <CheckCircle2 size={16} />
                       </button>

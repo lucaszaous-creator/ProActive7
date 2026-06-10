@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const DEFAULT_COLORS = [
   '#ef4444',
@@ -141,23 +142,18 @@ export function GruposPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Grupos de produtos
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Categorias usadas no cadastro de produtos e na hora de imprimir
-            etiqueta. Ex.: Carnes, Pescados, Vegetais.
-          </p>
-        </div>
-        {canEdit && (
-          <Button onClick={openCreate}>
-            <Plus size={18} />
-            Novo grupo
-          </Button>
-        )}
-      </div>
+      <PageHeader
+        title="Grupos de produtos"
+        subtitle="Categorias usadas no cadastro de produtos e na hora de imprimir etiqueta. Ex.: Carnes, Pescados, Vegetais."
+        actions={
+          canEdit && (
+            <Button onClick={openCreate}>
+              <Plus size={18} />
+              Novo grupo
+            </Button>
+          )
+        }
+      />
 
       {loading ? (
         <div className="flex justify-center py-16">
@@ -165,7 +161,7 @@ export function GruposPage() {
         </div>
       ) : groups.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nenhum grupo cadastrado. Comece criando "Carnes", "Pescados",
             "Vegetais", etc.
           </p>
@@ -177,7 +173,7 @@ export function GruposPage() {
             return (
               <div
                 key={g.id}
-                className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700"
+                className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700"
               >
                 <span
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white"
@@ -189,12 +185,12 @@ export function GruposPage() {
                   <p className="flex items-center gap-2 truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                     {g.name}
                     {!g.active && (
-                      <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-normal text-neutral-500 dark:bg-slate-800">
+                      <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-normal text-neutral-500 dark:text-neutral-400 dark:bg-neutral-800">
                         inativo
                       </span>
                     )}
                   </p>
-                  <p className="text-xs text-neutral-500">
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
                     {count} produto{count === 1 ? '' : 's'} · ordem{' '}
                     {g.sort_order}
                   </p>
@@ -205,7 +201,7 @@ export function GruposPage() {
                       onClick={() => openEdit(g)}
                       aria-label="Editar"
                       title="Editar"
-                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-slate-800"
+                      className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                     >
                       <Pencil size={16} />
                     </button>
@@ -263,7 +259,7 @@ export function GruposPage() {
                   onClick={() => setColor(c)}
                   className={`h-9 w-9 rounded-lg ring-2 transition ${
                     color === c
-                      ? 'ring-neutral-900'
+                      ? 'ring-neutral-900 dark:ring-neutral-100'
                       : 'ring-transparent hover:ring-neutral-300'
                   }`}
                   style={{ backgroundColor: c }}

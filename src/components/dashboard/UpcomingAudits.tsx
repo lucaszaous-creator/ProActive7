@@ -42,7 +42,7 @@ export function UpcomingAudits({ loading, items }: UpcomingAuditsProps) {
             <li key={ev.id}>
               <Link
                 to={`/visitas/${ev.id}`}
-                className="flex items-center justify-between gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-slate-800"
+                className="flex items-center justify-between gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800"
               >
                 <span className="min-w-0 flex-1 truncate font-medium text-neutral-800 dark:text-neutral-200">
                   {ev.company?.name ?? '—'}

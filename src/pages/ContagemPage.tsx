@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { Card } from '@/components/ui/Card';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Select } from '@/components/ui/Select';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 
@@ -92,16 +93,10 @@ export function ContagemPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Contagem
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Quantas etiquetas, em quê e quando — diagnóstico de produção.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Contagem"
+        subtitle="Quantas etiquetas, em quê e quando — diagnóstico de produção."
+      />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {isMaster && companies.length > 0 && (
@@ -132,7 +127,7 @@ export function ContagemPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada.
           </p>
         </Card>
@@ -143,14 +138,14 @@ export function ContagemPage() {
           <div className="grid gap-3 sm:grid-cols-3">
             <Card>
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-50 text-neutral-600">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300">
                   <Printer size={18} />
                 </span>
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-neutral-500">
+                  <p className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
                     Total impresso
                   </p>
-                  <p className="text-2xl font-semibold text-neutral-800">
+                  <p className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100">
                     {total.toLocaleString('pt-BR')}
                   </p>
                 </div>
@@ -158,14 +153,14 @@ export function ContagemPage() {
             </Card>
             <Card>
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
                   <BarChart3 size={18} />
                 </span>
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-neutral-500">
+                  <p className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
                     Produtos distintos
                   </p>
-                  <p className="text-2xl font-semibold text-neutral-800">
+                  <p className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100">
                     {distinctProducts}
                   </p>
                 </div>
@@ -173,14 +168,14 @@ export function ContagemPage() {
             </Card>
             <Card>
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300">
                   <BarChart3 size={18} />
                 </span>
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-neutral-500">
+                  <p className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
                     Etiquetas / dia
                   </p>
-                  <p className="text-2xl font-semibold text-neutral-800">
+                  <p className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100">
                     {Math.round(total / Math.max(1, Number(period)))}
                   </p>
                 </div>
@@ -189,24 +184,24 @@ export function ContagemPage() {
           </div>
 
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
               Top 10 produtos
             </h2>
             {topProducts.length === 0 ? (
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 Nenhuma etiqueta no período.
               </p>
             ) : (
               <ul className="flex flex-col gap-2">
                 {topProducts.map((p) => (
                   <li key={p.name}>
-                    <div className="mb-1 flex justify-between text-xs text-neutral-600">
+                    <div className="mb-1 flex justify-between text-xs text-neutral-600 dark:text-neutral-300">
                       <span className="truncate">{p.name}</span>
-                      <span className="font-medium text-neutral-800">
+                      <span className="font-medium text-neutral-800 dark:text-neutral-100">
                         {p.count}
                       </span>
                     </div>
-                    <div className="h-2 overflow-hidden rounded bg-neutral-100">
+                    <div className="h-2 overflow-hidden rounded bg-neutral-100 dark:bg-neutral-800">
                       <div
                         className="h-full bg-neutral-500"
                         style={{ width: `${(p.count / maxCount) * 100}%` }}
@@ -219,11 +214,11 @@ export function ContagemPage() {
           </Card>
 
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
               Volume por dia
             </h2>
             {byDay.entries.length === 0 ? (
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 Nenhuma etiqueta no período.
               </p>
             ) : (

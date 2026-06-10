@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { PhotoAttacher } from '@/components/PhotoAttacher';
 import { PhotoLightbox } from '@/components/PhotoLightbox';
 
@@ -240,20 +241,16 @@ export function TemperaturePage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Temperatura
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Registro de equipamentos e leituras de temperatura.
-          </p>
-        </div>
-        <Button onClick={openCreate} disabled={!companyId}>
-          <Plus size={18} />
-          Novo equipamento
-        </Button>
-      </div>
+      <PageHeader
+        title="Temperatura"
+        subtitle="Registro de equipamentos e leituras de temperatura."
+        actions={
+          <Button onClick={openCreate} disabled={!companyId}>
+            <Plus size={18} />
+            Novo equipamento
+          </Button>
+        }
+      />
 
       {isMaster && companies.length > 0 && (
         <div className="mb-4 max-w-xs">
@@ -273,7 +270,7 @@ export function TemperaturePage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
@@ -284,25 +281,25 @@ export function TemperaturePage() {
       ) : (
         <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
               Equipamentos
             </h2>
             {equipment.length === 0 ? (
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 Cadastre um equipamento para começar a registrar leituras.
               </p>
             ) : (
-              <ul className="divide-y divide-neutral-100">
+              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {equipment.map((e) => (
                   <li
                     key={e.id}
                     className="flex items-center justify-between py-2"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-neutral-800">
+                      <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                         {e.name}
                       </p>
-                      <p className="text-xs text-neutral-500">
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
                         {EQUIPMENT_TYPE_LABELS[e.type]} · {e.temp_min}°C a{' '}
                         {e.temp_max}°C
                         {!e.active ? ' · inativo' : ''}
@@ -311,7 +308,7 @@ export function TemperaturePage() {
                     <button
                       onClick={() => openEdit(e)}
                       aria-label="Editar"
-                      className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
+                      className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                     >
                       <Pencil size={16} />
                     </button>
@@ -322,11 +319,11 @@ export function TemperaturePage() {
           </Card>
 
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
               Registrar leitura
             </h2>
             {activeEquipment.length === 0 ? (
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 Cadastre um equipamento ativo primeiro.
               </p>
             ) : (
@@ -374,15 +371,15 @@ export function TemperaturePage() {
           </Card>
 
           <Card className="lg:col-span-2">
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
               Últimas 20 leituras
             </h2>
             {logs.length === 0 ? (
-              <p className="text-sm text-neutral-500">
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
                 Nenhuma leitura registrada ainda.
               </p>
             ) : (
-              <ul className="divide-y divide-neutral-100">
+              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {logs.map((l) => {
                   const outOfRange =
                     l.equipment &&
@@ -396,8 +393,8 @@ export function TemperaturePage() {
                       <span
                         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                           outOfRange
-                            ? 'bg-red-50 text-red-600'
-                            : 'bg-neutral-50 text-neutral-600'
+                            ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300'
+                            : 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300'
                         }`}
                       >
                         {outOfRange ? (
@@ -407,11 +404,11 @@ export function TemperaturePage() {
                         )}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-neutral-800">
+                        <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                           {l.equipment?.name ?? 'Equipamento removido'} —{' '}
                           {l.temperature}°C
                         </p>
-                        <p className="text-xs text-neutral-500">
+                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
                           {formatDateTime(l.recorded_at)}
                           {l.notes ? ` · ${l.notes}` : ''}
                         </p>
@@ -421,7 +418,7 @@ export function TemperaturePage() {
                           type="button"
                           onClick={() => setViewingPhotoUrl(photoUrl)}
                           title="Ver foto"
-                          className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-neutral-200 transition hover:border-neutral-400"
+                          className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800 transition hover:border-neutral-400"
                         >
                           <img
                             src={photoUrl}
@@ -430,7 +427,7 @@ export function TemperaturePage() {
                           />
                         </button>
                       ) : l.photo_id ? (
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-dashed border-neutral-200 text-neutral-300">
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-dashed border-neutral-200 dark:border-neutral-800 text-neutral-300">
                           <ImageIcon size={14} />
                         </span>
                       ) : null}
@@ -500,7 +497,7 @@ export function TemperaturePage() {
               onChange={(e) => setTempMax(e.target.value)}
             />
           </div>
-          <label className="flex items-center gap-2 text-sm text-neutral-700">
+          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-200">
             <input
               type="checkbox"
               checked={equipActive}

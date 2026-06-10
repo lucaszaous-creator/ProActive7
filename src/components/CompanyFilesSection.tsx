@@ -262,7 +262,7 @@ export function CompanyFilesSection({ companyId }: Props) {
             onClick={() => void openFile(f)}
             aria-label="Abrir"
             title="Abrir"
-            className="rounded-lg p-2 text-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-950"
+            className="rounded-lg p-2 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-950"
           >
             <Download size={14} />
           </button>
@@ -270,7 +270,7 @@ export function CompanyFilesSection({ companyId }: Props) {
             onClick={() => openEdit(f)}
             aria-label="Editar"
             title="Renomear / mudar categoria"
-            className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
           >
             <Pencil size={14} />
           </button>
@@ -487,7 +487,7 @@ export function CompanyFilesSection({ companyId }: Props) {
               />
             </label>
             {pickedFile ? (
-              <p className="mt-1 text-xs text-neutral-500">
+              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                 {humanBytes(pickedFile.size)}
               </p>
             ) : null}

@@ -15,9 +15,10 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const textareaCls =
-  'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-800 focus:outline-none dark:border-neutral-700 dark:bg-slate-800';
+  'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-800 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800';
 
 export function ArticlesAdminPage() {
   usePageTitle('Artigos do site');
@@ -150,24 +151,19 @@ export function ArticlesAdminPage() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100">
-            Artigos do site
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Publique conteúdos na página Novidades do site público. Rascunhos
-            não aparecem para o público.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={16} /> Novo artigo
-        </Button>
-      </div>
+      <PageHeader
+        title="Artigos do site"
+        subtitle="Publique conteúdos na página Novidades do site público. Rascunhos não aparecem para o público."
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={16} /> Novo artigo
+          </Button>
+        }
+      />
 
       {list.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nenhum artigo ainda. Clique em “Novo artigo” para começar.
           </p>
         </Card>
@@ -179,8 +175,8 @@ export function ArticlesAdminPage() {
                 <span
                   className={`mt-0.5 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
                     a.published
-                      ? 'bg-neutral-100 text-neutral-700'
-                      : 'bg-neutral-100 text-neutral-500'
+                      ? 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200'
+                      : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
                   }`}
                 >
                   {a.published ? <Eye size={12} /> : <EyeOff size={12} />}
@@ -190,7 +186,7 @@ export function ArticlesAdminPage() {
                   <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">
                     {a.title}
                   </p>
-                  <p className="mt-1 truncate text-xs text-neutral-500">
+                  <p className="mt-1 truncate text-xs text-neutral-500 dark:text-neutral-400">
                     /novidades/{a.slug} · atualizado em{' '}
                     {new Date(a.updated_at).toLocaleDateString('pt-BR')}
                   </p>
@@ -201,7 +197,7 @@ export function ArticlesAdminPage() {
                       href={`${SITE_URL}/novidades/${a.slug}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                       aria-label="Abrir no site"
                     >
                       <ExternalLink size={14} />
@@ -209,7 +205,7 @@ export function ArticlesAdminPage() {
                   )}
                   <button
                     onClick={() => openEdit(a)}
-                    className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                    className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                     aria-label="Editar"
                   >
                     <Pencil size={14} />
@@ -266,7 +262,7 @@ export function ArticlesAdminPage() {
             placeholder="organizar-recebimento"
           />
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-600">
+            <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-300">
               Resumo (aparece no card e na busca do Google)
             </label>
             <textarea
@@ -289,7 +285,7 @@ export function ArticlesAdminPage() {
             placeholder="https://..."
           />
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-600">
+            <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-300">
               Conteúdo (Markdown: ## título, **negrito**, - lista)
             </label>
             <textarea

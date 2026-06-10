@@ -135,7 +135,7 @@ export function LibraryBrowser({
       }
     >
       <div className="space-y-2">
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-neutral-500 dark:text-neutral-400">
           <Globe size={11} className="mr-1 inline" />
           Modelos publicados pela plataforma. Clique em "Usar como modelo" para
           criar uma cópia editável dentro da sua empresa.
@@ -145,7 +145,7 @@ export function LibraryBrowser({
             <Spinner />
           </div>
         ) : rows.length === 0 ? (
-          <p className="py-4 text-center text-sm text-neutral-500">
+          <p className="py-4 text-center text-sm text-neutral-500 dark:text-neutral-400">
             Nenhum modelo oficial publicado nesta categoria ainda.
           </p>
         ) : (
@@ -158,7 +158,7 @@ export function LibraryBrowser({
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{r.name}</p>
                   {r.details ? (
-                    <p className="truncate text-xs text-neutral-500">
+                    <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
                       {r.details}
                     </p>
                   ) : null}
@@ -166,7 +166,7 @@ export function LibraryBrowser({
                 <button
                   onClick={() => void handleClone(r)}
                   disabled={cloning === r.id || !companyId}
-                  className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-neutral-900 px-2 py-1 text-xs text-white hover:bg-neutral-800 disabled:opacity-50"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-neutral-900 px-2 py-1 text-xs text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white disabled:opacity-50"
                 >
                   <Copy size={11} />
                   {cloning === r.id ? '...' : 'Usar como modelo'}
@@ -176,7 +176,7 @@ export function LibraryBrowser({
           </div>
         )}
         {!companyId ? (
-          <p className="text-xs text-amber-600">
+          <p className="text-xs text-amber-600 dark:text-amber-300">
             Selecione uma empresa antes de clonar.
           </p>
         ) : null}

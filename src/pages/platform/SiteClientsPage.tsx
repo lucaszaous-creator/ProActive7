@@ -9,9 +9,10 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 const fieldCls =
-  'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-100';
+  'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100';
 
 export function SiteClientsPage() {
   usePageTitle('Clientes do site');
@@ -154,22 +155,22 @@ export function SiteClientsPage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl dark:text-neutral-100">
-            Clientes do site
-          </h1>
-          <p className="text-sm text-neutral-500">
+      <PageHeader
+        title="Clientes do site"
+        subtitle={
+          <>
             Empresas atendidas exibidas na página pública{' '}
             <span className="font-medium">/clientes</span>, com logo e
             depoimento.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Novo cliente
-        </Button>
-      </div>
+          </>
+        }
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Novo cliente
+          </Button>
+        }
+      />
 
       {loading ? (
         <ListSkeleton rows={4} />
@@ -193,7 +194,7 @@ export function SiteClientsPage() {
               <button
                 key={c.id}
                 onClick={() => openEdit(c)}
-                className="fx-lift fx-press flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-3 text-left hover:border-neutral-300 dark:border-neutral-800 dark:bg-slate-900 dark:hover:border-neutral-700"
+                className="fx-lift fx-press flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-3 text-left hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700"
               >
                 <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-700">
                   {logo ? (
@@ -272,7 +273,7 @@ export function SiteClientsPage() {
               )}
             </span>
             <div className="flex flex-col gap-1.5">
-              <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-slate-800 dark:text-neutral-200">
+              <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/60 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200">
                 <ImageIcon size={16} />
                 {uploading ? 'Enviando…' : 'Logo do cliente'}
                 <input
@@ -287,7 +288,7 @@ export function SiteClientsPage() {
                 <button
                   type="button"
                   onClick={() => setLogoPath(null)}
-                  className="w-fit text-xs text-neutral-500 hover:text-red-600"
+                  className="w-fit text-xs text-neutral-500 dark:text-neutral-400 hover:text-red-600"
                 >
                   Remover logo
                 </button>

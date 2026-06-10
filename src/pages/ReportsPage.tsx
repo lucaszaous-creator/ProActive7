@@ -7,6 +7,7 @@ import { STORAGE_CONDITION_LABELS, type StorageCondition } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 /** Linha agregada vinda da RPC label_report (agregação feita no SQL). */
 interface ReportRow {
@@ -75,10 +76,10 @@ function Bar({
   return (
     <div>
       <div className="mb-1 flex items-center justify-between text-xs">
-        <span className="truncate text-neutral-700">{label}</span>
-        <span className="text-neutral-500">{value}</span>
+        <span className="truncate text-neutral-700 dark:text-neutral-200">{label}</span>
+        <span className="text-neutral-500 dark:text-neutral-400">{value}</span>
       </div>
-      <div className="h-2 rounded-full bg-neutral-100">
+      <div className="h-2 rounded-full bg-neutral-100 dark:bg-neutral-800">
         <div
           className="h-2 rounded-full bg-neutral-500"
           style={{ width: `${pct}%` }}
@@ -135,14 +136,10 @@ export function ReportsPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5">
-        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-          Relatórios
-        </h1>
-        <p className="text-sm text-neutral-500">
-          Etiquetas impressas no período selecionado.
-        </p>
-      </div>
+      <PageHeader
+        title="Relatórios"
+        subtitle="Etiquetas impressas no período selecionado."
+      />
 
       <div className="mb-4 flex flex-col gap-3 sm:flex-row">
         {isMaster && companies.length > 0 && (
@@ -179,7 +176,7 @@ export function ReportsPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
@@ -189,24 +186,24 @@ export function ReportsPage() {
         </div>
       ) : !hasData ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma etiqueta impressa neste período.
           </p>
         </Card>
       ) : (
         <div className="flex flex-col gap-4">
           <Card>
-            <p className="text-xs uppercase tracking-wide text-neutral-500">
+            <p className="text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
               Total de etiquetas
             </p>
-            <p className="text-3xl font-semibold text-neutral-800">
+            <p className="text-3xl font-semibold text-neutral-800 dark:text-neutral-100">
               {data.total}
             </p>
           </Card>
 
           <div className="grid gap-4 md:grid-cols-2">
             <Card>
-              <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+              <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                 Por categoria
               </h2>
               <div className="flex flex-col gap-2">
@@ -222,7 +219,7 @@ export function ReportsPage() {
             </Card>
 
             <Card>
-              <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+              <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                 Por usuário
               </h2>
               <div className="flex flex-col gap-2">
@@ -238,7 +235,7 @@ export function ReportsPage() {
             </Card>
 
             <Card className="lg:col-span-2">
-              <h2 className="mb-3 text-sm font-semibold text-neutral-700">
+              <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                 Por condição de armazenamento
               </h2>
               <div className="flex flex-col gap-2">

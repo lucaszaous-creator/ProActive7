@@ -37,7 +37,7 @@ function ModuleUpsell({ moduleKey }: { moduleKey: string }) {
     <div className="mx-auto max-w-md">
       <Card>
         <div className="flex flex-col items-center gap-3 py-6 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 dark:bg-slate-800 dark:text-neutral-300">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300">
             <Lock size={24} />
           </span>
           <h1 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">

@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import type {
@@ -343,17 +344,10 @@ export function PestControlPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Controle de pragas
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Controle integrado (RDC 216 art. 4.4) — fornecedor licenciado,
-            aplicações e comprovantes.
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        title="Controle de pragas"
+        subtitle="Controle integrado (RDC 216 art. 4.4) — fornecedor licenciado, aplicações e comprovantes."
+      />
 
       {isMaster && companies.length > 0 ? (
         <div className="mb-4">
@@ -423,12 +417,12 @@ export function PestControlPage() {
 
       {/* Tabs */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-800 dark:bg-slate-900">
+        <div className="inline-flex rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-800 dark:bg-neutral-900">
           <button
             onClick={() => setTab('services')}
             className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
               tab === 'services'
-                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-400'
+                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-400'
                 : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
             }`}
           >
@@ -438,7 +432,7 @@ export function PestControlPage() {
             onClick={() => setTab('providers')}
             className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
               tab === 'providers'
-                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-400'
+                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-400'
                 : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
             }`}
           >
@@ -550,7 +544,7 @@ export function PestControlPage() {
                       <button
                         onClick={() => openEditService(s)}
                         aria-label="Editar"
-                        className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                       >
                         <Pencil size={16} />
                       </button>
@@ -617,7 +611,7 @@ export function PestControlPage() {
                   <button
                     onClick={() => openEditProvider(p)}
                     aria-label="Editar"
-                    className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                    className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                   >
                     <Pencil size={16} />
                   </button>
@@ -824,7 +818,7 @@ export function PestControlPage() {
               Documento entregue pela empresa contratada{' '}
               {editingSvc ? '(substituir)' : ''}
             </p>
-            <p className="mb-2 text-xs text-neutral-500">
+            <p className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
               PDF ou foto do certificado/laudo/comprovante de aplicação que a
               empresa de controle de pragas deve entregar após cada serviço.
             </p>

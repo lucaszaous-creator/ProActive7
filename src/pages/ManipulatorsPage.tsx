@@ -23,6 +23,7 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListSkeleton } from '@/components/ui/Skeleton';
+import { PageHeader } from '@/components/ui/PageHeader';
 import type {
   Manipulator,
   ManipulatorAso,
@@ -322,22 +323,18 @@ export function ManipulatorsPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Manipuladores
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Funcionários, ASO (RDC 216 art. 4.6.7) e treinamentos.
-          </p>
-        </div>
-        {isMaster ? (
-          <Button onClick={openCreate}>
-            <Plus size={18} />
-            Novo manipulador
-          </Button>
-        ) : null}
-      </div>
+      <PageHeader
+        title="Manipuladores"
+        subtitle="Funcionários, ASO (RDC 216 art. 4.6.7) e treinamentos."
+        actions={
+          isMaster ? (
+            <Button onClick={openCreate}>
+              <Plus size={18} />
+              Novo manipulador
+            </Button>
+          ) : null
+        }
+      />
 
       {!isMaster ? (
         <Card className="mb-4 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
@@ -503,7 +500,7 @@ export function ManipulatorsPage() {
                         onClick={() => openAsoModal(m)}
                         aria-label="Registrar ASO"
                         title="Registrar ASO"
-                        className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-950"
+                        className="rounded-lg p-2.5 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-950"
                       >
                         <FileCheck2 size={16} />
                       </button>
@@ -511,14 +508,14 @@ export function ManipulatorsPage() {
                         onClick={() => openTrainingModal(m)}
                         aria-label="Registrar treinamento"
                         title="Registrar treinamento"
-                        className="rounded-lg p-2.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
+                        className="rounded-lg p-2.5 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950"
                       >
                         <GraduationCap size={16} />
                       </button>
                       <button
                         onClick={() => openEdit(m)}
                         aria-label="Editar"
-                        className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                       >
                         <Pencil size={16} />
                       </button>

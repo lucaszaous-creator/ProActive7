@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 function bucketOf(
   expiry: Date,
@@ -149,17 +150,15 @@ export function ValidadesPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Validades
-          </h1>
-          <p className="text-sm text-neutral-500">
+      <PageHeader
+        title="Validades"
+        subtitle={
+          <>
             Etiquetas vivas, ordenadas por quem vence primeiro. Use para evitar
             servir vencido e reduzir desperdício.
-          </p>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {isMaster && companies.length > 0 && (
@@ -186,7 +185,7 @@ export function ValidadesPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada.
           </p>
         </Card>
@@ -196,7 +195,7 @@ export function ValidadesPage() {
         </div>
       ) : filtered.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nenhuma etiqueta viva. Imprima etiquetas em /imprimir para começar.
           </p>
         </Card>
@@ -207,10 +206,10 @@ export function ValidadesPage() {
             if (items.length === 0) return null;
             return (
               <section key={bucket}>
-                <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold text-neutral-700">
+                <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
                   <CalendarClock size={16} className="text-neutral-400" />
                   {BUCKET_LABELS[bucket]}
-                  <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs font-normal text-neutral-500">
+                  <span className="rounded bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 text-xs font-normal text-neutral-500 dark:text-neutral-400">
                     {items.length}
                   </span>
                 </h2>
@@ -221,9 +220,9 @@ export function ValidadesPage() {
                     return (
                       <div
                         key={l.id}
-                        className={`rounded-lg border bg-white p-3 dark:bg-slate-900 ${
+                        className={`rounded-lg border bg-white p-3 dark:bg-neutral-900 ${
                           isToday
-                            ? 'border-amber-300'
+                            ? 'border-amber-300 dark:border-amber-900'
                             : 'border-neutral-200 dark:border-neutral-800'
                         }`}
                       >
@@ -233,7 +232,7 @@ export function ValidadesPage() {
                               {l.product_name_snapshot}
                             </p>
                             {l.supplier && (
-                              <p className="truncate text-xs text-neutral-500">
+                              <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
                                 {l.supplier}
                               </p>
                             )}
@@ -241,14 +240,14 @@ export function ValidadesPage() {
                           <span
                             className={`shrink-0 rounded px-2 py-0.5 text-xs font-semibold ${
                               isToday
-                                ? 'bg-amber-100 text-amber-800'
-                                : 'bg-neutral-100 text-neutral-600'
+                                ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200'
+                                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300'
                             }`}
                           >
                             {countdownLabel(exp, now)}
                           </span>
                         </div>
-                        <p className="flex items-center gap-1 text-xs text-neutral-500">
+                        <p className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
                           {l.storage_condition === 'congelado' ? (
                             <Snowflake size={12} />
                           ) : l.storage_condition === 'refrigerado' ? (

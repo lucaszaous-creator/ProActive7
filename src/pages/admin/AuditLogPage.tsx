@@ -17,6 +17,7 @@ import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { formatDateTime } from '@/lib/dates';
 import { Card } from '@/components/ui/Card';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
@@ -50,7 +51,7 @@ const ACTION_LABEL: Record<AuditLogRow['action'], string> = {
 
 const ACTION_COLOR: Record<AuditLogRow['action'], string> = {
   INSERT:
-    'bg-neutral-100 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
+    'bg-neutral-100 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300',
   UPDATE: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
   DELETE: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
 };
@@ -117,15 +118,10 @@ export function AuditLogPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5">
-        <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-          Trilha de auditoria
-        </h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">
-          Quem alterou o quê e quando. Últimas 500 mudanças nas tabelas críticas
-          para fiscalização sanitária.
-        </p>
-      </div>
+      <PageHeader
+        title="Trilha de auditoria"
+        subtitle="Quem alterou o quê e quando. Últimas 500 mudanças nas tabelas críticas para fiscalização sanitária."
+      />
 
       <Card className="mb-4">
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

@@ -7,6 +7,7 @@ import { usePageTitle } from '@/lib/usePageTitle';
 import { MODULES } from '@/lib/modules';
 import { Card } from '@/components/ui/Card';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 function fmtDate(s: string | null): string | null {
   if (!s) return null;
@@ -51,18 +52,14 @@ export function SubscriptionPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-5">
-        <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl dark:text-neutral-100">
-          Minha assinatura
-        </h1>
-        <p className="text-sm text-neutral-500">
-          Plano atual da sua organização e recursos liberados.
-        </p>
-      </div>
+      <PageHeader
+        title="Minha assinatura"
+        subtitle="Plano atual da sua organização e recursos liberados."
+      />
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
+          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
             <CreditCard size={14} /> Plano
           </div>
           <p className="mt-1 text-lg font-semibold text-neutral-800 dark:text-neutral-100">
@@ -71,7 +68,7 @@ export function SubscriptionPage() {
           <span
             className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
               sub.status === 'active'
-                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300'
+                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300'
                 : 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
             }`}
           >
@@ -80,7 +77,7 @@ export function SubscriptionPage() {
         </Card>
 
         <Card>
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
+          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
             <Building2 size={14} /> Empresas
           </div>
           <p className="mt-1 text-lg font-semibold text-neutral-800 dark:text-neutral-100">
@@ -105,7 +102,7 @@ export function SubscriptionPage() {
         </Card>
 
         <Card>
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
+          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
             Vigência
           </div>
           <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">
@@ -130,12 +127,12 @@ export function SubscriptionPage() {
                 key={m.key}
                 className={`flex items-start gap-3 rounded-lg border p-3 ${
                   on
-                    ? 'border-neutral-200 bg-neutral-50 dark:border-neutral-900 dark:bg-neutral-950'
-                    : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-slate-800'
+                    ? 'border-neutral-200 bg-neutral-50 dark:border-neutral-900 dark:bg-neutral-800/60'
+                    : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
                 }`}
               >
                 <span
-                  className={`mt-0.5 shrink-0 ${on ? 'text-neutral-600' : 'text-neutral-400'}`}
+                  className={`mt-0.5 shrink-0 ${on ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-400'}`}
                 >
                   {on ? <Check size={16} /> : <Lock size={16} />}
                 </span>
@@ -144,18 +141,18 @@ export function SubscriptionPage() {
                     className={`text-sm font-medium ${
                       on
                         ? 'text-neutral-800 dark:text-neutral-100'
-                        : 'text-neutral-500'
+                        : 'text-neutral-500 dark:text-neutral-400'
                     }`}
                   >
                     {m.label}
                   </p>
-                  <p className="text-xs text-neutral-500">{m.description}</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">{m.description}</p>
                 </div>
               </li>
             );
           })}
         </ul>
-        <p className="mt-4 rounded-lg bg-neutral-50 px-3 py-2 text-xs text-neutral-500 dark:bg-slate-800 dark:text-neutral-400">
+        <p className="mt-4 rounded-lg bg-neutral-50 px-3 py-2 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
           Para fazer upgrade do plano ou liberar mais empresas, fale com o
           suporte do ProActive7.
         </p>
@@ -208,7 +205,7 @@ function SupportAccessCard({ orgId }: { orgId: string }) {
   return (
     <Card className="mt-4">
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-500 dark:bg-slate-800 dark:text-neutral-300">
+        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300">
           <ShieldCheck size={18} />
         </span>
         <div className="min-w-0 flex-1">

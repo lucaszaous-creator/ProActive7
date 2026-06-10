@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Spinner } from '@/components/ui/Spinner';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 
@@ -128,21 +129,21 @@ export function SuppliersPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
-            Fornecedores
-          </h1>
-          <p className="text-sm text-neutral-500">
+      <PageHeader
+        title="Fornecedores"
+        subtitle={
+          <>
             Cadastro central dos fornecedores que entregam mercadoria nas
             cozinhas.
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Novo fornecedor
-        </Button>
-      </div>
+          </>
+        }
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Novo fornecedor
+          </Button>
+        }
+      />
 
       {loading ? (
         <div className="flex justify-center py-16">
@@ -150,28 +151,28 @@ export function SuppliersPage() {
         </div>
       ) : suppliers.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nenhum fornecedor cadastrado ainda.
           </p>
         </Card>
       ) : (
         <Card>
-          <ul className="divide-y divide-neutral-100">
+          <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
             {suppliers.map((s) => (
               <li key={s.id} className="flex items-center gap-3 py-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-50 text-neutral-600">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300">
                   <Truck size={16} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-neutral-800">
+                  <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                     {s.name}
                     {!s.active && (
-                      <span className="ml-2 rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-normal text-neutral-500">
+                      <span className="ml-2 rounded bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 text-[10px] font-normal text-neutral-500 dark:text-neutral-400">
                         inativo
                       </span>
                     )}
                   </p>
-                  <p className="truncate text-xs text-neutral-500">
+                  <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
                     {[s.cnpj, s.phone, s.email].filter(Boolean).join(' · ') ||
                       '—'}
                   </p>
@@ -179,7 +180,7 @@ export function SuppliersPage() {
                 <button
                   onClick={() => openEdit(s)}
                   aria-label="Editar"
-                  className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
+                  className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 >
                   <Pencil size={16} />
                 </button>
@@ -251,7 +252,7 @@ export function SuppliersPage() {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
-          <label className="flex items-center gap-2 text-sm text-neutral-700">
+          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-200">
             <input
               type="checkbox"
               checked={active}

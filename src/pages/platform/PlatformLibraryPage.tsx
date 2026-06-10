@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card } from '@/components/ui/Card';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { usePageTitle } from '@/lib/usePageTitle';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 type Tab = 'audit' | 'checklist' | 'products';
 
@@ -85,15 +86,10 @@ export function PlatformLibraryPage() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100">
-          Biblioteca global
-        </h1>
-        <p className="text-sm text-neutral-500">
-          Templates e produtos publicados aqui ficam disponíveis para todas as
-          organizações clonarem como modelo oficial.
-        </p>
-      </div>
+      <PageHeader
+        title="Biblioteca global"
+        subtitle="Templates e produtos publicados aqui ficam disponíveis para todas as organizações clonarem como modelo oficial."
+      />
 
       <div className="flex gap-1 overflow-x-auto">
         {[
@@ -106,7 +102,7 @@ export function PlatformLibraryPage() {
             onClick={() => setTab(t.id)}
             className={`shrink-0 rounded-lg px-3 py-2 text-sm font-medium transition ${
               tab === t.id
-                ? 'bg-neutral-900 text-white'
+                ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
                 : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
             }`}
           >
@@ -119,19 +115,19 @@ export function PlatformLibraryPage() {
         <ListSkeleton rows={5} />
       ) : (
         <Card>
-          <p className="mb-3 text-xs text-neutral-500">
+          <p className="mb-3 text-xs text-neutral-500 dark:text-neutral-400">
             {globalCount} de {rows.length} marcados como{' '}
             {tab === 'products' ? 'seed' : 'global'}.
           </p>
           {rows.length === 0 ? (
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
               Nenhum item nesta categoria.
             </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:border-neutral-700">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:border-neutral-700">
                     <th className="py-2">Nome</th>
                     <th className="py-2">Origem</th>
                     <th className="py-2 text-right">Status</th>
@@ -145,17 +141,17 @@ export function PlatformLibraryPage() {
                       className="border-b border-neutral-100 dark:border-neutral-800"
                     >
                       <td className="py-2 font-medium">{r.name}</td>
-                      <td className="py-2 text-neutral-500">
+                      <td className="py-2 text-neutral-500 dark:text-neutral-400">
                         {r.company_id ? 'Org' : 'Plataforma'}
                       </td>
                       <td className="py-2 text-right">
                         {r.is_flag ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300">
                             <Globe size={10} />
                             Global
                           </span>
                         ) : (
-                          <span className="text-xs text-neutral-500">—</span>
+                          <span className="text-xs text-neutral-500 dark:text-neutral-400">—</span>
                         )}
                       </td>
                       <td className="py-2 text-right">
@@ -164,8 +160,8 @@ export function PlatformLibraryPage() {
                           disabled={toggling === r.id}
                           className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs disabled:opacity-50 ${
                             r.is_flag
-                              ? 'border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900'
-                              : 'border-neutral-200 text-neutral-700 hover:bg-neutral-50 dark:border-neutral-900'
+                              ? 'border-red-200 text-red-600 dark:text-red-300 hover:bg-red-50 dark:border-red-900'
+                              : 'border-neutral-200 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800/60 dark:border-neutral-900'
                           }`}
                         >
                           {r.is_flag ? (

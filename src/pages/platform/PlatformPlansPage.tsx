@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { ListSkeleton } from '@/components/ui/Skeleton';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 export function PlatformPlansPage() {
   usePageTitle('Planos');
@@ -100,21 +101,16 @@ export function PlatformPlansPage() {
 
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl dark:text-neutral-100">
-            Planos
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Catálogo de planos: limite de empresas e módulos liberados. A
-            cobrança é controlada manualmente (sem gateway).
-          </p>
-        </div>
-        <Button onClick={openCreate}>
-          <Plus size={18} />
-          Novo plano
-        </Button>
-      </div>
+      <PageHeader
+        title="Planos"
+        subtitle="Catálogo de planos: limite de empresas e módulos liberados. A cobrança é controlada manualmente (sem gateway)."
+        actions={
+          <Button onClick={openCreate}>
+            <Plus size={18} />
+            Novo plano
+          </Button>
+        }
+      />
 
       {loading ? (
         <ListSkeleton rows={4} />
@@ -129,12 +125,12 @@ export function PlatformPlansPage() {
           {plans.map((p) => (
             <div
               key={p.key}
-              className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-slate-900"
+              className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <CreditCard size={16} className="text-neutral-600" />
+                    <CreditCard size={16} className="text-neutral-600 dark:text-neutral-300" />
                     <p className="truncate font-medium text-neutral-800 dark:text-neutral-100">
                       {p.name}
                     </p>
@@ -145,18 +141,18 @@ export function PlatformPlansPage() {
                   onClick={() => openEdit(p)}
                   aria-label="Editar"
                   title="Editar"
-                  className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-slate-800"
+                  className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
                 >
                   <Pencil size={16} />
                 </button>
               </div>
               <div className="flex flex-wrap gap-1.5 text-xs">
-                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-neutral-600 dark:bg-slate-800 dark:text-neutral-300">
+                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
                   {p.company_limit === null
                     ? 'Empresas: ilimitado'
                     : `Empresas: ${p.company_limit}`}
                 </span>
-                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-neutral-600 dark:bg-slate-800 dark:text-neutral-300">
+                <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
                   {(p.allowed_modules ?? []).length} módulos
                 </span>
                 {!p.active && (

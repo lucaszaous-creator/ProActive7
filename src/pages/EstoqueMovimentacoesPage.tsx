@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Select } from '@/components/ui/Select';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 
 interface Row extends StockMovement {
   product: { id: string; name: string } | null;
@@ -57,22 +58,20 @@ export function EstoqueMovimentacoesPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex items-center gap-3">
-        <Link to="/estoque">
-          <Button variant="ghost">
-            <ArrowLeft size={18} />
-            Voltar
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
+      <PageHeader
+        title={
+          <span className="flex items-center gap-3">
+            <Link to="/estoque">
+              <Button variant="ghost">
+                <ArrowLeft size={18} />
+                Voltar
+              </Button>
+            </Link>
             Movimentações de estoque
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Trilha completa de entradas, saídas, ajustes e descartes.
-          </p>
-        </div>
-      </div>
+          </span>
+        }
+        subtitle="Trilha completa de entradas, saídas, ajustes e descartes."
+      />
 
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         {isMaster && companies.length > 0 && (
@@ -112,13 +111,13 @@ export function EstoqueMovimentacoesPage() {
         </div>
       ) : filtered.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Sem movimentações no período.
           </p>
         </Card>
       ) : (
         <Card>
-          <ul className="divide-y divide-neutral-100">
+          <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
             {filtered.map((r) => {
               const isEntry = r.quantity_delta > 0;
               return (
@@ -126,8 +125,8 @@ export function EstoqueMovimentacoesPage() {
                   <span
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                       isEntry
-                        ? 'bg-neutral-50 text-neutral-600'
-                        : 'bg-red-50 text-red-600'
+                        ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300'
+                        : 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300'
                     }`}
                   >
                     {isEntry ? (
@@ -137,10 +136,10 @@ export function EstoqueMovimentacoesPage() {
                     )}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-neutral-800">
+                    <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                       {r.product?.name ?? '—'} · lote {r.batch}
                     </p>
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
                       {STOCK_MOVEMENT_KIND_LABELS[r.kind]} ·{' '}
                       {formatDateTime(r.moved_at)}
                       {r.reason ? ` · ${r.reason}` : ''}
@@ -148,14 +147,14 @@ export function EstoqueMovimentacoesPage() {
                   </div>
                   <div
                     className={`text-sm font-medium ${
-                      isEntry ? 'text-neutral-700' : 'text-red-700'
+                      isEntry ? 'text-neutral-700 dark:text-neutral-200' : 'text-red-700'
                     }`}
                   >
                     {isEntry ? '+' : ''}
                     {Number(r.quantity_delta).toLocaleString('pt-BR', {
                       maximumFractionDigits: 3,
                     })}{' '}
-                    <span className="text-xs text-neutral-500">
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400">
                       {RECEIVING_UNIT_LABELS[r.unit]}
                     </span>
                   </div>

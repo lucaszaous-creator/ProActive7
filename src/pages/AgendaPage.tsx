@@ -15,6 +15,7 @@ import { formatDate } from '@/lib/dates';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
+import { PageHeader } from '@/components/ui/PageHeader';
 import {
   isoDate,
   monthGrid,
@@ -119,27 +120,23 @@ export function AgendaPage() {
 
   return (
     <div className="mx-auto max-w-5xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Agenda
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Visitas tecnicas agendadas e historico.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <Button variant="secondary" size="sm" onClick={prevMonth}>
-            <ChevronLeft size={16} />
-          </Button>
-          <Button variant="secondary" size="sm" onClick={goToday}>
-            Hoje
-          </Button>
-          <Button variant="secondary" size="sm" onClick={nextMonth}>
-            <ChevronRight size={16} />
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        title="Agenda"
+        subtitle="Visitas tecnicas agendadas e historico."
+        actions={
+          <>
+            <Button variant="secondary" size="sm" onClick={prevMonth}>
+              <ChevronLeft size={16} />
+            </Button>
+            <Button variant="secondary" size="sm" onClick={goToday}>
+              Hoje
+            </Button>
+            <Button variant="secondary" size="sm" onClick={nextMonth}>
+              <ChevronRight size={16} />
+            </Button>
+          </>
+        }
+      />
 
       <Card className="mb-4">
         <h2 className="mb-3 text-base font-semibold text-neutral-700 dark:text-neutral-200">
@@ -181,7 +178,7 @@ export function AgendaPage() {
                           <li key={ev.id}>
                             <Link
                               to={`/visitas/${ev.id}`}
-                              className="flex items-center gap-2 rounded-lg bg-neutral-50 px-2 py-1.5 text-xs hover:bg-neutral-100 dark:bg-slate-800 dark:hover:bg-slate-700"
+                              className="flex items-center gap-2 rounded-lg bg-neutral-50 px-2 py-1.5 text-xs hover:bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-700"
                             >
                               <span
                                 className={`h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[ev.status]}`}
@@ -230,9 +227,9 @@ export function AgendaPage() {
                       key={d.iso}
                       className={`flex min-h-[5.5rem] flex-col gap-1 rounded-lg border p-1 text-xs ${
                         d.inMonth
-                          ? 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-slate-900'
-                          : 'border-transparent bg-neutral-50 text-neutral-400 dark:bg-slate-950 dark:text-neutral-600'
-                      } ${d.isToday ? 'ring-2 ring-neutral-900' : ''}`}
+                          ? 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
+                          : 'border-transparent bg-neutral-50 text-neutral-400 dark:bg-neutral-950 dark:text-neutral-600'
+                      } ${d.isToday ? 'ring-2 ring-neutral-900 dark:ring-neutral-100' : ''}`}
                     >
                       <span
                         className={`text-right text-[10px] font-semibold ${
@@ -247,7 +244,7 @@ export function AgendaPage() {
                         <Link
                           key={ev.id}
                           to={`/visitas/${ev.id}`}
-                          className="flex items-center gap-1 truncate rounded bg-neutral-100 px-1 py-0.5 text-[10px] text-neutral-700 hover:bg-neutral-200 dark:bg-slate-800 dark:text-neutral-300 dark:hover:bg-slate-700"
+                          className="flex items-center gap-1 truncate rounded bg-neutral-100 px-1 py-0.5 text-[10px] text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
                         >
                           <span
                             className={`h-1.5 w-1.5 shrink-0 rounded-full ${STATUS_DOT[ev.status]}`}
@@ -258,7 +255,7 @@ export function AgendaPage() {
                         </Link>
                       ))}
                       {list.length > 3 ? (
-                        <span className="text-[10px] text-neutral-500">
+                        <span className="text-[10px] text-neutral-500 dark:text-neutral-400">
                           +{list.length - 3} mais
                         </span>
                       ) : null}
@@ -282,7 +279,7 @@ export function AgendaPage() {
               <li key={ev.id}>
                 <Link
                   to={`/visitas/${ev.id}`}
-                  className="flex items-center gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-slate-800"
+                  className="flex items-center gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800"
                 >
                   <span
                     className={`h-2 w-2 shrink-0 rounded-full ${STATUS_DOT[ev.status]}`}

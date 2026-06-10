@@ -25,6 +25,7 @@ import {
   type LabelPrint,
 } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
+import { PageHeader } from '@/components/ui/PageHeader';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -65,10 +66,10 @@ function expiryInfo(expiryAt: string, now: number) {
     key: 'ok' as ExpiryKey,
     label: `Vence em ${days}d`,
     badge:
-      'border-neutral-200 bg-neutral-50 text-neutral-700 dark:border-neutral-900 dark:bg-neutral-950 dark:text-neutral-300',
+      'border-neutral-200 bg-neutral-50 text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800/60 dark:text-neutral-300',
     ring: 'border-neutral-200 dark:border-neutral-800',
     iconBg:
-      'bg-neutral-50 text-neutral-600 dark:bg-neutral-950 dark:text-neutral-400',
+      'bg-neutral-50 text-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-400',
     expired: false,
     soon: false,
   };
@@ -268,18 +269,16 @@ export function ProducaoPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
-            Produção (etiquetas em uso)
-          </h1>
-          <p className="text-sm text-neutral-500">
+      <PageHeader
+        title="Produção (etiquetas em uso)"
+        subtitle={
+          <>
             Etiquetas <b>já impressas</b> aguardando baixa — conforme o lote vai
             sendo usado, descartado ou vence. Para saldo de matéria-prima
             recebida, use <b>Estoque</b>.
-          </p>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {!noCompany && !loading && labels.length > 0 && (
         <div className="mb-4 grid grid-cols-3 gap-3">
@@ -349,7 +348,7 @@ export function ProducaoPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600">
+          <p className="text-sm text-neutral-600 dark:text-neutral-300">
             Nenhuma empresa cadastrada.
           </p>
         </Card>
@@ -357,13 +356,13 @@ export function ProducaoPage() {
         <ListSkeleton rows={5} />
       ) : labels.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nenhuma etiqueta ativa. Imprima etiquetas em Etiquetas.
           </p>
         </Card>
       ) : filtered.length === 0 ? (
         <Card className="flex flex-col items-center gap-3 text-center">
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Nenhum item para este filtro.
           </p>
           <Button
@@ -385,7 +384,7 @@ export function ProducaoPage() {
             return (
               <div
                 key={l.id}
-                className={`flex flex-col rounded-xl border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg dark:bg-slate-900 ${info.ring}`}
+                className={`flex flex-col rounded-xl border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg dark:bg-neutral-900 ${info.ring}`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <span
@@ -498,7 +497,7 @@ export function ProducaoPage() {
       >
         {target && (
           <div className="flex flex-col gap-3">
-            <div className="rounded-lg bg-neutral-50 p-3 text-sm text-neutral-700 dark:bg-slate-800 dark:text-neutral-200">
+            <div className="rounded-lg bg-neutral-50 p-3 text-sm text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200">
               <p className="font-medium">{target.product_name_snapshot}</p>
               <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
                 {target.batch ? `Lote ${target.batch} · ` : ''}
@@ -588,7 +587,7 @@ function StatCard({
 }) {
   const tones = {
     emerald:
-      'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-400',
+      'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-400',
     amber: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
     red: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
   } as const;
@@ -604,7 +603,7 @@ function StatCard({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-xl border bg-white p-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500 dark:bg-slate-900 ${
+      className={`rounded-xl border bg-white p-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500 dark:bg-neutral-900 ${
         active ? activeRing[tone] : 'border-neutral-200 dark:border-neutral-800'
       }`}
     >

@@ -21,7 +21,7 @@ export function EmptyState({
   action,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 bg-white px-6 py-14 text-center dark:border-neutral-700 dark:bg-slate-900">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 bg-white px-6 py-14 text-center dark:border-neutral-700 dark:bg-neutral-900">
       <span className="relative flex h-16 w-16 items-center justify-center">
         {/* anéis concêntricos que pulsam suavemente */}
         <span className="absolute inset-0 rounded-full bg-neutral-100 dark:bg-neutral-800" />

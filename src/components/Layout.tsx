@@ -626,8 +626,8 @@ function NavItem({ item, onClick }: { item: NavItemDef; onClick: () => void }) {
       className={({ isActive }) =>
         `fx-accent fx-press flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
           isActive
-            ? 'bg-neutral-200 text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100'
-            : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
+            ? 'bg-neutral-900 text-white shadow-sm dark:bg-neutral-100 dark:text-neutral-900'
+            : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100'
         }`
       }
     >
@@ -752,7 +752,7 @@ export function Layout() {
   }
 
   return (
-    <div className="relative flex min-h-screen w-full overflow-x-hidden bg-slate-50 dark:bg-slate-950">
+    <div className="relative flex min-h-screen w-full overflow-x-hidden bg-slate-50 dark:bg-neutral-950">
       {mobileOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/40 lg:hidden"
@@ -761,20 +761,24 @@ export function Layout() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-neutral-200 bg-white transition-transform dark:border-neutral-800 dark:bg-slate-900 lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-neutral-200 bg-white transition-transform dark:border-white/10 dark:bg-neutral-950 lg:static lg:translate-x-0 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="group relative flex items-center justify-center border-b border-neutral-200 bg-white px-4 py-4 dark:border-neutral-800 dark:bg-white">
-          <img
-            src="/proactive7-logo.svg"
-            alt="ProActive7 — Boa alimentação, bem-estar e saúde!"
-            className="h-12 w-auto max-w-full transition-transform duration-300 group-hover:scale-105"
-          />
+        <div className="group relative flex items-center justify-center border-b border-neutral-200 bg-white px-4 py-4 dark:border-white/10 dark:bg-neutral-950">
+          {/* No dark, o logo (colorido) vive numa pílula branca compacta em
+              vez de uma faixa branca inteira gritando no tema escuro. */}
+          <span className="rounded-xl bg-white px-3 py-1.5 transition-transform duration-300 group-hover:scale-105">
+            <img
+              src="/proactive7-logo.svg"
+              alt="ProActive7 — Boa alimentação, bem-estar e saúde!"
+              className="h-12 w-auto max-w-full"
+            />
+          </span>
           <button
             onClick={closeMobile}
             aria-label="Fechar menu"
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 lg:hidden"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 lg:hidden"
           >
             <X size={22} />
           </button>
@@ -800,19 +804,26 @@ export function Layout() {
         </nav>
 
         <div className="border-t border-neutral-200 p-3 dark:border-neutral-800">
-          <div className="mb-2 px-2">
-            <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">
-              {profile?.full_name ?? profile?.email}
-            </p>
-            <p className="text-xs text-neutral-500 dark:text-neutral-500">
-              {isPlatformAdmin
-                ? t('layout.master')
-                : isNutritionist
-                  ? 'Nutricionista'
-                  : isPropertyManager
-                    ? t('layout.propertyManager')
-                    : t('layout.property')}
-            </p>
+          <div className="mb-2 flex items-center gap-2.5 rounded-lg bg-neutral-50 px-2.5 py-2 dark:bg-neutral-800/60">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-xs font-semibold uppercase text-white dark:bg-neutral-100 dark:text-neutral-900">
+              {(profile?.full_name ?? profile?.email ?? '?')
+                .trim()
+                .charAt(0)}
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                {profile?.full_name ?? profile?.email}
+              </p>
+              <p className="truncate text-xs text-neutral-500 dark:text-neutral-500">
+                {isPlatformAdmin
+                  ? t('layout.master')
+                  : isNutritionist
+                    ? 'Nutricionista'
+                    : isPropertyManager
+                      ? t('layout.propertyManager')
+                      : t('layout.property')}
+              </p>
+            </div>
           </div>
           <div className="space-y-1">
             <ThemeToggle />
@@ -830,8 +841,14 @@ export function Layout() {
         </div>
       </aside>
 
-      <div className="flex min-w-0 w-full flex-1 flex-col">
-        <header className="flex w-full items-center gap-3 border-b border-neutral-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-slate-900 lg:hidden">
+      <div className="relative flex min-w-0 w-full flex-1 flex-col">
+        {/* Dark v2: halo de luz no topo do conteúdo — profundidade sutil
+            no preto chapado, só no tema escuro. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 hidden h-72 bg-[radial-gradient(640px_220px_at_50%_-60px,rgba(255,255,255,0.07),transparent_70%)] dark:block"
+        />
+        <header className="sticky top-0 z-20 flex w-full items-center gap-3 border-b border-neutral-200 bg-white/90 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-neutral-950/90 lg:hidden">
           <button
             onClick={() => setMobileOpen(true)}
             aria-label={t('layout.openMenu')}
@@ -851,11 +868,13 @@ export function Layout() {
             (modo invisivel). O navegador so enfileira em print_jobs. */}
 
         <main className="w-full min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6">
-          <SubscriptionGate>
-            <RouteFade>
-              <Outlet />
-            </RouteFade>
-          </SubscriptionGate>
+          <div className="mx-auto w-full max-w-7xl">
+            <SubscriptionGate>
+              <RouteFade>
+                <Outlet />
+              </RouteFade>
+            </SubscriptionGate>
+          </div>
         </main>
       </div>
     </div>
