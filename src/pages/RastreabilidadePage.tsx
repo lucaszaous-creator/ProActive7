@@ -172,7 +172,7 @@ export function RastreabilidadePage() {
               <Stat label="Vencidas" value={summary.expired} tone="red" />
             </div>
             {summary.labelsTotal === 0 && summary.recTotal === 0 && (
-              <p className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">
+              <p className="mt-3 flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 p-3 text-sm text-amber-800 dark:text-amber-200">
                 <AlertTriangle size={16} className="mt-0.5 shrink-0" />
                 Nenhum recebimento ou etiqueta com este lote.
               </p>
@@ -263,7 +263,7 @@ export function RastreabilidadePage() {
                                 {l.consumed_reason ?? 'consumida'}
                               </span>
                             ) : isExpired ? (
-                              <span className="rounded-full bg-red-50 px-2 py-0.5 font-medium text-red-700">
+                              <span className="rounded-full bg-red-50 dark:bg-red-950/40 px-2 py-0.5 font-medium text-red-700 dark:text-red-200">
                                 vencida
                               </span>
                             ) : (
@@ -298,7 +298,7 @@ function Stat({
   const colors = {
     sky: 'bg-sky-50 text-sky-800',
     emerald: 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-800 dark:text-neutral-100',
-    red: 'bg-red-50 text-red-800',
+    red: 'bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-200',
     neutral: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200',
   }[tone];
   return (

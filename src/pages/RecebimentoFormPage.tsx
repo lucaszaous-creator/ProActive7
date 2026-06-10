@@ -450,7 +450,7 @@ export function RecebimentoFormPage() {
             </div>
 
             {products.length === 0 && (
-              <p className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
+              <p className="mb-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 px-3 py-2 text-xs text-amber-700 dark:text-amber-200">
                 Esta empresa não tem produtos cadastrados. Cadastre em Produtos
                 antes de registrar o recebimento.
               </p>

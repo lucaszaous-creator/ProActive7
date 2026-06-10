@@ -508,7 +508,7 @@ export function ManipulatorsPage() {
                         onClick={() => openTrainingModal(m)}
                         aria-label="Registrar treinamento"
                         title="Registrar treinamento"
-                        className="rounded-lg p-2.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950"
+                        className="rounded-lg p-2.5 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950"
                       >
                         <GraduationCap size={16} />
                       </button>

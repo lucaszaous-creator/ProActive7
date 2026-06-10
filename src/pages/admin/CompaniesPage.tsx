@@ -510,7 +510,7 @@ export function CompaniesPage() {
                       type="button"
                       onClick={handleLogoRemove}
                       disabled={uploadingLogo}
-                      className="text-xs text-red-600 hover:underline disabled:opacity-50"
+                      className="text-xs text-red-600 dark:text-red-300 hover:underline disabled:opacity-50"
                     >
                       Remover
                     </button>
@@ -550,7 +550,7 @@ export function CompaniesPage() {
                 <button
                   type="button"
                   onClick={() => setPrimaryColor('')}
-                  className="text-xs text-red-600 hover:underline"
+                  className="text-xs text-red-600 dark:text-red-300 hover:underline"
                 >
                   Limpar
                 </button>
@@ -586,7 +586,7 @@ function CompanyOrgLink({ row }: { row: CompanyRow }) {
   const org = row.organizations;
   if (!org) {
     return (
-      <span className="text-xs font-medium text-amber-600">
+      <span className="text-xs font-medium text-amber-600 dark:text-amber-300">
         Sem organização vinculada
       </span>
     );

@@ -61,7 +61,7 @@ const RESULT_OPTIONS: {
     label: 'C',
     icon: Check,
     classes:
-      'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800',
+      'border-neutral-200 bg-white text-neutral-500 dark:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800',
     activeClasses: 'border-neutral-500 bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200',
   },
   {
@@ -69,15 +69,15 @@ const RESULT_OPTIONS: {
     label: 'NC',
     icon: XIcon,
     classes:
-      'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800',
-    activeClasses: 'border-red-500 bg-red-50 text-red-700',
+      'border-neutral-200 bg-white text-neutral-500 dark:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800',
+    activeClasses: 'border-red-500 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200',
   },
   {
     value: 'NA',
     label: 'NA',
     icon: MinusCircle,
     classes:
-      'border-neutral-200 bg-white text-neutral-500 dark:border-neutral-700 dark:bg-neutral-800',
+      'border-neutral-200 bg-white text-neutral-500 dark:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800',
     activeClasses: 'border-neutral-500 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200',
   },
 ];
@@ -648,7 +648,7 @@ export function AuditDetailPage() {
                   onClick={() => setCancelOpen(true)}
                   disabled={saving || finalizing}
                   title="Cancelar esta visita"
-                  className="text-red-600 hover:bg-red-50 dark:hover:bg-red-950"
+                  className="text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950"
                 >
                   <XCircle size={14} />
                   Cancelar

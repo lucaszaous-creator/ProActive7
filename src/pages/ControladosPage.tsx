@@ -165,7 +165,7 @@ export function ControladosPage() {
                     key={`${b.product_id}-${b.batch}`}
                     className="flex items-center gap-3 py-2"
                   >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300">
                       <ShieldAlert size={16} />
                     </span>
                     <div className="min-w-0 flex-1">
@@ -218,7 +218,7 @@ export function ControladosPage() {
                       className={`text-sm font-medium ${
                         m.quantity_delta > 0
                           ? 'text-neutral-700 dark:text-neutral-200'
-                          : 'text-red-700'
+                          : 'text-red-700 dark:text-red-200'
                       }`}
                     >
                       {m.quantity_delta > 0 ? '+' : ''}

@@ -277,7 +277,7 @@ export function PlatformDashboardPage() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:border-neutral-700">
+                    <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:border-neutral-700">
                       <th className="py-2">Organização</th>
                       <th className="py-2 text-right">Empresas</th>
                       <th className="py-2 text-right">Etiquetas</th>
@@ -359,7 +359,7 @@ export function PlatformDashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:border-neutral-700">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:border-neutral-700">
                     <th className="py-2">Organização</th>
                     <th className="py-2 text-right">NCs abertas</th>
                     <th className="py-2 text-right">NCs +30d</th>
@@ -385,7 +385,7 @@ export function PlatformDashboardPage() {
                         </td>
                         <td className="py-2 text-right">{o.nc_open}</td>
                         <td
-                          className={`py-2 text-right ${critical ? 'font-semibold text-red-600' : ''}`}
+                          className={`py-2 text-right ${critical ? 'font-semibold text-red-600 dark:text-red-300' : ''}`}
                         >
                           {o.nc_overdue_30d}
                         </td>
@@ -420,7 +420,7 @@ export function PlatformDashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:border-neutral-700">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:border-neutral-700">
                     <th className="py-2">Feature</th>
                     <th className="py-2 text-right">Usos</th>
                     <th className="py-2 text-right">Usuários únicos</th>
@@ -473,7 +473,7 @@ export function PlatformDashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:border-neutral-700">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:border-neutral-700">
                     <th className="py-2">Organização</th>
                     <th className="py-2">Sinais de risco</th>
                     <th className="py-2 text-right">Etiquetas 30d</th>

@@ -151,16 +151,16 @@ export function ProductCsvImport({
                 {parsed.rows.length} válidos
               </span>
               {parsed.errors.length > 0 ? (
-                <span className="rounded-full bg-red-50 px-2 py-0.5 text-red-700">
+                <span className="rounded-full bg-red-50 dark:bg-red-950/40 px-2 py-0.5 text-red-700 dark:text-red-200">
                   {parsed.errors.length} com erro
                 </span>
               ) : null}
             </div>
 
             {parsed.errors.length > 0 ? (
-              <div className="max-h-32 overflow-y-auto rounded-lg border border-red-200 bg-red-50 p-2 text-xs">
+              <div className="max-h-32 overflow-y-auto rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 p-2 text-xs">
                 {parsed.errors.map((e, i) => (
-                  <div key={i} className="text-red-700">
+                  <div key={i} className="text-red-700 dark:text-red-200">
                     Linha {e.line}: {e.message}
                   </div>
                 ))}

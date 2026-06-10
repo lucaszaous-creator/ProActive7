@@ -153,7 +153,7 @@ export function ContagemPage() {
             </Card>
             <Card>
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-300">
                   <BarChart3 size={18} />
                 </span>
                 <div>
@@ -168,7 +168,7 @@ export function ContagemPage() {
             </Card>
             <Card>
               <div className="flex items-center gap-3">
-                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300">
                   <BarChart3 size={18} />
                 </span>
                 <div>

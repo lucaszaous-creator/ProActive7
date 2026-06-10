@@ -336,7 +336,7 @@ function AgentCard({
             </div>
           </dl>
           {virtual && (
-            <p className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-800">
+            <p className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 p-2 text-xs text-amber-800 dark:text-amber-200">
               <AlertTriangle size={14} className="mt-0.5 shrink-0" />
               Esta parece uma impressora <b>virtual</b> (PDF/XPS). ZPL não
               funciona aqui — a etiqueta sai em branco. Use uma térmica real
@@ -528,22 +528,22 @@ function TokenReveal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg space-y-3 rounded-2xl bg-amber-50 p-5 shadow-xl"
+        className="w-full max-w-lg space-y-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 p-5 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start gap-2">
-          <AlertTriangle size={20} className="mt-0.5 text-amber-600" />
+          <AlertTriangle size={20} className="mt-0.5 text-amber-600 dark:text-amber-300" />
           <div>
-            <h2 className="text-base font-semibold text-amber-900">
+            <h2 className="text-base font-semibold text-amber-900 dark:text-amber-200">
               Token da impressora — guarde AGORA
             </h2>
-            <p className="text-xs text-amber-800">
+            <p className="text-xs text-amber-800 dark:text-amber-200">
               Este token só aparece uma vez. O instalador do relay pede ele pra
               autenticar. Se perder, exclua a impressora e cadastre de novo.
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2 rounded-lg border border-amber-300 bg-white p-2">
+        <div className="flex items-center gap-2 rounded-lg border border-amber-300 dark:border-amber-900 bg-white p-2">
           <code className="flex-1 overflow-x-auto break-all text-xs">
             {token}
           </code>
@@ -617,9 +617,9 @@ function RelayLogList({ agentId }: { agentId: string }) {
 
   const color = (lvl: string) =>
     lvl === 'error'
-      ? 'text-red-700'
+      ? 'text-red-700 dark:text-red-200'
       : lvl === 'warn'
-        ? 'text-amber-700'
+        ? 'text-amber-700 dark:text-amber-200'
         : 'text-neutral-600 dark:text-neutral-300';
 
   return (

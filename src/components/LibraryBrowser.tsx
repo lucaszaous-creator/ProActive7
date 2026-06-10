@@ -176,7 +176,7 @@ export function LibraryBrowser({
           </div>
         )}
         {!companyId ? (
-          <p className="text-xs text-amber-600">
+          <p className="text-xs text-amber-600 dark:text-amber-300">
             Selecione uma empresa antes de clonar.
           </p>
         ) : null}

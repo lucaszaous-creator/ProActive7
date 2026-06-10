@@ -166,7 +166,7 @@ export function PhotoAttacher({
             disabled={disabled || uploading}
             title="Remover anexo (a foto continua na galeria)"
             aria-label="Remover foto"
-            className="absolute -right-2 -top-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-red-600 shadow ring-1 ring-neutral-200 hover:bg-red-50 disabled:opacity-50 dark:bg-neutral-800 dark:ring-neutral-700"
+            className="absolute -right-2 -top-2 inline-flex h-6 w-6 items-center justify-center rounded-full bg-white text-red-600 dark:text-red-300 shadow ring-1 ring-neutral-200 hover:bg-red-50 disabled:opacity-50 dark:bg-neutral-800 dark:ring-neutral-700"
           >
             <X size={14} />
           </button>

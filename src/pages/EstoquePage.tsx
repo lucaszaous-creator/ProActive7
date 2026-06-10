@@ -358,9 +358,9 @@ export function EstoquePage() {
                           <span
                             className={`inline-flex items-center gap-1 ${
                               expired
-                                ? 'text-red-600'
+                                ? 'text-red-600 dark:text-red-300'
                                 : expiringSoon
-                                  ? 'text-amber-600'
+                                  ? 'text-amber-600 dark:text-amber-300'
                                   : 'text-neutral-600 dark:text-neutral-300'
                             }`}
                           >

@@ -58,9 +58,9 @@ function AlertCard({
   children: React.ReactNode;
 }) {
   const toneClasses: Record<typeof tone, string> = {
-    red: 'bg-red-50 text-red-700',
-    amber: 'bg-amber-50 text-amber-700',
-    blue: 'bg-blue-50 text-blue-700',
+    red: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200',
+    amber: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-200',
+    blue: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-200',
   };
   return (
     <Card>
@@ -204,7 +204,7 @@ export function NutriAlerts() {
                   <span className="text-neutral-400"> · {a.company_name}</span>
                 </span>
                 <span
-                  className={`shrink-0 ${d < 0 ? 'text-red-600' : 'text-amber-600'}`}
+                  className={`shrink-0 ${d < 0 ? 'text-red-600 dark:text-red-300' : 'text-amber-600 dark:text-amber-300'}`}
                 >
                   {d < 0 ? `vencido há ${-d}d` : `${d}d`}
                 </span>
@@ -234,7 +234,7 @@ export function NutriAlerts() {
                   <span className="text-neutral-400"> · {n.company_name}</span>
                 )}
               </span>
-              <span className="shrink-0 text-red-600">
+              <span className="shrink-0 text-red-600 dark:text-red-300">
                 {daysAgo(n.opened_at)}d
               </span>
             </Link>
@@ -259,7 +259,7 @@ export function NutriAlerts() {
               <span className="truncate text-neutral-700 dark:text-neutral-200">
                 {p.company_name}
               </span>
-              <span className="shrink-0 text-red-600">
+              <span className="shrink-0 text-red-600 dark:text-red-300">
                 venceu {formatDate(p.next_due_at)}
               </span>
             </Link>

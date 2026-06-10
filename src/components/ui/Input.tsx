@@ -31,7 +31,7 @@ export function Input({
         } ${className}`}
         {...rest}
       />
-      {error && <span className="text-xs text-red-600">{error}</span>}
+      {error && <span className="text-xs text-red-600 dark:text-red-300">{error}</span>}
     </div>
   );
 }

@@ -273,7 +273,7 @@ export function SiteClientsPage() {
               )}
             </span>
             <div className="flex flex-col gap-1.5">
-              <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200">
+              <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/60 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200">
                 <ImageIcon size={16} />
                 {uploading ? 'Enviando…' : 'Logo do cliente'}
                 <input

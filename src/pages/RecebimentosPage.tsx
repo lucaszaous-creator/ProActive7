@@ -161,7 +161,7 @@ export function RecebimentosPage() {
                     <span
                       className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                         rejectedCount > 0
-                          ? 'bg-amber-50 text-amber-600'
+                          ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300'
                           : 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300'
                       }`}
                     >

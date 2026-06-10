@@ -151,7 +151,7 @@ export function RecebimentoDetailPage() {
                       <span
                         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                           it.rejected
-                            ? 'bg-red-50 text-red-600'
+                            ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300'
                             : 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300'
                         }`}
                       >
@@ -178,7 +178,7 @@ export function RecebimentoDetailPage() {
                             : ''}
                         </p>
                         {it.rejected && it.rejection_reason && (
-                          <p className="mt-1 text-xs text-red-600">
+                          <p className="mt-1 text-xs text-red-600 dark:text-red-300">
                             Rejeitado: {it.rejection_reason}
                           </p>
                         )}

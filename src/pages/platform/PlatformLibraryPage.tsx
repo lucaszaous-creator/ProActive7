@@ -127,7 +127,7 @@ export function PlatformLibraryPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:border-neutral-700">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:border-neutral-700">
                     <th className="py-2">Nome</th>
                     <th className="py-2">Origem</th>
                     <th className="py-2 text-right">Status</th>
@@ -160,8 +160,8 @@ export function PlatformLibraryPage() {
                           disabled={toggling === r.id}
                           className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs disabled:opacity-50 ${
                             r.is_flag
-                              ? 'border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900'
-                              : 'border-neutral-200 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:border-neutral-900'
+                              ? 'border-red-200 text-red-600 dark:text-red-300 hover:bg-red-50 dark:border-red-900'
+                              : 'border-neutral-200 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800/60 dark:border-neutral-900'
                           }`}
                         >
                           {r.is_flag ? (

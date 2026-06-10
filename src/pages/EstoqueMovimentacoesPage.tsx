@@ -126,7 +126,7 @@ export function EstoqueMovimentacoesPage() {
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                       isEntry
                         ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300'
-                        : 'bg-red-50 text-red-600'
+                        : 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300'
                     }`}
                   >
                     {isEntry ? (

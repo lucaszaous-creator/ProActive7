@@ -222,7 +222,7 @@ export function ValidadesPage() {
                         key={l.id}
                         className={`rounded-lg border bg-white p-3 dark:bg-neutral-900 ${
                           isToday
-                            ? 'border-amber-300'
+                            ? 'border-amber-300 dark:border-amber-900'
                             : 'border-neutral-200 dark:border-neutral-800'
                         }`}
                       >
@@ -240,7 +240,7 @@ export function ValidadesPage() {
                           <span
                             className={`shrink-0 rounded px-2 py-0.5 text-xs font-semibold ${
                               isToday
-                                ? 'bg-amber-100 text-amber-800'
+                                ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200'
                                 : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300'
                             }`}
                           >

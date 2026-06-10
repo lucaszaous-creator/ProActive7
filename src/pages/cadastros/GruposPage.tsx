@@ -185,7 +185,7 @@ export function GruposPage() {
                   <p className="flex items-center gap-2 truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
                     {g.name}
                     {!g.active && (
-                      <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-normal text-neutral-500 dark:bg-neutral-800">
+                      <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-normal text-neutral-500 dark:text-neutral-400 dark:bg-neutral-800">
                         inativo
                       </span>
                     )}

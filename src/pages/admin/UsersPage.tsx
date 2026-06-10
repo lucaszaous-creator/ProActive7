@@ -530,7 +530,7 @@ function UserLink({ user }: { user: ProfileRow }) {
         {org ? (
           <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">Org · {org}</div>
         ) : (
-          <div className="mt-0.5 text-xs text-amber-600">
+          <div className="mt-0.5 text-xs text-amber-600 dark:text-amber-300">
             Sem organização vinculada
           </div>
         )}
