@@ -140,7 +140,65 @@ adicione ao roadmap "para quando houver caixa".
   (advisor reporta como WARN hoje).
 - **Service role** só em Edge Function, nunca no bundle.
 - **Backup:** ativar Point-in-Time Recovery quando subir para Supabase Pro.
-- **Rate limit** em RPCs públicas (`get_public_label`) — hoje sem limite.
+- **Rate limit** em RPCs públicas (`get_public_label`, `get_company_seal`)
+  — implementado por IP/janela via `enforce_rate_limit()` (migration `0094`).
+
+### Isolamento multi-tenant — auditoria e verificação (2026-07-09)
+
+Auditoria completa da separação por organização (property só vê a própria
+empresa; nutri só as empresas da própria org; platform_admin vê tudo).
+**Conclusão: o isolamento é imposto no banco, por consulta — a chance de
+acesso cross-org NÃO cresce com o nº de usuários.** Verificado contra
+produção via sweep SQL. As quatro camadas:
+
+1. **RLS em 100% das tabelas** (39/39 no schema).
+2. **Helpers à prova de falsificação:** `current_organization_id()`,
+   `current_company_id()`, `is_nutritionist()` etc. são `SECURITY DEFINER`
+   e leem `profiles` por `auth.uid()` em tempo de query — o usuário não
+   controla o próprio `auth.uid()`.
+3. **Anti-escalonamento:** `guard_profiles_update` reverte tentativa de
+   não-admin mudar o próprio `role`/`company_id`/`organization_id`/`active`;
+   `sync_profiles_org_on_company_move` reamarra profiles quando a empresa
+   troca de org.
+4. **Toda RPC `SECURITY DEFINER` gated:** funções que recebem `company_id`
+   por parâmetro (ex.: `label_report`) replicam a RLS de `label_prints`
+   (retornam vazio sem acesso); métricas de plataforma exigem
+   `is_platform_admin()`; `my_subscription` escopa por
+   `current_organization_id()`. As RPCs anônimas (`get_public_label`,
+   `get_company_seal`) devolvem 1 registro pelo UUID exato, nunca listagem.
+
+**Onde o risco realmente mora: código NOVO, não volume de usuários.** Os
+dois vazamentos históricos (`platform_org_metrics` para anon,
+`get_public_label` com PII) foram tabela/RPC sem gate. Portanto, **todo PR
+que adicione tabela ou função `SECURITY DEFINER` deve rodar este sweep**
+(as 2 primeiras queries têm que vir VAZIAS; a 3ª é revisão manual — só
+podem aparecer helpers `is_*`/`current_*`, RPCs públicas por UUID e
+funções gated por org/admin):
+
+```sql
+-- (1) Tabelas public SEM RLS (deve vir VAZIO)
+select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace
+where n.nspname='public' and c.relkind='r' and not c.relrowsecurity;
+
+-- (2) Tabelas com RLS mas SEM policy (VAZIO, salvo tabelas internas
+--     tipo rpc_rate_limit — RLS on + zero policy = deny total, intencional)
+select c.relname from pg_class c join pg_namespace n on n.oid=c.relnamespace
+where n.nspname='public' and c.relkind='r' and c.relrowsecurity
+  and not exists (select 1 from pg_policies p
+                  where p.schemaname='public' and p.tablename=c.relname);
+
+-- (3) Funções SECURITY DEFINER acessíveis a anon/authenticated (revisar)
+select p.proname, pg_get_function_identity_arguments(p.oid) as args
+from pg_proc p join pg_namespace n on n.oid=p.pronamespace
+where n.nspname='public' and p.prosecdef
+  and exists (select 1 from aclexplode(p.proacl) a join pg_roles r on r.oid=a.grantee
+              where a.privilege_type='EXECUTE' and r.rolname in ('anon','authenticated'))
+order by 1;
+```
+
+A única travessia proposital entre orgs é o **impersonate**
+(`admin-impersonate`): exige platform_admin + `allow_impersonation` da org
++ é auditado (linha em `audit_log` visível à org do alvo).
 
 ## Roadmap (pontos futuros)
 
