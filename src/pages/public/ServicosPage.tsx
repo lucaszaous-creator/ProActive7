@@ -106,7 +106,8 @@ const SERVICOS: Servico[] = [
     title: 'Manuais de Boas Práticas e POPs',
     tag: 'Documentação',
     body: 'Manual de boas práticas personalizado, respeitando as peculiaridades do seu ramo e negócio. Os POPs (Procedimentos Operacionais Padronizados) orientam o manipulador no dia a dia da operação.',
-    entrega: 'Manual de Boas Práticas e POPs personalizados para a sua operação.',
+    entrega:
+      'Manual de Boas Práticas e POPs personalizados para a sua operação.',
   },
 ];
 
@@ -210,7 +211,10 @@ function ServiceShowcase() {
     <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden py-16 md:py-20">
       {/* Fundo aurora (liquid glass backdrop) */}
       <div className="absolute inset-0 -z-10 bg-[#121212]" />
-      <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 overflow-hidden"
+      >
         <div className="animate-aurora absolute -left-24 -top-24 h-[30rem] w-[30rem] rounded-full bg-[#525252]/45 blur-[120px]" />
         <div className="animate-aurora absolute right-[-6rem] top-1/4 h-[28rem] w-[28rem] rounded-full bg-[#737373]/35 blur-[130px] [animation-delay:-7s]" />
         <div className="animate-aurora absolute bottom-[-8rem] left-1/3 h-[26rem] w-[26rem] rounded-full bg-[#525252]/40 blur-[120px] [animation-delay:-14s]" />
@@ -391,33 +395,37 @@ function SistemaBanner() {
  * o fluxo real: diagnóstico → implantação → acompanhamento → pronto).
  */
 function ComoFunciona() {
-  const passos: { icon: LucideIcon; step: string; title: string; body: string }[] =
-    [
-      {
-        icon: Search,
-        step: '01',
-        title: 'Diagnóstico',
-        body: 'Auditoria inicial da sua operação para mapear o que já está conforme e o que precisa de ajuste.',
-      },
-      {
-        icon: Wrench,
-        step: '02',
-        title: 'Implantação',
-        body: 'Manuais, POPs, fichas técnicas e treinamento da equipe — colocamos as boas práticas para rodar de fato.',
-      },
-      {
-        icon: CalendarCheck,
-        step: '03',
-        title: 'Acompanhamento',
-        body: 'Visitas periódicas e o sistema ProActive7 mantêm tudo registrado e atualizado no dia a dia.',
-      },
-      {
-        icon: BadgeCheck,
-        step: '04',
-        title: 'Pronto para a fiscalização',
-        body: 'Documentação assinada pela RT e operação em conformidade com a ANVISA, a qualquer momento.',
-      },
-    ];
+  const passos: {
+    icon: LucideIcon;
+    step: string;
+    title: string;
+    body: string;
+  }[] = [
+    {
+      icon: Search,
+      step: '01',
+      title: 'Diagnóstico',
+      body: 'Auditoria inicial da sua operação para mapear o que já está conforme e o que precisa de ajuste.',
+    },
+    {
+      icon: Wrench,
+      step: '02',
+      title: 'Implantação',
+      body: 'Manuais, POPs, fichas técnicas e treinamento da equipe — colocamos as boas práticas para rodar de fato.',
+    },
+    {
+      icon: CalendarCheck,
+      step: '03',
+      title: 'Acompanhamento',
+      body: 'Visitas periódicas e o sistema ProActive7 mantêm tudo registrado e atualizado no dia a dia.',
+    },
+    {
+      icon: BadgeCheck,
+      step: '04',
+      title: 'Pronto para a fiscalização',
+      body: 'Documentação assinada pela RT e operação em conformidade com a ANVISA, a qualquer momento.',
+    },
+  ];
   return (
     <section className="border-t border-[#e5e5e5] bg-white py-16">
       <div className="mx-auto max-w-6xl px-5">

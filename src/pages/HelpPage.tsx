@@ -397,60 +397,66 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                     </div>
                   ) : null}
 
-                  {m.breakdown?.length ? (
-                    (() => {
-                      const max = Math.max(...m.breakdown.map((p) => p.points));
-                      const sum = m.breakdown.reduce((s, p) => s + p.points, 0);
-                      const unit = m.breakdownUnit ?? (sum === 100 ? 'pts' : 'itens');
-                      const defaultTitle =
-                        sum === 100
-                          ? 'As sete frentes (total 100 pontos)'
-                          : 'Distribuição';
-                      return (
-                        <div>
-                          <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700 dark:text-neutral-400">
-                            {m.breakdownTitle ?? defaultTitle}
-                          </p>
-                          <div className="space-y-1.5">
-                            {m.breakdown.map((p) => (
-                              <div
-                                key={p.label}
-                                className="flex items-center gap-2"
-                              >
-                                <span className="w-28 shrink-0 text-xs font-medium text-neutral-700 dark:text-neutral-300">
-                                  {p.label}
-                                </span>
-                                <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
-                                  <div
-                                    className="h-full rounded-full bg-neutral-500"
-                                    style={{
-                                      width: `${(p.points / max) * 100}%`,
-                                    }}
-                                  />
+                  {m.breakdown?.length
+                    ? (() => {
+                        const max = Math.max(
+                          ...m.breakdown.map((p) => p.points),
+                        );
+                        const sum = m.breakdown.reduce(
+                          (s, p) => s + p.points,
+                          0,
+                        );
+                        const unit =
+                          m.breakdownUnit ?? (sum === 100 ? 'pts' : 'itens');
+                        const defaultTitle =
+                          sum === 100
+                            ? 'As sete frentes (total 100 pontos)'
+                            : 'Distribuição';
+                        return (
+                          <div>
+                            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700 dark:text-neutral-400">
+                              {m.breakdownTitle ?? defaultTitle}
+                            </p>
+                            <div className="space-y-1.5">
+                              {m.breakdown.map((p) => (
+                                <div
+                                  key={p.label}
+                                  className="flex items-center gap-2"
+                                >
+                                  <span className="w-28 shrink-0 text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                                    {p.label}
+                                  </span>
+                                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+                                    <div
+                                      className="h-full rounded-full bg-neutral-500"
+                                      style={{
+                                        width: `${(p.points / max) * 100}%`,
+                                      }}
+                                    />
+                                  </div>
+                                  <span className="w-16 shrink-0 text-right text-xs font-semibold text-neutral-700 dark:text-neutral-400">
+                                    {p.points} {unit}
+                                  </span>
                                 </div>
-                                <span className="w-16 shrink-0 text-right text-xs font-semibold text-neutral-700 dark:text-neutral-400">
-                                  {p.points} {unit}
-                                </span>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
+                            <ul className="mt-2 space-y-0.5">
+                              {m.breakdown.map((p) => (
+                                <li
+                                  key={`d-${p.label}`}
+                                  className="text-[11px] leading-snug text-neutral-500 dark:text-neutral-400"
+                                >
+                                  <span className="font-medium text-neutral-700 dark:text-neutral-300">
+                                    {p.label}:
+                                  </span>{' '}
+                                  {p.desc}
+                                </li>
+                              ))}
+                            </ul>
                           </div>
-                          <ul className="mt-2 space-y-0.5">
-                            {m.breakdown.map((p) => (
-                              <li
-                                key={`d-${p.label}`}
-                                className="text-[11px] leading-snug text-neutral-500 dark:text-neutral-400"
-                              >
-                                <span className="font-medium text-neutral-700 dark:text-neutral-300">
-                                  {p.label}:
-                                </span>{' '}
-                                {p.desc}
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      );
-                    })()
-                  ) : null}
+                        );
+                      })()
+                    : null}
 
                   {m.example ? (
                     <div className="rounded-lg border-l-4 border-amber-400 bg-amber-50 p-3 dark:bg-amber-950/40">
@@ -480,9 +486,11 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                           >
                             <span
                               className={`mt-1 h-3 w-3 shrink-0 rounded-sm ${
-                                ['bg-neutral-500', 'bg-amber-500', 'bg-red-500'][
-                                  i
-                                ] ?? 'bg-neutral-400'
+                                [
+                                  'bg-neutral-500',
+                                  'bg-amber-500',
+                                  'bg-red-500',
+                                ][i] ?? 'bg-neutral-400'
                               }`}
                             />
                             <span>{t}</span>

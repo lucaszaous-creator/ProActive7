@@ -307,14 +307,22 @@
       "crumb": "Cursos",
       "title": "Cursos e Treinamentos em Segurança Alimentar | ProActive7",
       "description": "Capacitação e treinamentos em boas práticas de manipulação e segurança alimentar para equipes de cozinha, conduzidos pela responsável técnica da ProActive7.",
-      "keywords": ["cursos segurança alimentar", "treinamento boas práticas", "capacitação manipuladores"]
+      "keywords": [
+        "cursos segurança alimentar",
+        "treinamento boas práticas",
+        "capacitação manipuladores"
+      ]
     },
     "/clientes": {
       "image": "https://www.proactive7.com.br/og/clientes.png",
       "crumb": "Clientes",
       "title": "Clientes e Cases | ProActive7",
       "description": "Restaurantes, indústrias e serviços de alimentação que confiam na responsabilidade técnica da ProActive7 para operar em conformidade com a ANVISA.",
-      "keywords": ["clientes ProActive7", "cases segurança alimentar", "restaurantes Macaé"]
+      "keywords": [
+        "clientes ProActive7",
+        "cases segurança alimentar",
+        "restaurantes Macaé"
+      ]
     },
     "/404": {
       "title": "Página não encontrada (404) | ProActive7",

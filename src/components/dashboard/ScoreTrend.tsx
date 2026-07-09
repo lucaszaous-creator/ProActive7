@@ -45,7 +45,10 @@ export function ScoreTrend() {
     <Card>
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
-          <LineChart size={15} className="text-neutral-400 dark:text-neutral-500" />
+          <LineChart
+            size={15}
+            className="text-neutral-400 dark:text-neutral-500"
+          />
           Evolução do compliance
         </h2>
         {last ? (
@@ -57,9 +60,9 @@ export function ScoreTrend() {
       </div>
       {data.length < 2 ? (
         <p className="rounded-lg bg-neutral-50 px-3 py-2.5 text-sm text-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-300">
-          A curva se constrói com o uso: cada dia em que o painel é aberto,
-          o score do dia fica registrado. Volte amanhã para ver o primeiro
-          traço da série.
+          A curva se constrói com o uso: cada dia em que o painel é aberto, o
+          score do dia fica registrado. Volte amanhã para ver o primeiro traço
+          da série.
         </p>
       ) : (
         <TrendArea

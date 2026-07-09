@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { Printer, Bluetooth, BluetoothOff } from 'lucide-react';
@@ -276,7 +276,10 @@ export function PrintLabelPage() {
     Boolean(selectedProduct) &&
     rule !== null &&
     expiry !== null &&
-    responsible.trim().length > 0 &&
+    // Responsável precisa ser um funcionário cadastrado (escolhido da
+    // lista), nunca texto livre — princípio "zero digitação na cozinha".
+    manipulators.length > 0 &&
+    manipulators.some((m) => m.full_name === responsible) &&
     quantity >= 1;
 
   async function handlePrint() {
@@ -507,13 +510,22 @@ export function PrintLabelPage() {
                   ))}
                 </Select>
               ) : (
-                <Input
-                  id="resp"
-                  label="Responsável manipulação"
-                  value={responsible}
-                  onChange={(e) => setResponsible(e.target.value)}
-                  placeholder="Cadastre manipuladores em Manipuladores"
-                />
+                // Zero digitação na cozinha: sem manipuladores cadastrados,
+                // não oferecemos campo de texto livre — o nome do responsável
+                // sempre vem de cadastro. Bloqueia com CTA (igual ao wizard).
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-800">
+                  <p className="font-medium">Nenhum funcionário cadastrado</p>
+                  <p className="mt-1 text-xs text-amber-700">
+                    O responsável pela manipulação precisa ser escolhido de uma
+                    lista — não digitado à mão.
+                  </p>
+                  <Link
+                    to="/manipuladores"
+                    className="mt-2 inline-block rounded-md bg-amber-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-amber-700"
+                  >
+                    Cadastrar funcionários
+                  </Link>
+                </div>
               )}
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

@@ -81,8 +81,8 @@ function Faq() {
               Tudo sobre a ProActive7
             </h2>
             <p className="mt-3 text-base leading-relaxed text-[#171717]/65">
-              O que é a ProActive7, onde atende e quem assina a
-              responsabilidade técnica pela sua operação.
+              O que é a ProActive7, onde atende e quem assina a responsabilidade
+              técnica pela sua operação.
             </p>
           </div>
         </Reveal>
@@ -150,11 +150,11 @@ function Hero() {
         </p>
 
         <p className="mt-7 max-w-2xl text-base leading-relaxed text-white/75 md:text-lg">
-          Assessoria e consultoria em segurança alimentar para
-          estabelecimentos comerciais <em>on-shore</em> e{' '}
-          <em>off-shore</em> — restaurantes, indústrias, hotéis, escolas,
-          padarias e mercados. Responsabilidade técnica perante a ANVISA com
-          quem entende do dia a dia da sua operação.
+          Assessoria e consultoria em segurança alimentar para estabelecimentos
+          comerciais <em>on-shore</em> e <em>off-shore</em> — restaurantes,
+          indústrias, hotéis, escolas, padarias e mercados. Responsabilidade
+          técnica perante a ANVISA com quem entende do dia a dia da sua
+          operação.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -223,17 +223,16 @@ function Sobre() {
             <p>
               Nascemos como <strong>PERSONAL DIET</strong> em 2013 e em 2020
               passamos a ser{' '}
-              <strong className="text-[#262626]">PROACTIVE7</strong>,
-              fundada pela nutricionista{' '}
-              <strong>Ariane Madureira</strong>. Mais de uma década entregando
-              consultoria técnica em segurança alimentar, com método próprio:{' '}
+              <strong className="text-[#262626]">PROACTIVE7</strong>, fundada
+              pela nutricionista <strong>Ariane Madureira</strong>. Mais de uma
+              década entregando consultoria técnica em segurança alimentar, com
+              método próprio:{' '}
               <em>observar, planejar, capacitar e conscientizar</em>.
             </p>
             <p>
               Atendemos restaurantes, indústrias, hotéis, escolas, padarias,
-              hortifrutis e mercados em Macaé e região — adequando a
-              operação às legislações federais, estaduais e municipais
-              vigentes.
+              hortifrutis e mercados em Macaé e região — adequando a operação às
+              legislações federais, estaduais e municipais vigentes.
             </p>
           </div>
           <Link
@@ -251,9 +250,9 @@ function Sobre() {
           <div className="relative overflow-hidden rounded-3xl border border-[#e5e5e5] bg-gradient-to-br from-[#262626] to-[#171717] p-8 text-white shadow-[0_25px_60px_-30px_rgba(0,0,0,0.45)] md:p-10">
             <Quote className="h-8 w-8 text-white/40" />
             <p className="mt-4 text-lg font-light italic leading-relaxed text-white/95">
-              Atuar como prestadora de serviços em assessoria e consultoria
-              em fornecimento de alimentação e nutrição com qualidade e foco
-              no cliente — diferenciada pela{' '}
+              Atuar como prestadora de serviços em assessoria e consultoria em
+              fornecimento de alimentação e nutrição com qualidade e foco no
+              cliente — diferenciada pela{' '}
               <strong className="not-italic">atitude pró-ativa</strong> e
               parceria comprometida com as empresas.
             </p>
@@ -430,9 +429,8 @@ function ServicosResumo() {
             Consultoria que cabe na rotina do seu estabelecimento.
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-base text-[#171717]/65">
-            Cada empresa tem um ritmo. Montamos o pacote certo para sua
-            unidade — do treinamento da equipe à entrega de manuais
-            assinados.
+            Cada empresa tem um ritmo. Montamos o pacote certo para sua unidade
+            — do treinamento da equipe à entrega de manuais assinados.
           </p>
         </div>
       </Reveal>

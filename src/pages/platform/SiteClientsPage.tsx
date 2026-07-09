@@ -146,8 +146,13 @@ export function SiteClientsPage() {
       toast.error('Erro ao remover: ' + error.message);
       return;
     }
-    if (editing.logo_path)
-      await supabase.storage.from('site-assets').remove([editing.logo_path]);
+    if (editing.logo_path) {
+      const { error: rmErr } = await supabase.storage
+        .from('site-assets')
+        .remove([editing.logo_path]);
+      if (rmErr)
+        console.warn('Falha ao remover logo do storage:', rmErr.message);
+    }
     toast.success('Cliente removido.');
     setModalOpen(false);
     void load();

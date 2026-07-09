@@ -15,12 +15,7 @@
 // Uso: node scripts/generate-system-manual.mjs   (ou: npm run manual:pdf)
 
 import { jsPDF } from 'jspdf';
-import {
-  writeFileSync,
-  mkdirSync,
-  existsSync,
-  readFileSync,
-} from 'node:fs';
+import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -92,9 +87,24 @@ function drawCheck(d, cx, cy, s, color) {
 function drawChevron(d, cx, cy, s, color, dir = 'r') {
   fill(d, color);
   let pts;
-  if (dir === 'r') pts = [[cx - s, cy - s], [cx + s, cy], [cx - s, cy + s]];
-  else if (dir === 'l') pts = [[cx + s, cy - s], [cx - s, cy], [cx + s, cy + s]];
-  else pts = [[cx - s, cy - s], [cx + s, cy - s], [cx, cy + s]];
+  if (dir === 'r')
+    pts = [
+      [cx - s, cy - s],
+      [cx + s, cy],
+      [cx - s, cy + s],
+    ];
+  else if (dir === 'l')
+    pts = [
+      [cx + s, cy - s],
+      [cx - s, cy],
+      [cx + s, cy + s],
+    ];
+  else
+    pts = [
+      [cx - s, cy - s],
+      [cx + s, cy - s],
+      [cx, cy + s],
+    ];
   d.triangle(...pts[0], ...pts[1], ...pts[2], 'F');
 }
 
@@ -523,10 +533,12 @@ function mockPropertyPainel(d, x, y, w, h) {
   pill(d, cx + 13, yy + 10.5, 24, 2.6, '3 tarefas hoje', C.amberSoft, C.amber);
   yy += 16;
 
-  ['Imprimir etiqueta', 'Registrar temp.', 'Abrir checklist'].forEach((l, i) => {
-    const bw = (cw - 6) / 3;
-    btn(d, cx + i * (bw + 3), yy, bw, 8, l, i === 0);
-  });
+  ['Imprimir etiqueta', 'Registrar temp.', 'Abrir checklist'].forEach(
+    (l, i) => {
+      const bw = (cw - 6) / 3;
+      btn(d, cx + i * (bw + 3), yy, bw, 8, l, i === 0);
+    },
+  );
   yy += 11;
 
   ink(d, C.body);
@@ -574,7 +586,13 @@ function mockPropertyPainel(d, x, y, w, h) {
 
 function mockPrintWizard(d, x, y, w, h) {
   const { cx, cy, cw } = appShell(d, x, y, w, h, 'property', 'Etiquetas');
-  let yy = header(d, cx, cy + 1, 'Imprimir etiqueta', 'Passo 4 de 5 - nada digitado');
+  let yy = header(
+    d,
+    cx,
+    cy + 1,
+    'Imprimir etiqueta',
+    'Passo 4 de 5 - nada digitado',
+  );
   yy += 3;
   ['Manip.', 'Grupo', 'Produto', 'Info', 'Imprimir'].forEach((s, i) => {
     const sx = cx + i * (cw / 5);
@@ -834,13 +852,23 @@ function mockTemperatura(d, x, y, w, h) {
 
 function mockDocumentos(d, x, y, w, h) {
   const { cx, cy, cw } = appShell(d, x, y, w, h, 'property', 'Conformidade');
-  let yy = header(d, cx, cy + 1, 'Documentos', 'Carregue os documentos da empresa');
+  let yy = header(
+    d,
+    cx,
+    cy + 1,
+    'Documentos',
+    'Carregue os documentos da empresa',
+  );
   btn(d, cx + cw - 18, cy - 1, 18, 5, '+ Adicionar', true);
   yy += 2;
   card(d, cx, yy, cw, 11);
   ink(d, C.muted);
   font(d, 'normal', 4.5);
-  d.text('Carregue cada documento na gaveta certa. PDF/imagem ate 20 MB.', cx + 2, yy + 3);
+  d.text(
+    'Carregue cada documento na gaveta certa. PDF/imagem ate 20 MB.',
+    cx + 2,
+    yy + 3,
+  );
   ink(d, C.ink);
   font(d, 'bold', 7);
   d.text('14', cx + cw - 16, yy + 4.5);
@@ -885,7 +913,13 @@ function mockDocumentos(d, x, y, w, h) {
 
 function mockManipuladores(d, x, y, w, h) {
   const { cx, cy, cw } = appShell(d, x, y, w, h, 'nutri', 'Avaliacao');
-  let yy = header(d, cx, cy + 1, 'Manipuladores', 'ASOs, treinamentos e historico');
+  let yy = header(
+    d,
+    cx,
+    cy + 1,
+    'Manipuladores',
+    'ASOs, treinamentos e historico',
+  );
   btn(d, cx + cw - 22, cy - 1, 22, 5, '+ Novo funcionario', true);
   yy += 2;
   const kw = (cw - 6) / 4;
@@ -942,7 +976,13 @@ function mockManipuladores(d, x, y, w, h) {
 
 function mockProducao(d, x, y, w, h) {
   const { cx, cy, cw } = appShell(d, x, y, w, h, 'property', 'Producao');
-  let yy = header(d, cx, cy + 1, 'Producao (etiquetas em uso)', 'Aguardando baixa');
+  let yy = header(
+    d,
+    cx,
+    cy + 1,
+    'Producao (etiquetas em uso)',
+    'Aguardando baixa',
+  );
   yy += 2;
   const sw = (cw - 6) / 3;
   [
@@ -985,7 +1025,16 @@ function mockProducao(d, x, y, w, h) {
       const fg = exp ? C.red : soon ? C.amber : C.brand;
       fill(d, bg);
       rrect(d, bx + 1.5, by + 1.5, 4, 4, 0.8, 'F');
-      pill(d, bx + cwid - 14, by + 1.5, 12, 3, exp ? 'Vencido' : soon ? 'Hoje' : 'Vence 3d', bg, fg);
+      pill(
+        d,
+        bx + cwid - 14,
+        by + 1.5,
+        12,
+        3,
+        exp ? 'Vencido' : soon ? 'Hoje' : 'Vence 3d',
+        bg,
+        fg,
+      );
       ink(d, C.ink);
       font(d, 'bold', 5);
       d.text(labels[r * 3 + col], bx + 2, by + 8);
@@ -1001,7 +1050,13 @@ function mockProducao(d, x, y, w, h) {
 
 function mockEstoqueRecebimento(d, x, y, w, h) {
   const { cx, cy, cw } = appShell(d, x, y, w, h, 'property', 'Estoque');
-  let yy = header(d, cx, cy + 1, 'Recebimentos', 'Conferencia de notas e temperaturas');
+  let yy = header(
+    d,
+    cx,
+    cy + 1,
+    'Recebimentos',
+    'Conferencia de notas e temperaturas',
+  );
   btn(d, cx + cw - 22, cy - 1, 22, 5, '+ Novo recebimento', true);
   yy += 2;
   [
@@ -1016,9 +1071,27 @@ function mockEstoqueRecebimento(d, x, y, w, h) {
     ink(d, C.muted);
     font(d, 'normal', 4.5);
     d.text(sub, cx + 2, yy + 7);
-    pill(d, cx + cw - 32, yy + 1.5, 16, 3.5, `${items} itens`, C.brandSoft, C.brandDeep);
+    pill(
+      d,
+      cx + cw - 32,
+      yy + 1.5,
+      16,
+      3.5,
+      `${items} itens`,
+      C.brandSoft,
+      C.brandDeep,
+    );
     if (rej > 0)
-      pill(d, cx + cw - 14, yy + 1.5, 12, 3.5, `${rej} rejeit`, C.redSoft, C.red);
+      pill(
+        d,
+        cx + cw - 14,
+        yy + 1.5,
+        12,
+        3.5,
+        `${rej} rejeit`,
+        C.redSoft,
+        C.red,
+      );
     ink(d, C.muted);
     font(d, 'normal', 4);
     d.text('Conformes', cx + 2, yy + 11);
@@ -1028,7 +1101,9 @@ function mockEstoqueRecebimento(d, x, y, w, h) {
     rrect(d, cx + 20, yy + 9.5, (cw - 24) * (1 - rej / items), 1.2, 0.4, 'F');
     ink(d, C.body);
     font(d, 'bold', 4);
-    d.text(`${items - rej}/${items}`, cx + cw - 2, yy + 10.5, { align: 'right' });
+    d.text(`${items - rej}/${items}`, cx + cw - 2, yy + 10.5, {
+      align: 'right',
+    });
     yy += 16;
   });
 }
@@ -1062,7 +1137,16 @@ function mockGeneric(d, x, y, w, h, role, feature) {
   // Busca
   card(d, cx, yy, cw, 6);
   input(d, cx + 2, yy + 1.5, cw * 0.5, 3.5, 'Buscar...');
-  pill(d, cx + cw * 0.5 + 4, yy + 1.5, 14, 3.5, 'Filtro', C.brandSoft, C.brandDeep);
+  pill(
+    d,
+    cx + cw * 0.5 + 4,
+    yy + 1.5,
+    14,
+    3.5,
+    'Filtro',
+    C.brandSoft,
+    C.brandDeep,
+  );
   yy += 8;
 
   // Lista genérica
@@ -1078,10 +1162,18 @@ function mockGeneric(d, x, y, w, h, role, feature) {
     d.circle(cx + 5.5, iy + 3.2, 0.8, 'F');
     ink(d, C.ink);
     font(d, 'bold', 5);
-    d.text(`${feature.title} ${String(i + 1).padStart(2, '0')}`, cx + 9.5, iy + 3);
+    d.text(
+      `${feature.title} ${String(i + 1).padStart(2, '0')}`,
+      cx + 9.5,
+      iy + 3,
+    );
     ink(d, C.muted);
     font(d, 'normal', 4);
-    d.text('Atualizado 26/01/2026 - responsavel cadastrado', cx + 9.5, iy + 5.2);
+    d.text(
+      'Atualizado 26/01/2026 - responsavel cadastrado',
+      cx + 9.5,
+      iy + 5.2,
+    );
     pill(
       d,
       cx + cw - 16,
@@ -1099,7 +1191,15 @@ function mockGeneric(d, x, y, w, h, role, feature) {
 // ====== Mockups do PLATFORM ADMIN ======
 
 function mockAdminCentro(d, x, y, w, h) {
-  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Plataforma');
+  const { cx, cy, cw } = appShell(
+    d,
+    x,
+    y,
+    w,
+    h,
+    'platform_admin',
+    'Plataforma',
+  );
   let yy = header(d, cx, cy + 1, 'Centro de controle', 'Visao geral do SaaS');
   yy += 2;
   const kw = (cw - 9) / 4;
@@ -1171,8 +1271,22 @@ function mockAdminCentro(d, x, y, w, h) {
 }
 
 function mockAdminDashboard(d, x, y, w, h) {
-  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Plataforma');
-  let yy = header(d, cx, cy + 1, 'Dashboard SaaS', 'Saude e uso das organizacoes');
+  const { cx, cy, cw } = appShell(
+    d,
+    x,
+    y,
+    w,
+    h,
+    'platform_admin',
+    'Plataforma',
+  );
+  let yy = header(
+    d,
+    cx,
+    cy + 1,
+    'Dashboard SaaS',
+    'Saude e uso das organizacoes',
+  );
   yy += 2;
   // Tabs
   ['Saude das orgs', 'Uso de features', 'Crescimento'].forEach((t, i) => {
@@ -1206,7 +1320,12 @@ function mockAdminDashboard(d, x, y, w, h) {
     ['Demo (manual PDF)', '82%', 'amber', 3, '8', 'hoje'],
   ].forEach(([name, score, tier, ncs, eti, login]) => {
     const fg = tier === 'green' ? C.brand : tier === 'amber' ? C.amber : C.red;
-    const bg = tier === 'green' ? C.brandSoft : tier === 'amber' ? C.amberSoft : C.redSoft;
+    const bg =
+      tier === 'green'
+        ? C.brandSoft
+        : tier === 'amber'
+          ? C.amberSoft
+          : C.redSoft;
     ink(d, C.ink);
     font(d, 'bold', 4.8);
     d.text(name, cx + 3, iy + 2.8);
@@ -1223,7 +1342,15 @@ function mockAdminDashboard(d, x, y, w, h) {
 }
 
 function mockAdminOrgs(d, x, y, w, h) {
-  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Plataforma');
+  const { cx, cy, cw } = appShell(
+    d,
+    x,
+    y,
+    w,
+    h,
+    'platform_admin',
+    'Plataforma',
+  );
   let yy = header(d, cx, cy + 1, 'Organizacoes', 'Clientes do SaaS');
   btn(d, cx + cw - 18, cy - 1, 18, 5, '+ Nova org', true);
   yy += 2;
@@ -1238,7 +1365,13 @@ function mockAdminOrgs(d, x, y, w, h) {
   let iy = yy + 2;
   [
     ['Royal Nutri', 'royal-nutri - Profissional', 6, 'Ativa', C.brand],
-    ['AP Madureira Servicos', 'ap-madureira-servicos - Essencial', 4, 'Ativa', C.brand],
+    [
+      'AP Madureira Servicos',
+      'ap-madureira-servicos - Essencial',
+      4,
+      'Ativa',
+      C.brand,
+    ],
     ['ProActive Consultoria', 'proactive - Premium', 12, 'Ativa', C.brand],
     ['Cafe da Esquina', 'cafe-esquina - Trial', 1, 'Trial 7d', C.amber],
     ['Demo (manual PDF)', 'demo-manual - Profissional', 1, 'Ativa', C.brand],
@@ -1250,7 +1383,9 @@ function mockAdminOrgs(d, x, y, w, h) {
     rrect(d, cx + 3.5, iy + 1.5, 5, 5, 0.6, 'F');
     ink(d, C.brandDeep);
     font(d, 'bold', 4);
-    d.text(name.slice(0, 2).toUpperCase(), cx + 6, iy + 4.6, { align: 'center' });
+    d.text(name.slice(0, 2).toUpperCase(), cx + 6, iy + 4.6, {
+      align: 'center',
+    });
     ink(d, C.ink);
     font(d, 'bold', 5.5);
     d.text(name, cx + 10, iy + 3.5);
@@ -1268,7 +1403,15 @@ function mockAdminOrgs(d, x, y, w, h) {
 }
 
 function mockAdminPlanos(d, x, y, w, h) {
-  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Plataforma');
+  const { cx, cy, cw } = appShell(
+    d,
+    x,
+    y,
+    w,
+    h,
+    'platform_admin',
+    'Plataforma',
+  );
   let yy = header(d, cx, cy + 1, 'Planos', 'Modulos e limites por plano');
   btn(d, cx + cw - 18, cy - 1, 18, 5, '+ Novo plano', true);
   yy += 2;
@@ -1291,10 +1434,17 @@ function mockAdminPlanos(d, x, y, w, h) {
     font(d, 'bold', 7);
     d.text(plan, px + colW / 2, yy + 6, { align: 'center' });
     font(d, 'bold', 11);
-    d.text(['R$ 99', 'R$ 199', 'R$ 399'][i], px + colW / 2, yy + 14, { align: 'center' });
+    d.text(['R$ 99', 'R$ 199', 'R$ 399'][i], px + colW / 2, yy + 14, {
+      align: 'center',
+    });
     ink(d, featured ? [200, 225, 212] : C.muted);
     font(d, 'normal', 4.5);
-    d.text(['Ate 2 empresas', 'Ate 5 empresas', 'Ilimitado'][i], px + colW / 2, yy + 19, { align: 'center' });
+    d.text(
+      ['Ate 2 empresas', 'Ate 5 empresas', 'Ilimitado'][i],
+      px + colW / 2,
+      yy + 19,
+      { align: 'center' },
+    );
 
     const mods = [
       ['Etiquetas', true, true, true],
@@ -1307,7 +1457,13 @@ function mockAdminPlanos(d, x, y, w, h) {
     let my = yy + 26;
     mods.forEach(([m, ...vals]) => {
       const ok = vals[i];
-      drawCheck(d, px + 4, my, 1.2, ok ? (featured ? C.white : C.brand) : C.faint);
+      drawCheck(
+        d,
+        px + 4,
+        my,
+        1.2,
+        ok ? (featured ? C.white : C.brand) : C.faint,
+      );
       ink(d, featured ? C.white : C.body);
       font(d, ok ? 'bold' : 'normal', 4.8);
       d.text(m, px + 7, my + 0.8);
@@ -1319,7 +1475,15 @@ function mockAdminPlanos(d, x, y, w, h) {
 }
 
 function mockAdminBiblioteca(d, x, y, w, h) {
-  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Plataforma');
+  const { cx, cy, cw } = appShell(
+    d,
+    x,
+    y,
+    w,
+    h,
+    'platform_admin',
+    'Plataforma',
+  );
   let yy = header(d, cx, cy + 1, 'Biblioteca global', 'Modelos compartilhados');
   btn(d, cx + cw - 22, cy - 1, 22, 5, '+ Novo modelo', true);
   yy += 2;
@@ -1359,12 +1523,27 @@ function mockAdminBiblioteca(d, x, y, w, h) {
 
 function mockAdminTrilha(d, x, y, w, h) {
   const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Admin');
-  let yy = header(d, cx, cy + 1, 'Trilha de auditoria', 'Historico imutavel de mudancas');
+  let yy = header(
+    d,
+    cx,
+    cy + 1,
+    'Trilha de auditoria',
+    'Historico imutavel de mudancas',
+  );
   yy += 2;
   card(d, cx, yy, cw, 6);
   input(d, cx + 2, yy + 1.5, 40, 3.5, 'Entidade...');
   input(d, cx + 44, yy + 1.5, 30, 3.5, 'Ator...');
-  pill(d, cx + 76, yy + 1.5, 20, 3.5, 'Ultimos 30 dias', C.brandSoft, C.brandDeep);
+  pill(
+    d,
+    cx + 76,
+    yy + 1.5,
+    20,
+    3.5,
+    'Ultimos 30 dias',
+    C.brandSoft,
+    C.brandDeep,
+  );
   yy += 8;
 
   card(d, cx, yy, cw, h - (yy - y) - 6);
@@ -1372,7 +1551,13 @@ function mockAdminTrilha(d, x, y, w, h) {
   [
     ['profiles', 'role', 'Lucas (admin)', 'Pedro -> property_manager', '2h'],
     ['profiles', 'create', 'Ariane (nutri)', 'Cozinha Demo', '5h'],
-    ['organizations', 'plan_key', 'Lucas (admin)', 'essencial -> profissional', '1d'],
+    [
+      'organizations',
+      'plan_key',
+      'Lucas (admin)',
+      'essencial -> profissional',
+      '1d',
+    ],
     ['companies', 'delete', 'Ariane (nutri)', 'Soft delete: Padaria X', '2d'],
     ['profiles', 'impersonate', 'Lucas (admin)', 'logou como Ariane', '3d'],
   ].forEach(([ent, act, who, what, when]) => {
@@ -1395,8 +1580,22 @@ function mockAdminTrilha(d, x, y, w, h) {
 }
 
 function mockAdminComunicados(d, x, y, w, h) {
-  const { cx, cy, cw } = appShell(d, x, y, w, h, 'platform_admin', 'Plataforma');
-  let yy = header(d, cx, cy + 1, 'Comunicados', 'Banner global para todas as orgs');
+  const { cx, cy, cw } = appShell(
+    d,
+    x,
+    y,
+    w,
+    h,
+    'platform_admin',
+    'Plataforma',
+  );
+  let yy = header(
+    d,
+    cx,
+    cy + 1,
+    'Comunicados',
+    'Banner global para todas as orgs',
+  );
   btn(d, cx + cw - 18, cy - 1, 18, 5, '+ Novo', true);
   yy += 2;
 
@@ -1409,7 +1608,11 @@ function mockAdminComunicados(d, x, y, w, h) {
   font(d, 'bold', 5);
   d.text('PREVIEW DO BANNER ATIVO', cx + 4, yy + 3);
   font(d, 'normal', 4.8);
-  d.text('Manutencao programada no dia 15/06 das 02h as 04h. Sem impacto previsto.', cx + 4, yy + 5.8);
+  d.text(
+    'Manutencao programada no dia 15/06 das 02h as 04h. Sem impacto previsto.',
+    cx + 4,
+    yy + 5.8,
+  );
   yy += 11;
 
   ink(d, C.body);
@@ -1756,7 +1959,11 @@ function main() {
 
     for (const f of role.features) {
       d.addPage();
-      featPage.push({ role: role.key, title: f.title, page: d.getCurrentPageInfo().pageNumber });
+      featPage.push({
+        role: role.key,
+        title: f.title,
+        page: d.getCurrentPageInfo().pageNumber,
+      });
 
       let y = drawPageHeader(d);
       ink(d, C.brandDeep);
@@ -1847,7 +2054,10 @@ function main() {
 
     CONTENT.methodology.metrics.forEach((m, i) => {
       d.addPage();
-      methodologyEntries.push({ title: m.title, page: d.getCurrentPageInfo().pageNumber });
+      methodologyEntries.push({
+        title: m.title,
+        page: d.getCurrentPageInfo().pageNumber,
+      });
       drawMethodologyPage(d, m, i);
     });
   }

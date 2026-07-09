@@ -151,7 +151,9 @@ export function PlatformLibraryPage() {
                             Global
                           </span>
                         ) : (
-                          <span className="text-xs text-neutral-500 dark:text-neutral-400">—</span>
+                          <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                            —
+                          </span>
                         )}
                       </td>
                       <td className="py-2 text-right">

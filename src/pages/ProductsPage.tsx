@@ -920,8 +920,8 @@ export function ProductsPage() {
               ))}
             </Select>
             <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
-              Aplicado automaticamente no wizard de impressão — o cozinheiro
-              não escolhe.
+              Aplicado automaticamente no wizard de impressão — o cozinheiro não
+              escolhe.
             </p>
           </div>
 

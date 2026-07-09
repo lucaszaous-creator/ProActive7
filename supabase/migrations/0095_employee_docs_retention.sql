@@ -1,0 +1,43 @@
+-- =====================================================================
+-- 0095_employee_docs_retention.sql — retencao LGPD de ASOs (dado de saude)
+--
+-- ASO = Atestado de Saude Ocupacional = dado pessoal SENSIVEL. Hoje
+-- `manipulator_asos` e o bucket `employee-docs` nao expiram (so `photos`
+-- tem cleanup de 30 dias). A edge function `cleanup-employee-docs` remove
+-- arquivo + linha de ASOs vencidos ha muito tempo (RETENTION_DAYS, hoje
+-- 3 anos), preservando ASOs validos/recem-vencidos.
+--
+-- ⚠️  DELECAO DE DADO DE SAUDE / COMPLIANCE — NAO AGENDADO AUTOMATICAMENTE.
+-- O prazo de retencao e decisao da RT (Ariane), conforme CLAUDE.md §2.
+-- Este arquivo NAO agenda nada por si so. Para ativar, depois de:
+--   1. deploy da function `cleanup-employee-docs`;
+--   2. CLEANUP_SECRET definido nas variaveis da function;
+--   3. prazo (RETENTION_DAYS) confirmado pela RT;
+-- rode manualmente o bloco abaixo (descomentado, com o segredo real):
+--
+-- create extension if not exists pg_cron;
+-- create extension if not exists pg_net;
+--
+-- select cron.unschedule('cleanup-employee-docs-weekly')
+-- where exists (
+--   select 1 from cron.job where jobname = 'cleanup-employee-docs-weekly'
+-- );
+--
+-- select cron.schedule(
+--   'cleanup-employee-docs-weekly',
+--   '0 4 * * 0',  -- domingos 04:00 UTC
+--   $$
+--   select net.http_post(
+--     url     := 'https://glvdiicipblsohdgmqaz.functions.supabase.co/cleanup-employee-docs',
+--     headers := jsonb_build_object(
+--       'Content-Type', 'application/json',
+--       'x-cleanup-secret', '<CLEANUP_SECRET>'
+--     )
+--   );
+--   $$
+-- );
+-- =====================================================================
+
+-- Sem DDL: a retencao e feita pela edge function. Esta migration serve de
+-- registro versionado da decisao + instrucoes de ativacao. (no-op)
+select 1;

@@ -131,7 +131,8 @@ export function ContagemPage() {
   const peakDay = useMemo(() => {
     let best: { label: string; value: number } | null = null;
     for (const d of byDay) {
-      if (!best || d.value > best.value) best = { label: d.label, value: d.value };
+      if (!best || d.value > best.value)
+        best = { label: d.label, value: d.value };
     }
     return best && best.value > 0 ? best : null;
   }, [byDay]);
@@ -233,7 +234,10 @@ export function ContagemPage() {
               value={distinctProducts}
               tone="blue"
               delta={
-                <DeltaBadge current={distinctProducts} previous={prevDistinct} />
+                <DeltaBadge
+                  current={distinctProducts}
+                  previous={prevDistinct}
+                />
               }
             />
             <StatCard
@@ -258,8 +262,8 @@ export function ContagemPage() {
                 Volume por dia
               </h2>
               <span className="text-xs text-neutral-400 dark:text-neutral-500">
-                vs. período anterior:{' '}
-                {prevTotal.toLocaleString('pt-BR')} etiquetas
+                vs. período anterior: {prevTotal.toLocaleString('pt-BR')}{' '}
+                etiquetas
               </span>
             </div>
             <ColumnChart data={byDay} height={170} />

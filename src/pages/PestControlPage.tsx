@@ -304,7 +304,11 @@ export function PestControlPage() {
     if (error) {
       // Cleanup arquivo orfao se foi feito upload novo.
       if (typeof certPath === 'string') {
-        await supabase.storage.from('pest-docs').remove([certPath]);
+        const { error: rmErr } = await supabase.storage
+          .from('pest-docs')
+          .remove([certPath]);
+        if (rmErr)
+          console.warn('Falha ao remover certificado órfão:', rmErr.message);
       }
       toast.error('Erro ao salvar: ' + error.message);
       return;

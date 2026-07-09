@@ -199,7 +199,9 @@ export function ControladosPage() {
               trilha que comprova o destino dos controlados.
             </p>
             {movements.length === 0 ? (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Sem movimentações.</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                Sem movimentações.
+              </p>
             ) : (
               <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {movements.map((m) => (

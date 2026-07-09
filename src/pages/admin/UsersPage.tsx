@@ -526,9 +526,13 @@ function UserLink({ user }: { user: ProfileRow }) {
       user.companies?.organizations?.name ?? user.organizations?.name ?? null;
     return (
       <div className="leading-tight">
-        <div className="font-medium text-neutral-800 dark:text-neutral-100">{empresa}</div>
+        <div className="font-medium text-neutral-800 dark:text-neutral-100">
+          {empresa}
+        </div>
         {org ? (
-          <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">Org · {org}</div>
+          <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+            Org · {org}
+          </div>
         ) : (
           <div className="mt-0.5 text-xs text-amber-600 dark:text-amber-300">
             Sem organização vinculada
@@ -541,7 +545,9 @@ function UserLink({ user }: { user: ProfileRow }) {
     const org = user.organizations?.name ?? '—';
     return (
       <div className="leading-tight">
-        <div className="font-medium text-neutral-800 dark:text-neutral-100">{org}</div>
+        <div className="font-medium text-neutral-800 dark:text-neutral-100">
+          {org}
+        </div>
         <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
           Nutricionista responsável
         </div>
@@ -551,7 +557,9 @@ function UserLink({ user }: { user: ProfileRow }) {
   // platform_admin / master
   return (
     <div className="leading-tight">
-      <div className="font-medium text-neutral-800 dark:text-neutral-100">Plataforma</div>
+      <div className="font-medium text-neutral-800 dark:text-neutral-100">
+        Plataforma
+      </div>
       {user.organizations?.name ? (
         <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
           {user.organizations.name}

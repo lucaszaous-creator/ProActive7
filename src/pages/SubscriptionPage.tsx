@@ -146,7 +146,9 @@ export function SubscriptionPage() {
                   >
                     {m.label}
                   </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">{m.description}</p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                    {m.description}
+                  </p>
                 </div>
               </li>
             );

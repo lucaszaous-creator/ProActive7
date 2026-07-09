@@ -180,7 +180,10 @@ export function ProductCsvImport({
                   </thead>
                   <tbody>
                     {parsed.rows.map((r, i) => (
-                      <tr key={i} className="border-t border-neutral-100 dark:border-neutral-800">
+                      <tr
+                        key={i}
+                        className="border-t border-neutral-100 dark:border-neutral-800"
+                      >
                         <td className="px-2 py-1">{r.name}</td>
                         <td className="px-2 py-1 text-neutral-500 dark:text-neutral-400">
                           {r.category ?? '—'}

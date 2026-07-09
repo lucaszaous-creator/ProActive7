@@ -283,10 +283,10 @@ export function PrintWizardPage() {
     const candidate =
       mode === 'single'
         ? selectedProduct?.default_label_size
-        : (batchItems[0]
-            ? products.find((p) => p.id === batchItems[0].product_id)
-                ?.default_label_size
-            : null);
+        : batchItems[0]
+          ? products.find((p) => p.id === batchItems[0].product_id)
+              ?.default_label_size
+          : null;
     if (!candidate) return null;
     return LABEL_SIZES.find((s) => s.id === candidate) ?? null;
   })();
@@ -1216,7 +1216,9 @@ function Step4({
           type="number"
           min={1}
           value={quantity}
-          onChange={(e) => setQuantity(Math.max(1, Number(e.target.value) || 1))}
+          onChange={(e) =>
+            setQuantity(Math.max(1, Number(e.target.value) || 1))
+          }
         />
 
         <Input

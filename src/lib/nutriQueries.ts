@@ -155,7 +155,9 @@ export async function fetchPestControlOverdue(): Promise<NutriPestOverdue[]> {
   const today = new Date().toISOString().slice(0, 10);
   const { data, error } = await supabase
     .from('pest_control_services')
-    .select('company_id, performed_at, next_due_at, company:companies(id, name)')
+    .select(
+      'company_id, performed_at, next_due_at, company:companies(id, name)',
+    )
     .order('performed_at', { ascending: false })
     .limit(500);
   if (error) throw error;
@@ -169,7 +171,8 @@ export async function fetchPestControlOverdue(): Promise<NutriPestOverdue[]> {
   // Mantém só o serviço mais recente por empresa (já vem ordenado desc).
   const latestByCompany = new Map<string, Row>();
   for (const r of rows) {
-    if (!latestByCompany.has(r.company_id)) latestByCompany.set(r.company_id, r);
+    if (!latestByCompany.has(r.company_id))
+      latestByCompany.set(r.company_id, r);
   }
   return [...latestByCompany.values()]
     .filter((r) => r.next_due_at && r.next_due_at < today)

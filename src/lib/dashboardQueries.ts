@@ -361,9 +361,7 @@ export interface ScoreTrendPoint {
 }
 
 /** Média diária do score das empresas visíveis (RLS escopa a org). */
-export async function fetchScoreTrend(
-  days = 90,
-): Promise<ScoreTrendPoint[]> {
+export async function fetchScoreTrend(days = 90): Promise<ScoreTrendPoint[]> {
   const since = new Date();
   since.setDate(since.getDate() - days);
   const { data, error } = await supabase

@@ -233,9 +233,9 @@ export function EstoquePage() {
         title="Estoque (matéria-prima)"
         subtitle={
           <>
-            Saldo dos <b>itens recebidos</b> (NF / nota), por lote, ordenado
-            por validade (FIFO). Para acompanhar etiquetas de produção já
-            feitas, use <b>Produção</b>.
+            Saldo dos <b>itens recebidos</b> (NF / nota), por lote, ordenado por
+            validade (FIFO). Para acompanhar etiquetas de produção já feitas,
+            use <b>Produção</b>.
           </>
         }
         actions={
@@ -344,7 +344,9 @@ export function EstoquePage() {
                           )}
                         </div>
                       </td>
-                      <td className="px-2 py-2 text-neutral-600 dark:text-neutral-300">{r.batch}</td>
+                      <td className="px-2 py-2 text-neutral-600 dark:text-neutral-300">
+                        {r.batch}
+                      </td>
                       <td className="px-2 py-2 text-right font-medium text-neutral-800 dark:text-neutral-100">
                         {Number(r.balance).toLocaleString('pt-BR', {
                           maximumFractionDigits: 3,

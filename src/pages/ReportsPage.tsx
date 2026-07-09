@@ -155,7 +155,9 @@ export function ReportsPage() {
   const topCategory = data.byCategory[0] ?? null;
   const prevTopCategoryValue = useMemo(() => {
     if (!topCategory) return 0;
-    return prev.byCategory.find((b) => b.label === topCategory.label)?.value ?? 0;
+    return (
+      prev.byCategory.find((b) => b.label === topCategory.label)?.value ?? 0
+    );
   }, [topCategory, prev.byCategory]);
 
   const noCompany = isMaster && companies.length === 0;
@@ -184,7 +186,11 @@ export function ReportsPage() {
         b.value,
       ]),
     ];
-    downloadCsv(`relatorio-etiquetas-${period}d`, ['Dimensão', 'Item', 'Etiquetas'], rows);
+    downloadCsv(
+      `relatorio-etiquetas-${period}d`,
+      ['Dimensão', 'Item', 'Etiquetas'],
+      rows,
+    );
   }
 
   return (

@@ -98,23 +98,32 @@ const ACTIONS: {
 ];
 
 const TONE_BG: Record<string, string> = {
-  emerald: 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800',
+  emerald:
+    'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800',
   blue: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-200 hover:bg-blue-100',
-  amber: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-200 hover:bg-amber-100',
+  amber:
+    'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-200 hover:bg-amber-100',
   red: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200 hover:bg-red-100',
-  neutral: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200',
+  neutral:
+    'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200',
 };
 
 const ISSUE_LEVEL_META: Record<
   SystemIssue['level'],
   { tone: string; icon: LucideIcon }
 > = {
-  error: { tone: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200 border-red-200 dark:border-red-900', icon: AlertOctagon },
+  error: {
+    tone: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200 border-red-200 dark:border-red-900',
+    icon: AlertOctagon,
+  },
   warn: {
     tone: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-200 border-amber-200 dark:border-amber-900',
     icon: AlertTriangle,
   },
-  info: { tone: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-900', icon: Info },
+  info: {
+    tone: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-200 border-blue-200 dark:border-blue-900',
+    icon: Info,
+  },
 };
 
 export function PlatformControlPage() {

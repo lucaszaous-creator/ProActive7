@@ -1,10 +1,20 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, Quote, MapPin, ExternalLink, MessageCircle } from 'lucide-react';
+import {
+  Building2,
+  Quote,
+  MapPin,
+  ExternalLink,
+  MessageCircle,
+} from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
 import { Reveal } from '@/components/public/Reveal';
 import { Spotlight } from '@/components/public/Spotlight';
-import { fetchPublicClients, siteAssetUrl, type SiteClient } from '@/lib/siteCms';
+import {
+  fetchPublicClients,
+  siteAssetUrl,
+  type SiteClient,
+} from '@/lib/siteCms';
 
 export function ClientesPublicPage() {
   usePageMeta('/clientes');
@@ -48,7 +58,11 @@ export function ClientesPublicPage() {
         {clients === null ? (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className="fx-skeleton h-28 rounded-2xl" aria-hidden />
+              <div
+                key={i}
+                className="fx-skeleton h-28 rounded-2xl"
+                aria-hidden
+              />
             ))}
           </div>
         ) : clients.length === 0 ? (

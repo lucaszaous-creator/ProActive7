@@ -44,9 +44,21 @@
         "breakdownTitle": "DISTRIBUICAO NO TEMPLATE OFICIAL (45 ITENS RDC 216)",
         "breakdownUnit": "itens",
         "breakdown": [
-          { "label": "Peso 3", "points": 23, "desc": "Risco direto à saúde — pesa o mais alto no cálculo. Cerca da metade dos itens do template oficial são desta categoria." },
-          { "label": "Peso 2", "points": 18, "desc": "Risco indireto ou estrutural — a maior parte dos itens do dia a dia." },
-          { "label": "Peso 1", "points": 4, "desc": "Boa prática complementar — pesa o menos no cálculo, mas continua sendo cobrado." }
+          {
+            "label": "Peso 3",
+            "points": 23,
+            "desc": "Risco direto à saúde — pesa o mais alto no cálculo. Cerca da metade dos itens do template oficial são desta categoria."
+          },
+          {
+            "label": "Peso 2",
+            "points": 18,
+            "desc": "Risco indireto ou estrutural — a maior parte dos itens do dia a dia."
+          },
+          {
+            "label": "Peso 1",
+            "points": 4,
+            "desc": "Boa prática complementar — pesa o menos no cálculo, mas continua sendo cobrado."
+          }
         ],
         "example": {
           "scenario": "O template oficial do sistema (RDC 216) tem 45 itens distribuídos em 9 categorias.",
@@ -66,13 +78,41 @@
         "tagline": "A nota viva de cada cliente, que se atualiza sozinha",
         "plain": "Se a nota da visita é uma foto do dia da inspeção, o score de saúde é um filme contínuo. Ele observa sete frentes da operação ao mesmo tempo e resume tudo em um número de 0 a 100, que muda sozinho conforme a cozinha registra (ou deixa de registrar) suas rotinas. Cada frente vale uma quantidade de pontos:",
         "breakdown": [
-          { "label": "Não-conformidades", "points": 25, "desc": "Quanto menos pendências vencidas, mais pontos. Empresa sem NC atrasada leva os 25 cheios." },
-          { "label": "Checklists", "points": 20, "desc": "A fatia dos checklists planejados no mês que foi de fato realizada pela cozinha." },
-          { "label": "Visita técnica", "points": 20, "desc": "Houve visita da nutricionista nos últimos 90 dias? Sim leva 20; não, zero." },
-          { "label": "Temperatura", "points": 10, "desc": "Quanto menos leituras fora da faixa segura na semana, mais pontos." },
-          { "label": "Documentos", "points": 10, "desc": "Manual de Boas Práticas mais os 5 POPs publicados garantem os 10 pontos." },
-          { "label": "Manipuladores", "points": 10, "desc": "A proporção da equipe com ASO em dia." },
-          { "label": "Controle de pragas", "points": 5, "desc": "Dedetização em dia leva 5; vencida, zero. Quem nunca precisou contratar não é penalizado." }
+          {
+            "label": "Não-conformidades",
+            "points": 25,
+            "desc": "Quanto menos pendências vencidas, mais pontos. Empresa sem NC atrasada leva os 25 cheios."
+          },
+          {
+            "label": "Checklists",
+            "points": 20,
+            "desc": "A fatia dos checklists planejados no mês que foi de fato realizada pela cozinha."
+          },
+          {
+            "label": "Visita técnica",
+            "points": 20,
+            "desc": "Houve visita da nutricionista nos últimos 90 dias? Sim leva 20; não, zero."
+          },
+          {
+            "label": "Temperatura",
+            "points": 10,
+            "desc": "Quanto menos leituras fora da faixa segura na semana, mais pontos."
+          },
+          {
+            "label": "Documentos",
+            "points": 10,
+            "desc": "Manual de Boas Práticas mais os 5 POPs publicados garantem os 10 pontos."
+          },
+          {
+            "label": "Manipuladores",
+            "points": 10,
+            "desc": "A proporção da equipe com ASO em dia."
+          },
+          {
+            "label": "Controle de pragas",
+            "points": 5,
+            "desc": "Dedetização em dia leva 5; vencida, zero. Quem nunca precisou contratar não é penalizado."
+          }
         ],
         "example": {
           "scenario": "Uma empresa com: nenhuma NC atrasada (25), 8 de 10 checklists feitos (16), visita há 40 dias (20), nenhuma temperatura fora da faixa (10), documentos completos (10), 9 de 10 ASOs em dia (9) e pragas em dia (5).",
