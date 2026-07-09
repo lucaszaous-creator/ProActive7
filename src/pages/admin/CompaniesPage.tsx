@@ -158,7 +158,11 @@ export function CompaniesPage() {
       // mas remover devolve o estado anterior do banco — se algum
       // logo antigo apontava para esse path, precisaria de re-upload
       // manual).
-      await supabase.storage.from('branding').remove([path]);
+      const { error: rmErr } = await supabase.storage
+        .from('branding')
+        .remove([path]);
+      if (rmErr)
+        console.warn('Falha ao remover logo órfão:', rmErr.message);
       toast.error('Erro ao salvar logo: ' + dbErr.message);
       return;
     }
@@ -182,7 +186,10 @@ export function CompaniesPage() {
       toast.error('Erro ao remover logo: ' + error.message);
       return;
     }
-    await supabase.storage.from('branding').remove([logoPath]);
+    const { error: rmErr } = await supabase.storage
+      .from('branding')
+      .remove([logoPath]);
+    if (rmErr) console.warn('Falha ao remover logo do storage:', rmErr.message);
     setUploadingLogo(false);
     setLogoPath(null);
     toast.success('Logo removido.');

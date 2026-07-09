@@ -160,7 +160,11 @@ export function CompanyFilesSection({ companyId }: Props) {
     });
     setSaving(false);
     if (insErr) {
-      await supabase.storage.from('company-docs').remove([path]);
+      const { error: rmErr } = await supabase.storage
+        .from('company-docs')
+        .remove([path]);
+      if (rmErr)
+        console.warn('Falha ao remover arquivo órfão:', rmErr.message);
       toast.error('Erro ao registrar: ' + insErr.message);
       return;
     }

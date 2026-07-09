@@ -90,7 +90,10 @@ Deno.serve(async (req) => {
       return json({ error: 'Usuario alvo nao encontrado' }, 404);
     }
 
-    // Gera magic link
+    // Gera magic link (uso unico). NOTA de seguranca: a sessao resultante
+    // herda o JWT expiry do projeto (nao ha TTL por-link no generateLink).
+    // Para sessao curta de suporte (roadmap: 15 min), reduzir o JWT expiry
+    // global no painel Auth ou emitir um token proprio de curta duracao.
     const redirectTo = body?.redirect_to ?? 'https://pro-active7.vercel.app/painel';
     const { data: link, error: linkErr } = await admin.auth.admin.generateLink({
       type: 'magiclink',
@@ -101,18 +104,36 @@ Deno.serve(async (req) => {
       return json({ error: linkErr?.message ?? 'Falha ao gerar link' }, 500);
     }
 
-    // Registra no audit_log (inclui a org do alvo para rastreabilidade)
-    await admin.from('audit_log').insert({
-      table_name: 'auth',
-      row_id: targetUserId,
-      action: 'impersonate',
-      user_id: user.id,
-      new_data: {
-        actor_name: callerProfile?.full_name,
-        target_email: target.user.email,
-        target_organization_id: orgId,
+    // Registra no audit_log. Duas linhas:
+    //  (a) user_id = actor (admin)  -> trilha do platform_admin.
+    //  (b) user_id = alvo           -> TRANSPARENCIA LGPD: a policy
+    //      audit_log_select deixa a nutri ver linhas cujo user_id pertence
+    //      a org dela. Sem esta segunda linha, a org impersonada nunca
+    //      enxergaria que foi acessada (o actor nao esta na org dela).
+    await admin.from('audit_log').insert([
+      {
+        table_name: 'auth',
+        row_id: targetUserId,
+        action: 'impersonate',
+        user_id: user.id,
+        new_data: {
+          actor_name: callerProfile?.full_name,
+          target_email: target.user.email,
+          target_organization_id: orgId,
+        },
       },
-    });
+      {
+        table_name: 'auth',
+        row_id: targetUserId,
+        action: 'impersonated_by_admin',
+        user_id: targetUserId,
+        new_data: {
+          actor_id: user.id,
+          actor_name: callerProfile?.full_name,
+          target_organization_id: orgId,
+        },
+      },
+    ]);
 
     return json({ ok: true, action_link: link.properties.action_link }, 200);
   } catch (e) {

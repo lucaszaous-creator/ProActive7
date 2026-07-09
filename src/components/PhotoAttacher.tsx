@@ -111,7 +111,11 @@ export function PhotoAttacher({
         .single();
       if (insErr) {
         // Cleanup do arquivo órfão.
-        await supabase.storage.from(BUCKET).remove([path]);
+        const { error: rmErr } = await supabase.storage
+          .from(BUCKET)
+          .remove([path]);
+        if (rmErr)
+          console.warn('Falha ao remover foto órfã:', rmErr.message);
         throw insErr;
       }
       onChange(row.id);

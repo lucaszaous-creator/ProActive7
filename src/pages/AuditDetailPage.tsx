@@ -291,7 +291,11 @@ export function AuditDetailPage() {
     setFinalizing(false);
     if (error) {
       // Remove a assinatura orfa do bucket.
-      await supabase.storage.from('signatures').remove([path]);
+      const { error: rmErr } = await supabase.storage
+        .from('signatures')
+        .remove([path]);
+      if (rmErr)
+        console.warn('Falha ao remover assinatura órfã:', rmErr.message);
       toast.error('Erro ao finalizar: ' + error.message);
       return;
     }

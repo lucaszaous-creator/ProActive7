@@ -228,7 +228,11 @@ export function ManipulatorsPage() {
     if (error) {
       // Insert falhou — remover o arquivo orfao do bucket.
       if (filePath) {
-        await supabase.storage.from('employee-docs').remove([filePath]);
+        const { error: rmErr } = await supabase.storage
+          .from('employee-docs')
+          .remove([filePath]);
+        if (rmErr)
+          console.warn('Falha ao remover ASO órfão:', rmErr.message);
       }
       toast.error('Erro ao salvar ASO: ' + error.message);
       return;
@@ -283,7 +287,11 @@ export function ManipulatorsPage() {
     setTrSaving(false);
     if (error) {
       if (certPath) {
-        await supabase.storage.from('employee-docs').remove([certPath]);
+        const { error: rmErr } = await supabase.storage
+          .from('employee-docs')
+          .remove([certPath]);
+        if (rmErr)
+          console.warn('Falha ao remover certificado órfão:', rmErr.message);
       }
       toast.error('Erro ao salvar: ' + error.message);
       return;

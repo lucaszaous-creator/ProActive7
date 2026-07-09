@@ -1,7 +1,8 @@
 project_id = "glvdiicipblsohdgmqaz"
 
-# admin-create-user / admin-update-user / admin-delete-user: exigem JWT
-# valido (cada function ainda re-verifica se o chamador e o usuario master).
+# Funcoes de admin: exigem JWT valido no gateway (cada uma ainda
+# re-verifica internamente a role do chamador). Declaradas explicitamente
+# para evitar drift entre o que esta deployado e este arquivo.
 [functions.admin-create-user]
 verify_jwt = true
 
@@ -9,6 +10,18 @@ verify_jwt = true
 verify_jwt = true
 
 [functions.admin-delete-user]
+verify_jwt = true
+
+[functions.admin-create-organization]
+verify_jwt = true
+
+[functions.admin-export-org]
+verify_jwt = true
+
+[functions.admin-impersonate]
+verify_jwt = true
+
+[functions.admin-push-org]
 verify_jwt = true
 
 # cleanup-photos: chamada pelo pg_cron, sem JWT. Protegida pelo header
@@ -19,4 +32,20 @@ verify_jwt = false
 # send-expiry-notifications: chamada pelo pg_cron, sem JWT. Protegida
 # pelo header x-cron-secret (variavel CRON_SECRET).
 [functions.send-expiry-notifications]
+verify_jwt = false
+
+# cleanup-employee-docs: retencao LGPD de ASOs. Chamada pelo pg_cron
+# (quando agendada), sem JWT. Protegida pelo header x-cleanup-secret.
+[functions.cleanup-employee-docs]
+verify_jwt = false
+
+# print-agent: chamada pelo relay local (PowerShell), sem sessao de
+# usuario. A autenticacao e feita no corpo via token do agente (hash
+# SHA-256 conferido contra print_agents.token_hash). verify_jwt=false
+# para nao depender do relay mandar a anon key como Bearer.
+[functions.print-agent]
+verify_jwt = false
+
+# instagram-sync: desativada (responde 410). Sem JWT.
+[functions.instagram-sync]
 verify_jwt = false

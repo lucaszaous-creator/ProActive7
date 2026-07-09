@@ -1,10 +1,12 @@
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useState,
   type ReactNode,
 } from 'react';
+import { toast } from 'sonner';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import type { OrgSubscription, Profile } from '@/lib/types';
@@ -56,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     null,
   );
 
-  async function loadSubscription(loadedProfile: Profile | null) {
+  const loadSubscription = useCallback(async (loadedProfile: Profile | null) => {
     // platform_admin não pertence a uma org-cliente — nunca é gateado.
     if (
       !loadedProfile ||
@@ -76,26 +78,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const row = (data as OrgSubscription[] | null)?.[0] ?? null;
     setSubscription(row);
-  }
+  }, []);
 
-  async function loadProfile(userId: string) {
-    setProfileLoading(true);
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle();
-    setProfileLoading(false);
-    if (error) {
-      console.error('Erro ao carregar perfil:', error.message);
-      setProfile(null);
-      setSubscription(null);
-      return;
-    }
-    const loaded = (data as Profile | null) ?? null;
-    setProfile(loaded);
-    await loadSubscription(loaded);
-  }
+  const loadProfile = useCallback(
+    async (userId: string) => {
+      setProfileLoading(true);
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+      setProfileLoading(false);
+      if (error) {
+        console.error('Erro ao carregar perfil:', error.message);
+        setProfile(null);
+        setSubscription(null);
+        return;
+      }
+      const loaded = (data as Profile | null) ?? null;
+      // Conta desativada: desloga na hora. Reforço em app do ban no Auth —
+      // se `active` for setado false direto no banco (sem ban), o usuário
+      // não continua com sessão viva.
+      if (loaded && loaded.active === false) {
+        setProfile(null);
+        setSubscription(null);
+        await supabase.auth.signOut();
+        toast.error('Sua conta está desativada. Fale com o administrador.');
+        return;
+      }
+      setProfile(loaded);
+      await loadSubscription(loaded);
+    },
+    [loadSubscription],
+  );
 
   useEffect(() => {
     supabase.auth
@@ -138,7 +153,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     );
 
     return () => sub.subscription.unsubscribe();
-  }, []);
+  }, [loadProfile]);
 
   const isPropertyManager = profile?.role === 'property_manager';
 

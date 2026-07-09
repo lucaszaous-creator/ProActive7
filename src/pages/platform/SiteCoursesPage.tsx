@@ -155,8 +155,13 @@ export function SiteCoursesPage() {
       toast.error('Erro ao remover: ' + error.message);
       return;
     }
-    if (editing.image_path)
-      await supabase.storage.from('site-assets').remove([editing.image_path]);
+    if (editing.image_path) {
+      const { error: rmErr } = await supabase.storage
+        .from('site-assets')
+        .remove([editing.image_path]);
+      if (rmErr)
+        console.warn('Falha ao remover imagem do storage:', rmErr.message);
+    }
     toast.success('Curso removido.');
     setModalOpen(false);
     void load();
