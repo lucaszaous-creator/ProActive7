@@ -104,7 +104,10 @@ export function StatCard({
       <p className="mt-0.5 truncate text-xs text-neutral-500 dark:text-neutral-400">
         {label}
         {hint ? (
-          <span className="text-neutral-400 dark:text-neutral-500"> · {hint}</span>
+          <span className="text-neutral-400 dark:text-neutral-500">
+            {' '}
+            · {hint}
+          </span>
         ) : null}
       </p>
     </div>
@@ -218,7 +221,9 @@ export function ColumnChart({
               {isActive ? (
                 <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-lg bg-neutral-900 px-2 py-1 text-[10px] font-medium text-white shadow-lg dark:bg-neutral-100 dark:text-neutral-900">
                   {d.hint ?? d.label}:{' '}
-                  <b className="tabular-nums">{d.value.toLocaleString('pt-BR')}</b>
+                  <b className="tabular-nums">
+                    {d.value.toLocaleString('pt-BR')}
+                  </b>
                 </div>
               ) : null}
               <div
@@ -397,7 +402,10 @@ export function TrendArea({
     n <= 1 ? W / 2 : PAD + (i / (n - 1)) * (W - PAD * 2);
   const y = (v: number) => PAD + (1 - (v - lo) / span) * (H - PAD * 2);
   const line = points
-    .map((p, i) => `${i === 0 ? 'M' : 'L'}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`)
+    .map(
+      (p, i) =>
+        `${i === 0 ? 'M' : 'L'}${x(i).toFixed(1)},${y(p.value).toFixed(1)}`,
+    )
     .join(' ');
   const area = `${line} L${x(n - 1).toFixed(1)},${H - PAD} L${x(0).toFixed(1)},${H - PAD} Z`;
   const gid = `trend-${color.replace(/[^a-z0-9]/gi, '')}`;
@@ -479,7 +487,10 @@ export function TrendArea({
       </div>
       {last ? (
         <p className="mt-1 text-right text-xs text-neutral-500 dark:text-neutral-400">
-          último: <b className="tabular-nums text-neutral-900 dark:text-neutral-100">{formatValue(last.value)}</b>
+          último:{' '}
+          <b className="tabular-nums text-neutral-900 dark:text-neutral-100">
+            {formatValue(last.value)}
+          </b>
         </p>
       ) : null}
     </div>

@@ -296,7 +296,10 @@ function AgentCard({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <Printer size={18} className="text-neutral-500 dark:text-neutral-400" />
+            <Printer
+              size={18}
+              className="text-neutral-500 dark:text-neutral-400"
+            />
             <h2 className="truncate font-semibold text-neutral-800 dark:text-neutral-100">
               {agent.name}
             </h2>
@@ -532,7 +535,10 @@ function TokenReveal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start gap-2">
-          <AlertTriangle size={20} className="mt-0.5 text-amber-600 dark:text-amber-300" />
+          <AlertTriangle
+            size={20}
+            className="mt-0.5 text-amber-600 dark:text-amber-300"
+          />
           <div>
             <h2 className="text-base font-semibold text-amber-900 dark:text-amber-200">
               Token da impressora — guarde AGORA
@@ -643,7 +649,9 @@ function RelayLogList({ agentId }: { agentId: string }) {
           <span className={`font-medium uppercase ${color(l.level)}`}>
             [{l.level}]
           </span>{' '}
-          <span className="text-neutral-700 dark:text-neutral-200">{l.message}</span>
+          <span className="text-neutral-700 dark:text-neutral-200">
+            {l.message}
+          </span>
         </div>
       ))}
     </div>

@@ -130,7 +130,10 @@ export function PlatformPlansPage() {
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <CreditCard size={16} className="text-neutral-600 dark:text-neutral-300" />
+                    <CreditCard
+                      size={16}
+                      className="text-neutral-600 dark:text-neutral-300"
+                    />
                     <p className="truncate font-medium text-neutral-800 dark:text-neutral-100">
                       {p.name}
                     </p>

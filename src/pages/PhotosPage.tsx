@@ -153,31 +153,33 @@ export function PhotosPage() {
       <PageHeader
         title="Fotos"
         subtitle={
-          <>As fotos são excluídas automaticamente após {RETENTION_DAYS} dias.</>
+          <>
+            As fotos são excluídas automaticamente após {RETENTION_DAYS} dias.
+          </>
         }
         actions={
-        <label
-          className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white ${
-            uploading || !companyId ? 'pointer-events-none opacity-60' : ''
-          }`}
-        >
-          {uploading ? (
-            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-          ) : (
-            <Upload size={18} />
-          )}
-          Enviar foto
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            disabled={uploading || !companyId}
-            onChange={(e) => {
-              void handleFile(e.target.files?.[0]);
-              e.target.value = '';
-            }}
-          />
-        </label>
+          <label
+            className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white ${
+              uploading || !companyId ? 'pointer-events-none opacity-60' : ''
+            }`}
+          >
+            {uploading ? (
+              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+            ) : (
+              <Upload size={18} />
+            )}
+            Enviar foto
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              disabled={uploading || !companyId}
+              onChange={(e) => {
+                void handleFile(e.target.files?.[0]);
+                e.target.value = '';
+              }}
+            />
+          </label>
         }
       />
 

@@ -77,12 +77,12 @@ function QuemSomos() {
               <p>
                 Começamos como{' '}
                 <strong className="text-[#262626]">PERSONAL DIET</strong> e hoje
-                somos a{' '}
-                <strong className="text-[#262626]">PROACTIVE7</strong> — uma
-                empresa especializada em assessoria e consultoria em segurança
-                alimentar que reúne profissionais capacitados, experiência,
-                ética, responsabilidade, comprometimento, transparência, atitude
-                e respeito para oferecer o melhor serviço aos seus clientes.
+                somos a <strong className="text-[#262626]">PROACTIVE7</strong> —
+                uma empresa especializada em assessoria e consultoria em
+                segurança alimentar que reúne profissionais capacitados,
+                experiência, ética, responsabilidade, comprometimento,
+                transparência, atitude e respeito para oferecer o melhor serviço
+                aos seus clientes.
               </p>
               <p>
                 Nossa metodologia consiste em{' '}
@@ -97,7 +97,8 @@ function QuemSomos() {
                 </strong>{' '}
                 comerciais com seguimento em alimentação on-shore ou off-shore
                 como: indústrias, fábricas, restaurantes, lanchonetes, padarias,
-                mercados/supermercados, creches/escolas, hortifrutis e hotelaria.
+                mercados/supermercados, creches/escolas, hortifrutis e
+                hotelaria.
               </p>
             </div>
           </div>
@@ -318,7 +319,10 @@ function Pilares() {
   return (
     <section className="fx-grain relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#1f1f1f] py-16 text-white md:py-20">
       {/* Aurora de fundo */}
-      <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 overflow-hidden"
+      >
         <div className="animate-aurora absolute -left-24 -top-24 h-[28rem] w-[28rem] rounded-full bg-[#525252]/45 blur-[120px]" />
         <div className="animate-aurora absolute right-[-6rem] top-1/3 h-[26rem] w-[26rem] rounded-full bg-[#737373]/35 blur-[130px] [animation-delay:-7s]" />
         <div className="animate-aurora absolute bottom-[-8rem] left-1/3 h-[24rem] w-[24rem] rounded-full bg-[#a3a3a3]/20 blur-[120px] [animation-delay:-14s]" />
@@ -341,7 +345,9 @@ function Pilares() {
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-[#a3a3a3]">
               <Compass className="h-6 w-6" />
             </div>
-            <h3 className="mt-5 text-xl font-semibold tracking-tight">Missão</h3>
+            <h3 className="mt-5 text-xl font-semibold tracking-tight">
+              Missão
+            </h3>
             <p className="mt-3 text-sm leading-relaxed text-white/85">
               Atuar como prestadora de serviços em assessoria e consultoria em
               fornecimento de alimentação e nutrição com qualidade e foco do
@@ -360,7 +366,8 @@ function Pilares() {
             <p className="mt-3 text-sm leading-relaxed text-white/85">
               Atingir níveis de excelência na prestação de serviços aos clientes
               através da segurança e qualidade nutricional, agregando valor aos
-              serviços e colaboradores, com atendimento de qualidade e confiança.
+              serviços e colaboradores, com atendimento de qualidade e
+              confiança.
             </p>
           </article>
 
@@ -369,7 +376,9 @@ function Pilares() {
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-[#a3a3a3]">
               <Gem className="h-6 w-6" />
             </div>
-            <h3 className="mt-5 text-xl font-semibold tracking-tight">Valores</h3>
+            <h3 className="mt-5 text-xl font-semibold tracking-tight">
+              Valores
+            </h3>
             <ul className="mt-4 flex flex-wrap gap-2">
               {valores.map((v) => (
                 <li

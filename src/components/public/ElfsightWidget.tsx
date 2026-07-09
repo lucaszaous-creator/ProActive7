@@ -12,7 +12,9 @@ const SCRIPT_ID = 'elfsight-platform-script';
  */
 function ensureElfsightScript(): Promise<void> {
   if (typeof document === 'undefined') return Promise.resolve();
-  const existing = document.getElementById(SCRIPT_ID) as HTMLScriptElement | null;
+  const existing = document.getElementById(
+    SCRIPT_ID,
+  ) as HTMLScriptElement | null;
   if (existing) {
     // Já presente: se o widget global existir, força reinicialização para
     // pegar os divs recém-montados pelo React.

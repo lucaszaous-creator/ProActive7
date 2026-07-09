@@ -59,7 +59,8 @@ function AlertCard({
 }) {
   const toneClasses: Record<typeof tone, string> = {
     red: 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200',
-    amber: 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-200',
+    amber:
+      'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-200',
     blue: 'bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-200',
   };
   return (

@@ -1,9 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -61,7 +56,11 @@ export function Carousel({
   }, [emblaApi, onSelect]);
 
   return (
-    <div className="relative" aria-roledescription="carrossel" aria-label={ariaLabel}>
+    <div
+      className="relative"
+      aria-roledescription="carrossel"
+      aria-label={ariaLabel}
+    >
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex gap-5">
           {children.map((child, i) => (

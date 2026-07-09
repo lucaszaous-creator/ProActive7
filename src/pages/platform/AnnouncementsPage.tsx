@@ -188,7 +188,10 @@ export function AnnouncementsPage() {
             return (
               <Card key={a.id}>
                 <div className="flex items-start gap-3">
-                  <Icon size={18} className="mt-1 shrink-0 text-neutral-500 dark:text-neutral-400" />
+                  <Icon
+                    size={18}
+                    className="mt-1 shrink-0 text-neutral-500 dark:text-neutral-400"
+                  />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm text-neutral-800 dark:text-neutral-200">
                       {a.message}

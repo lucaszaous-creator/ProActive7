@@ -11,7 +11,11 @@ import {
 import { usePageMeta } from '@/lib/usePageMeta';
 import { Reveal } from '@/components/public/Reveal';
 import { Spotlight } from '@/components/public/Spotlight';
-import { fetchPublicCourses, siteAssetUrl, type SiteCourse } from '@/lib/siteCms';
+import {
+  fetchPublicCourses,
+  siteAssetUrl,
+  type SiteCourse,
+} from '@/lib/siteCms';
 
 export function CursosPublicPage() {
   usePageMeta('/cursos');

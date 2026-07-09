@@ -104,7 +104,9 @@ export function RecebimentoDetailPage() {
         </div>
       ) : !data ? (
         <Card>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">Não encontrado.</p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            Não encontrado.
+          </p>
         </Card>
       ) : (
         <div className="flex flex-col gap-4">
@@ -139,7 +141,9 @@ export function RecebimentoDetailPage() {
               Itens recebidos
             </h2>
             {data.receiving_items.length === 0 ? (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">Sem itens.</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                Sem itens.
+              </p>
             ) : (
               <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
                 {data.receiving_items.map((it) => (
@@ -210,7 +214,9 @@ function Field({ label, value }: { label: string; value: string }) {
       <p className="text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
         {label}
       </p>
-      <p className="mt-1 text-sm text-neutral-800 dark:text-neutral-100">{value}</p>
+      <p className="mt-1 text-sm text-neutral-800 dark:text-neutral-100">
+        {value}
+      </p>
     </div>
   );
 }

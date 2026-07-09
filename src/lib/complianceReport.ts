@@ -237,8 +237,9 @@ export async function generateComplianceReportPdf(
     .eq('company_id', company.company_id)
     .order('snapshot_date', { ascending: true })
     .limit(60);
-  const trend = ((snaps ?? []) as { snapshot_date: string; score: number }[])
-    .map((s) => ({ date: s.snapshot_date, score: Number(s.score) }));
+  const trend = (
+    (snaps ?? []) as { snapshot_date: string; score: number }[]
+  ).map((s) => ({ date: s.snapshot_date, score: Number(s.score) }));
   if (trend.length >= 2) {
     if (y > 215) {
       doc.addPage();
@@ -254,8 +255,18 @@ export async function generateComplianceReportPdf(
     // Linha-guia dos tiers (85 verde / 70 âmbar)
     doc.setDrawColor(...PRINT_RGB.hair);
     doc.setLineWidth(0.2);
-    doc.line(chartX, baseY - chartH * 0.85, chartX + chartW, baseY - chartH * 0.85);
-    doc.line(chartX, baseY - chartH * 0.7, chartX + chartW, baseY - chartH * 0.7);
+    doc.line(
+      chartX,
+      baseY - chartH * 0.85,
+      chartX + chartW,
+      baseY - chartH * 0.85,
+    );
+    doc.line(
+      chartX,
+      baseY - chartH * 0.7,
+      chartX + chartW,
+      baseY - chartH * 0.7,
+    );
     trend.forEach((p, i) => {
       const h = Math.max(0.8, (p.score / 100) * chartH);
       const bx = chartX + (i * chartW) / trend.length;

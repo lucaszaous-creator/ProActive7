@@ -113,7 +113,9 @@ export function CompanyFilesSection({ companyId }: Props) {
   // só para dar visibilidade — a cliente sabe o que se aplica.
   const progress = useMemo(() => {
     const required = COMPANY_FILE_CATEGORIES.filter((c) => c.key !== OUTRO);
-    const done = required.filter((c) => (byCategory.get(c.key)?.length ?? 0) > 0);
+    const done = required.filter(
+      (c) => (byCategory.get(c.key)?.length ?? 0) > 0,
+    );
     return { total: required.length, done: done.length };
   }, [byCategory]);
 
@@ -163,8 +165,7 @@ export function CompanyFilesSection({ companyId }: Props) {
       const { error: rmErr } = await supabase.storage
         .from('company-docs')
         .remove([path]);
-      if (rmErr)
-        console.warn('Falha ao remover arquivo órfão:', rmErr.message);
+      if (rmErr) console.warn('Falha ao remover arquivo órfão:', rmErr.message);
       toast.error('Erro ao registrar: ' + insErr.message);
       return;
     }
@@ -352,8 +353,8 @@ export function CompanyFilesSection({ companyId }: Props) {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              Carregue cada documento do estabelecimento na gaveta certa. PDF
-              ou imagem, até 20 MB.
+              Carregue cada documento do estabelecimento na gaveta certa. PDF ou
+              imagem, até 20 MB.
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -369,7 +370,11 @@ export function CompanyFilesSection({ companyId }: Props) {
                 </span>
               </p>
             </div>
-            <Button onClick={() => openUpload()} size="sm" disabled={!companyId}>
+            <Button
+              onClick={() => openUpload()}
+              size="sm"
+              disabled={!companyId}
+            >
               <Plus size={14} />
               Adicionar
             </Button>
@@ -380,9 +385,7 @@ export function CompanyFilesSection({ companyId }: Props) {
             className="h-full rounded-full bg-neutral-500 transition-all"
             style={{
               width: `${
-                progress.total > 0
-                  ? (progress.done / progress.total) * 100
-                  : 0
+                progress.total > 0 ? (progress.done / progress.total) * 100 : 0
               }%`,
             }}
           />

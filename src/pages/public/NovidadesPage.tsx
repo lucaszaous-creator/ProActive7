@@ -140,7 +140,9 @@ function Temas() {
                 <Icon className="h-5 w-5" />
               </span>
               <div>
-                <h3 className="text-sm font-semibold text-[#171717]">{title}</h3>
+                <h3 className="text-sm font-semibold text-[#171717]">
+                  {title}
+                </h3>
                 <p className="mt-1.5 text-xs leading-relaxed text-[#171717]/65">
                   {body}
                 </p>

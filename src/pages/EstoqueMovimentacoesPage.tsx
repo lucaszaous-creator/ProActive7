@@ -147,7 +147,9 @@ export function EstoqueMovimentacoesPage() {
                   </div>
                   <div
                     className={`text-sm font-medium ${
-                      isEntry ? 'text-neutral-700 dark:text-neutral-200' : 'text-red-700'
+                      isEntry
+                        ? 'text-neutral-700 dark:text-neutral-200'
+                        : 'text-red-700'
                     }`}
                   >
                     {isEntry ? '+' : ''}

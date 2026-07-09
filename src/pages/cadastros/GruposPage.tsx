@@ -80,8 +80,9 @@ export function GruposPage() {
       .limit(10000);
     const tally = new Map<string, number>();
     let withoutGroup = 0;
-    for (const p of (prods as { id: string; group_id: string | null }[] | null) ??
-      []) {
+    for (const p of (prods as
+      | { id: string; group_id: string | null }[]
+      | null) ?? []) {
       if (p.group_id) tally.set(p.group_id, (tally.get(p.group_id) ?? 0) + 1);
       else withoutGroup += 1;
     }
@@ -273,9 +274,7 @@ export function GruposPage() {
             <StatCard
               icon={<Crown size={17} />}
               label="Maior grupo"
-              value={
-                biggest ? biggest.count.toLocaleString('pt-BR') : '—'
-              }
+              value={biggest ? biggest.count.toLocaleString('pt-BR') : '—'}
               hint={biggest ? biggest.name : 'nenhum produto vinculado'}
               tone="neutral"
             />
@@ -322,60 +321,60 @@ export function GruposPage() {
               {filteredGroups.map((g) => {
                 const count = counts.get(g.id) ?? 0;
                 return (
-              <div
-                key={g.id}
-                className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700"
-              >
-                <span
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white"
-                  style={{ backgroundColor: g.color ?? '#6b7280' }}
-                >
-                  <Tag size={18} />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="flex items-center gap-2 truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
-                    {g.name}
-                    {!g.active && (
-                      <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-normal text-neutral-500 dark:text-neutral-400 dark:bg-neutral-800">
-                        inativo
-                      </span>
-                    )}
-                  </p>
-                  <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+                  <div
+                    key={g.id}
+                    className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700"
+                  >
                     <span
-                      className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold tabular-nums ${
-                        count > 0
-                          ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200'
-                          : 'bg-neutral-50 text-neutral-400 dark:bg-neutral-800/60 dark:text-neutral-500'
-                      }`}
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white"
+                      style={{ backgroundColor: g.color ?? '#6b7280' }}
                     >
-                      <Package size={11} />
-                      {count} produto{count === 1 ? '' : 's'}
+                      <Tag size={18} />
                     </span>
-                    · ordem {g.sort_order}
-                  </p>
-                </div>
-                {canEdit && (
-                  <div className="flex shrink-0 gap-1">
-                    <button
-                      onClick={() => openEdit(g)}
-                      aria-label="Editar"
-                      title="Editar"
-                      className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                    >
-                      <Pencil size={16} />
-                    </button>
-                    <button
-                      onClick={() => setDeleting(g)}
-                      aria-label="Excluir"
-                      title="Excluir"
-                      className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    <div className="min-w-0 flex-1">
+                      <p className="flex items-center gap-2 truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                        {g.name}
+                        {!g.active && (
+                          <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-normal text-neutral-500 dark:text-neutral-400 dark:bg-neutral-800">
+                            inativo
+                          </span>
+                        )}
+                      </p>
+                      <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold tabular-nums ${
+                            count > 0
+                              ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200'
+                              : 'bg-neutral-50 text-neutral-400 dark:bg-neutral-800/60 dark:text-neutral-500'
+                          }`}
+                        >
+                          <Package size={11} />
+                          {count} produto{count === 1 ? '' : 's'}
+                        </span>
+                        · ordem {g.sort_order}
+                      </p>
+                    </div>
+                    {canEdit && (
+                      <div className="flex shrink-0 gap-1">
+                        <button
+                          onClick={() => openEdit(g)}
+                          aria-label="Editar"
+                          title="Editar"
+                          className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        >
+                          <Pencil size={16} />
+                        </button>
+                        <button
+                          onClick={() => setDeleting(g)}
+                          aria-label="Excluir"
+                          title="Excluir"
+                          className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
                 );
               })}
             </div>

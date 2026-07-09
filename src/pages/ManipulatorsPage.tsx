@@ -231,8 +231,7 @@ export function ManipulatorsPage() {
         const { error: rmErr } = await supabase.storage
           .from('employee-docs')
           .remove([filePath]);
-        if (rmErr)
-          console.warn('Falha ao remover ASO órfão:', rmErr.message);
+        if (rmErr) console.warn('Falha ao remover ASO órfão:', rmErr.message);
       }
       toast.error('Erro ao salvar ASO: ' + error.message);
       return;

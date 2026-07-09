@@ -128,8 +128,8 @@ export function RastreabilidadePage() {
         title="Rastreabilidade"
         subtitle={
           <>
-            {companyName} — recall em 1 clique. Digite o lote pra ver tudo que
-            o envolve.
+            {companyName} — recall em 1 clique. Digite o lote pra ver tudo que o
+            envolve.
           </>
         }
       />
@@ -196,7 +196,10 @@ export function RastreabilidadePage() {
                   </thead>
                   <tbody>
                     {receivings.map((r) => (
-                      <tr key={r.id} className="border-b border-neutral-100 dark:border-neutral-800">
+                      <tr
+                        key={r.id}
+                        className="border-b border-neutral-100 dark:border-neutral-800"
+                      >
                         <td className="px-2 py-1.5">
                           {r.receiving?.received_at
                             ? formatDateTime(new Date(r.receiving.received_at))
@@ -243,7 +246,10 @@ export function RastreabilidadePage() {
                       const isExpired =
                         !isConsumed && new Date(l.expiry_at).getTime() < now;
                       return (
-                        <tr key={l.id} className="border-b border-neutral-100 dark:border-neutral-800">
+                        <tr
+                          key={l.id}
+                          className="border-b border-neutral-100 dark:border-neutral-800"
+                        >
                           <td className="px-2 py-1.5">
                             {formatDateTime(new Date(l.printed_at))}
                           </td>
@@ -297,9 +303,11 @@ function Stat({
 }) {
   const colors = {
     sky: 'bg-sky-50 text-sky-800',
-    emerald: 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-800 dark:text-neutral-100',
+    emerald:
+      'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-800 dark:text-neutral-100',
     red: 'bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-200',
-    neutral: 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200',
+    neutral:
+      'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200',
   }[tone];
   return (
     <div className={`rounded-lg p-3 text-center ${colors}`}>

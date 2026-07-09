@@ -58,27 +58,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     null,
   );
 
-  const loadSubscription = useCallback(async (loadedProfile: Profile | null) => {
-    // platform_admin não pertence a uma org-cliente — nunca é gateado.
-    if (
-      !loadedProfile ||
-      loadedProfile.role === 'platform_admin' ||
-      loadedProfile.role === 'master' ||
-      !loadedProfile.organization_id
-    ) {
-      setSubscription(null);
-      return;
-    }
-    const { data, error } = await supabase.rpc('my_subscription');
-    if (error) {
-      // Fail-open: erro de rede não pode trancar a cozinha fora do sistema.
-      console.error('Erro ao carregar assinatura:', error.message);
-      setSubscription(null);
-      return;
-    }
-    const row = (data as OrgSubscription[] | null)?.[0] ?? null;
-    setSubscription(row);
-  }, []);
+  const loadSubscription = useCallback(
+    async (loadedProfile: Profile | null) => {
+      // platform_admin não pertence a uma org-cliente — nunca é gateado.
+      if (
+        !loadedProfile ||
+        loadedProfile.role === 'platform_admin' ||
+        loadedProfile.role === 'master' ||
+        !loadedProfile.organization_id
+      ) {
+        setSubscription(null);
+        return;
+      }
+      const { data, error } = await supabase.rpc('my_subscription');
+      if (error) {
+        // Fail-open: erro de rede não pode trancar a cozinha fora do sistema.
+        console.error('Erro ao carregar assinatura:', error.message);
+        setSubscription(null);
+        return;
+      }
+      const row = (data as OrgSubscription[] | null)?.[0] ?? null;
+      setSubscription(row);
+    },
+    [],
+  );
 
   const loadProfile = useCallback(
     async (userId: string) => {

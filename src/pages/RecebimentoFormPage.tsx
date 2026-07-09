@@ -438,7 +438,9 @@ export function RecebimentoFormPage() {
 
           <Card>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">Itens</h2>
+              <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+                Itens
+              </h2>
               <Button
                 size="sm"
                 variant="secondary"

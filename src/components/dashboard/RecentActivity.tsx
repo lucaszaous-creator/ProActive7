@@ -37,7 +37,10 @@ export function RecentActivity({ loading, items }: RecentActivityProps) {
   return (
     <Card>
       <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
-        <Activity size={16} className="text-neutral-600 dark:text-neutral-400" />
+        <Activity
+          size={16}
+          className="text-neutral-600 dark:text-neutral-400"
+        />
         Atividade recente
       </h2>
       {loading ? (

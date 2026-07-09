@@ -194,8 +194,7 @@ export function ValidadesPage() {
         l.product_name_snapshot,
         l.batch ?? '',
         l.supplier ?? '',
-        STORAGE_CONDITION_LABELS[l.storage_condition as StorageCondition] ??
-          '',
+        STORAGE_CONDITION_LABELS[l.storage_condition as StorageCondition] ?? '',
         formatDateTime(new Date(l.expiry_at)),
       ]),
     );

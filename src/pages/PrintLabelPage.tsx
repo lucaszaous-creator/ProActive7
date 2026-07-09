@@ -516,8 +516,8 @@ export function PrintLabelPage() {
                 <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-800">
                   <p className="font-medium">Nenhum funcionário cadastrado</p>
                   <p className="mt-1 text-xs text-amber-700">
-                    O responsável pela manipulação precisa ser escolhido de
-                    uma lista — não digitado à mão.
+                    O responsável pela manipulação precisa ser escolhido de uma
+                    lista — não digitado à mão.
                   </p>
                   <Link
                     to="/manipuladores"

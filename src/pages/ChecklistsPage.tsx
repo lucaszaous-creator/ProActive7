@@ -499,7 +499,9 @@ export function ChecklistsPage() {
           </Select>
 
           <div>
-            <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">Itens</p>
+            <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
+              Itens
+            </p>
             <div className="flex flex-col gap-2">
               {tplItems.map((it, i) => (
                 <div key={i} className="flex gap-2">

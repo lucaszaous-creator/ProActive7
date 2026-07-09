@@ -1,8 +1,4 @@
-import type {
-  HTMLAttributes,
-  TdHTMLAttributes,
-  ThHTMLAttributes,
-} from 'react';
+import type { HTMLAttributes, TdHTMLAttributes, ThHTMLAttributes } from 'react';
 
 /**
  * Primitivas de tabela do design system. Encapsulam o padrão repetido

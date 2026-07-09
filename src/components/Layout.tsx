@@ -374,12 +374,7 @@ const NAV_PROPERTY: NavNode[] = [
     defaultOpen: false,
     // Property NÃO vê "Funcionários/Manipuladores" aqui — esse cadastro é
     // de responsabilidade da nutri (RT), que mantém ASO/treinamento.
-    children: [
-      ITEM.produtos,
-      ITEM.grupos,
-      ITEM.fornecedores,
-      ITEM.impressoras,
-    ],
+    children: [ITEM.produtos, ITEM.grupos, ITEM.fornecedores, ITEM.impressoras],
   },
   {
     kind: 'group',
@@ -531,12 +526,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
     labelKey: 'nav.plataforma',
     icon: Network,
     defaultOpen: true,
-    children: [
-      ITEM.platformControl,
-      ITEM.platformDash,
-      ITEM.orgs,
-      ITEM.planos,
-    ],
+    children: [ITEM.platformControl, ITEM.platformDash, ITEM.orgs, ITEM.planos],
   },
   {
     kind: 'group',
@@ -806,9 +796,7 @@ export function Layout() {
         <div className="border-t border-neutral-200 p-3 dark:border-neutral-800">
           <div className="mb-2 flex items-center gap-2.5 rounded-lg bg-neutral-50 px-2.5 py-2 dark:bg-neutral-800/60">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-xs font-semibold uppercase text-white dark:bg-neutral-100 dark:text-neutral-900">
-              {(profile?.full_name ?? profile?.email ?? '?')
-                .trim()
-                .charAt(0)}
+              {(profile?.full_name ?? profile?.email ?? '?').trim().charAt(0)}
             </span>
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">

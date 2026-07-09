@@ -1,6 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Plus, Pencil, Thermometer, AlertTriangle, ImageIcon } from 'lucide-react';
+import {
+  Plus,
+  Pencil,
+  Thermometer,
+  AlertTriangle,
+  ImageIcon,
+} from 'lucide-react';
 import { logFeatureEvent } from '@/lib/platformMetrics';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';

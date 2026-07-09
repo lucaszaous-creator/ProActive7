@@ -161,8 +161,7 @@ export function CompaniesPage() {
       const { error: rmErr } = await supabase.storage
         .from('branding')
         .remove([path]);
-      if (rmErr)
-        console.warn('Falha ao remover logo órfão:', rmErr.message);
+      if (rmErr) console.warn('Falha ao remover logo órfão:', rmErr.message);
       toast.error('Erro ao salvar logo: ' + dbErr.message);
       return;
     }
@@ -606,7 +605,9 @@ function CompanyOrgLink({ row }: { row: CompanyRow }) {
         {ownerName ?? 'Sem nutricionista titular'}
       </div>
       {org.name ? (
-        <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">{org.name}</div>
+        <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+          {org.name}
+        </div>
       ) : null}
     </div>
   );

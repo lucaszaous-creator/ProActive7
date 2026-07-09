@@ -35,7 +35,8 @@ export function PhotoLightbox({ url, fileName, onClose }: Props) {
 
   // Para o atributo `download`, removemos query string e usamos o nome
   // original quando disponível.
-  const downloadName = fileName ?? url.split('/').pop()?.split('?')[0] ?? 'foto';
+  const downloadName =
+    fileName ?? url.split('/').pop()?.split('?')[0] ?? 'foto';
 
   return (
     <div

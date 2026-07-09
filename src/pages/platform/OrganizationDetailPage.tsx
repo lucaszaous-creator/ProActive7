@@ -205,7 +205,9 @@ export function OrganizationDetailPage() {
   if (!org) {
     return (
       <div className="mx-auto max-w-4xl">
-        <p className="text-sm text-neutral-600 dark:text-neutral-300">Organização não encontrada.</p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          Organização não encontrada.
+        </p>
         <Button
           variant="secondary"
           className="mt-4"

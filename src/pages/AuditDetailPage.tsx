@@ -62,7 +62,8 @@ const RESULT_OPTIONS: {
     icon: Check,
     classes:
       'border-neutral-200 bg-white text-neutral-500 dark:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800',
-    activeClasses: 'border-neutral-500 bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200',
+    activeClasses:
+      'border-neutral-500 bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200',
   },
   {
     value: 'NC',
@@ -70,7 +71,8 @@ const RESULT_OPTIONS: {
     icon: XIcon,
     classes:
       'border-neutral-200 bg-white text-neutral-500 dark:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800',
-    activeClasses: 'border-red-500 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200',
+    activeClasses:
+      'border-red-500 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200',
   },
   {
     value: 'NA',
@@ -78,7 +80,8 @@ const RESULT_OPTIONS: {
     icon: MinusCircle,
     classes:
       'border-neutral-200 bg-white text-neutral-500 dark:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800',
-    activeClasses: 'border-neutral-500 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200',
+    activeClasses:
+      'border-neutral-500 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200',
   },
 ];
 
@@ -210,7 +213,9 @@ export function AuditDetailPage() {
       toast.error('Erro ao reagendar: ' + error.message);
       return;
     }
-    toast.success(reopen ? 'Visita reaberta e reagendada.' : 'Visita reagendada.');
+    toast.success(
+      reopen ? 'Visita reaberta e reagendada.' : 'Visita reagendada.',
+    );
     setScheduleOpen(false);
     void load();
   }
@@ -585,7 +590,9 @@ export function AuditDetailPage() {
   if (!audit) {
     return (
       <Card>
-        <p className="text-sm text-neutral-600 dark:text-neutral-300">Visita nao encontrada.</p>
+        <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          Visita nao encontrada.
+        </p>
       </Card>
     );
   }
@@ -620,91 +627,91 @@ export function AuditDetailPage() {
         subtitle={template?.name}
         actions={
           <div className="flex flex-col items-stretch gap-2 sm:items-end">
-          {score != null ? (
-            <span
-              className={`rounded-full px-3 py-1 text-base font-bold ${
-                score >= 85
-                  ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200'
-                  : score >= 70
-                    ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200'
-                    : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200'
-              }`}
-            >
-              Score: {score.toFixed(1)}%
-            </span>
-          ) : null}
-          <div className="flex flex-wrap gap-2">
-            {!isCompleted && !isCancelled && isMaster ? (
-              <>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={openSchedule}
-                  disabled={saving || finalizing}
-                  title="Alterar data e hora agendada"
-                >
-                  <CalendarClock size={14} />
-                  Reagendar
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setCancelOpen(true)}
-                  disabled={saving || finalizing}
-                  title="Cancelar esta visita"
-                  className="text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950"
-                >
-                  <XCircle size={14} />
-                  Cancelar
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={handleSaveDraft}
-                  loading={saving}
-                >
-                  <Save size={14} />
-                  Salvar rascunho
-                </Button>
-                <Button size="sm" onClick={() => setSignOpen(true)}>
-                  <PenLine size={14} />
-                  Finalizar
-                </Button>
-              </>
+            {score != null ? (
+              <span
+                className={`rounded-full px-3 py-1 text-base font-bold ${
+                  score >= 85
+                    ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200'
+                    : score >= 70
+                      ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200'
+                      : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200'
+                }`}
+              >
+                Score: {score.toFixed(1)}%
+              </span>
             ) : null}
-            {isCancelled && isMaster ? (
-              <>
-                <span className="inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
-                  <XCircle size={12} />
-                  Visita cancelada
-                </span>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={openSchedule}
-                  title="Reagendar reabre a visita"
-                >
-                  <CalendarClock size={14} />
-                  Reagendar
-                </Button>
-              </>
-            ) : null}
-            {isCompleted ? (
-              <>
-                <span
-                  className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200"
-                  title="O status de uma visita finalizada não pode ser revertido — assinada pela RT, ela passa a fazer parte da trilha de auditoria."
-                >
-                  <Lock size={12} />
-                  Status travado (finalizada)
-                </span>
-                <Button size="sm" onClick={handleExportPdf}>
-                  <Download size={14} />
-                  Exportar PDF
-                </Button>
-              </>
-            ) : null}
-          </div>
+            <div className="flex flex-wrap gap-2">
+              {!isCompleted && !isCancelled && isMaster ? (
+                <>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={openSchedule}
+                    disabled={saving || finalizing}
+                    title="Alterar data e hora agendada"
+                  >
+                    <CalendarClock size={14} />
+                    Reagendar
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCancelOpen(true)}
+                    disabled={saving || finalizing}
+                    title="Cancelar esta visita"
+                    className="text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950"
+                  >
+                    <XCircle size={14} />
+                    Cancelar
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleSaveDraft}
+                    loading={saving}
+                  >
+                    <Save size={14} />
+                    Salvar rascunho
+                  </Button>
+                  <Button size="sm" onClick={() => setSignOpen(true)}>
+                    <PenLine size={14} />
+                    Finalizar
+                  </Button>
+                </>
+              ) : null}
+              {isCancelled && isMaster ? (
+                <>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                    <XCircle size={12} />
+                    Visita cancelada
+                  </span>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={openSchedule}
+                    title="Reagendar reabre a visita"
+                  >
+                    <CalendarClock size={14} />
+                    Reagendar
+                  </Button>
+                </>
+              ) : null}
+              {isCompleted ? (
+                <>
+                  <span
+                    className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200"
+                    title="O status de uma visita finalizada não pode ser revertido — assinada pela RT, ela passa a fazer parte da trilha de auditoria."
+                  >
+                    <Lock size={12} />
+                    Status travado (finalizada)
+                  </span>
+                  <Button size="sm" onClick={handleExportPdf}>
+                    <Download size={14} />
+                    Exportar PDF
+                  </Button>
+                </>
+              ) : null}
+            </div>
           </div>
         }
       />

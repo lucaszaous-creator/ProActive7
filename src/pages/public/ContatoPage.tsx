@@ -18,8 +18,7 @@ import { usePageMeta } from '@/lib/usePageMeta';
 import { Reveal } from '@/components/public/Reveal';
 
 const WHATSAPP_URL = 'https://wa.me/5522997662669';
-const MAPS_QUERY =
-  'Rua Dr. Luiz Belegard, 407, Imbetiba, Macaé - RJ';
+const MAPS_QUERY = 'Rua Dr. Luiz Belegard, 407, Imbetiba, Macaé - RJ';
 
 export function ContatoPage() {
   usePageMeta('/contato');
