@@ -317,53 +317,55 @@ function Pilares() {
     'Trabalho em equipe',
   ];
   return (
-    <section className="fx-grain relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#1f1f1f] py-16 text-white md:py-20">
-      {/* Aurora de fundo */}
+    <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#f4f4f2] py-16 md:py-20">
+      {/* Luz de fundo — brancos suaves no lugar da aurora escura */}
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-10 overflow-hidden"
       >
-        <div className="animate-aurora absolute -left-24 -top-24 h-[28rem] w-[28rem] rounded-full bg-[#525252]/45 blur-[120px]" />
-        <div className="animate-aurora absolute right-[-6rem] top-1/3 h-[26rem] w-[26rem] rounded-full bg-[#737373]/35 blur-[130px] [animation-delay:-7s]" />
-        <div className="animate-aurora absolute bottom-[-8rem] left-1/3 h-[24rem] w-[24rem] rounded-full bg-[#a3a3a3]/20 blur-[120px] [animation-delay:-14s]" />
-        <div className="fx-grid absolute inset-0" />
+        <div className="animate-aurora absolute -left-24 -top-24 h-[28rem] w-[28rem] rounded-full bg-white/80 blur-[120px]" />
+        <div className="animate-aurora absolute right-[-6rem] top-1/3 h-[26rem] w-[26rem] rounded-full bg-white/60 blur-[130px] [animation-delay:-7s]" />
+        <div className="animate-aurora absolute bottom-[-8rem] left-1/3 h-[24rem] w-[24rem] rounded-full bg-white/50 blur-[120px] [animation-delay:-14s]" />
+        <div className="fx-grid-ink absolute inset-0" />
       </div>
 
       <div className="mx-auto max-w-6xl px-5">
         <div className="mx-auto max-w-2xl text-center">
-          <span className="text-xs font-medium uppercase tracking-wider text-[#a3a3a3]">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
             Quem nos move
           </span>
-          <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
+          <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
             Missão, Visão e Valores
           </h2>
         </div>
 
         <div className="mt-12 grid gap-5 lg:grid-cols-3 lg:items-stretch">
           {/* Missão */}
-          <article className="flex flex-col rounded-3xl border border-white/15 bg-white/10 p-7 backdrop-blur-xl">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-[#a3a3a3]">
+          <article className="fx-lift flex flex-col rounded-3xl border border-[#e5e5e5] bg-white p-7 shadow-[0_18px_40px_-32px_rgba(0,0,0,0.25)]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#e5e5e5] bg-[#fafafa] text-[#262626]">
               <Compass className="h-6 w-6" />
             </div>
-            <h3 className="mt-5 text-xl font-semibold tracking-tight">
+            <h3 className="mt-5 text-xl font-semibold tracking-tight text-[#171717]">
               Missão
             </h3>
-            <p className="mt-3 text-sm leading-relaxed text-white/85">
+            <p className="mt-3 text-sm leading-relaxed text-[#171717]/75">
               Atuar como prestadora de serviços em assessoria e consultoria em
               fornecimento de alimentação e nutrição com qualidade e foco do
               cliente, diferenciada pela{' '}
-              <strong className="text-white">atitude pró-ativa</strong> e
+              <strong className="text-[#171717]">atitude pró-ativa</strong> e
               parceria com as empresas de forma comprometida.
             </p>
           </article>
 
           {/* Visão */}
-          <article className="flex flex-col rounded-3xl border border-white/15 bg-white/10 p-7 backdrop-blur-xl">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-[#a3a3a3]">
+          <article className="fx-lift flex flex-col rounded-3xl border border-[#e5e5e5] bg-white p-7 shadow-[0_18px_40px_-32px_rgba(0,0,0,0.25)]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#e5e5e5] bg-[#fafafa] text-[#262626]">
               <Eye className="h-6 w-6" />
             </div>
-            <h3 className="mt-5 text-xl font-semibold tracking-tight">Visão</h3>
-            <p className="mt-3 text-sm leading-relaxed text-white/85">
+            <h3 className="mt-5 text-xl font-semibold tracking-tight text-[#171717]">
+              Visão
+            </h3>
+            <p className="mt-3 text-sm leading-relaxed text-[#171717]/75">
               Atingir níveis de excelência na prestação de serviços aos clientes
               através da segurança e qualidade nutricional, agregando valor aos
               serviços e colaboradores, com atendimento de qualidade e
@@ -372,18 +374,18 @@ function Pilares() {
           </article>
 
           {/* Valores */}
-          <article className="flex flex-col rounded-3xl border border-white/15 bg-white/10 p-7 backdrop-blur-xl">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-[#a3a3a3]">
+          <article className="fx-lift flex flex-col rounded-3xl border border-[#e5e5e5] bg-white p-7 shadow-[0_18px_40px_-32px_rgba(0,0,0,0.25)]">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-[#e5e5e5] bg-[#fafafa] text-[#262626]">
               <Gem className="h-6 w-6" />
             </div>
-            <h3 className="mt-5 text-xl font-semibold tracking-tight">
+            <h3 className="mt-5 text-xl font-semibold tracking-tight text-[#171717]">
               Valores
             </h3>
             <ul className="mt-4 flex flex-wrap gap-2">
               {valores.map((v) => (
                 <li
                   key={v}
-                  className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium text-white/90"
+                  className="rounded-full border border-[#d4d4d4] bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#171717]/80"
                 >
                   {v}
                 </li>
@@ -455,34 +457,31 @@ function Politica() {
 /* CTA final — fecha a página convidando ao contato (faltava). */
 function CtaPerfil() {
   return (
-    <section className="relative isolate overflow-hidden bg-[#262626] text-white">
+    <section className="relative isolate overflow-hidden border-t border-[#e5e5e5] bg-white">
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-32 -top-32 h-80 w-80 rounded-full bg-[#737373]/25 blur-3xl"
+        className="absolute inset-0 -z-10 bg-[radial-gradient(60%_70%_at_50%_0%,#ffffff_0%,#fbfbfa_60%,#f2f2f0_100%)]"
       />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-[#a3a3a3]/15 blur-3xl"
-      />
+      <div aria-hidden className="fx-grid-ink absolute inset-0 -z-10" />
       <div className="relative mx-auto max-w-3xl px-5 py-20 text-center md:py-24">
-        <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+        <h2 className="text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
           Vamos cuidar da segurança alimentar da sua operação?
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/85">
-          Converse com a Ariane e descubra o que sua unidade precisa para estar
-          em conformidade — sem compromisso.
+        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-[#171717]/70">
+          Converse com a nossa equipe e descubra o que sua unidade precisa para
+          estar em conformidade — sem compromisso.
         </p>
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/contato"
-            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#262626] transition hover:bg-white/95"
+            className="fx-sheen inline-flex items-center gap-2 rounded-full bg-[#171717] px-6 py-3 text-sm font-medium text-white shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] transition hover:bg-[#333333]"
           >
             <MessageCircle className="h-4 w-4" />
             Falar com a ProActive7
           </Link>
           <Link
             to="/servicos"
-            className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-medium text-white transition hover:border-white/60"
+            className="inline-flex items-center gap-2 rounded-full border border-[#171717]/20 bg-white px-6 py-3 text-sm font-medium text-[#171717] transition hover:border-[#171717]/50"
           >
             Ver serviços
             <ArrowRight className="h-4 w-4" />

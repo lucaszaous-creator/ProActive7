@@ -257,26 +257,26 @@ export function SistemaPage() {
 
       {/* HERO */}
       <section className="relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#404040] via-[#262626] to-[#525252]" />
+        <div className="absolute inset-0 bg-[radial-gradient(70%_60%_at_40%_20%,#ffffff_0%,#fcfcfb_55%,#f0f0ee_100%)]" />
         <div
-          className="absolute inset-0 opacity-[0.07]"
+          className="absolute inset-0 opacity-[0.05]"
           style={{
             backgroundImage:
-              'radial-gradient(circle at 20% 20%, #fff 1px, transparent 1px)',
+              'radial-gradient(circle at 20% 20%, #171717 1px, transparent 1px)',
             backgroundSize: '28px 28px',
           }}
         />
         <div className="relative mx-auto grid max-w-6xl items-center gap-10 px-5 py-16 md:grid-cols-2 md:py-24">
-          <div className="text-white">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/12 px-3 py-1 text-xs font-medium text-white/90 ring-1 ring-white/20">
+          <div className="text-[#171717]">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-medium text-[#171717]/75 shadow-sm ring-1 ring-[#171717]/12">
               <Sparkles className="h-3.5 w-3.5" />
               Segurança alimentar sem papelada
             </span>
             <h1 className="mt-5 text-4xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
               A cozinha em conformidade,{' '}
-              <span className="text-[#d4d4d4]">no piloto automático</span>
+              <span className="text-[#737373]">no piloto automático</span>
             </h1>
-            <p className="mt-5 max-w-md text-base leading-relaxed text-white/85">
+            <p className="mt-5 max-w-md text-base leading-relaxed text-[#171717]/70">
               Etiquetas de validade, auditorias RDC, temperatura, ASO e dossiê
               ANVISA — tudo num sistema feito para a nutricionista responsável
               técnica e sua equipe de cozinha.
@@ -284,13 +284,13 @@ export function SistemaPage() {
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#262626] shadow-lg transition hover:-translate-y-0.5 hover:bg-[#e5e5e5]"
+                className="inline-flex items-center gap-2 rounded-full bg-[#171717] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] transition hover:-translate-y-0.5 hover:bg-[#333333]"
               >
                 Acessar sistema <ArrowRight className="h-4 w-4" />
               </Link>
               <a
                 href="#planos"
-                className="inline-flex items-center gap-2 rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white ring-1 ring-white/25 transition hover:bg-white/15"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#171717] ring-1 ring-[#171717]/20 transition hover:ring-[#171717]/45"
               >
                 Ver planos
               </a>
@@ -307,12 +307,12 @@ export function SistemaPage() {
         </div>
 
         {/* Faixa de stats */}
-        <div className="relative border-t border-white/10 bg-black/10">
+        <div className="relative border-y border-[#e5e5e5] bg-white/70">
           <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-5 py-6 md:grid-cols-4">
             {STATS.map((s) => (
-              <div key={s.label} className="text-center text-white">
+              <div key={s.label} className="text-center text-[#171717]">
                 <p className="text-2xl font-bold sm:text-3xl">{s.value}</p>
-                <p className="text-xs text-white/70">{s.label}</p>
+                <p className="text-xs text-[#737373]">{s.label}</p>
               </div>
             ))}
           </div>
@@ -681,27 +681,27 @@ export function SistemaPage() {
 
       {/* CTA FINAL */}
       <section className="px-5 pb-20">
-        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl bg-[#262626] px-6 py-14 text-center text-white sm:px-12">
+        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-3xl border border-[#e5e5e5] bg-white px-6 py-14 text-center shadow-[0_30px_60px_-45px_rgba(0,0,0,0.35)] sm:px-12">
           <div
-            className="absolute inset-0 opacity-10"
+            className="absolute inset-0 opacity-[0.05]"
             style={{
               backgroundImage:
-                'radial-gradient(circle at 80% 30%, #fff 1px, transparent 1px)',
+                'radial-gradient(circle at 80% 30%, #171717 1px, transparent 1px)',
               backgroundSize: '24px 24px',
             }}
           />
           <div className="relative">
-            <h2 className="text-3xl font-bold tracking-tight">
+            <h2 className="text-3xl font-bold tracking-tight text-[#171717]">
               Pronto para deixar a cozinha em ordem?
             </h2>
-            <p className="mx-auto mt-3 max-w-md text-white/80">
+            <p className="mx-auto mt-3 max-w-md text-[#171717]/65">
               Acesse o sistema ou fale com a nossa equipe pelo WhatsApp para uma
               demonstração.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
                 to="/login"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#262626] transition hover:-translate-y-0.5 hover:bg-[#e5e5e5]"
+                className="inline-flex items-center gap-2 rounded-full bg-[#171717] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] transition hover:-translate-y-0.5 hover:bg-[#333333]"
               >
                 Acessar sistema <ArrowRight className="h-4 w-4" />
               </Link>
@@ -709,7 +709,7 @@ export function SistemaPage() {
                 href="https://wa.me/5522997662669"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white ring-1 ring-white/25 transition hover:bg-white/15"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-[#171717] ring-1 ring-[#171717]/20 transition hover:ring-[#171717]/45"
               >
                 <MessageCircle className="h-4 w-4" /> Falar no WhatsApp
               </a>
