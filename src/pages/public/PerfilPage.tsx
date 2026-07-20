@@ -71,13 +71,13 @@ function QuemSomos() {
               Sobre a empresa
             </span>
             <h2 className="mt-2 text-2xl font-semibold tracking-tight md:text-3xl">
-              Da PERSONAL DIET à PROACTIVE 7.
+              Da PERSONAL DIET à ProActive 7.
             </h2>
             <div className="mt-6 space-y-5 text-base leading-relaxed text-[#171717]/75">
               <p>
                 Começamos como{' '}
                 <strong className="text-[#262626]">PERSONAL DIET</strong> e hoje
-                somos a <strong className="text-[#262626]">PROACTIVE 7</strong> —
+                somos a <strong className="text-[#262626]">ProActive 7</strong> —
                 uma empresa especializada em assessoria e consultoria em
                 segurança alimentar que reúne profissionais capacitados,
                 experiência, ética, responsabilidade, comprometimento,
@@ -149,7 +149,7 @@ function NossaHistoria() {
     },
     {
       year: '2020',
-      title: 'Surge a PROACTIVE 7',
+      title: 'Surge a ProActive 7',
       body: 'Fundada pela nutricionista Ariane Madureira, a empresa evolui para assessoria e consultoria completa em segurança alimentar, com método próprio.',
     },
     {
@@ -228,7 +228,7 @@ function FundadoraAvatar() {
   return (
     <img
       src="/equipe/ariane.jpg"
-      alt="Ariane Madureira, nutricionista e responsável técnica da ProActive 7"
+      alt="Ariane Madureira, nutricionista e responsável técnica da ProActive7"
       width={128}
       height={128}
       loading="lazy"
@@ -265,7 +265,7 @@ function Fundadora() {
             </h2>
             <p className="mt-1 flex flex-wrap items-center gap-2 text-sm font-medium text-[#262626]">
               <BadgeCheck className="h-4 w-4" />
-              Nutricionista · Fundadora da ProActive 7
+              Nutricionista · Fundadora da ProActive7
             </p>
             <p className="mt-4 max-w-2xl text-base leading-relaxed text-[#171717]/75">
               Responsável técnica registrada no CRN, Ariane é quem assina e
@@ -478,7 +478,7 @@ function CtaPerfil() {
             className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#262626] transition hover:bg-white/95"
           >
             <MessageCircle className="h-4 w-4" />
-            Falar com a ProActive 7
+            Falar com a ProActive7
           </Link>
           <Link
             to="/servicos"
