@@ -253,7 +253,7 @@ export function OrganizationDetailPage() {
                 variant="secondary"
                 onClick={() => void handleExport()}
                 loading={exporting}
-                title="Backup LGPD: exporta tudo da org em JSON"
+                title="Backup LGPD: exporta os dados (tabelas) da org em JSON. Arquivos do Storage (fotos, ASOs, logos) não são incluídos"
               >
                 <Download size={14} /> Backup
               </Button>

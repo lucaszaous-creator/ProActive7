@@ -191,19 +191,44 @@ roadmap "para quando houver caixa", fora do MVP.
 
 ### Pendências do review de lançamento (bloqueante/alto)
 
-- [ ] **Impersonate sem consentimento + magic link reutilizável** — esconder
-   botão "Entrar como" até implementar trava (coluna `allow_impersonation`
-   na org + checagem server-side + sessão curta + visibilidade pra nutri no
-   `audit_log`). Viola CLAUDE.md §2.1.
+- [ ] **Impersonate sem consentimento + magic link reutilizável** —
+   ✅ **parcialmente resolvido**: trava de consentimento implementada
+   (coluna `allow_impersonation` na org, migration `0078`, default OFF +
+   checagem server-side na Edge `admin-impersonate` + dupla linha no
+   `audit_log` visível pra nutri). ⏳ Falta só a *sessão curta* (o magic
+   link herda o JWT expiry global — reduzir no painel Auth ou emitir
+   token próprio de 15 min).
 - [ ] **`admin-export-org` não exporta arquivos do Storage** (ASO, fotos,
-   branding) — tooltip "exporta tudo" é enganoso. Incluir arquivos ou
-   corrigir o texto.
-- [ ] **`audit_log` ausente em `profiles`** — adicionar trigger `log_changes()`
+   branding) — ✅ tooltip corrigido (deixa claro que Storage não vai no
+   JSON). ⏳ Incluir os arquivos no export fica como melhoria.
+- [x] **`audit_log` ausente em `profiles`** — adicionar trigger `log_changes()`
    (mudança de `role`/`organization_id` é a mais sensível em multi-tenant).
    ✅ **Resolvido** (migration `0087`, trigger `trg_profiles_audit`).
-- [ ] **`fetchFeatureUsage` agrega no cliente sem `.limit`** — contagem fica
-   silenciosamente errada acima de 1000 eventos (PostgREST corta). Virar RPC/
-   view SQL.
+- [x] **`fetchFeatureUsage` agrega no cliente sem `.limit`** —
+   ✅ **Resolvido** (migration `0080`, RPC `feature_usage_30d`; frontend
+   usa `supabase.rpc`).
+
+### Review pré-produção 2026-07-20 (correções aplicadas)
+
+- [x] **CRÍTICO — escrita cross-tenant via policies de seed/global
+   (0052)**: `products_seed_insert/update`, `audit_templates_global_*` e
+   `checklist_templates_global_*` tinham ramo `OR is_seed/is_global =
+   false`; como policies permissivas combinam com OR, qualquer
+   autenticado podia inserir/alterar produtos e templates de QUALQUER
+   org. ✅ Corrigido na migration `0098` (policies passam a cobrir só o
+   caso global/seed + platform_admin).
+- [x] **`documents_update` permitia property reatribuir `company_id`**
+   (WITH CHECK do ramo property era só `status <> 'published'`). ✅
+   Corrigido na `0098`.
+- [x] **Bucket `pest-docs` sem ramo de nutricionista** (nutri tomava RLS
+   error ao anexar comprovante de dedetização). ✅ Corrigido na `0098`.
+- [x] **Drift da `company_compliance_v` (stub 0039)** — corpo real só
+   existia no banco, sem garantia versionada de `security_invoker`. ✅
+   Recriada deterministicamente na `0099` (invoker + filtros de
+   soft-delete + grant só a authenticated).
+- ⚠️ **As migrations `0098`/`0099` precisam ser APLICADAS no banco de
+   produção** (o deploy automático do Vercel não roda migrations). Sem
+   isso a brecha da 0052 continua viva em produção.
 
 ### Pendências para a reunião 2026-06-03 (decisão do Lucas/Ariane)
 
@@ -448,24 +473,20 @@ privado, `auth.users` e Realtime OK. Buracos encontrados e fechados:
 - [ ] **Retenção LGPD**: `manipulator_asos` (dado de saúde) e bucket
   `employee-docs` (ASOs) **sem expiração**. Estender o padrão de 30 dias
   das `photos`/`cleanup-photos`.
-- [ ] **Sem `audit_log` em `profiles`**: mudança de `role`/`organization_id`
-  (a mais sensível em multi-tenant) não é registrada. Adicionar trigger
-  `log_changes()`.
-- [ ] **`get_public_label` sem rate limit** (anon) — risco de enumeração.
-- [ ] **Funções trigger/internas executáveis por anon/authenticated**
-  (`cleanup_soft_deleted`, `rls_auto_enable`, `log_changes`,
-  `sync_profile_org_from_company`): `REVOKE EXECUTE` (não tocar nos
-  helpers `is_*`/`current_*`, que a RLS precisa executar).
-- [ ] **Agregação client-side sem `.limit`**: `ReportsPage.tsx` e
-  `platformMetrics.ts` (feature_events 30d) — mover pra view/RPC SQL
-  antes de escalar volume.
-- [ ] **Deleções no Storage ignoram erro** (fotos, ASO, NC, pragas,
-  visitas) → arquivos órfãos. Checar `error` do `.remove()`.
-- [ ] **Realtime/timer vazam no wizard** se sair com job em fila
-  (`PrintWizardPage` DirectPrintBlock) — limpar em `useEffect` cleanup.
-- [ ] **`PrintLabelPage` legado (`/imprimir`) tem `<input>` texto livre**
-  pro responsável sem manipulador — viola "zero digitação na cozinha". O
-  wizard novo já bloqueia com CTA; aplicar o mesmo ou aposentar a rota.
+- [x] **Sem `audit_log` em `profiles`** — ✅ resolvido (migration `0087`).
+- [x] **`get_public_label` sem rate limit** (anon) — ✅ resolvido
+  (migration `0094`, `enforce_rate_limit` por IP em `get_public_label` e
+  `get_company_seal`).
+- [x] **Funções trigger/internas executáveis por anon/authenticated** —
+  ✅ resolvido (migration `0073`, `REVOKE EXECUTE`).
+- [x] **Agregação client-side sem `.limit`** — ✅ resolvido
+  (`label_report` na `0076` + `feature_usage_30d` na `0080`).
+- [x] **Deleções no Storage ignoram erro** — ✅ resolvido (todos os
+  `.remove()` checam `error` e avisam/`console.warn`).
+- [x] **Realtime/timer vazam no wizard** — ✅ resolvido
+  (`directCleanupRef` + cleanup no unmount do `DirectPrintBlock`).
+- [x] **`PrintLabelPage` legado (`/imprimir`)** — ✅ resolvido: a rota
+  agora redireciona (`Navigate`) para `/imprimir/novo`.
 - [ ] **`master` legado** ainda referenciado em migrations/checks —
   consolidar em `platform_admin` (já estava no roadmap).
 - [ ] **FKs sem índice** em `print_jobs`/`print_agents`
