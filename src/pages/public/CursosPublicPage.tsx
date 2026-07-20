@@ -174,7 +174,7 @@ export function CursosPublicPage() {
             className="fx-sheen mt-6 inline-flex items-center gap-2 rounded-full bg-[#262626] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#404040]"
           >
             <MessageCircle className="h-4 w-4" />
-            Falar com a Ariane
+            Falar com nossa Equipe
           </Link>
         </div>
       </section>

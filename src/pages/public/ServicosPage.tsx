@@ -96,7 +96,7 @@ const SERVICOS: Servico[] = [
   },
   {
     icon: Tag,
-    title: 'Informação nutricional',
+    title: 'Rotulagem Nutricional conforme legislação atual',
     tag: 'Rotulagem',
     body: 'Todos os alimentos fabricados e embalados para venda devem ter rótulo nutricional elaborado e assinado por nutricionista especializada — nossa equipe entrega isso para você dentro da legislação vigente.',
     entrega: 'Rótulo nutricional assinado, pronto para a embalagem.',

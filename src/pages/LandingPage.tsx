@@ -170,7 +170,7 @@ function Hero() {
             className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-medium text-white transition hover:border-white/60"
           >
             <MessageCircle className="h-4 w-4" />
-            Falar com a Ariane
+            Falar com nossa Equipe
           </Link>
         </div>
       </div>
@@ -223,7 +223,7 @@ function Sobre() {
             <p>
               Nascemos como <strong>PERSONAL DIET</strong> em 2013 e em 2020
               passamos a ser{' '}
-              <strong className="text-[#262626]">PROACTIVE7</strong>, fundada
+              <strong className="text-[#262626]">ProActive 7</strong>, fundada
               pela nutricionista <strong>Ariane Madureira</strong>. Mais de uma
               década entregando consultoria técnica em segurança alimentar, com
               método próprio:{' '}
@@ -231,8 +231,9 @@ function Sobre() {
             </p>
             <p>
               Atendemos restaurantes, indústrias, hotéis, escolas, padarias,
-              hortifrutis e mercados em Macaé e região — adequando a operação às
-              legislações federais, estaduais e municipais vigentes.
+              hortifrutis e mercados em todo o Brasil e também no exterior, de
+              forma presencial e online — adequando a operação às legislações
+              federais, estaduais e municipais vigentes.
             </p>
           </div>
           <Link
@@ -348,7 +349,7 @@ function Metodo() {
 function Numeros() {
   const stats = [
     { value: '12+', label: 'anos de operação' },
-    { value: '30+', label: 'estabelecimentos atendidos' },
+    { value: '100+', label: 'estabelecimentos atendidos' },
     { value: 'RDC 216', label: 'conformidade ANVISA' },
     { value: 'On & off-shore', label: 'cozinhas atendidas' },
   ];
@@ -409,7 +410,7 @@ function ServicosResumo() {
     },
     {
       icon: Tag,
-      title: 'Informação nutricional',
+      title: 'Rotulagem Nutricional conforme legislação atual',
       body: 'Rótulo nutricional assinado por especialista.',
     },
     {
