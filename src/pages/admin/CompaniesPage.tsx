@@ -90,6 +90,7 @@ export function CompaniesPage() {
       .select(
         '*, organizations(name, owner:profiles!organizations_owner_profile_fkey(full_name, email))',
       )
+      .is('deleted_at', null)
       .order('name');
     setLoading(false);
     if (error) {
