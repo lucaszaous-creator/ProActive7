@@ -313,9 +313,65 @@ table {
   box-shadow: 0 24px 50px -28px rgba(0, 0, 0, 0.45);
 }
 
+/* Variantes CLARAS — mesmos efeitos, calibrados para superfícies brancas.
+   O site é dominado pelo branco; o preto vive só em texto, botões e
+   detalhes finos. Aqui a "luz" vira tinta: halos, grades e brilhos em
+   cinza-tinta de opacidade baixíssima. */
+
+/* 1b. Spotlight de tinta — sombra suave que segue o cursor no hero claro. */
+.fx-spotlight-ink::before {
+  background: radial-gradient(
+    340px circle at var(--mx, 50%) var(--my, 0%),
+    rgba(23, 23, 23, 0.07),
+    rgba(23, 23, 23, 0.03) 40%,
+    transparent 70%
+  );
+}
+
+/* 2b. Grade técnica em tinta para fundos claros. */
+.fx-grid-ink {
+  background-image:
+    linear-gradient(to right, rgba(23, 23, 23, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(23, 23, 23, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 40%,
+    #000 40%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 70% 60% at 50% 40%,
+    #000 40%,
+    transparent 100%
+  );
+}
+
+/* 3b. Grão mais discreto — no branco, textura forte parece sujeira. */
+.fx-grain-soft::after {
+  opacity: 0.03;
+}
+
+/* 4b. Shimmer de tinta — a faixa de luz varre um título PRETO. */
+.fx-shimmer-ink {
+  background: linear-gradient(
+    100deg,
+    #171717 0%,
+    #171717 35%,
+    #9c9c9c 50%,
+    #171717 65%,
+    #171717 100%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmerSweep 6s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .fx-grain::after,
   .fx-shimmer,
+  .fx-shimmer-ink,
   .fx-ring::before,
   .fx-float {
     animation: none;
@@ -325,6 +381,9 @@ table {
   }
   .fx-shimmer {
     color: #fff;
+  }
+  .fx-shimmer-ink {
+    color: #171717;
   }
 }
 

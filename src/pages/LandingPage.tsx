@@ -109,47 +109,45 @@ function Faq() {
  * ===================================================================== */
 function Hero() {
   return (
-    <Spotlight className="relative isolate overflow-hidden bg-[#111111] text-white fx-grain">
-      {/* Imagem de fundo: cozinha profissional, em B&W, escurecida.
-          Sem network: usa um SVG inline em data URI com gradiente que
-          mimetiza o clima escuro/ambiente da foto que a cliente
-          enviou — preserva custo zero (sem CDN nem upload de foto). */}
+    <Spotlight className="fx-spotlight-ink fx-grain fx-grain-soft relative isolate overflow-hidden bg-white text-[#171717]">
+      {/* Luz ambiente: branco puro no centro que esfria para as bordas —
+          o hero respira sem precisar de laje escura. */}
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-[radial-gradient(60%_45%_at_50%_30%,#1f1f1f_0%,#111111_55%,#050505_100%)]"
+        className="absolute inset-0 -z-10 bg-[radial-gradient(70%_55%_at_50%_28%,#ffffff_0%,#fcfcfb_55%,#f0f0ee_100%)]"
       />
       {/* Grade técnica mascarada — profundidade discreta no fundo. */}
-      <div aria-hidden className="fx-grid absolute inset-0 -z-10" />
+      <div aria-hidden className="fx-grid-ink absolute inset-0 -z-10" />
       <div
         aria-hidden
-        className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(0,0,0,0)_60%,rgba(0,0,0,0.55)_100%)]"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(250,250,250,0)_70%,#fafafa_100%)]"
       />
       {/* "Linhas glitch" sutis que ecoam o logotipo enviado */}
       <div
         aria-hidden
-        className="absolute inset-x-0 top-1/3 -z-10 flex flex-col gap-3 opacity-15"
+        className="absolute inset-x-0 top-1/3 -z-10 flex flex-col gap-3 opacity-10"
       >
-        <span className="block h-px w-2/3 bg-white" />
-        <span className="ml-[20%] block h-px w-1/3 bg-white" />
-        <span className="ml-[55%] block h-px w-1/4 bg-white" />
-        <span className="ml-[10%] mt-4 block h-px w-1/2 bg-white" />
+        <span className="block h-px w-2/3 bg-[#171717]" />
+        <span className="ml-[20%] block h-px w-1/3 bg-[#171717]" />
+        <span className="ml-[55%] block h-px w-1/4 bg-[#171717]" />
+        <span className="ml-[10%] mt-4 block h-px w-1/2 bg-[#171717]" />
       </div>
 
       <div className="relative z-[2] mx-auto flex max-w-6xl flex-col items-center px-5 py-28 text-center md:py-36">
-        <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white/75 backdrop-blur">
+        <span className="inline-flex items-center gap-2 rounded-full border border-[#171717]/12 bg-white px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-[#171717]/65 shadow-sm">
           <Leaf className="h-3.5 w-3.5" />
           Consultoria nutricional · Macaé / RJ · desde 2013
         </span>
 
-        <h1 className="fx-shimmer mt-7 text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
+        <h1 className="fx-shimmer-ink mt-7 text-4xl font-semibold leading-[1.05] tracking-tight md:text-6xl">
           ProActive7
         </h1>
 
-        <p className="mt-4 text-base font-light uppercase tracking-[0.4em] text-white/65 md:text-lg">
+        <p className="mt-4 text-base font-light uppercase tracking-[0.4em] text-[#171717]/55 md:text-lg">
           Boa alimentação, bem-estar e saúde
         </p>
 
-        <p className="mt-7 max-w-2xl text-base leading-relaxed text-white/75 md:text-lg">
+        <p className="mt-7 max-w-2xl text-base leading-relaxed text-[#171717]/70 md:text-lg">
           Assessoria e consultoria em segurança alimentar para estabelecimentos
           comerciais <em>on-shore</em> e <em>off-shore</em> — restaurantes,
           indústrias, hotéis, escolas, padarias e mercados. Responsabilidade
@@ -160,14 +158,14 @@ function Hero() {
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/servicos"
-            className="fx-sheen inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#111111] transition hover:bg-white/90"
+            className="fx-sheen inline-flex items-center gap-2 rounded-full bg-[#171717] px-6 py-3 text-sm font-medium text-white shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] transition hover:bg-[#333333]"
           >
             Conhecer nossos serviços
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             to="/contato"
-            className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-medium text-white transition hover:border-white/60"
+            className="inline-flex items-center gap-2 rounded-full border border-[#171717]/20 bg-white/70 px-6 py-3 text-sm font-medium text-[#171717] transition hover:border-[#171717]/50"
           >
             <MessageCircle className="h-4 w-4" />
             Falar com nossa Equipe
@@ -248,16 +246,22 @@ function Sobre() {
         {/* Card "estampa" com a missão da empresa — substitui o mockup
             de produto, fica fiel ao tom de empresa, não de software. */}
         <Reveal delay={120} className="relative order-1 md:order-2">
-          <div className="relative overflow-hidden rounded-3xl border border-[#e5e5e5] bg-gradient-to-br from-[#262626] to-[#171717] p-8 text-white shadow-[0_25px_60px_-30px_rgba(0,0,0,0.45)] md:p-10">
-            <Quote className="h-8 w-8 text-white/40" />
-            <p className="mt-4 text-lg font-light italic leading-relaxed text-white/95">
+          <div className="relative overflow-hidden rounded-3xl border border-[#e5e5e5] bg-white p-8 shadow-[0_25px_60px_-35px_rgba(0,0,0,0.25)] md:p-10">
+            <span
+              aria-hidden
+              className="absolute inset-y-0 left-0 w-1 bg-[#171717]"
+            />
+            <Quote className="h-8 w-8 text-[#d4d4d4]" />
+            <p className="mt-4 text-lg font-light italic leading-relaxed text-[#171717]/85">
               Atuar como prestadora de serviços em assessoria e consultoria em
               fornecimento de alimentação e nutrição com qualidade e foco no
               cliente — diferenciada pela{' '}
-              <strong className="not-italic">atitude pró-ativa</strong> e
-              parceria comprometida com as empresas.
+              <strong className="not-italic text-[#171717]">
+                atitude pró-ativa
+              </strong>{' '}
+              e parceria comprometida com as empresas.
             </p>
-            <div className="mt-6 border-t border-white/15 pt-4 text-xs uppercase tracking-[0.18em] text-white/60">
+            <div className="mt-6 border-t border-[#e5e5e5] pt-4 text-xs uppercase tracking-[0.18em] text-[#737373]">
               Nossa missão
             </div>
           </div>
@@ -354,15 +358,19 @@ function Numeros() {
     { value: 'On & off-shore', label: 'cozinhas atendidas' },
   ];
   return (
-    <section className="bg-[#111111] py-16 text-white">
+    <section className="border-y border-[#e5e5e5] bg-white py-16">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-5 md:grid-cols-4">
         {stats.map((s, i) => (
           <Reveal key={s.label} delay={i * 90}>
             <div className="text-center">
-              <p className="text-3xl font-semibold tracking-tight md:text-4xl">
+              <span
+                aria-hidden
+                className="mx-auto mb-4 block h-1 w-8 rounded-full bg-[#171717]"
+              />
+              <p className="text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
                 {s.value}
               </p>
-              <p className="mt-2 text-xs uppercase tracking-wider text-white/55">
+              <p className="mt-2 text-xs uppercase tracking-wider text-[#737373]">
                 {s.label}
               </p>
             </div>
@@ -497,22 +505,22 @@ function Diferenciais() {
     },
   ];
   return (
-    <section className="relative isolate overflow-hidden bg-[#111111] py-20 text-white">
+    <section className="relative isolate overflow-hidden border-y border-[#e5e5e5] bg-white py-20">
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-40 top-0 h-96 w-96 rounded-full bg-[#262626]/40 blur-[120px]"
+        className="pointer-events-none absolute -right-40 top-0 h-96 w-96 rounded-full bg-[#efefed] blur-[120px]"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-40 bottom-0 h-96 w-96 rounded-full bg-[#737373]/20 blur-[120px]"
+        className="pointer-events-none absolute -left-40 bottom-0 h-96 w-96 rounded-full bg-[#f0f0ee] blur-[120px]"
       />
       <div className="relative mx-auto max-w-6xl px-5">
         <Reveal>
           <div className="mx-auto max-w-2xl text-center">
-            <span className="text-xs font-medium uppercase tracking-wider text-[#a3a3a3]">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
               Por que a ProActive7
             </span>
-            <h2 className="mt-2 text-3xl font-semibold tracking-tight md:text-4xl">
+            <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
               Consultoria que assume a responsabilidade com você.
             </h2>
           </div>
@@ -520,15 +528,15 @@ function Diferenciais() {
         <div className="mt-12 grid gap-5 sm:grid-cols-2">
           {items.map(({ icon: Icon, title, body }, i) => (
             <Reveal key={title} delay={i * 90}>
-              <div className="flex h-full gap-4 rounded-3xl border border-white/10 bg-white/5 p-7 backdrop-blur-sm transition hover:border-white/25 hover:bg-white/10">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-[#a3a3a3]">
+              <div className="fx-lift flex h-full gap-4 rounded-3xl border border-[#e5e5e5] bg-[#fafafa] p-7 transition hover:border-[#c9c9c6] hover:bg-white">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#e5e5e5] bg-white text-[#262626]">
                   <Icon className="h-6 w-6" />
                 </span>
                 <div>
-                  <h3 className="text-lg font-semibold tracking-tight">
+                  <h3 className="text-lg font-semibold tracking-tight text-[#171717]">
                     {title}
                   </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-white/75">
+                  <p className="mt-2 text-sm leading-relaxed text-[#171717]/70">
                     {body}
                   </p>
                 </div>
@@ -660,34 +668,31 @@ function Atuacao() {
  * ===================================================================== */
 function FinalCta() {
   return (
-    <section className="relative isolate overflow-hidden bg-[#262626] text-white">
+    <section className="relative isolate overflow-hidden border-t border-[#e5e5e5] bg-white">
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-32 -top-32 h-80 w-80 rounded-full bg-[#737373]/25 blur-3xl"
+        className="absolute inset-0 -z-10 bg-[radial-gradient(60%_70%_at_50%_0%,#ffffff_0%,#fbfbfa_60%,#f2f2f0_100%)]"
       />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-32 -left-32 h-80 w-80 rounded-full bg-[#a3a3a3]/15 blur-3xl"
-      />
+      <div aria-hidden className="fx-grid-ink absolute inset-0 -z-10" />
       <Reveal className="relative mx-auto max-w-3xl px-5 py-20 text-center md:py-24">
-        <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
+        <h2 className="text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
           Pronto para conversar sobre a sua operação?
         </h2>
-        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/85">
+        <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-[#171717]/70">
           A gente avalia o que sua unidade precisa e monta o pacote certo —
           consultoria, treinamento, RT, POPs e tudo que a ANVISA exige.
         </p>
         <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
           <Link
             to="/contato"
-            className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-medium text-[#262626] transition hover:bg-white/95"
+            className="fx-sheen inline-flex items-center gap-2 rounded-full bg-[#171717] px-6 py-3 text-sm font-medium text-white shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] transition hover:bg-[#333333]"
           >
             Falar com a ProActive7
             <ArrowRight className="h-4 w-4" />
           </Link>
           <Link
             to="/servicos"
-            className="inline-flex items-center gap-2 rounded-full border border-white/30 px-6 py-3 text-sm font-medium text-white transition hover:border-white/60"
+            className="inline-flex items-center gap-2 rounded-full border border-[#171717]/20 bg-white px-6 py-3 text-sm font-medium text-[#171717] transition hover:border-[#171717]/50"
           >
             Ver serviços oferecidos
           </Link>

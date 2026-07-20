@@ -209,28 +209,27 @@ function ServiceShowcase() {
 
   return (
     <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden py-16 md:py-20">
-      {/* Fundo aurora (liquid glass backdrop) */}
-      <div className="absolute inset-0 -z-10 bg-[#121212]" />
+      {/* Fundo aurora (liquid glass claro) */}
+      <div className="absolute inset-0 -z-10 bg-[#f4f4f2]" />
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-10 overflow-hidden"
       >
-        <div className="animate-aurora absolute -left-24 -top-24 h-[30rem] w-[30rem] rounded-full bg-[#525252]/45 blur-[120px]" />
-        <div className="animate-aurora absolute right-[-6rem] top-1/4 h-[28rem] w-[28rem] rounded-full bg-[#737373]/35 blur-[130px] [animation-delay:-7s]" />
-        <div className="animate-aurora absolute bottom-[-8rem] left-1/3 h-[26rem] w-[26rem] rounded-full bg-[#525252]/40 blur-[120px] [animation-delay:-14s]" />
-        {/* véu sutil para uniformizar o contraste do texto */}
-        <div className="absolute inset-0 bg-[#121212]/30" />
+        <div className="animate-aurora absolute -left-24 -top-24 h-[30rem] w-[30rem] rounded-full bg-white/80 blur-[120px]" />
+        <div className="animate-aurora absolute right-[-6rem] top-1/4 h-[28rem] w-[28rem] rounded-full bg-white/60 blur-[130px] [animation-delay:-7s]" />
+        <div className="animate-aurora absolute bottom-[-8rem] left-1/3 h-[26rem] w-[26rem] rounded-full bg-white/70 blur-[120px] [animation-delay:-14s]" />
+        <div className="fx-grid-ink absolute inset-0" />
       </div>
 
       <div className="mx-auto max-w-6xl px-5">
         <div className="mb-8">
-          <span className="text-xs font-medium uppercase tracking-wider text-[#d4d4d4]">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
             O que fazemos
           </span>
-          <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-white md:text-3xl">
+          <h2 className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-[#171717] md:text-3xl">
             Consultoria técnica do início à fiscalização.
           </h2>
-          <p className="mt-3 max-w-xl text-sm text-white/60">
+          <p className="mt-3 max-w-xl text-sm text-[#171717]/60">
             Passe o mouse (ou toque) em cada serviço para ver o que entregamos.
           </p>
         </div>
@@ -249,17 +248,17 @@ function ServiceShowcase() {
                     onFocus={() => setActive(i)}
                     onClick={() => setActive(i)}
                     aria-pressed={isActive}
-                    className={`group flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left text-white backdrop-blur-md transition ${
+                    className={`group flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left text-[#171717] backdrop-blur-md transition ${
                       isActive
-                        ? 'border-white/30 bg-white/15 shadow-[0_12px_30px_-14px_rgba(0,0,0,0.5)]'
-                        : 'border-white/10 bg-white/5 hover:border-white/25 hover:bg-white/10'
+                        ? 'border-[#171717]/25 bg-white shadow-[0_12px_30px_-18px_rgba(0,0,0,0.35)]'
+                        : 'border-[#e5e5e5] bg-white/60 hover:border-[#c9c9c6] hover:bg-white'
                     }`}
                   >
                     <span
                       className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition ${
                         isActive
-                          ? 'border-white/30 bg-white/20 text-white'
-                          : 'border-white/10 bg-white/10 text-[#e5e5e5]'
+                          ? 'border-[#171717] bg-[#171717] text-white'
+                          : 'border-[#e5e5e5] bg-white text-[#525252]'
                       }`}
                     >
                       <Icon className="h-5 w-5" />
@@ -267,7 +266,7 @@ function ServiceShowcase() {
                     <span className="min-w-0 flex-1">
                       <span
                         className={`block font-mono text-[10px] uppercase tracking-wider ${
-                          isActive ? 'text-white/60' : 'text-[#d4d4d4]/70'
+                          isActive ? 'text-[#737373]' : 'text-[#a3a3a3]'
                         }`}
                       >
                         {String(i + 1).padStart(2, '0')}
@@ -290,11 +289,11 @@ function ServiceShowcase() {
           </ul>
 
           {/* Banner de vidro que se transforma */}
-          <div className="relative min-h-[20rem] overflow-hidden rounded-3xl border border-white/15 bg-white/10 p-8 shadow-[0_24px_70px_-30px_rgba(0,0,0,0.7)] backdrop-blur-2xl md:p-10">
+          <div className="relative min-h-[20rem] overflow-hidden rounded-3xl border border-[#e5e5e5] bg-white/80 p-8 shadow-[0_24px_70px_-45px_rgba(0,0,0,0.4)] backdrop-blur-2xl md:p-10">
             {/* brilho superior do vidro */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#171717]/20 to-transparent" />
             <span
-              className="pointer-events-none absolute right-6 top-2 select-none font-mono text-[7rem] font-bold leading-none text-white/10"
+              className="pointer-events-none absolute right-6 top-2 select-none font-mono text-[7rem] font-bold leading-none text-[#171717]/5"
               aria-hidden="true"
             >
               {num}
@@ -303,24 +302,24 @@ function ServiceShowcase() {
             {/* key={active} remonta o bloco → dispara a animação a cada troca */}
             <div
               key={active}
-              className="animate-service-reveal relative flex h-full flex-col text-white"
+              className="animate-service-reveal relative flex h-full flex-col text-[#171717]"
             >
-              <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/25 bg-white/15 px-3 py-1 text-xs font-medium backdrop-blur-sm">
+              <span className="inline-flex w-fit items-center gap-2 rounded-full border border-[#171717]/15 bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#171717]/75">
                 <Sparkles className="h-3.5 w-3.5" />
                 {current.tag}
               </span>
-              <div className="mt-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-white">
+              <div className="mt-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-[#e5e5e5] bg-[#fafafa] text-[#262626]">
                 <CurrentIcon className="h-7 w-7" />
               </div>
               <h3 className="mt-5 text-2xl font-semibold tracking-tight">
                 {current.title}
               </h3>
-              <p className="mt-3 max-w-lg text-sm leading-relaxed text-white/80 md:text-base">
+              <p className="mt-3 max-w-lg text-sm leading-relaxed text-[#171717]/70 md:text-base">
                 {current.body}
               </p>
               <div className="mt-auto flex items-start gap-2.5 pt-6">
-                <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#e5e5e5]" />
-                <p className="text-sm font-medium text-white">
+                <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#525252]" />
+                <p className="text-sm font-medium text-[#171717]">
                   {current.entrega}
                 </p>
               </div>
@@ -340,30 +339,30 @@ function ServiceShowcase() {
 function SistemaBanner() {
   return (
     <section className="mx-auto max-w-6xl px-5 py-12">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#404040] via-[#262626] to-[#525252] p-8 text-white shadow-[0_24px_60px_-25px_rgba(0,0,0,0.55)] md:p-12">
+      <div className="relative overflow-hidden rounded-3xl border border-[#e5e5e5] bg-white p-8 text-[#171717] shadow-[0_30px_60px_-45px_rgba(0,0,0,0.35)] md:p-12">
         {/* círculos decorativos */}
-        <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-white/5" />
-        <div className="pointer-events-none absolute -bottom-24 -left-12 h-56 w-56 rounded-full bg-white/5" />
+        <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-[#f0f0ee]" />
+        <div className="pointer-events-none absolute -bottom-24 -left-12 h-56 w-56 rounded-full bg-[#f4f4f2]" />
 
         <div className="relative grid gap-10 md:grid-cols-[1.3fr_1fr] md:items-center">
           <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-sm">
+            <span className="inline-flex items-center gap-2 rounded-full border border-[#171717]/15 bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#171717]/75">
               <Sparkles className="h-3.5 w-3.5" />
               Exclusivo · incluso na consultoria
             </span>
             <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold tracking-tight md:text-3xl">
-              <Laptop2 className="h-7 w-7 shrink-0 text-[#e5e5e5]" />
+              <Laptop2 className="h-7 w-7 shrink-0 text-[#525252]" />
               Sistema ProActive7
             </h2>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-white/85 md:text-base">
-              Plataforma própria que digitaliza toda a operação — a Ariane
+            <p className="mt-4 max-w-xl text-sm leading-relaxed text-[#171717]/70 md:text-base">
+              Plataforma própria que digitaliza toda a operação — nossa equipe
               entrega gratuitamente junto à consultoria. Registre tudo pelo
               celular e tenha a documentação pronta para a fiscalização a
               qualquer momento.
             </p>
             <Link
               to="/sistema"
-              className="mt-7 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-medium text-[#262626] shadow-sm transition hover:bg-[#e5e5e5]"
+              className="fx-sheen mt-7 inline-flex items-center gap-2 rounded-full bg-[#171717] px-5 py-3 text-sm font-medium text-white shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] transition hover:bg-[#333333]"
             >
               Conhecer a plataforma
               <ArrowRight className="h-4 w-4" />
@@ -374,9 +373,9 @@ function SistemaBanner() {
             {SISTEMA_HIGHLIGHTS.map(({ icon: Icon, label }) => (
               <li
                 key={label}
-                className="flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-medium backdrop-blur-sm"
+                className="flex items-center gap-3 rounded-2xl border border-[#e5e5e5] bg-[#fafafa] px-4 py-3 text-sm font-medium text-[#171717]/85"
               >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15 text-[#e5e5e5]">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#e5e5e5] bg-white text-[#262626]">
                   <Icon className="h-4 w-4" />
                 </span>
                 {label}

@@ -30,21 +30,21 @@ export function CursosPublicPage() {
   return (
     <div>
       {/* Hero */}
-      <Spotlight className="fx-grain relative isolate overflow-hidden bg-[#111111] text-white">
+      <Spotlight className="fx-spotlight-ink fx-grain fx-grain-soft relative isolate overflow-hidden border-b border-[#e5e5e5] bg-white text-[#171717]">
         <div
           aria-hidden
-          className="absolute inset-0 -z-10 bg-[radial-gradient(60%_45%_at_50%_25%,#1f1f1f_0%,#111111_60%,#050505_100%)]"
+          className="absolute inset-0 -z-10 bg-[radial-gradient(70%_55%_at_50%_25%,#ffffff_0%,#fcfcfb_55%,#f0f0ee_100%)]"
         />
-        <div aria-hidden className="fx-grid absolute inset-0 -z-10" />
+        <div aria-hidden className="fx-grid-ink absolute inset-0 -z-10" />
         <div className="relative z-[2] mx-auto max-w-6xl px-5 py-20 text-center md:py-24">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white/75 backdrop-blur">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#171717]/12 bg-white px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-[#171717]/65 shadow-sm">
             <GraduationCap className="h-3.5 w-3.5" />
             Cursos e treinamentos
           </span>
-          <h1 className="fx-shimmer mx-auto mt-6 max-w-3xl text-3xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
+          <h1 className="fx-shimmer-ink mx-auto mt-6 max-w-3xl text-3xl font-semibold leading-[1.1] tracking-tight md:text-5xl">
             Capacitação em segurança alimentar
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-white/75">
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[#171717]/70">
             Treinamentos práticos em boas práticas de manipulação, conduzidos
             pela responsável técnica — para equipes que servem comida com
             segurança todos os dias.
@@ -100,8 +100,8 @@ export function CursosPublicPage() {
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#262626] to-[#111111]">
-                          <GraduationCap className="h-10 w-10 text-white/80" />
+                        <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-[#f0f0ee] to-[#e0e0dd]">
+                          <GraduationCap className="h-10 w-10 text-[#737373]" />
                         </div>
                       )}
                     </div>
