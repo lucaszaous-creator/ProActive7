@@ -105,15 +105,20 @@ export function AuditDetailPage() {
   const [savingSchedule, setSavingSchedule] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  /** Quem executou a visita — pode não ser quem está lendo agora. */
+  const [auditorName, setAuditorName] = useState<string | null>(null);
 
   const sigRef = useRef<SignatureCanvas | null>(null);
 
   const load = useCallback(async () => {
     if (!id) return;
     setLoading(true);
+    // `auditor` é embed explícito pelo nome da FK: `audits` só referencia
+    // `profiles` por auditor_id hoje, mas o padrão do projeto é nomear a
+    // constraint para não quebrar se outra FK aparecer.
     const { data, error } = await supabase
       .from('audits')
-      .select('*')
+      .select('*, auditor:profiles!audits_auditor_id_fkey(full_name)')
       .eq('id', id)
       .single();
     if (error || !data) {
@@ -121,6 +126,10 @@ export function AuditDetailPage() {
       setLoading(false);
       return;
     }
+    const withAuditor = data as Audit & {
+      auditor: { full_name: string | null } | null;
+    };
+    setAuditorName(withAuditor.auditor?.full_name ?? null);
     const a = data as Audit;
     setAudit(a);
     setResponses(a.responses ?? []);
@@ -248,6 +257,10 @@ export function AuditDetailPage() {
         status: audit.status === 'scheduled' ? 'in_progress' : audit.status,
         started_at: audit.started_at ?? new Date().toISOString(),
         score,
+        // Quem agendou nem sempre e quem vai a campo. A partir do momento
+        // em que alguem comeca a preencher, a visita passa a ser dessa
+        // pessoa — e e o nome dela que sai no laudo.
+        auditor_id: profile?.id ?? audit.auditor_id,
       })
       .eq('id', audit.id);
     setSaving(false);
@@ -291,6 +304,8 @@ export function AuditDetailPage() {
         status: 'completed',
         completed_at: new Date().toISOString(),
         score,
+        // Quem assina e quem responde pela visita.
+        auditor_id: profile?.id ?? audit.auditor_id,
       })
       .eq('id', audit.id);
     setFinalizing(false);
@@ -428,6 +443,8 @@ export function AuditDetailPage() {
       audit.completed_at
         ? `Finalizada: ${formatDateTime(audit.completed_at)}`
         : '',
+      // Com equipe, quem vai a campo nem sempre e a RT do cabecalho.
+      auditorName ? `Executada por: ${auditorName}` : '',
     ]
       .filter(Boolean)
       .join('     ·     ');

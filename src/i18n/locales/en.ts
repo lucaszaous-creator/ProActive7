@@ -13,6 +13,7 @@ const en = {
     recipes: 'Recipes',
     documents: 'Documents',
     audits: 'Audits',
+    auditTemplates: 'Audit templates',
     agenda: 'Calendar',
     nonConformities: 'Non-conformities',
     manipulators: 'Food handlers',

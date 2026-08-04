@@ -456,6 +456,23 @@
           "tip": "Use Salvar rascunho durante a visita: você não perde se o WhatsApp pular na frente. Só finalize quando tudo estiver conferido — depois de assinada, não retrocede."
         },
         {
+          "icon": "ClipboardList",
+          "title": "Modelos de visita",
+          "subtitle": "O roteiro que a equipe segue na inspeção",
+          "route": "/visitas/modelos",
+          "what": "Onde a RT monta o próprio checklist de visita técnica: categorias, perguntas, peso de cada item e a base legal correspondente. Um modelo pode valer para toda a organização (todas as empresas da carteira) ou para uma empresa específica, quando o cliente tem uma exigência que os outros não têm.",
+          "how": [
+            "Novo modelo: dê um nome, escolha se vale para toda a organização ou para uma empresa só, e adicione as perguntas.",
+            "Cada pergunta tem categoria (a seção do relatório), texto, peso e base legal opcional.",
+            "O peso define quanto o item vale no score e a gravidade da NC aberta se ele for reprovado: 3 (imprescindível) abre NC alta, 2 (necessário) média, 1 (recomendável) baixa.",
+            "Biblioteca: copia um modelo oficial da plataforma para a sua organização, já editável.",
+            "Duplicar: cria uma variação sem mexer no original.",
+            "Desativar tira o modelo do seletor de agendamento sem apagar nada — as visitas antigas continuam com o questionário delas.",
+            "Modelos já usados em alguma visita não podem ser excluídos: apagar deixaria o laudo assinado sem as perguntas."
+          ],
+          "tip": "Prefira um modelo da organização a um por empresa. Se cada cliente tiver o seu, corrigir uma pergunta vira trabalho repetido — e os scores deixam de ser comparáveis entre as empresas da carteira."
+        },
+        {
           "icon": "AlertOctagon",
           "title": "Não-conformidades",
           "subtitle": "Plano de ação 5W2H com fotos",

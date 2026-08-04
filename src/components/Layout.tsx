@@ -16,6 +16,7 @@ import {
   X,
   Thermometer,
   ClipboardCheck,
+  ClipboardList,
   BarChart3,
   ChefHat,
   FileText,
@@ -190,6 +191,12 @@ const ITEM = {
     to: '/visitas',
     labelKey: 'nav.audits',
     icon: ShieldCheck,
+  } as NavItemDef,
+  modelosVisita: {
+    kind: 'item',
+    to: '/visitas/modelos',
+    labelKey: 'nav.auditTemplates',
+    icon: ClipboardList,
   } as NavItemDef,
   ncs: {
     kind: 'item',
@@ -473,7 +480,13 @@ const NAV_NUTRITIONIST: NavNode[] = [
     labelKey: 'nav.avaliacao',
     icon: Stethoscope,
     defaultOpen: true,
-    children: [ITEM.visitas, ITEM.ncs, ITEM.checklists, ITEM.manipuladores],
+    children: [
+      ITEM.visitas,
+      ITEM.modelosVisita,
+      ITEM.ncs,
+      ITEM.checklists,
+      ITEM.manipuladores,
+    ],
   },
   {
     kind: 'group',
@@ -566,6 +579,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
     defaultOpen: false,
     children: [
       ITEM.visitas,
+      ITEM.modelosVisita,
       ITEM.ncs,
       ITEM.checklists,
       ITEM.temperatura,

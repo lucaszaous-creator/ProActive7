@@ -29,25 +29,34 @@ const CONFIG: Record<
     flag: string;
     rpc: string;
     title: string;
+    /**
+     * 'org': a cópia nasce da organização inteira e não precisa de empresa
+     * selecionada (modelos de visita, migration 0102). 'company': a cópia
+     * é de uma empresa só.
+     */
+    target: 'org' | 'company';
   }
 > = {
   audit: {
     table: 'audit_templates',
     flag: 'is_global',
-    rpc: 'clone_audit_template',
+    rpc: 'clone_audit_template_to_org',
     title: 'Modelos oficiais de auditoria',
+    target: 'org',
   },
   checklist: {
     table: 'checklist_templates',
     flag: 'is_global',
     rpc: 'clone_checklist_template',
     title: 'Modelos oficiais de checklist',
+    target: 'company',
   },
   product: {
     table: 'products',
     flag: 'is_seed',
     rpc: 'clone_seed_product',
     title: 'Catálogo seed de produtos',
+    target: 'company',
   },
 };
 
@@ -101,15 +110,17 @@ export function LibraryBrowser({
       });
   }, [open, kind, cfg.table, cfg.flag]);
 
+  const needsCompany = cfg.target === 'company';
+
   async function handleClone(row: LibraryRow) {
-    if (!companyId) {
+    if (needsCompany && !companyId) {
       toast.error('Selecione uma empresa antes.');
       return;
     }
     setCloning(row.id);
     const params =
-      kind === 'audit'
-        ? { p_template_id: row.id, p_company_id: companyId }
+      cfg.target === 'org'
+        ? { p_template_id: row.id }
         : kind === 'checklist'
           ? { p_template_id: row.id, p_company_id: companyId }
           : { p_product_id: row.id, p_company_id: companyId };
@@ -119,7 +130,9 @@ export function LibraryBrowser({
       toast.error('Erro ao clonar: ' + error.message);
       return;
     }
-    toast.success(`"${row.name}" copiado para sua empresa.`);
+    toast.success(
+      `"${row.name}" copiado para ${cfg.target === 'org' ? 'sua organização' : 'sua empresa'}.`,
+    );
     onCloned();
   }
 
@@ -138,7 +151,11 @@ export function LibraryBrowser({
         <p className="text-xs text-neutral-500 dark:text-neutral-400">
           <Globe size={11} className="mr-1 inline" />
           Modelos publicados pela plataforma. Clique em "Usar como modelo" para
-          criar uma cópia editável dentro da sua empresa.
+          criar uma cópia editável{' '}
+          {cfg.target === 'org'
+            ? 'na sua organização (vale para todas as empresas)'
+            : 'dentro da sua empresa'}
+          .
         </p>
         {loading ? (
           <div className="flex justify-center py-6">
@@ -165,7 +182,7 @@ export function LibraryBrowser({
                 </div>
                 <button
                   onClick={() => void handleClone(r)}
-                  disabled={cloning === r.id || !companyId}
+                  disabled={cloning === r.id || (needsCompany && !companyId)}
                   className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-neutral-900 px-2 py-1 text-xs text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white disabled:opacity-50"
                 >
                   <Copy size={11} />
@@ -175,7 +192,7 @@ export function LibraryBrowser({
             ))}
           </div>
         )}
-        {!companyId ? (
+        {needsCompany && !companyId ? (
           <p className="text-xs text-amber-600 dark:text-amber-300">
             Selecione uma empresa antes de clonar.
           </p>

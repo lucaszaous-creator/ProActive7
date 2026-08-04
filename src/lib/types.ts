@@ -441,11 +441,27 @@ export interface AuditResponse {
 export interface AuditTemplate {
   id: string;
   company_id: string | null;
+  /**
+   * Escopo do modelo (migration 0102). Exatamente um dos tres vale:
+   *  - is_global          -> catalogo da plataforma
+   *  - organization_id    -> modelo da consultoria, todas as empresas dela
+   *  - company_id         -> modelo de uma empresa so
+   */
+  organization_id: string | null;
   name: string;
   items: AuditItem[];
   is_global: boolean;
+  /** Modelo aposentado: some do seletor de agendamento, mas o historico fica. */
+  active: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export type AuditTemplateScope = 'global' | 'organization' | 'company';
+
+export function auditTemplateScope(t: AuditTemplate): AuditTemplateScope {
+  if (t.is_global) return 'global';
+  return t.company_id ? 'company' : 'organization';
 }
 
 export interface Audit {
