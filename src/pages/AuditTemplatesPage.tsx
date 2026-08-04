@@ -21,6 +21,7 @@ import {
   auditTemplateScope,
   type AuditItem,
   type AuditTemplate,
+  type NcTemplate,
 } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -71,6 +72,7 @@ interface DraftItem {
   text: string;
   weight: number;
   legal_ref: string;
+  ncTemplateId: string;
 }
 
 function toDraft(item: AuditItem): DraftItem {
@@ -80,6 +82,7 @@ function toDraft(item: AuditItem): DraftItem {
     text: item.text ?? '',
     weight: item.weight ?? 1,
     legal_ref: item.legal_ref ?? '',
+    ncTemplateId: item.nc_template_id ?? '',
   };
 }
 
@@ -90,6 +93,7 @@ function emptyDraft(category = ''): DraftItem {
     text: '',
     weight: 1,
     legal_ref: '',
+    ncTemplateId: '',
   };
 }
 
@@ -99,6 +103,8 @@ export function AuditTemplatesPage() {
   const { companies, companyId } = useCompanyScope();
 
   const [templates, setTemplates] = useState<AuditTemplate[]>([]);
+  /** Planos de ação disponíveis para vincular a um item reprovado (0103). */
+  const [ncTemplates, setNcTemplates] = useState<NcTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [libraryOpen, setLibraryOpen] = useState(false);
 
@@ -132,6 +138,16 @@ export function AuditTemplatesPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    void supabase
+      .from('nc_templates')
+      .select('*')
+      .eq('active', true)
+      .order('name')
+      .limit(300)
+      .then(({ data }) => setNcTemplates((data as NcTemplate[] | null) ?? []));
+  }, []);
 
   const companyName = useCallback(
     (id: string | null) =>
@@ -241,6 +257,7 @@ export function AuditTemplatesPage() {
         text: i.text.trim(),
         weight: i.weight,
         ...(i.legal_ref.trim() ? { legal_ref: i.legal_ref.trim() } : {}),
+        ...(i.ncTemplateId ? { nc_template_id: i.ncTemplateId } : {}),
       }));
     if (cleaned.length === 0) {
       toast.error('Adicione ao menos uma pergunta.');
@@ -640,6 +657,32 @@ export function AuditTemplatesPage() {
                         className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
                       />
                     </div>
+
+                    {/* Plano de ação padrão: quando este item for reprovado
+                        na visita, a NC nasce preenchida com este modelo em
+                        vez de virar só o texto da pergunta. */}
+                    <select
+                      value={it.ncTemplateId}
+                      onChange={(e) =>
+                        setItems((prev) =>
+                          prev.map((p, idx) =>
+                            idx === i
+                              ? { ...p, ncTemplateId: e.target.value }
+                              : p,
+                          ),
+                        )
+                      }
+                      className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                    >
+                      <option value="">
+                        Se reprovado: abrir NC só com o texto da pergunta
+                      </option>
+                      {ncTemplates.map((n) => (
+                        <option key={n.id} value={n.id}>
+                          Se reprovado: {n.name} (prazo {n.default_due_days}d)
+                        </option>
+                      ))}
+                    </select>
                   </div>
                 </div>
               ))}

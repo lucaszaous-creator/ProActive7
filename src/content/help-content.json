@@ -473,6 +473,22 @@
           "tip": "Prefira um modelo da organização a um por empresa. Se cada cliente tiver o seu, corrigir uma pergunta vira trabalho repetido — e os scores deixam de ser comparáveis entre as empresas da carteira."
         },
         {
+          "icon": "ClipboardList",
+          "title": "Modelos de NC",
+          "subtitle": "Plano de ação 5W2H pronto para os problemas que se repetem",
+          "route": "/nao-conformidades/modelos",
+          "what": "Biblioteca da organização com as não-conformidades recorrentes já resolvidas no papel: categoria, gravidade, causa provável, ação corretiva, como fazer e prazo padrão. Qualquer nutricionista da organização cria e edita, e vale para todas as empresas da carteira.",
+          "how": [
+            "Novo modelo: nome curto (o que você procura na lista), descrição (o texto que vai para a NC) e o 5W2H padrão.",
+            "O prazo é em dias e conta a partir do dia em que a NC for aberta — não é uma data fixa.",
+            "O responsável (\"quem\") não entra no modelo: muda a cada empresa e é escolhido na hora.",
+            "Ao abrir uma NC na mão, o campo \"Partir de um modelo\" preenche tudo; você ainda pode ajustar antes de salvar.",
+            "Em Modelos de visita, cada pergunta pode apontar para um modelo de NC: se o item for reprovado na inspeção, a NC nasce com o plano de ação pronto.",
+            "Modelo vinculado a um modelo de visita não pode ser excluído — desvincule ou desative."
+          ],
+          "tip": "Comece pelos cinco problemas que você mais escreve. O ganho não é só digitar menos: com o mesmo texto e o mesmo prazo em todas as empresas, dá para comparar a carteira e ver onde o problema realmente se concentra."
+        },
+        {
           "icon": "AlertOctagon",
           "title": "Não-conformidades",
           "subtitle": "Plano de ação 5W2H com fotos",

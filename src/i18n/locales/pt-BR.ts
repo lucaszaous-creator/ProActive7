@@ -14,6 +14,7 @@ const ptBR = {
     documents: 'Documentos',
     audits: 'Visitas técnicas',
     auditTemplates: 'Modelos de visita',
+    ncTemplates: 'Modelos de NC',
     agenda: 'Agenda',
     nonConformities: 'Não-conformidades',
     manipulators: 'Manipuladores',

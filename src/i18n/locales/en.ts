@@ -14,6 +14,7 @@ const en = {
     documents: 'Documents',
     audits: 'Audits',
     auditTemplates: 'Audit templates',
+    ncTemplates: 'NC templates',
     agenda: 'Calendar',
     nonConformities: 'Non-conformities',
     manipulators: 'Food handlers',

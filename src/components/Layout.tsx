@@ -204,6 +204,12 @@ const ITEM = {
     labelKey: 'nav.nonConformities',
     icon: AlertOctagon,
   } as NavItemDef,
+  modelosNc: {
+    kind: 'item',
+    to: '/nao-conformidades/modelos',
+    labelKey: 'nav.ncTemplates',
+    icon: ClipboardList,
+  } as NavItemDef,
   checklists: {
     kind: 'item',
     to: '/checklists',
@@ -484,6 +490,7 @@ const NAV_NUTRITIONIST: NavNode[] = [
       ITEM.visitas,
       ITEM.modelosVisita,
       ITEM.ncs,
+      ITEM.modelosNc,
       ITEM.checklists,
       ITEM.manipuladores,
     ],
@@ -581,6 +588,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
       ITEM.visitas,
       ITEM.modelosVisita,
       ITEM.ncs,
+      ITEM.modelosNc,
       ITEM.checklists,
       ITEM.temperatura,
       ITEM.pragas,
