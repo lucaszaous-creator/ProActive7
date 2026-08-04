@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { extractInvokeError } from './edgeFunction';
 
 /**
  * Para um DELETE com .select('id'), confirma que ao menos uma linha
@@ -73,6 +74,61 @@ export async function restoreSoftDeleted(
     return 'Não foi possível restaurar.';
   }
   return null;
+}
+
+/**
+ * Organizacao nao entra em SoftDeleteTable: excluir uma org nao e um
+ * UPDATE numa linha, e um cascade (org + empresas) que precisa ser
+ * atomico e auditado. Tudo passa pelas RPCs da migration 0101, que so
+ * respondem a platform_admin.
+ */
+
+/** Move a org (e as empresas dela) para a lixeira. Retorna erro ou null. */
+export async function softDeleteOrganization(
+  id: string,
+): Promise<string | null> {
+  const { error } = await supabase.rpc('soft_delete_organization', {
+    p_id: id,
+  });
+  return error ? error.message : null;
+}
+
+/**
+ * Restaura a org e as empresas derrubadas junto com ela. A org volta
+ * SUSPENSA — reativar e uma decisao separada, no botao "Reativar".
+ */
+export async function restoreOrganization(id: string): Promise<string | null> {
+  const { error } = await supabase.rpc('restore_organization', { p_id: id });
+  return error ? error.message : null;
+}
+
+export interface HardDeleteOrgResult {
+  companies_removed: number;
+  users_removed: number;
+  files_removed: number;
+  storage_errors: string[];
+}
+
+/**
+ * Exclusao definitiva: apaga Storage, contas de acesso, empresas e a org.
+ * Exige que a org ja esteja na lixeira e o nome exato digitado.
+ */
+export async function hardDeleteOrganization(
+  id: string,
+  confirmName: string,
+): Promise<{ error: string | null; result: HardDeleteOrgResult | null }> {
+  const { data, error } = await supabase.functions.invoke(
+    'admin-delete-organization',
+    { body: { organization_id: id, confirm_name: confirmName } },
+  );
+  if (error) return { error: await extractInvokeError(error), result: null };
+  if (!data?.ok) {
+    return {
+      error: data?.error ?? 'Falha ao excluir organização',
+      result: null,
+    };
+  }
+  return { error: null, result: data as HardDeleteOrgResult };
 }
 
 /** Excluir definitivo (master, na lixeira). Hard delete real. */

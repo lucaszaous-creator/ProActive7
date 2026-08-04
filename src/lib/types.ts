@@ -57,6 +57,8 @@ export interface Company {
   organization_id: string | null;
   created_at: string;
   updated_at: string;
+  /** Soft delete (0037). Ausente em selects parciais. */
+  deleted_at?: string | null;
 }
 
 export interface Profile {

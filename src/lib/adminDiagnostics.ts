@@ -33,7 +33,10 @@ const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 export async function fetchSystemStats(): Promise<SystemStats> {
   const since = new Date(Date.now() - SEVEN_DAYS_MS).toISOString();
   const [orgs, comps, users, labels, recs, mov] = await Promise.all([
-    supabase.from('organizations').select('*', { count: 'exact', head: true }),
+    supabase
+      .from('organizations')
+      .select('*', { count: 'exact', head: true })
+      .is('deleted_at', null),
     supabase
       .from('companies')
       .select('*', { count: 'exact', head: true })

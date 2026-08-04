@@ -52,7 +52,8 @@ Embeds aninhados nestes pares **exigem** sintaxe `!nome_do_fkey`:
 ### Edge Functions (uso de service role)
 
 `admin-create-user`, `admin-create-organization`, `admin-update-user`,
-`admin-delete-user`, `cleanup-photos`, `send-expiry-notifications`.
+`admin-delete-user`, `admin-delete-organization`, `cleanup-photos`,
+`send-expiry-notifications`.
 **Nunca** chamar service role direto do frontend — sempre via Edge Function.
 
 ## Princípio de UX: zero digitação na cozinha
@@ -308,6 +309,19 @@ Status atualizado:
 8. ✅ **Banner global** — `/platform/comunicados` + `AnnouncementBanner` no Layout
 9. ✅ **Estatísticas de uso** — tabela `feature_events` + RPC `log_feature_event` + aba "Uso de features"
 10. ✅ **Backup on-demand** — Edge `admin-export-org` + botão "Backup" na OrganizationDetailPage
+11. ✅ **Excluir organização (não só suspender)** — migration `0101`:
+    RPC `soft_delete_organization()` (org + empresas em cascade, mesmo
+    `deleted_at`, status→suspended, `allow_impersonation`→false),
+    `restore_organization()` (restaura só o que caiu naquele cascade; a
+    org volta suspensa) e `purge_organization_db()` (empresas + org numa
+    transação). Exclusão definitiva na Edge `admin-delete-organization`:
+    exige org na lixeira + nome digitado, apaga contas do Auth → banco →
+    Storage (6 buckets por `company_id`). UI: botão Excluir em
+    `/platform/organizacoes` e na `OrganizationDetailPage`, seção
+    Organização na `/admin/lixeira`. A `0101` também conserta o
+    `cleanup_soft_deleted()`, que estourava em `profiles.company_id`
+    (ON DELETE RESTRICT) e abortava a limpeza inteira em silêncio.
+    ⚠️ Migration precisa ser APLICADA no banco de produção.
 
 ### Ordem de execução proposta
 

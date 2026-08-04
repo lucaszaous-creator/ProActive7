@@ -1,14 +1,27 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ArrowLeft, LogIn, Send, Download } from 'lucide-react';
+import {
+  ArrowLeft,
+  LogIn,
+  Send,
+  Download,
+  Trash2,
+  RotateCcw,
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import {
+  restoreOrganization,
+  softDeleteOrganization,
+} from '@/lib/supabaseHelpers';
+import { formatDateTime } from '@/lib/dates';
 import type { Organization, Company, Plan } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Spinner } from '@/components/ui/Spinner';
 import { PageHeader } from '@/components/ui/PageHeader';
 
@@ -39,6 +52,9 @@ export function OrganizationDetailPage() {
   const [pushBody, setPushBody] = useState('');
   const [pushing, setPushing] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [restoring, setRestoring] = useState(false);
 
   async function handleExport() {
     if (!org) return;
@@ -117,11 +133,13 @@ export function OrganizationDetailPage() {
       setLoading(true);
       const [orgRes, companiesRes, usersRes, plansRes] = await Promise.all([
         supabase.from('organizations').select('*').eq('id', id!).maybeSingle(),
+        // Sem filtro de deleted_at: quando a org esta na lixeira, as
+        // empresas dela tambem estao (cascade) e ainda precisam aparecer
+        // aqui — e o que o admin olha antes de excluir definitivamente.
         supabase
           .from('companies')
           .select('*')
           .eq('organization_id', id!)
-          .is('deleted_at', null)
           .order('name'),
         supabase
           .from('profiles')
@@ -138,13 +156,17 @@ export function OrganizationDetailPage() {
         toast.error('Erro ao carregar organização: ' + orgRes.error.message);
         return;
       }
-      setOrg((orgRes.data as Organization | null) ?? null);
+      const loadedOrg = (orgRes.data as Organization | null) ?? null;
+      setOrg(loadedOrg);
       setPlans((plansRes.data as Plan[] | null) ?? []);
 
       if (companiesRes.error) {
         toast.error('Erro ao carregar empresas: ' + companiesRes.error.message);
       } else {
-        setCompanies((companiesRes.data as Company[] | null) ?? []);
+        const all = (companiesRes.data as Company[] | null) ?? [];
+        setCompanies(
+          loadedOrg?.deleted_at ? all : all.filter((c) => !c.deleted_at),
+        );
       }
 
       if (usersRes.error) {
@@ -175,6 +197,37 @@ export function OrganizationDetailPage() {
       newStatus === 'active'
         ? 'Organização reativada.'
         : 'Organização suspensa.',
+    );
+  }
+
+  async function handleSoftDelete() {
+    if (!org) return;
+    setDeleting(true);
+    const err = await softDeleteOrganization(org.id);
+    setDeleting(false);
+    if (err) {
+      toast.error(err);
+      return;
+    }
+    setConfirmDelete(false);
+    toast.success(
+      'Organização movida para a lixeira. As empresas dela foram junto.',
+    );
+    navigate('/platform/organizacoes');
+  }
+
+  async function handleRestore() {
+    if (!org) return;
+    setRestoring(true);
+    const err = await restoreOrganization(org.id);
+    setRestoring(false);
+    if (err) {
+      toast.error(err);
+      return;
+    }
+    setOrg({ ...org, deleted_at: null });
+    toast.success(
+      'Organização restaurada — e continua suspensa. Use "Reativar" para liberar o acesso.',
     );
   }
 
@@ -234,45 +287,100 @@ export function OrganizationDetailPage() {
         <PageHeader
           title={org.name}
           subtitle={
-            <span
-              className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                org.status === 'active'
-                  ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200'
-                  : 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200'
-              }`}
-            >
-              {org.status === 'active' ? 'Ativa' : 'Suspensa'}
+            <span className="flex flex-wrap items-center gap-2">
+              <span
+                className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                  org.status === 'active'
+                    ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200'
+                    : 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200'
+                }`}
+              >
+                {org.status === 'active' ? 'Ativa' : 'Suspensa'}
+              </span>
+              {org.deleted_at ? (
+                <span className="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-950 dark:text-red-200">
+                  Na lixeira
+                </span>
+              ) : null}
             </span>
           }
           actions={
-            <>
-              <Button variant="secondary" onClick={() => setPushOpen(true)}>
-                <Send size={14} /> Notificar
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => void handleExport()}
-                loading={exporting}
-                title="Backup LGPD: exporta os dados (tabelas) da org em JSON. Arquivos do Storage (fotos, ASOs, logos) não são incluídos"
-              >
-                <Download size={14} /> Backup
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => void handleToggleStatus()}
-                loading={togglingStatus}
-                className={
-                  org.status === 'active'
-                    ? 'border-red-200 dark:border-red-900 text-red-600 dark:text-red-300 hover:bg-red-50'
-                    : 'border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/60'
-                }
-              >
-                {org.status === 'active' ? 'Suspender' : 'Reativar'}
-              </Button>
-            </>
+            org.deleted_at ? (
+              <>
+                <Button
+                  variant="secondary"
+                  onClick={() => void handleExport()}
+                  loading={exporting}
+                  title="Backup LGPD: exporta os dados (tabelas) da org em JSON. Arquivos do Storage (fotos, ASOs, logos) não são incluídos"
+                >
+                  <Download size={14} /> Backup
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => void handleRestore()}
+                  loading={restoring}
+                >
+                  <RotateCcw size={14} /> Restaurar
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button variant="secondary" onClick={() => setPushOpen(true)}>
+                  <Send size={14} /> Notificar
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => void handleExport()}
+                  loading={exporting}
+                  title="Backup LGPD: exporta os dados (tabelas) da org em JSON. Arquivos do Storage (fotos, ASOs, logos) não são incluídos"
+                >
+                  <Download size={14} /> Backup
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => void handleToggleStatus()}
+                  loading={togglingStatus}
+                  className={
+                    org.status === 'active'
+                      ? 'border-red-200 dark:border-red-900 text-red-600 dark:text-red-300 hover:bg-red-50'
+                      : 'border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/60'
+                  }
+                >
+                  {org.status === 'active' ? 'Suspender' : 'Reativar'}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => setConfirmDelete(true)}
+                  className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/40"
+                >
+                  <Trash2 size={14} /> Excluir
+                </Button>
+              </>
+            )
           }
         />
       </div>
+
+      {org.deleted_at ? (
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200">
+          <p className="font-medium">
+            Organização na lixeira desde {formatDateTime(org.deleted_at)}.
+          </p>
+          <p className="mt-1 text-xs">
+            As {companies.length} empresa(s) abaixo foram para a lixeira junto e
+            os usuários estão sem acesso. Restaurar traz tudo de volta (ainda
+            suspensa). A exclusão definitiva — que apaga fotos, ASOs, documentos
+            e as contas de acesso — é feita em{' '}
+            <button
+              onClick={() => navigate('/admin/lixeira')}
+              className="underline underline-offset-2"
+            >
+              Lixeira
+            </button>
+            .
+          </p>
+        </div>
+      ) : null}
 
       {/* Org info */}
       <Card>
@@ -530,6 +638,16 @@ export function OrganizationDetailPage() {
           </Card>
         )}
       </div>
+
+      <ConfirmDialog
+        open={confirmDelete}
+        title="Excluir organização"
+        message={`"${org.name}" vai para a lixeira junto com ${companies.length} empresa(s) e ${users.length} usuário(s) perdem o acesso na hora. Nada é apagado agora: você tem 30 dias para restaurar. A exclusão definitiva é um segundo passo, feito na Lixeira.`}
+        confirmLabel="Mover para a lixeira"
+        loading={deleting}
+        onConfirm={handleSoftDelete}
+        onCancel={() => setConfirmDelete(false)}
+      />
 
       <Modal
         open={pushOpen}
