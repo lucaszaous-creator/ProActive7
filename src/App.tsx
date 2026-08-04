@@ -109,6 +109,11 @@ const HelpPage = lazy(() =>
 const AuditsPage = lazy(() =>
   import('./pages/AuditsPage').then((m) => ({ default: m.AuditsPage })),
 );
+const AuditTemplatesPage = lazy(() =>
+  import('./pages/AuditTemplatesPage').then((m) => ({
+    default: m.AuditTemplatesPage,
+  })),
+);
 const AuditDetailPage = lazy(() =>
   import('./pages/AuditDetailPage').then((m) => ({
     default: m.AuditDetailPage,
@@ -343,6 +348,10 @@ export default function App() {
         <Route element={<ProtectedRoute nutritionistOrAdmin />}>
           <Route element={<Layout />}>
             <Route path="/admin/empresas" element={<CompaniesPage />} />
+            {/* Modelo de visita é roteiro técnico: só nutri e platform_admin
+                criam. A rota estática vence /visitas/:id no ranking do
+                React Router, independente da ordem de declaração. */}
+            <Route path="/visitas/modelos" element={<AuditTemplatesPage />} />
             <Route path="/admin/novidades" element={<ArticlesAdminPage />} />
             <Route path="/admin/assinatura" element={<SubscriptionPage />} />
             <Route path="/admin/hardware" element={<HardwarePage />} />

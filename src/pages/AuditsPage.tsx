@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   ClipboardCheck,
+  ClipboardList,
   Plus,
   CalendarDays,
   CheckCircle2,
   Clock,
   XCircle,
-  BookOpen,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -22,7 +22,6 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { PageHeader } from '@/components/ui/PageHeader';
-import { LibraryBrowser } from '@/components/LibraryBrowser';
 import type { Audit, AuditStatus, AuditTemplate, Company } from '@/lib/types';
 
 const STATUS_LABELS: Record<AuditStatus, string> = {
@@ -53,6 +52,7 @@ const STATUS_STYLE: Record<AuditStatus, { icon: typeof Clock; bg: string }> = {
 
 export function AuditsPage() {
   usePageTitle('Visitas tecnicas');
+  const navigate = useNavigate();
   const { isMaster, profile } = useAuth();
   const { companies, companyId } = useCompanyScope();
 
@@ -69,17 +69,10 @@ export function AuditsPage() {
   const [newScheduledAt, setNewScheduledAt] = useState('');
   const [newRecurrence, setNewRecurrence] = useState('0');
   const [saving, setSaving] = useState(false);
-  const [libraryOpen, setLibraryOpen] = useState(false);
 
-  const reloadTemplates = useCallback(() => {
-    void supabase
-      .from('audit_templates')
-      .select('*')
-      .order('name')
-      .then(({ data }) => {
-        setTemplates((data as AuditTemplate[] | null) ?? []);
-      });
-  }, []);
+  // Modelos desativados (0102) continuam existindo para as visitas que já
+  // os usaram, mas não podem ser escolhidos numa visita nova.
+  const selectableTemplates = templates.filter((t) => t.active !== false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -120,8 +113,14 @@ export function AuditsPage() {
   }, []);
 
   function openSchedule() {
+    if (selectableTemplates.length === 0) {
+      toast.error(
+        'Nenhum modelo de visita ativo. Crie um em "Modelos de visita".',
+      );
+      return;
+    }
     setNewCompanyId(isMaster ? (companies[0]?.id ?? '') : (companyId ?? ''));
-    setNewTemplateId(templates[0]?.id ?? '');
+    setNewTemplateId(selectableTemplates[0]?.id ?? '');
     setNewScheduledAt(new Date().toISOString().slice(0, 16));
     setNewRecurrence('0');
     setModalOpen(true);
@@ -172,31 +171,22 @@ RDC 275/2002 — Regulamento Técnico de Procedimentos Operacionais Padronizados
           </>
         }
         actions={
-          <>
-            <Button
-              variant="secondary"
-              onClick={() => setLibraryOpen(true)}
-              disabled={!companyId && !isMaster}
-            >
-              <BookOpen size={16} />
-              Biblioteca
-            </Button>
-            {isMaster ? (
+          isMaster ? (
+            <>
+              <Button
+                variant="secondary"
+                onClick={() => navigate('/visitas/modelos')}
+              >
+                <ClipboardList size={16} />
+                Modelos
+              </Button>
               <Button onClick={openSchedule}>
                 <Plus size={18} />
                 Agendar visita
               </Button>
-            ) : null}
-          </>
+            </>
+          ) : null
         }
-      />
-
-      <LibraryBrowser
-        open={libraryOpen}
-        onClose={() => setLibraryOpen(false)}
-        kind="audit"
-        companyId={companyId}
-        onCloned={reloadTemplates}
       />
 
       <div className="mb-4">
@@ -229,6 +219,15 @@ RDC 275/2002 — Regulamento Técnico de Procedimentos Operacionais Padronizados
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
               Nenhuma visita ainda.
             </p>
+            {isMaster && selectableTemplates.length === 0 ? (
+              <Button
+                variant="secondary"
+                onClick={() => navigate('/visitas/modelos')}
+              >
+                <ClipboardList size={16} />
+                Criar o modelo da visita
+              </Button>
+            ) : null}
           </div>
         </Card>
       ) : (
@@ -317,9 +316,14 @@ RDC 275/2002 — Regulamento Técnico de Procedimentos Operacionais Padronizados
             value={newTemplateId}
             onChange={(e) => setNewTemplateId(e.target.value)}
           >
-            {templates.map((t) => (
+            {selectableTemplates.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.name}
+                {t.company_id
+                  ? ` (só ${companyMap.get(t.company_id) ?? 'uma empresa'})`
+                  : t.is_global
+                    ? ' (modelo oficial)'
+                    : ''}
               </option>
             ))}
           </Select>
