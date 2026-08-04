@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
+  Briefcase,
   Building2,
   ClipboardCheck,
   FileText,
@@ -15,26 +17,39 @@ import { supabase } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { formatDateTime } from '@/lib/dates';
 import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Modal } from '@/components/ui/Modal';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import {
   hardDelete,
+  hardDeleteOrganization,
+  restoreOrganization,
   restoreSoftDeleted,
   type SoftDeleteTable,
 } from '@/lib/supabaseHelpers';
 
+/**
+ * `organizations` nao e uma SoftDeleteTable comum: restaurar e excluir
+ * passam por RPC/Edge Function porque envolvem cascade nas empresas,
+ * arquivos do Storage e contas do Auth (migration 0101).
+ */
+type TrashTable = SoftDeleteTable | 'organizations';
+
 interface DeletedRow {
-  table: SoftDeleteTable;
+  table: TrashTable;
   id: string;
   label: string;
   deleted_at: string;
 }
 
 const TABLE_META: Record<
-  SoftDeleteTable,
+  TrashTable,
   { label: string; icon: LucideIcon; nameField: string }
 > = {
+  organizations: { label: 'Organização', icon: Briefcase, nameField: 'name' },
   companies: { label: 'Empresa', icon: Building2, nameField: 'name' },
   products: { label: 'Produto', icon: Package, nameField: 'name' },
   audits: {
@@ -50,7 +65,8 @@ const TABLE_META: Record<
   documents: { label: 'Documento', icon: FileText, nameField: 'title' },
 };
 
-const TABLES: SoftDeleteTable[] = [
+const TABLES: TrashTable[] = [
+  'organizations',
   'companies',
   'products',
   'audits',
@@ -64,15 +80,27 @@ export function TrashPage() {
   const [loading, setLoading] = useState(true);
   const [working, setWorking] = useState<string | null>(null);
   const [confirmHard, setConfirmHard] = useState<DeletedRow | null>(null);
+  const [orgToPurge, setOrgToPurge] = useState<DeletedRow | null>(null);
+  const [orgConfirmName, setOrgConfirmName] = useState('');
+  const [purging, setPurging] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     const results: DeletedRow[] = [];
+    // Empresas derrubadas junto com a org nao aparecem soltas na lista:
+    // elas voltam (ou somem) com a organizacao, que e a unidade aqui.
+    // `organizations` vem primeiro em TABLES, entao o Set ja esta cheio
+    // quando chegamos em `companies`.
+    const deletedOrgIds = new Set<string>();
     for (const table of TABLES) {
       const meta = TABLE_META[table];
+      const columns =
+        table === 'companies'
+          ? `id, deleted_at, ${meta.nameField}, organization_id`
+          : `id, deleted_at, ${meta.nameField}`;
       const { data, error } = await supabase
         .from(table)
-        .select(`id, deleted_at, ${meta.nameField}`)
+        .select(columns)
         .not('deleted_at', 'is', null)
         .order('deleted_at', { ascending: false })
         .limit(100);
@@ -82,6 +110,13 @@ export function TrashPage() {
       }
       for (const r of (data as unknown as Record<string, unknown>[] | null) ??
         []) {
+        if (table === 'organizations') deletedOrgIds.add(r.id as string);
+        if (
+          table === 'companies' &&
+          deletedOrgIds.has(r.organization_id as string)
+        ) {
+          continue;
+        }
         results.push({
           table,
           id: r.id as string,
@@ -101,20 +136,30 @@ export function TrashPage() {
 
   async function handleRestore(row: DeletedRow) {
     setWorking(row.id);
-    const err = await restoreSoftDeleted(row.table, row.id);
+    const err =
+      row.table === 'organizations'
+        ? await restoreOrganization(row.id)
+        : await restoreSoftDeleted(row.table, row.id);
     setWorking(null);
     if (err) {
       toast.error(err);
       return;
     }
-    toast.success('Item restaurado.');
+    toast.success(
+      row.table === 'organizations'
+        ? 'Organização restaurada (ainda suspensa) com as empresas dela.'
+        : 'Item restaurado.',
+    );
     void load();
   }
 
   async function handleHardDelete() {
     if (!confirmHard) return;
     setWorking(confirmHard.id);
-    const err = await hardDelete(confirmHard.table, confirmHard.id);
+    const err = await hardDelete(
+      confirmHard.table as SoftDeleteTable,
+      confirmHard.id,
+    );
     setWorking(null);
     setConfirmHard(null);
     if (err) {
@@ -122,6 +167,32 @@ export function TrashPage() {
       return;
     }
     toast.success('Excluído permanentemente.');
+    void load();
+  }
+
+  async function handlePurgeOrganization() {
+    if (!orgToPurge) return;
+    setPurging(true);
+    const { error, result } = await hardDeleteOrganization(
+      orgToPurge.id,
+      orgConfirmName,
+    );
+    setPurging(false);
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    setOrgToPurge(null);
+    setOrgConfirmName('');
+    toast.success(
+      `Organização apagada: ${result?.companies_removed ?? 0} empresa(s), ` +
+        `${result?.users_removed ?? 0} usuário(s) e ${result?.files_removed ?? 0} arquivo(s).`,
+    );
+    if (result?.storage_errors?.length) {
+      toast.warning(
+        `Alguns arquivos não puderam ser removidos do Storage: ${result.storage_errors.join('; ')}`,
+      );
+    }
     void load();
   }
 
@@ -137,7 +208,10 @@ export function TrashPage() {
         subtitle={
           <>
             Itens excluídos ficam aqui por <strong>30 dias</strong> antes de
-            serem apagados definitivamente. Restaure ou apague de vez.
+            serem apagados definitivamente. Restaure ou apague de vez.{' '}
+            <strong>Organizações</strong> não são apagadas por prazo: elas ficam
+            aqui até você excluir definitivamente (o que apaga também arquivos e
+            contas de acesso).
           </>
         }
       />
@@ -163,6 +237,7 @@ export function TrashPage() {
               const meta = TABLE_META[r.table];
               const Icon = meta.icon;
               const busy = working === r.id;
+              const isOrg = r.table === 'organizations';
               return (
                 <li
                   key={`${r.table}-${r.id}`}
@@ -179,6 +254,17 @@ export function TrashPage() {
                       </p>
                       <p className="text-xs text-neutral-500 dark:text-neutral-400">
                         Excluído {formatDateTime(r.deleted_at)}
+                        {isOrg ? (
+                          <>
+                            {' · '}
+                            <Link
+                              to={`/platform/organizacoes/${r.id}`}
+                              className="underline underline-offset-2"
+                            >
+                              ver dados / fazer backup
+                            </Link>
+                          </>
+                        ) : null}
                       </p>
                     </div>
                   </div>
@@ -192,7 +278,14 @@ export function TrashPage() {
                       Restaurar
                     </button>
                     <button
-                      onClick={() => setConfirmHard(r)}
+                      onClick={() => {
+                        if (isOrg) {
+                          setOrgConfirmName('');
+                          setOrgToPurge(r);
+                        } else {
+                          setConfirmHard(r);
+                        }
+                      }}
                       disabled={busy}
                       className="inline-flex items-center gap-1 rounded-lg border border-red-300 px-3 py-2 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-950"
                     >
@@ -215,6 +308,70 @@ export function TrashPage() {
         onConfirm={handleHardDelete}
         onCancel={() => setConfirmHard(null)}
       />
+
+      {/* Organizacao: confirmacao por digitacao do nome. E a unica acao do
+          sistema que apaga contas de acesso e arquivos de uma vez. */}
+      <Modal
+        open={orgToPurge !== null}
+        onClose={() => setOrgToPurge(null)}
+        title="Excluir organização definitivamente"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setOrgToPurge(null)}
+              disabled={purging}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => void handlePurgeOrganization()}
+              loading={purging}
+              disabled={orgConfirmName.trim() !== (orgToPurge?.label ?? '')}
+            >
+              Apagar para sempre
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3 text-sm text-neutral-600 dark:text-neutral-400">
+          <p>
+            Esta ação é <strong>IRREVERSÍVEL</strong> e apaga, de uma vez:
+          </p>
+          <ul className="list-disc space-y-1 pl-5 text-xs">
+            <li>
+              todas as empresas da organização e os dados delas (produtos,
+              etiquetas, visitas, não-conformidades, temperaturas, estoque);
+            </li>
+            <li>
+              os arquivos no Storage: fotos, ASOs e certificados dos
+              manipuladores, comprovantes de dedetização, documentos e logos;
+            </li>
+            <li>
+              as contas de acesso (login) de todos os usuários da organização.
+            </li>
+          </ul>
+          <p className="text-xs">
+            A trilha de auditoria do que foi apagado permanece registrada. Se
+            você ainda vai precisar desses dados,{' '}
+            <Link
+              to={`/platform/organizacoes/${orgToPurge?.id ?? ''}`}
+              className="underline underline-offset-2"
+            >
+              faça o backup JSON antes
+            </Link>
+            .
+          </p>
+          <Input
+            id="org-purge-confirm"
+            label={`Digite o nome da organização para confirmar: ${orgToPurge?.label ?? ''}`}
+            value={orgConfirmName}
+            onChange={(e) => setOrgConfirmName(e.target.value)}
+            autoComplete="off"
+          />
+        </div>
+      </Modal>
     </div>
   );
 }

@@ -18,6 +18,9 @@ verify_jwt = true
 [functions.admin-export-org]
 verify_jwt = true
 
+[functions.admin-delete-organization]
+verify_jwt = true
+
 [functions.admin-impersonate]
 verify_jwt = true
 

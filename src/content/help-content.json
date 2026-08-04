@@ -379,11 +379,11 @@
           "subtitle": "Recuperação de itens excluídos",
           "route": "/admin/lixeira",
           "screenshot": "admin-lixeira",
-          "what": "Repositório de itens com soft delete (deleted_at preenchido) que ainda podem ser restaurados. Cobre empresas, manipuladores, documentos, NCs e outras tabelas críticas. Itens permanecem aqui por 90 dias.",
+          "what": "Repositório de itens com soft delete (deleted_at preenchido) que ainda podem ser restaurados. Cobre organizações, empresas, produtos, visitas técnicas, manipuladores e documentos. Itens permanecem aqui por 30 dias.",
           "how": [
-            "Filtros por tipo de entidade e quem excluiu.",
             "Clique em Restaurar para zerar o deleted_at e devolver o item à operação.",
-            "Itens com mais de 90 dias são limpos automaticamente pela rotina de manutenção."
+            "Itens com mais de 30 dias são limpos automaticamente pela rotina de manutenção.",
+            "Organização é a exceção: fica na lixeira até você excluir definitivamente (digitando o nome), porque a exclusão apaga também arquivos do Storage e as contas de acesso. Restaurar uma organização traz as empresas dela junto — e ela volta suspensa."
           ],
           "tip": "Quando um cliente liga em pânico dizendo que apagou algo, a Lixeira costuma resolver em 1 clique."
         },

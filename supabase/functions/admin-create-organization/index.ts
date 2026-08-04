@@ -98,12 +98,16 @@ Deno.serve(async (req) => {
     // 4b. Confere se o slug ja esta em uso (mensagem amigavel).
     const { data: existing } = await admin
       .from('organizations')
-      .select('id')
+      .select('id, deleted_at')
       .eq('slug', orgSlug)
       .maybeSingle();
     if (existing) {
       return json(
-        { error: `Slug "${orgSlug}" já existe. Informe um org_slug diferente.` },
+        {
+          error: existing.deleted_at
+            ? `Slug "${orgSlug}" pertence a uma organização que está na lixeira. Restaure-a, exclua definitivamente, ou informe um org_slug diferente.`
+            : `Slug "${orgSlug}" já existe. Informe um org_slug diferente.`,
+        },
         400,
       );
     }

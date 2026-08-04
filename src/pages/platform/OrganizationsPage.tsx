@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Plus, Pencil, Eye, Building2 } from 'lucide-react';
+import { Plus, Pencil, Eye, Building2, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { softDeleteOrganization } from '@/lib/supabaseHelpers';
 import type { Organization, Plan } from '@/lib/types';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -23,6 +25,8 @@ export function OrganizationsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<Organization | null>(null);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState<Organization | null>(null);
+  const [deleteBusy, setDeleteBusy] = useState(false);
 
   // Org fields
   const [name, setName] = useState('');
@@ -182,6 +186,22 @@ export function OrganizationsPage() {
     void load();
   }
 
+  async function handleDelete() {
+    if (!deleting) return;
+    setDeleteBusy(true);
+    const err = await softDeleteOrganization(deleting.id);
+    setDeleteBusy(false);
+    if (err) {
+      toast.error(err);
+      return;
+    }
+    toast.success(
+      'Organização movida para a lixeira. As empresas dela foram junto.',
+    );
+    setDeleting(null);
+    void load();
+  }
+
   return (
     <div className="mx-auto max-w-5xl">
       <PageHeader
@@ -278,6 +298,14 @@ export function OrganizationsPage() {
                         >
                           {org.status === 'active' ? 'Suspender' : 'Reativar'}
                         </button>
+                        <button
+                          onClick={() => setDeleting(org)}
+                          aria-label="Excluir"
+                          title="Excluir (vai para a lixeira)"
+                          className="rounded-lg p-2.5 text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/40"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -287,6 +315,16 @@ export function OrganizationsPage() {
           </div>
         </Card>
       )}
+
+      <ConfirmDialog
+        open={deleting !== null}
+        title="Excluir organização"
+        message={`"${deleting?.name ?? ''}" e todas as empresas dela vão para a lixeira. Os usuários perdem o acesso na hora (a organização fica suspensa). Você tem 30 dias para restaurar em Lixeira — a exclusão definitiva, que apaga arquivos e contas de acesso, é feita de lá.`}
+        confirmLabel="Mover para a lixeira"
+        loading={deleteBusy}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleting(null)}
+      />
 
       <Modal
         open={modalOpen}
