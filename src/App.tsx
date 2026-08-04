@@ -109,6 +109,11 @@ const HelpPage = lazy(() =>
 const AuditsPage = lazy(() =>
   import('./pages/AuditsPage').then((m) => ({ default: m.AuditsPage })),
 );
+const NcTemplatesPage = lazy(() =>
+  import('./pages/NcTemplatesPage').then((m) => ({
+    default: m.NcTemplatesPage,
+  })),
+);
 const AuditTemplatesPage = lazy(() =>
   import('./pages/AuditTemplatesPage').then((m) => ({
     default: m.AuditTemplatesPage,
@@ -352,6 +357,10 @@ export default function App() {
                 criam. A rota estática vence /visitas/:id no ranking do
                 React Router, independente da ordem de declaração. */}
             <Route path="/visitas/modelos" element={<AuditTemplatesPage />} />
+            <Route
+              path="/nao-conformidades/modelos"
+              element={<NcTemplatesPage />}
+            />
             <Route path="/admin/novidades" element={<ArticlesAdminPage />} />
             <Route path="/admin/assinatura" element={<SubscriptionPage />} />
             <Route path="/admin/hardware" element={<HardwarePage />} />

@@ -413,6 +413,35 @@ export interface NonConformity {
   closed_by: string | null;
   closed_at: string | null;
   updated_at: string;
+  /** De qual modelo esta NC nasceu (migration 0103). */
+  nc_template_id: string | null;
+}
+
+/**
+ * Modelo de nao-conformidade (migration 0103): problema recorrente com o
+ * plano de acao 5W2H ja pronto. Escopo de organizacao — qualquer nutri da
+ * org cria e edita, e vale para todas as empresas dela.
+ */
+export interface NcTemplate {
+  id: string;
+  organization_id: string;
+  /** Rotulo curto na lista ("Manipulador sem touca"). */
+  name: string;
+  category: string | null;
+  severity: NcSeverity;
+  /** Texto que vai para a descricao da NC. */
+  description: string;
+  what: string | null;
+  why: string | null;
+  where_loc: string | null;
+  how: string | null;
+  how_much: number | null;
+  /** Prazo em dias a contar da abertura — vira o `when_due` da NC. */
+  default_due_days: number;
+  active: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export type AuditStatus =
@@ -429,6 +458,12 @@ export interface AuditItem {
   text: string;
   weight: number;
   legal_ref?: string;
+  /**
+   * Plano de acao padrao (migration 0103). Quando o item e reprovado na
+   * visita, a NC nasce preenchida a partir deste modelo em vez de virar
+   * so o texto da pergunta.
+   */
+  nc_template_id?: string | null;
 }
 
 export interface AuditResponse {

@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   AlertTriangle,
+  ClipboardList,
   Plus,
   Pencil,
   CheckCircle2,
@@ -22,7 +24,12 @@ import { Modal } from '@/components/ui/Modal';
 import { Spinner } from '@/components/ui/Spinner';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { PhotoAttacher } from '@/components/PhotoAttacher';
-import type { NcSeverity, NcStatus, NonConformity } from '@/lib/types';
+import type {
+  NcSeverity,
+  NcStatus,
+  NcTemplate,
+  NonConformity,
+} from '@/lib/types';
 import { NC_SEVERITY_LABELS, NC_STATUS_LABELS } from '@/lib/types';
 
 const SEVERITY_COLOR: Record<NcSeverity, string> = {
@@ -78,6 +85,7 @@ const emptyForm: Form = {
 
 export function NonConformitiesPage() {
   usePageTitle('Nao-conformidades');
+  const navigate = useNavigate();
   const { isMaster, profile } = useAuth();
   const { companies, companyId } = useCompanyScope();
 
@@ -96,6 +104,8 @@ export function NonConformitiesPage() {
   const [form, setForm] = useState<Form>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [newCompanyId, setNewCompanyId] = useState('');
+  const [ncTemplates, setNcTemplates] = useState<NcTemplate[]>([]);
+  const [selectedNcTemplate, setSelectedNcTemplate] = useState('');
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -118,6 +128,18 @@ export function NonConformitiesPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  // Modelos de NC da org (0103). Property também lê: quem abre a NC na
+  // cozinha escolhe da lista em vez de redigir o plano de ação.
+  useEffect(() => {
+    void supabase
+      .from('nc_templates')
+      .select('*')
+      .eq('active', true)
+      .order('name')
+      .limit(300)
+      .then(({ data }) => setNcTemplates((data as NcTemplate[] | null) ?? []));
+  }, []);
 
   const today = new Date().toISOString().slice(0, 10);
   const filtered = useMemo(() => {
@@ -178,8 +200,35 @@ export function NonConformitiesPage() {
   function openCreate() {
     setEditing(null);
     setForm(emptyForm);
+    setSelectedNcTemplate('');
     setNewCompanyId(companyId ?? companies[0]?.id ?? '');
     setModalOpen(true);
+  }
+
+  /**
+   * Preenche o formulário a partir de um modelo de NC (migration 0103).
+   * Só preenche — a nutri ainda revisa e ajusta antes de salvar, e o
+   * prazo é recalculado a partir de hoje.
+   */
+  function applyNcTemplate(templateId: string) {
+    setSelectedNcTemplate(templateId);
+    if (!templateId) return;
+    const t = ncTemplates.find((n) => n.id === templateId);
+    if (!t) return;
+    const due = new Date();
+    due.setDate(due.getDate() + t.default_due_days);
+    setForm((prev) => ({
+      ...prev,
+      description: t.description,
+      category: t.category ?? '',
+      severity: t.severity,
+      what: t.what ?? '',
+      why: t.why ?? '',
+      where_loc: t.where_loc ?? '',
+      how: t.how ?? '',
+      how_much: t.how_much != null ? String(t.how_much) : '',
+      when_due: due.toISOString().slice(0, 10),
+    }));
   }
 
   function openEdit(nc: NonConformity) {
@@ -244,6 +293,9 @@ export function NonConformitiesPage() {
         ...payload,
         opened_by: profile?.id,
         source: 'manual',
+        // Guarda a origem mesmo com os campos editados na mão: serve para
+        // depois responder qual problema mais se repete na carteira.
+        nc_template_id: selectedNcTemplate || null,
       }));
     }
     setSaving(false);
@@ -280,10 +332,21 @@ export function NonConformitiesPage() {
         title="Nao-conformidades"
         subtitle="Plano de acao 5W2H para corrigir desvios encontrados."
         actions={
-          <Button onClick={openCreate}>
-            <Plus size={18} />
-            Nova NC
-          </Button>
+          <>
+            {isMaster ? (
+              <Button
+                variant="secondary"
+                onClick={() => navigate('/nao-conformidades/modelos')}
+              >
+                <ClipboardList size={16} />
+                Modelos
+              </Button>
+            ) : null}
+            <Button onClick={openCreate}>
+              <Plus size={18} />
+              Nova NC
+            </Button>
+          </>
         }
       />
 
@@ -516,6 +579,28 @@ export function NonConformitiesPage() {
                 </option>
               ))}
             </Select>
+          ) : null}
+          {!editing && ncTemplates.length > 0 ? (
+            <div>
+              <Select
+                id="nc-template"
+                label="Partir de um modelo (opcional)"
+                value={selectedNcTemplate}
+                onChange={(e) => applyNcTemplate(e.target.value)}
+              >
+                <option value="">Começar em branco</option>
+                {ncTemplates.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                    {t.category ? ` · ${t.category}` : ''}
+                  </option>
+                ))}
+              </Select>
+              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                Preenche o plano de ação e o prazo. Você ainda pode ajustar tudo
+                antes de salvar.
+              </p>
+            </div>
           ) : null}
           <Input
             id="nc-desc"
