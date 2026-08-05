@@ -166,7 +166,9 @@ export function SiteClientsPage() {
           <>
             Empresas atendidas exibidas na página pública{' '}
             <span className="font-medium">/clientes</span>, com logo e
-            depoimento.
+            depoimento. A carta de clientes da apresentação institucional já
+            aparece lá por padrão — o que você cadastrar aqui entra em
+            &ldquo;Também acompanhamos&rdquo; e nos depoimentos.
           </>
         }
         actions={

@@ -782,7 +782,7 @@ export function Layout() {
               vez de uma faixa branca inteira gritando no tema escuro. */}
           <span className="rounded-xl bg-white px-3 py-1.5 transition-transform duration-300 group-hover:scale-105">
             <img
-              src="/proactive7-logo.svg"
+              src="/proactive7-wordmark.png"
               alt="ProActive7 — Boa alimentação, bem-estar e saúde!"
               className="h-12 w-auto max-w-full"
             />
@@ -867,7 +867,7 @@ export function Layout() {
             <Menu size={22} />
           </button>
           <img
-            src="/proactive7-logo.svg"
+            src="/proactive7-wordmark.png"
             alt="ProActive7"
             className="h-7 w-auto"
           />

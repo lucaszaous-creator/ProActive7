@@ -18,6 +18,9 @@ import {
   Building2,
   Croissant,
   Apple,
+  Coffee,
+  PartyPopper,
+  Leaf,
   Quote,
   Thermometer,
   Bug,
@@ -493,7 +496,18 @@ function Segmentos() {
     {
       icon: Building2,
       label: 'Lanchonetes',
-      sub: 'Fast food e quiosques',
+      sub: 'Hamburguerias, pizzarias e pastelarias',
+    },
+    { icon: Coffee, label: 'Cafés e bistrôs', sub: 'Salão e produção' },
+    {
+      icon: PartyPopper,
+      label: 'Buffet e eventos',
+      sub: 'Produção fora do estabelecimento',
+    },
+    {
+      icon: Leaf,
+      label: 'Mercado saudável',
+      sub: 'Especiarias e produtos naturais',
     },
   ];
   return (

@@ -36,10 +36,10 @@ export function drawPdfHeader(doc: jsPDF, info: PdfHeaderInfo): number {
   doc.rect(0, bandH - 1.2, pw, 1.2, 'F');
 
   // Marca — logo gráfica (wordmark + tagline) em branco, encaixada à
-  // esquerda da faixa preservando a proporção (~2.15:1).
+  // esquerda da faixa preservando a proporção (~1.53:1).
   try {
     const logoH = 14;
-    const logoW = logoH * 2.286; // proporção 320:140
+    const logoW = logoH * 1.533; // proporção 440:287
     doc.addImage(PDF_BRAND_LOGO, 'PNG', M, 5, logoW, logoH);
   } catch {
     // Fallback: texto, caso a imagem falhe.

@@ -26,6 +26,12 @@ import {
 } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
 import seoConfig from '@/lib/seo.config.json';
+import {
+  ROSTER_FLAT,
+  ROSTER_BRAND_COUNT,
+  ROSTER_UNIT_COUNT,
+  ROSTER_SEGMENT_COUNT,
+} from '@/lib/clientRoster';
 import { Carousel } from '@/components/public/Carousel';
 import { Reveal } from '@/components/public/Reveal';
 import { Spotlight } from '@/components/public/Spotlight';
@@ -52,6 +58,7 @@ export function LandingPage() {
       <Sobre />
       <Metodo />
       <Numeros />
+      <MuralClientes />
       <ServicosResumo />
       <Diferenciais />
       <Depoimentos />
@@ -351,9 +358,13 @@ function Metodo() {
  * NÚMEROS — 12 anos, etc.
  * ===================================================================== */
 function Numeros() {
+  /* Números verificáveis: o total de unidades sai da carta de clientes
+     (clientRoster.ts), não de estimativa — CLAUDE.md §3 "não inventar
+     métrica positiva". Se a Ariane confirmar um histórico maior, é só
+     trocar aqui. */
   const stats = [
     { value: '12+', label: 'anos de operação' },
-    { value: '100+', label: 'estabelecimentos atendidos' },
+    { value: `${ROSTER_UNIT_COUNT}`, label: 'unidades atendidas' },
     { value: 'RDC 216', label: 'conformidade ANVISA' },
     { value: 'On & off-shore', label: 'cozinhas atendidas' },
   ];
@@ -376,6 +387,67 @@ function Numeros() {
             </div>
           </Reveal>
         ))}
+      </div>
+    </section>
+  );
+}
+
+/* =====================================================================
+ * MURAL DE CLIENTES — prova social direto da carta de clientes da
+ * apresentação institucional. Marcas reais, sem logo inventado; quem quiser
+ * a lista completa por segmento vai para /clientes.
+ * ===================================================================== */
+function MuralClientes() {
+  /* Marcas com arte disponível, na ordem da apresentação. */
+  const marcas = ROSTER_FLAT.filter((c) => c.hasLogo !== false);
+  return (
+    <section className="border-b border-[#e5e5e5] bg-[#fafafa] py-16">
+      <div className="mx-auto max-w-6xl px-5">
+        <Reveal>
+          <div className="text-center">
+            <span className="text-xs font-medium uppercase tracking-wider text-[#737373]">
+              Quem confia no nosso trabalho
+            </span>
+            <h2 className="mx-auto mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
+              {ROSTER_UNIT_COUNT} unidades já servem com a nossa assinatura
+              técnica.
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-base text-[#171717]/65">
+              Hotéis, fábricas, escolas, padarias, pizzarias, mercados e buffets
+              de Macaé e região — {ROSTER_BRAND_COUNT} marcas em{' '}
+              {ROSTER_SEGMENT_COUNT} segmentos.
+            </p>
+          </div>
+        </Reveal>
+
+        <ul className="mt-10 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7">
+          {marcas.map((c, i) => (
+            <li
+              key={c.slug}
+              className="flex h-20 items-center justify-center rounded-2xl border border-[#e5e5e5] bg-white p-3"
+              style={{ animationDelay: `${i * 20}ms` }}
+            >
+              <img
+                src={`/clientes/${c.slug}.webp`}
+                alt={c.name}
+                title={c.name}
+                loading="lazy"
+                decoding="async"
+                className="max-h-12 max-w-full object-contain opacity-80 transition hover:opacity-100"
+              />
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-8 text-center">
+          <Link
+            to="/clientes"
+            className="inline-flex items-center gap-2 rounded-full border border-[#171717]/20 bg-white px-5 py-2.5 text-sm font-medium text-[#171717] transition hover:border-[#171717]/50"
+          >
+            Ver a carta de clientes completa
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
       </div>
     </section>
   );
@@ -614,15 +686,19 @@ function Depoimentos() {
  * ATUAÇÃO — onde atendemos
  * ===================================================================== */
 function Atuacao() {
+  /* Segmentos que realmente atendemos hoje — espelham a carta de clientes
+     da apresentação institucional (ver src/lib/clientRoster.ts). */
   const segmentos = [
-    'Restaurantes',
-    'Indústrias',
-    'Hotelaria on/off-shore',
+    'Hotéis e apart hotéis',
+    'Indústrias e fábricas',
+    'Restaurantes e bistrôs',
     'Escolas e creches',
-    'Lanchonetes',
-    'Padarias',
+    'Hamburguerias e pizzarias',
+    'Padarias e confeitarias',
     'Mercados e supermercados',
-    'Hortifrutis',
+    'Hortifrutis e minimercados',
+    'Cafés',
+    'Buffet e eventos',
   ];
   return (
     <section className="mx-auto max-w-6xl px-5 py-20">
