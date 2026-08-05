@@ -26,12 +26,8 @@ import {
 } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
 import seoConfig from '@/lib/seo.config.json';
-import {
-  ROSTER_FLAT,
-  ROSTER_BRAND_COUNT,
-  ROSTER_UNIT_COUNT,
-  ROSTER_SEGMENT_COUNT,
-} from '@/lib/clientRoster';
+import { flattenGroups, ROSTER_TOTALS } from '@/lib/clientRoster';
+import { useSiteClients } from '@/lib/useSiteClients';
 import { Carousel } from '@/components/public/Carousel';
 import { Reveal } from '@/components/public/Reveal';
 import { Spotlight } from '@/components/public/Spotlight';
@@ -358,13 +354,13 @@ function Metodo() {
  * NÚMEROS — 12 anos, etc.
  * ===================================================================== */
 function Numeros() {
-  /* Números verificáveis: o total de unidades sai da carta de clientes
-     (clientRoster.ts), não de estimativa — CLAUDE.md §3 "não inventar
-     métrica positiva". Se a Ariane confirmar um histórico maior, é só
-     trocar aqui. */
+  /* Números verificáveis: o total de unidades sai da carta de clientes,
+     não de estimativa — CLAUDE.md §3 "não inventar métrica positiva".
+     Usa a semente (e não o banco) porque esta faixa é renderizada no
+     prerender de SEO, antes de qualquer fetch. */
   const stats = [
     { value: '12+', label: 'anos de operação' },
-    { value: `${ROSTER_UNIT_COUNT}`, label: 'unidades atendidas' },
+    { value: `${ROSTER_TOTALS.units}`, label: 'unidades atendidas' },
     { value: 'RDC 216', label: 'conformidade ANVISA' },
     { value: 'On & off-shore', label: 'cozinhas atendidas' },
   ];
@@ -398,8 +394,10 @@ function Numeros() {
  * a lista completa por segmento vai para /clientes.
  * ===================================================================== */
 function MuralClientes() {
-  /* Marcas com arte disponível, na ordem da apresentação. */
-  const marcas = ROSTER_FLAT.filter((c) => c.hasLogo !== false);
+  const { groups, totals } = useSiteClients();
+  /* Só entram no mural as marcas com arte — um monograma solto numa faixa
+     de logos vira ruído. A lista completa fica em /clientes. */
+  const marcas = flattenGroups(groups).filter((c) => c.logo);
   return (
     <section className="border-b border-[#e5e5e5] bg-[#fafafa] py-16">
       <div className="mx-auto max-w-6xl px-5">
@@ -409,13 +407,12 @@ function MuralClientes() {
               Quem confia no nosso trabalho
             </span>
             <h2 className="mx-auto mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
-              {ROSTER_UNIT_COUNT} unidades já servem com a nossa assinatura
-              técnica.
+              {totals.units} unidades já servem com a nossa assinatura técnica.
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-base text-[#171717]/65">
               Hotéis, fábricas, escolas, padarias, pizzarias, mercados e buffets
-              de Macaé e região — {ROSTER_BRAND_COUNT} marcas em{' '}
-              {ROSTER_SEGMENT_COUNT} segmentos.
+              de Macaé e região — {totals.brands} marcas em {totals.segments}{' '}
+              segmentos.
             </p>
           </div>
         </Reveal>
@@ -423,12 +420,12 @@ function MuralClientes() {
         <ul className="mt-10 grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7">
           {marcas.map((c, i) => (
             <li
-              key={c.slug}
+              key={c.key}
               className="flex h-20 items-center justify-center rounded-2xl border border-[#e5e5e5] bg-white p-3"
               style={{ animationDelay: `${i * 20}ms` }}
             >
               <img
-                src={`/clientes/${c.slug}.webp`}
+                src={c.logo!}
                 alt={c.name}
                 title={c.name}
                 loading="lazy"

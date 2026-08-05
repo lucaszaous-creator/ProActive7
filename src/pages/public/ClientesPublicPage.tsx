@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Building2,
@@ -20,22 +19,16 @@ import {
 import { usePageMeta } from '@/lib/usePageMeta';
 import { Reveal } from '@/components/public/Reveal';
 import { Spotlight } from '@/components/public/Spotlight';
-import {
-  CLIENT_ROSTER,
-  ROSTER_BRAND_COUNT,
-  ROSTER_UNIT_COUNT,
-  ROSTER_SEGMENT_COUNT,
-  rosterLogoUrl,
-  type RosterClient,
-} from '@/lib/clientRoster';
-import {
-  fetchPublicClients,
-  siteAssetUrl,
-  type SiteClient,
-} from '@/lib/siteCms';
+import { CLIENT_ROSTER, type DisplayClient } from '@/lib/clientRoster';
+import { useSiteClients } from '@/lib/useSiteClients';
+import { siteAssetUrl, type SiteClient } from '@/lib/siteCms';
 
-/** Ícone por segmento — só decoração, mora aqui e não no roster. */
-const SEGMENT_ICONS: Record<string, LucideIcon> = {
+/**
+ * Ícone por segmento. A chave é o rótulo salvo em `site_clients.segment`,
+ * derivado do próprio roster para os dois nunca saírem de sincronia. Um
+ * segmento novo, criado pela nutri, cai no ícone genérico.
+ */
+const ICON_BY_KEY: Record<string, LucideIcon> = {
   hoteis: Hotel,
   escolas: GraduationCap,
   fabricas: Factory,
@@ -46,39 +39,34 @@ const SEGMENT_ICONS: Record<string, LucideIcon> = {
   saudavel: Leaf,
   buffet: PartyPopper,
 };
+const ICON_BY_LABEL = new Map<string, LucideIcon>(
+  CLIENT_ROSTER.map((s) => [s.label, ICON_BY_KEY[s.key] ?? Building2]),
+);
 
 export function ClientesPublicPage() {
   usePageMeta('/clientes');
-  const [cms, setCms] = useState<SiteClient[] | null>(null);
-
-  useEffect(() => {
-    fetchPublicClients()
-      .then(setCms)
-      .catch(() => setCms([]));
-  }, []);
-
-  const withTestimonial = (cms ?? []).filter((c) => c.testimonial);
-  const extras = cms ?? [];
+  const { groups, totals, testimonials } = useSiteClients();
 
   return (
     <div>
       <Hero />
-      <Numeros />
+      <Numeros
+        brands={totals.brands}
+        units={totals.units}
+        segments={totals.segments}
+      />
 
-      {CLIENT_ROSTER.map((seg, i) => (
+      {groups.map((g, i) => (
         <SegmentBlock
-          key={seg.key}
-          icon={SEGMENT_ICONS[seg.key] ?? Building2}
-          label={seg.label}
-          clients={seg.clients}
+          key={g.label ?? '__sem_segmento__'}
+          icon={g.label ? (ICON_BY_LABEL.get(g.label) ?? Building2) : Building2}
+          label={g.label ?? 'Também acompanhamos'}
+          clients={g.clients}
           alt={i % 2 === 1}
         />
       ))}
 
-      {extras.length > 0 ? <CmsClients clients={extras} /> : null}
-      {withTestimonial.length > 0 ? (
-        <Depoimentos clients={withTestimonial} />
-      ) : null}
+      {testimonials.length > 0 ? <Depoimentos clients={testimonials} /> : null}
 
       <CtaClientes />
     </div>
@@ -111,11 +99,19 @@ function Hero() {
   );
 }
 
-function Numeros() {
+function Numeros({
+  brands,
+  units,
+  segments,
+}: {
+  brands: number;
+  units: number;
+  segments: number;
+}) {
   const stats = [
-    { value: `${ROSTER_BRAND_COUNT}`, label: 'marcas atendidas' },
-    { value: `${ROSTER_UNIT_COUNT}`, label: 'unidades acompanhadas' },
-    { value: `${ROSTER_SEGMENT_COUNT}`, label: 'segmentos diferentes' },
+    { value: `${brands}`, label: 'marcas atendidas' },
+    { value: `${units}`, label: 'unidades acompanhadas' },
+    { value: `${segments}`, label: 'segmentos diferentes' },
     { value: '12+', label: 'anos de operação' },
   ];
   return (
@@ -148,15 +144,13 @@ function Numeros() {
  * (algumas com 80px de altura), então nunca ampliamos além do confortável.
  * Sem logo, cai no monograma da inicial — nada de espaço vazio.
  */
-function LogoCard({ client }: { client: RosterClient }) {
-  const logo = rosterLogoUrl(client);
-  const units = client.units ?? [];
-  return (
+function LogoCard({ client }: { client: DisplayClient }) {
+  const inner = (
     <div className="fx-lift flex h-full flex-col items-center justify-start gap-3 rounded-2xl border border-[#e5e5e5] bg-white p-5 text-center">
       <div className="flex h-16 w-full items-center justify-center">
-        {logo ? (
+        {client.logo ? (
           <img
-            src={logo}
+            src={client.logo}
             alt={client.name}
             loading="lazy"
             decoding="async"
@@ -171,12 +165,27 @@ function LogoCard({ client }: { client: RosterClient }) {
       <p className="text-xs font-medium leading-snug text-[#1A2A22]/75">
         {client.name}
       </p>
-      {units.length > 0 ? (
+      {client.units.length > 0 ? (
         <p className="mt-auto text-[11px] leading-snug text-[#171717]/50">
-          {units.length} unidades · {units.join(' · ')}
+          {client.units.length} unidades · {client.units.join(' · ')}
+        </p>
+      ) : client.city ? (
+        <p className="mt-auto text-[11px] leading-snug text-[#171717]/50">
+          {client.city}
         </p>
       ) : null}
     </div>
+  );
+  if (!client.websiteUrl) return inner;
+  return (
+    <a
+      href={client.websiteUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block h-full"
+    >
+      {inner}
+    </a>
   );
 }
 
@@ -188,7 +197,7 @@ function SegmentBlock({
 }: {
   icon: LucideIcon;
   label: string;
-  clients: RosterClient[];
+  clients: DisplayClient[];
   alt: boolean;
 }) {
   return (
@@ -210,73 +219,10 @@ function SegmentBlock({
 
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {clients.map((c, i) => (
-            <Reveal key={c.slug} delay={i * 45}>
+            <Reveal key={c.key} delay={i * 45}>
               <LogoCard client={c} />
             </Reveal>
           ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/**
- * Clientes cadastrados no CMS (`site_clients`) — a nutri/admin pode somar
- * novas marcas pela tela `/platform/clientes` sem precisar de deploy.
- */
-function CmsClients({ clients }: { clients: SiteClient[] }) {
-  return (
-    <section className="bg-white">
-      <div className="mx-auto max-w-6xl px-5 py-12">
-        <Reveal>
-          <h2 className="text-lg font-semibold tracking-tight text-[#171717] md:text-xl">
-            Também acompanhamos
-          </h2>
-        </Reveal>
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {clients.map((c, i) => {
-            const logo = siteAssetUrl(c.logo_path);
-            const inner = (
-              <div className="fx-lift flex h-full flex-col items-center justify-center gap-2 rounded-2xl border border-[#e5e5e5] bg-white p-5 text-center">
-                <div className="flex h-16 w-full items-center justify-center">
-                  {logo ? (
-                    <img
-                      src={logo}
-                      alt={c.name}
-                      loading="lazy"
-                      className="max-h-16 max-w-[86%] object-contain"
-                    />
-                  ) : (
-                    <Building2 className="h-7 w-7 text-[#9ca3af]" />
-                  )}
-                </div>
-                <span className="text-xs font-medium text-[#1A2A22]/75">
-                  {c.name}
-                </span>
-                {c.segment || c.city ? (
-                  <span className="text-[11px] text-[#171717]/50">
-                    {[c.segment, c.city].filter(Boolean).join(' · ')}
-                  </span>
-                ) : null}
-              </div>
-            );
-            return (
-              <Reveal key={c.id} delay={i * 45}>
-                {c.website_url ? (
-                  <a
-                    href={c.website_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block h-full"
-                  >
-                    {inner}
-                  </a>
-                ) : (
-                  inner
-                )}
-              </Reveal>
-            );
-          })}
         </div>
       </div>
     </section>

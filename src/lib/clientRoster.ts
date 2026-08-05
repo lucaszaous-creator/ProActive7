@@ -5,10 +5,17 @@
  * ("EMPRESAS QUE CONFIAM NO NOSSO TRABALHO", páginas 6–13). As marcas e a
  * divisão por segmento seguem exatamente o material — nada aqui é inferido.
  *
+ * Este arquivo é a **semente**: a migration `0104` insere estas linhas em
+ * `site_clients` (casando pelo `slug`), então quem manda no site é o banco
+ * e a nutri edita/remove tudo por `/platform/clientes`. O roster continua
+ * aqui como rede de segurança — se a consulta falhar ou o banco ainda não
+ * tiver a migration aplicada, a página cai neste conteúdo em vez de ficar
+ * vazia.
+ *
  * Os logos são assets estáticos em `public/clientes/*.webp`, extraídos da
- * própria apresentação. Custo zero: sem storage, sem banco, sem CDN paga.
- * Clientes cadastrados pelo admin em `site_clients` (CMS) continuam
- * funcionando e são exibidos junto — ver `ClientesPublicPage`.
+ * própria apresentação. Custo zero: sem Storage, sem CDN paga. O caminho
+ * gravado no banco (`/clientes/<slug>.webp`) é resolvido por
+ * `siteAssetUrl()`, que devolve caminhos absolutos como estão.
  */
 
 export interface RosterClient {
@@ -133,22 +140,100 @@ export function rosterLogoUrl(c: RosterClient): string | null {
   return c.hasLogo === false ? null : `/clientes/${c.slug}.webp`;
 }
 
-/** Marcas atendidas (uma linha por marca, independente de nº de unidades). */
-export const ROSTER_BRAND_COUNT = CLIENT_ROSTER.reduce(
-  (n, s) => n + s.clients.length,
-  0,
-);
+/* ===================================================================
+ * Forma exibida na tela — a página não sabe se veio do banco ou da
+ * semente, só recebe grupos prontos.
+ * =================================================================== */
 
-/** Unidades atendidas — marcas com várias lojas contam cada endereço. */
-export const ROSTER_UNIT_COUNT = CLIENT_ROSTER.reduce(
-  (n, s) =>
-    n + s.clients.reduce((m, c) => m + Math.max(1, c.units?.length ?? 1), 0),
-  0,
-);
+export interface DisplayClient {
+  key: string;
+  name: string;
+  logo: string | null;
+  units: string[];
+  city?: string | null;
+  websiteUrl?: string | null;
+}
 
-export const ROSTER_SEGMENT_COUNT = CLIENT_ROSTER.length;
+export interface DisplayGroup {
+  /** Rótulo do segmento; null = clientes sem segmento definido. */
+  label: string | null;
+  clients: DisplayClient[];
+}
 
-/** Lista achatada, na ordem da apresentação — usada na faixa de logos da home. */
-export const ROSTER_FLAT: RosterClient[] = CLIENT_ROSTER.flatMap(
-  (s) => s.clients,
-);
+export interface RosterTotals {
+  brands: number;
+  units: number;
+  segments: number;
+}
+
+/** Grupos a partir da semente — usado como fallback. */
+export function groupsFromRoster(): DisplayGroup[] {
+  return CLIENT_ROSTER.map((s) => ({
+    label: s.label,
+    clients: s.clients.map((c) => ({
+      key: c.slug,
+      name: c.name,
+      logo: rosterLogoUrl(c),
+      units: c.units ?? [],
+    })),
+  }));
+}
+
+/**
+ * Agrupa as linhas do banco por segmento. A ordem dos grupos é a da
+ * primeira aparição (as linhas já vêm por `sort_order`), então a ordem da
+ * apresentação se mantém sem precisar de uma tabela de segmentos.
+ * Clientes sem segmento caem num grupo próprio, no fim.
+ */
+export function groupsFromRows(
+  rows: {
+    id: string;
+    name: string;
+    logo_path: string | null;
+    segment: string | null;
+    city?: string | null;
+    website_url?: string | null;
+    units?: string[] | null;
+  }[],
+  resolveLogo: (path: string | null) => string | null,
+): DisplayGroup[] {
+  const order: (string | null)[] = [];
+  const byLabel = new Map<string | null, DisplayClient[]>();
+  for (const r of rows) {
+    const label = r.segment?.trim() || null;
+    if (!byLabel.has(label)) {
+      byLabel.set(label, []);
+      order.push(label);
+    }
+    byLabel.get(label)!.push({
+      key: r.id,
+      name: r.name,
+      logo: resolveLogo(r.logo_path),
+      units: r.units ?? [],
+      city: r.city,
+      websiteUrl: r.website_url,
+    });
+  }
+  // Sem segmento sempre por último, independente de onde apareceu.
+  order.sort((a, b) => Number(a === null) - Number(b === null));
+  return order.map((label) => ({ label, clients: byLabel.get(label)! }));
+}
+
+/** Marcas, unidades e segmentos de um conjunto de grupos já montado. */
+export function totalsOf(groups: DisplayGroup[]): RosterTotals {
+  let brands = 0;
+  let units = 0;
+  for (const g of groups) {
+    brands += g.clients.length;
+    for (const c of g.clients) units += Math.max(1, c.units.length);
+  }
+  return { brands, units, segments: groups.filter((g) => g.label).length };
+}
+
+/** Achata os grupos preservando a ordem — faixa de logos da home. */
+export function flattenGroups(groups: DisplayGroup[]): DisplayClient[] {
+  return groups.flatMap((g) => g.clients);
+}
+
+/** Totais da semente — usados enquanto o banco não respondeu. */
+export const ROSTER_TOTALS: RosterTotals = totalsOf(groupsFromRoster());
