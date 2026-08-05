@@ -19,12 +19,18 @@ comment on column public.site_clients.slug is
 comment on column public.site_clients.units is
   'Enderecos da mesma marca (ex.: Padaria Panini: Riviera, Cavaleiros, Centro).';
 
--- Parcial: linhas criadas pela tela ficam com slug null e nao colidem
--- entre si (varios NULL sao permitidos, mas o indice parcial deixa isso
--- explicito e mantem o indice pequeno).
-create unique index if not exists site_clients_slug_key
-  on public.site_clients (slug)
-  where slug is not null;
+-- Indice unico NAO parcial de proposito. Um indice parcial (WHERE slug is
+-- not null) nao pode ser inferido por "on conflict (slug)" sem repetir o
+-- predicado, e isso quebra qualquer upsert futuro nesta coluna com um
+-- 42P10 nada obvio. Sem o WHERE, NULL continua sendo distinto de NULL,
+-- entao as linhas criadas pela tela (slug null) seguem convivendo.
+--
+-- drop + create em vez de "if not exists": se uma tentativa anterior
+-- deixou a versao parcial no banco, o "if not exists" a manteria e o
+-- insert abaixo falharia de novo.
+drop index if exists public.site_clients_slug_key;
+create unique index site_clients_slug_key
+  on public.site_clients (slug);
 
 -- Idempotente: rodar de novo nao duplica nem sobrescreve edicao manual.
 insert into public.site_clients (slug, name, segment, logo_path, units, sort_order)
