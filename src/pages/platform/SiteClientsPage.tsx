@@ -29,6 +29,7 @@ export function SiteClientsPage() {
   const [testimonial, setTestimonial] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [logoPath, setLogoPath] = useState<string | null>(null);
+  const [units, setUnits] = useState('');
   const [sortOrder, setSortOrder] = useState('0');
   const [active, setActive] = useState(true);
 
@@ -59,6 +60,7 @@ export function SiteClientsPage() {
     setTestimonial('');
     setWebsiteUrl('');
     setLogoPath(null);
+    setUnits('');
     setSortOrder(String(rows.length));
     setActive(true);
     setModalOpen(true);
@@ -72,6 +74,7 @@ export function SiteClientsPage() {
     setTestimonial(c.testimonial ?? '');
     setWebsiteUrl(c.website_url ?? '');
     setLogoPath(c.logo_path);
+    setUnits((c.units ?? []).join(', '));
     setSortOrder(String(c.sort_order));
     setActive(c.active);
     setModalOpen(true);
@@ -117,6 +120,10 @@ export function SiteClientsPage() {
       testimonial: testimonial.trim() || null,
       website_url: websiteUrl.trim() || null,
       logo_path: logoPath,
+      units: units
+        .split(',')
+        .map((u) => u.trim())
+        .filter(Boolean),
       sort_order: Number(sortOrder) || 0,
       active,
     };
@@ -146,7 +153,8 @@ export function SiteClientsPage() {
       toast.error('Erro ao remover: ' + error.message);
       return;
     }
-    if (editing.logo_path) {
+    // Logo estatico ('/clientes/x.webp') nao mora no Storage — nada a remover.
+    if (editing.logo_path && !editing.logo_path.startsWith('/')) {
       const { error: rmErr } = await supabase.storage
         .from('site-assets')
         .remove([editing.logo_path]);
@@ -165,8 +173,11 @@ export function SiteClientsPage() {
         subtitle={
           <>
             Empresas atendidas exibidas na página pública{' '}
-            <span className="font-medium">/clientes</span>, com logo e
-            depoimento.
+            <span className="font-medium">/clientes</span> e no mural da home. A
+            carta da apresentação já vem cadastrada aqui: edite, reordene pelo
+            campo Ordem ou desmarque &ldquo;ativo&rdquo; para tirar uma marca do
+            ar. O <span className="font-medium">Segmento</span> é o título do
+            bloco em que ela aparece.
           </>
         }
         actions={
@@ -224,7 +235,13 @@ export function SiteClientsPage() {
                     )}
                   </div>
                   <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
-                    {[c.segment, c.city].filter(Boolean).join(' · ') || '—'}
+                    {[
+                      c.segment,
+                      c.city,
+                      c.units?.length ? `${c.units.length} unidades` : null,
+                    ]
+                      .filter(Boolean)
+                      .join(' · ') || '—'}
                   </p>
                 </div>
                 <Pencil size={15} className="shrink-0 text-neutral-400" />
@@ -324,6 +341,13 @@ export function SiteClientsPage() {
               placeholder="ex.: Macaé / RJ"
             />
           </div>
+          <Input
+            id="client-units"
+            label="Unidades (opcional, separadas por vírgula)"
+            value={units}
+            onChange={(e) => setUnits(e.target.value)}
+            placeholder="ex.: Riviera, Cavaleiros, Centro"
+          />
           <div>
             <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
               Depoimento (opcional)

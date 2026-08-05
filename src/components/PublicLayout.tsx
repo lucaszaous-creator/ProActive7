@@ -67,7 +67,7 @@ function PublicNav({ onOpenMenu }: { onOpenMenu: () => void }) {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
         <Link to="/" className="flex shrink-0 items-center gap-2.5">
           <img
-            src="/proactive7-logo.svg"
+            src="/proactive7-wordmark.png"
             alt="ProActive7"
             className="h-9 w-auto"
           />
@@ -132,7 +132,7 @@ function MobileDrawer({
         <div className="flex items-center justify-between border-b border-white/12 px-5 py-4">
           <div className="flex items-center gap-2">
             <img
-              src="/proactive7-logo.svg"
+              src="/proactive7-wordmark.png"
               alt="ProActive7"
               className="h-7 w-auto brightness-0 invert"
             />
@@ -235,12 +235,16 @@ function PublicFooter() {
         <div>
           <div className="flex items-center gap-2.5">
             <img
-              src="/proactive7-logo.svg"
+              src="/proactive7-wordmark.png"
               alt="ProActive7"
-              className="h-8 w-auto"
+              className="h-9 w-auto"
             />
           </div>
-          <p className="mt-3 max-w-sm text-sm leading-relaxed text-[#171717]/65">
+          {/* Slogan oficial da marca (apresentação institucional). */}
+          <p className="mt-3 text-sm font-medium text-[#262626]">
+            Boa alimentação. Bem estar e saúde!
+          </p>
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-[#171717]/65">
             Assessoria e consultoria em segurança alimentar para
             estabelecimentos comerciais on-shore e off-shore.
           </p>

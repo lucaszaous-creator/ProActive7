@@ -71,7 +71,7 @@ export function LoginPage() {
       <header className="border-b border-[#e5e5e5] bg-[#fafafa]/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
           <Link to="/" className="flex items-center gap-2.5">
-            <img src="/proactive7-logo.svg" alt="" className="h-9 w-auto" />
+            <img src="/proactive7-wordmark.png" alt="" className="h-9 w-auto" />
             <span className="text-base font-semibold tracking-tight text-[#262626]">
               ProActive7
             </span>

@@ -77,8 +77,8 @@ function QuemSomos() {
               <p>
                 Começamos como{' '}
                 <strong className="text-[#262626]">PERSONAL DIET</strong> e hoje
-                somos a <strong className="text-[#262626]">ProActive 7</strong> —
-                uma empresa especializada em assessoria e consultoria em
+                somos a <strong className="text-[#262626]">ProActive 7</strong>{' '}
+                — uma empresa especializada em assessoria e consultoria em
                 segurança alimentar que reúne profissionais capacitados,
                 experiência, ética, responsabilidade, comprometimento,
                 transparência, atitude e respeito para oferecer o melhor serviço

@@ -3,7 +3,7 @@
   "brand": "ProActive7",
   "locale": "pt_BR",
   "defaultImage": "https://www.proactive7.com.br/og-image.png",
-  "logo": "https://www.proactive7.com.br/proactive7-logo.svg",
+  "logo": "https://www.proactive7.com.br/proactive7-logo.png",
   "organizationJsonLd": {
     "@context": "https://schema.org",
     "@graph": [
@@ -20,7 +20,7 @@
         "description": "Empresa de consultoria nutricional e segurança alimentar para serviços de alimentação (ANVISA RDC 216), sediada em Macaé/RJ e fundada pela nutricionista Ariane Madureira.",
         "disambiguatingDescription": "ProActive7 é uma empresa brasileira de consultoria em segurança alimentar e nutrição, localizada em Macaé, Rio de Janeiro. A marca não tem relação com o livro 'Os 7 Hábitos das Pessoas Altamente Eficazes'.",
         "url": "https://www.proactive7.com.br/",
-        "logo": "https://www.proactive7.com.br/proactive7-logo.svg",
+        "logo": "https://www.proactive7.com.br/proactive7-logo.png",
         "image": "https://www.proactive7.com.br/og-image.png",
         "email": "contato@proactive7.com.br",
         "telephone": "+55-22-99766-2669",

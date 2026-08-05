@@ -26,11 +26,25 @@ export interface SiteClient {
   active: boolean;
   sort_order: number;
   created_at?: string;
+  /** Chave estável dos clientes semeados pela migration 0104. Null nos criados pela tela. */
+  slug?: string | null;
+  /** Endereços da mesma marca (ex.: Padaria Panini: Riviera, Cavaleiros, Centro). */
+  units?: string[] | null;
 }
 
-/** URL pública de um asset do bucket site-assets (cursos/clientes). */
+/**
+ * URL pública de uma imagem de cliente/curso.
+ *
+ * Dois formatos convivem em `logo_path`:
+ * - começa com `/` → asset estático servido pelo próprio site
+ *   (`/clientes/panini.webp`), usado pelos clientes da carta institucional.
+ *   Custo zero: não ocupa Storage.
+ * - qualquer outra coisa → objeto no bucket `site-assets`, enviado pela
+ *   tela `/platform/clientes`.
+ */
 export function siteAssetUrl(path: string | null | undefined): string | null {
   if (!path) return null;
+  if (path.startsWith('/')) return path;
   return supabase.storage.from('site-assets').getPublicUrl(path).data.publicUrl;
 }
 

@@ -194,7 +194,7 @@ export function PublicLabelPage() {
               name: BRAND_NAME,
               description: BRAND_TAGLINE,
               url: SITE_URL,
-              logo: `${SITE_URL}/proactive7-logo.svg`,
+              logo: `${SITE_URL}/proactive7-logo.png`,
             }),
           }}
         />
@@ -228,7 +228,7 @@ function BrandFooter() {
         className="inline-block"
       >
         <img
-          src="/proactive7-logo.svg"
+          src="/proactive7-wordmark.png"
           alt="ProActive7"
           className="h-9 w-auto opacity-80 transition hover:opacity-100"
         />
