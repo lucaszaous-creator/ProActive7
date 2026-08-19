@@ -12,6 +12,7 @@ const en = {
     checklists: 'Checklists',
     recipes: 'Recipes',
     documents: 'Documents',
+    newInspection: 'New inspection',
     audits: 'Audits',
     auditTemplates: 'Inspection templates',
     ncTemplates: 'NC templates',

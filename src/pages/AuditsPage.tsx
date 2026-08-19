@@ -180,9 +180,14 @@ RDC 275/2002 — Regulamento Técnico de Procedimentos Operacionais Padronizados
                 <ClipboardList size={16} />
                 Modelos
               </Button>
-              <Button onClick={openSchedule}>
-                <Plus size={18} />
+              <Button variant="secondary" onClick={openSchedule}>
+                <CalendarDays size={16} />
                 Agendar visita
+              </Button>
+              {/* Fluxo guiado: empresa → checklist → avaliar, sem agendar. */}
+              <Button onClick={() => navigate('/vistorias/nova')}>
+                <Plus size={18} />
+                Iniciar vistoria
               </Button>
             </>
           ) : null

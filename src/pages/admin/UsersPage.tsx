@@ -77,11 +77,37 @@ export function UsersPage() {
   const [deleting, setDeleting] = useState<ProfileRow | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
 
+  // Contas de administrador da plataforma não aparecem para nutri/gerente,
+  // mesmo quando a RLS retorna a linha (perfil do admin vinculado à org).
+  const visibleUsers = useMemo(
+    () =>
+      isPlatformAdmin
+        ? users
+        : users.filter(
+            (u) => u.role !== 'platform_admin' && u.role !== 'master',
+          ),
+    [users, isPlatformAdmin],
+  );
+
+  // Quem o chamador pode de fato editar/excluir — espelha a regra da Edge
+  // admin-update-user, para a UI não oferecer botão que o servidor nega.
+  const canManage = useCallback(
+    (u: ProfileRow) => {
+      if (isPlatformAdmin) return true;
+      if (u.id === callerProfile?.id) return false;
+      if (isNutritionist)
+        return u.role === 'property' || u.role === 'property_manager';
+      if (isPropertyManager) return u.role === 'property';
+      return false;
+    },
+    [isPlatformAdmin, isNutritionist, isPropertyManager, callerProfile?.id],
+  );
+
   const [search, setSearch] = useState('');
   const filteredUsers = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return users;
-    return users.filter((u) => {
+    if (!q) return visibleUsers;
+    return visibleUsers.filter((u) => {
       const haystack = [
         u.full_name,
         u.email,
@@ -95,7 +121,7 @@ export function UsersPage() {
         .toLowerCase();
       return haystack.includes(q);
     });
-  }, [users, search]);
+  }, [visibleUsers, search]);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -264,7 +290,11 @@ export function UsersPage() {
     <div className="mx-auto max-w-5xl">
       <PageHeader
         title="Usuários"
-        subtitle="Acessos das empresas e do administrador."
+        subtitle={
+          isPlatformAdmin
+            ? 'Acessos das empresas e do administrador.'
+            : 'Acessos das empresas da sua organização.'
+        }
         actions={
           <Button onClick={openCreate}>
             <Plus size={18} />
@@ -275,7 +305,7 @@ export function UsersPage() {
 
       {loading ? (
         <ListSkeleton rows={5} />
-      ) : users.length === 0 ? (
+      ) : visibleUsers.length === 0 ? (
         <EmptyState
           icon={Users}
           title="Nenhum usuário cadastrado ainda"
@@ -356,28 +386,32 @@ export function UsersPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex justify-end gap-1">
-                          <button
-                            onClick={() => openEdit(u)}
-                            aria-label="Editar"
-                            className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
-                          >
-                            <Pencil size={16} />
-                          </button>
-                          <button
-                            onClick={() => setDeleting(u)}
-                            aria-label="Excluir"
-                            disabled={u.id === callerProfile?.id}
-                            title={
-                              u.id === callerProfile?.id
-                                ? 'Você não pode excluir o próprio usuário'
-                                : 'Excluir'
-                            }
-                            className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
+                        {/* Sem botões para quem o chamador não gerencia —
+                            a Edge negaria de qualquer forma (403). */}
+                        {canManage(u) ? (
+                          <div className="flex justify-end gap-1">
+                            <button
+                              onClick={() => openEdit(u)}
+                              aria-label="Editar"
+                              className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                            >
+                              <Pencil size={16} />
+                            </button>
+                            <button
+                              onClick={() => setDeleting(u)}
+                              aria-label="Excluir"
+                              disabled={u.id === callerProfile?.id}
+                              title={
+                                u.id === callerProfile?.id
+                                  ? 'Você não pode excluir o próprio usuário'
+                                  : 'Excluir'
+                              }
+                              className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        ) : null}
                       </td>
                     </tr>
                   ))}
