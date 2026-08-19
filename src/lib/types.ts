@@ -511,7 +511,18 @@ export interface Audit {
   score: number | null;
   responses: AuditResponse[];
   notes: string | null;
+  /** Observação por seção do checklist: { [categoria]: texto } (0106). */
+  section_notes: Record<string, string> | null;
   signature_path: string | null;
+  /** Assinatura de ciência de quem recebeu a visita pela empresa (0106). */
+  client_signature_path: string | null;
+  client_signer_name: string | null;
+  client_signer_role: string | null;
+  /** Check-in geolocalizado do início da vistoria (0106). */
+  latitude: number | null;
+  longitude: number | null;
+  geo_accuracy_m: number | null;
+  geo_captured_at: string | null;
   recurrence_months: number | null;
   parent_audit_id: string | null;
   created_at: string;
