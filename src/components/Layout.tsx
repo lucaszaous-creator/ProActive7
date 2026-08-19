@@ -184,6 +184,12 @@ const ITEM = {
     labelKey: 'nav.newInspection',
     icon: ClipboardCheck,
   } as NavItemDef,
+  fichas: {
+    kind: 'item',
+    to: '/fichas',
+    labelKey: 'nav.recipes',
+    icon: ChefHat,
+  } as NavItemDef,
   visitas: {
     kind: 'item',
     to: '/visitas',
@@ -479,6 +485,7 @@ const NAV_NUTRITIONIST: NavNode[] = [
       ITEM.temperatura,
       ITEM.pragas,
       ITEM.documentos,
+      ITEM.fichas,
       ITEM.fotos,
       ITEM.agenda,
     ],

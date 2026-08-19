@@ -256,6 +256,10 @@ export interface Recipe {
   company_id: string;
   name: string;
   yield_amount: string | null;
+  /** Rendimento em porções — base do custo por porção e do per capita (0107). */
+  yield_portions: number | null;
+  /** Peso (g) de uma porção servida (0107). */
+  portion_grams: number | null;
   prep_time_minutes: number | null;
   instructions: string | null;
   active: boolean;
@@ -269,6 +273,10 @@ export interface RecipeItem {
   product_id: string;
   quantity: number;
   unit: string;
+  /** Peso bruto / peso líquido. 1 = sem perda de limpeza (0107). */
+  correction_factor: number;
+  /** Custo do ingrediente nesta ficha, em centavos (0107). */
+  cost_cents: number | null;
   sort_order: number;
   created_at: string;
 }
