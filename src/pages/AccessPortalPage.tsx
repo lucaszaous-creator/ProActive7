@@ -1,17 +1,8 @@
 import { Link, Navigate } from 'react-router-dom';
-import {
-  ArrowLeft,
-  ArrowRight,
-  Boxes,
-  CalendarRange,
-  ClipboardCheck,
-  Printer,
-  ShieldCheck,
-  Stethoscope,
-  Tag,
-} from 'lucide-react';
+import { ArrowLeft, ArrowRight, Printer, Stethoscope } from 'lucide-react';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
+import { PORTAL_FEATURES, postLoginDest } from '@/lib/portals';
 import { FullPageSpinner } from '@/components/ui/Spinner';
 
 /**
@@ -26,9 +17,12 @@ export function AccessPortalPage() {
 
   if (loading) return <FullPageSpinner />;
   if (session) {
-    const dest =
-      isNutritionist && !profile?.company_id ? '/admin/empresas' : '/painel';
-    return <Navigate to={dest} replace />;
+    return (
+      <Navigate
+        to={postLoginDest(isNutritionist, profile?.company_id)}
+        replace
+      />
+    );
   }
 
   return (
@@ -79,11 +73,7 @@ export function AccessPortalPage() {
               cozinha.
             </p>
             <ul className="mt-5 flex-1 space-y-2.5 text-sm text-[#171717]/75">
-              {[
-                { icon: Tag, label: 'Etiquetas de validade em segundos' },
-                { icon: Boxes, label: 'Validades, produção e estoque' },
-                { icon: ClipboardCheck, label: 'Rotina diária da cozinha' },
-              ].map(({ icon: Icon, label }) => (
+              {PORTAL_FEATURES.cliente.map(({ icon: Icon, label }) => (
                 <li key={label} className="flex items-center gap-2.5">
                   <Icon className="h-4 w-4 shrink-0 text-[#737373]" />
                   {label}
@@ -116,20 +106,7 @@ export function AccessPortalPage() {
               suas empresas.
             </p>
             <ul className="relative mt-5 flex-1 space-y-2.5 text-sm text-white/80">
-              {[
-                {
-                  icon: ClipboardCheck,
-                  label: 'Checklists e rotinas técnicas',
-                },
-                {
-                  icon: ShieldCheck,
-                  label: 'Auditorias com plano de ação',
-                },
-                {
-                  icon: CalendarRange,
-                  label: 'Agenda e carteira de empresas',
-                },
-              ].map(({ icon: Icon, label }) => (
+              {PORTAL_FEATURES.nutricionista.map(({ icon: Icon, label }) => (
                 <li key={label} className="flex items-center gap-2.5">
                   <Icon className="h-4 w-4 shrink-0 text-white/55" />
                   {label}

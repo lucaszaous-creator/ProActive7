@@ -7,9 +7,18 @@ interface ModalProps {
   title: string;
   children: ReactNode;
   footer?: ReactNode;
+  /** Largura extra para editores densos (ex.: modelo de visita modular). */
+  wide?: boolean;
 }
 
-export function Modal({ open, onClose, title, children, footer }: ModalProps) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  footer,
+  wide = false,
+}: ModalProps) {
   if (!open) return null;
   return (
     <div
@@ -17,7 +26,9 @@ export function Modal({ open, onClose, title, children, footer }: ModalProps) {
       onClick={onClose}
     >
       <div
-        className="fx-modal-in flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl dark:bg-neutral-900 dark:ring-1 dark:ring-white/10 sm:rounded-2xl"
+        className={`fx-modal-in flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-2xl bg-white shadow-2xl dark:bg-neutral-900 dark:ring-1 dark:ring-white/10 sm:rounded-2xl ${
+          wide ? 'max-w-3xl' : 'max-w-lg'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between gap-3 border-b border-neutral-200 px-4 py-3 dark:border-neutral-800 sm:px-6">

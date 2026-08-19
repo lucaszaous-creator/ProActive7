@@ -1,14 +1,11 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { useState, type FormEvent } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
-  Boxes,
-  CalendarRange,
   ClipboardCheck,
   Leaf,
   LucideIcon,
-  Printer,
   ShieldCheck,
   Stethoscope,
   Tag,
@@ -16,10 +13,14 @@ import {
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
+import {
+  PORTAL_FEATURES,
+  postLoginDest,
+  rememberLoginPortal,
+  type PortalKey,
+} from '@/lib/portals';
 import { FullPageSpinner } from '@/components/ui/Spinner';
 import { Spotlight } from '@/components/public/Spotlight';
-
-type PortalKey = 'cliente' | 'nutricionista';
 
 type PortalTheme = {
   badge: string;
@@ -44,11 +45,7 @@ const PORTAL_THEMES: Record<PortalKey, PortalTheme> = {
     title: 'A rotina de etiquetas, em ordem.',
     subtitle:
       'Acesse o programa de etiquetas da sua empresa: impressão, validades, produção, estoque e a rotina diária da cozinha.',
-    features: [
-      { icon: Printer, label: 'Etiquetas de validade em segundos' },
-      { icon: Boxes, label: 'Validades, produção e estoque' },
-      { icon: ClipboardCheck, label: 'Rotina diária da cozinha' },
-    ],
+    features: PORTAL_FEATURES.cliente,
     mobileTitle: 'Portal da empresa',
     mobileSubtitle: 'Acesse o programa de etiquetas',
   },
@@ -58,11 +55,7 @@ const PORTAL_THEMES: Record<PortalKey, PortalTheme> = {
     title: 'Sua consultoria, no controle.',
     subtitle:
       'Acesse o sistema da responsável técnica: checklists, rotinas, auditorias e o acompanhamento das suas empresas.',
-    features: [
-      { icon: ClipboardCheck, label: 'Checklists e rotinas técnicas' },
-      { icon: ShieldCheck, label: 'Auditorias com plano de ação' },
-      { icon: CalendarRange, label: 'Agenda e carteira de empresas' },
-    ],
+    features: PORTAL_FEATURES.nutricionista,
     mobileTitle: 'Portal da nutricionista',
     mobileSubtitle: 'Acesse suas rotinas e auditorias',
   },
@@ -98,35 +91,20 @@ export function LoginPage() {
         ? 'Entrar — Portal da nutricionista'
         : 'Entrar',
   );
-  const { session, loading, profile, isNutritionist, isPlatformAdmin } =
-    useAuth();
+  const { session, loading, profile, isNutritionist } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sendingReset, setSendingReset] = useState(false);
-  const mismatchWarnedRef = useRef(false);
-
-  // Se a pessoa entrou pelo portal "errado", avisa que o sistema certo
-  // abre mesmo assim — quem decide o acesso é o role, não o card clicado.
-  useEffect(() => {
-    if (!portal || loading || !session || !profile) return;
-    if (mismatchWarnedRef.current || isPlatformAdmin) return;
-    if (portal === 'cliente' && isNutritionist) {
-      mismatchWarnedRef.current = true;
-      toast.info(
-        'Seu acesso é de nutricionista — abrindo o sistema da nutricionista.',
-      );
-    } else if (portal === 'nutricionista' && !isNutritionist) {
-      mismatchWarnedRef.current = true;
-      toast.info('Seu acesso é da empresa — abrindo o programa de etiquetas.');
-    }
-  }, [portal, loading, session, profile, isNutritionist, isPlatformAdmin]);
 
   if (loading) return <FullPageSpinner />;
   if (session) {
-    const dest =
-      isNutritionist && !profile?.company_id ? '/admin/empresas' : '/painel';
-    return <Navigate to={dest} replace />;
+    return (
+      <Navigate
+        to={postLoginDest(isNutritionist, profile?.company_id)}
+        replace
+      />
+    );
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -145,6 +123,9 @@ export function LoginPage() {
       toast.error('Não foi possível entrar. Verifique e-mail e senha.');
       return;
     }
+    // O aviso de "portal trocado" é dado pelo Layout depois que o profile
+    // carrega — esta página desmonta assim que a sessão existe.
+    if (portal) rememberLoginPortal(portal);
     toast.success('Bem-vindo!');
   }
 

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { RouteFade } from './RouteFade';
 import {
@@ -113,9 +113,19 @@ function PublicNav({ onOpenMenu }: { onOpenMenu: () => void }) {
  * mostra as duas opções direto. */
 function AccessSystemMenu() {
   const [open, setOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Sem role="menu": as opções são links comuns (Tab navega entre eles);
+  // Escape fecha e devolve o foco ao botão.
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === 'Escape' && open) {
+      setOpen(false);
+      buttonRef.current?.focus();
+    }
+  }
 
   return (
-    <div className="relative ml-1 hidden md:block">
+    <div className="relative ml-1 hidden md:block" onKeyDown={handleKeyDown}>
       {open && (
         <div
           className="fixed inset-0 z-40"
@@ -124,9 +134,9 @@ function AccessSystemMenu() {
         />
       )}
       <button
+        ref={buttonRef}
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        aria-haspopup="menu"
         className="inline-flex items-center gap-1.5 rounded-full bg-[#262626] px-4 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-[#404040]"
       >
         Acessar sistema
@@ -135,13 +145,9 @@ function AccessSystemMenu() {
         />
       </button>
       {open && (
-        <div
-          role="menu"
-          className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-[#e5e5e5] bg-white p-1.5 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.35)]"
-        >
+        <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-[#e5e5e5] bg-white p-1.5 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.35)]">
           <Link
             to="/login/cliente"
-            role="menuitem"
             onClick={() => setOpen(false)}
             className="flex items-start gap-3 rounded-xl px-3 py-2.5 transition hover:bg-[#f0f0ee]"
           >
@@ -159,7 +165,6 @@ function AccessSystemMenu() {
           </Link>
           <Link
             to="/login/nutricionista"
-            role="menuitem"
             onClick={() => setOpen(false)}
             className="flex items-start gap-3 rounded-xl px-3 py-2.5 transition hover:bg-[#f0f0ee]"
           >

@@ -13,7 +13,7 @@ const en = {
     recipes: 'Recipes',
     documents: 'Documents',
     audits: 'Audits',
-    auditTemplates: 'Audit templates',
+    auditTemplates: 'Inspection templates',
     ncTemplates: 'NC templates',
     agenda: 'Calendar',
     nonConformities: 'Non-conformities',
