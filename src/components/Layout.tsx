@@ -188,6 +188,12 @@ const ITEM = {
     labelKey: 'nav.suppliers',
     icon: Truck,
   } as NavItemDef,
+  novaVistoria: {
+    kind: 'item',
+    to: '/vistorias/nova',
+    labelKey: 'nav.newInspection',
+    icon: ClipboardCheck,
+  } as NavItemDef,
   visitas: {
     kind: 'item',
     to: '/visitas',
@@ -460,7 +466,10 @@ const NAV_NUTRITIONIST: NavNode[] = [
     labelKey: 'nav.avaliacao',
     icon: Stethoscope,
     defaultOpen: true,
+    // "Nova vistoria" primeiro: é o fluxo guiado que a RT usa no local
+    // (empresa → checklist → avaliar). O resto é gestão/histórico.
     children: [
+      ITEM.novaVistoria,
       ITEM.visitas,
       ITEM.modelosVisita,
       ITEM.ncs,

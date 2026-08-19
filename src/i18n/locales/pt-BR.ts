@@ -12,6 +12,7 @@ const ptBR = {
     checklists: 'Checklists',
     recipes: 'Fichas técnicas',
     documents: 'Documentos',
+    newInspection: 'Nova vistoria',
     audits: 'Visitas técnicas',
     auditTemplates: 'Modelos de vistoria',
     ncTemplates: 'Modelos de NC',

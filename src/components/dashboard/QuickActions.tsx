@@ -2,9 +2,11 @@ import { Link } from 'react-router-dom';
 import {
   Printer,
   ClipboardCheck,
+  ClipboardList,
   Thermometer,
   AlertOctagon,
   CalendarPlus,
+  CalendarRange,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -61,6 +63,54 @@ interface QuickActionsProps {
 }
 
 export function QuickActions({ isMaster }: QuickActionsProps) {
+  // Carteira (nutri/admin): ações de nutricionista — nada de etiquetas,
+  // que são o sistema da empresa (split pedido pela Ariane).
+  if (isMaster) {
+    return (
+      <section className="mb-5">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <ActionTile
+            to="/vistorias/nova"
+            icon={ClipboardCheck}
+            title="Iniciar vistoria"
+            subtitle="Checklist no local"
+            accent="teal"
+          />
+          <ActionTile
+            to="/nao-conformidades"
+            icon={AlertOctagon}
+            title="Não conformidades"
+            subtitle="Planos de ação"
+            accent="amber"
+          />
+          <ActionTile
+            to="/agenda"
+            icon={CalendarRange}
+            title="Agenda"
+            subtitle="Visitas e prazos"
+            accent="blue"
+          />
+          <ActionTile
+            to="/visitas/modelos"
+            icon={ClipboardList}
+            title="Modelos de vistoria"
+            subtitle="Monte seu checklist"
+            accent="emerald"
+          />
+        </div>
+        <div className="mt-3 flex justify-end">
+          <Link
+            to="/visitas"
+            className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:border-neutral-700"
+          >
+            <CalendarPlus size={14} />
+            Agendar visita técnica
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="mb-5">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -93,17 +143,6 @@ export function QuickActions({ isMaster }: QuickActionsProps) {
           accent="amber"
         />
       </div>
-      {isMaster ? (
-        <div className="mt-3 flex justify-end">
-          <Link
-            to="/visitas"
-            className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:border-neutral-700"
-          >
-            <CalendarPlus size={14} />
-            Agendar visita técnica
-          </Link>
-        </div>
-      ) : null}
     </section>
   );
 }
