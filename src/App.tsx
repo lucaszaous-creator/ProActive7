@@ -130,6 +130,9 @@ const NewInspectionPage = lazy(() =>
     default: m.NewInspectionPage,
   })),
 );
+const RecipesPage = lazy(() =>
+  import('./pages/RecipesPage').then((m) => ({ default: m.RecipesPage })),
+);
 const AgendaPage = lazy(() =>
   import('./pages/AgendaPage').then((m) => ({ default: m.AgendaPage })),
 );
@@ -371,6 +374,8 @@ export default function App() {
             <Route path="/visitas/modelos" element={<AuditTemplatesPage />} />
             {/* Fluxo guiado: empresa → checklist → avaliar (só RT/admin). */}
             <Route path="/vistorias/nova" element={<NewInspectionPage />} />
+            {/* Ficha técnica é entregável da RT: ela padroniza o preparo. */}
+            <Route path="/fichas" element={<RecipesPage />} />
             <Route
               path="/nao-conformidades/modelos"
               element={<NcTemplatesPage />}
