@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { isNetworkError } from '@/lib/offlineSync';
+import { resetCompanyScope } from '@/lib/companyScopeStore';
 import type { OrgSubscription, Profile } from '@/lib/types';
 
 /**
@@ -282,9 +283,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await loadSubscription(profile);
     },
     signOut: async () => {
-      // Sair apaga a cópia local do perfil: o próximo a usar o aparelho
-      // não pode abrir offline com a identidade de quem saiu.
+      // Sair apaga a cópia local do perfil e a empresa ativa: o próximo a
+      // usar o aparelho não pode abrir offline com a identidade de quem
+      // saiu, nem cair na empresa que a pessoa anterior estava vendo.
       clearProfileCache();
+      resetCompanyScope();
       await supabase.auth.signOut();
     },
   };
