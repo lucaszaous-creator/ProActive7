@@ -12,13 +12,13 @@ function AccountSuspended() {
     <div className="mx-auto max-w-md">
       <Card>
         <div className="flex flex-col items-center gap-3 py-6 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-700">
             <AlertOctagon size={24} />
           </span>
-          <h1 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+          <h1 className="text-lg font-semibold text-neutral-800">
             Conta suspensa
           </h1>
-          <p className="max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="max-w-sm text-sm text-neutral-600">
             O acesso da sua organização está temporariamente suspenso. Fale com
             o suporte para reativar a assinatura. Seus dados estão preservados.
           </p>
@@ -37,13 +37,13 @@ function ModuleUpsell({ moduleKey }: { moduleKey: string }) {
     <div className="mx-auto max-w-md">
       <Card>
         <div className="flex flex-col items-center gap-3 py-6 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-neutral-100 text-neutral-500">
             <Lock size={24} />
           </span>
-          <h1 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+          <h1 className="text-lg font-semibold text-neutral-800">
             {MODULE_LABEL[moduleKey] ?? 'Recurso'} não incluso no seu plano
           </h1>
-          <p className="max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="max-w-sm text-sm text-neutral-600">
             Este recurso faz parte de um plano superior. Faça upgrade para
             liberar.
           </p>

@@ -10,8 +10,17 @@
     <link rel="dns-prefetch" href="https://glvdiicipblsohdgmqaz.supabase.co" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#14b8a6" />
+    <!-- viewport-fit=cover: com o status bar em black-translucent (abaixo), o
+      conteudo passa a ocupar a tela inteira no iPhone instalado. Quem
+      devolve o espaco do notch e da barra de gestos e o env(safe-area-inset-*)
+      aplicado no Layout. Sem este par, o cabecalho ficava sob o notch. -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <!-- Branco: sobra do design anterior, o teal #14b8a6 ficou pintando a
+      barra do Android depois que o app virou monocromatico. -->
+    <meta name="theme-color" content="#ffffff" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-title" content="ProActive7" />
     <meta

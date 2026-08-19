@@ -17,9 +17,26 @@ import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDateTime } from '@/lib/dates';
 import { moveInArray } from '@/lib/auditTemplateSections';
+import {
+  ANSWER_TYPES,
+  ANSWER_TYPE_HINT,
+  ANSWER_TYPE_LABEL,
+  answerDraftFrom,
+  answerSpecFromDraft,
+  answerTypeOf,
+  checklistItemChecked,
+  emptyAnswerDraft,
+  hasDraftRange,
+  rangeLabel,
+  resultForMeasure,
+  scaleMaxOf,
+  type AnswerDraft,
+} from '@/lib/auditAnswers';
+import { isNetworkError, queueWrite } from '@/lib/offlineSync';
 import { logFeatureEvent } from '@/lib/platformMetrics';
 import {
   CHECKLIST_FREQUENCY_LABELS,
+  type AuditAnswerType,
   type ChecklistFrequency,
   type ChecklistItem,
   type ChecklistRun,
@@ -80,6 +97,20 @@ interface RunWithTemplate extends ChecklistRun {
   checklist_templates: { name: string } | null;
 }
 
+/**
+ * Item do modelo de rotina em edição. Carrega o `id` REAL do item salvo:
+ * antes o editor recriava todos os ids ao salvar, e o histórico de
+ * execuções (`checklist_runs.items[].id`) perdia o vínculo com a pergunta.
+ */
+interface DraftChecklistItem extends AnswerDraft {
+  id: string;
+  text: string;
+}
+
+function emptyChecklistItem(): DraftChecklistItem {
+  return { id: crypto.randomUUID(), text: '', ...emptyAnswerDraft() };
+}
+
 export function ChecklistsPage() {
   usePageTitle('Checklists');
   const { profile, isPlatformAdmin } = useAuth();
@@ -94,7 +125,9 @@ export function ChecklistsPage() {
   const [saving, setSaving] = useState(false);
   const [tplName, setTplName] = useState('');
   const [tplFreq, setTplFreq] = useState<ChecklistFrequency>('daily');
-  const [tplItems, setTplItems] = useState<string[]>(['']);
+  const [tplItems, setTplItems] = useState<DraftChecklistItem[]>([
+    emptyChecklistItem(),
+  ]);
   const [tplActive, setTplActive] = useState(true);
 
   const [deleting, setDeleting] = useState<ChecklistTemplate | null>(null);
@@ -105,7 +138,10 @@ export function ChecklistsPage() {
   const [runTemplate, setRunTemplate] = useState<ChecklistTemplate | null>(
     null,
   );
-  const [runChecks, setRunChecks] = useState<Record<string, boolean>>({});
+  /** Resposta de cada item da execução, por tipo (ver lib/auditAnswers). */
+  const [runChecks, setRunChecks] = useState<
+    Record<string, { checked?: boolean; value?: number; text?: string }>
+  >({});
   const [runNotes, setRunNotes] = useState('');
   const [runPhotoId, setRunPhotoId] = useState<string | null>(null);
   const [runSaving, setRunSaving] = useState(false);
@@ -156,11 +192,17 @@ export function ChecklistsPage() {
     void load();
   }, [load]);
 
+  function patchTplItem(index: number, patch: Partial<DraftChecklistItem>) {
+    setTplItems((prev) =>
+      prev.map((item, i) => (i === index ? { ...item, ...patch } : item)),
+    );
+  }
+
   function openCreate() {
     setEditing(null);
     setTplName('');
     setTplFreq('daily');
-    setTplItems(['']);
+    setTplItems([emptyChecklistItem()]);
     setTplActive(true);
     setTplIsGlobal(false);
     setModalOpen(true);
@@ -170,7 +212,15 @@ export function ChecklistsPage() {
     setEditing(t);
     setTplName(t.name);
     setTplFreq(t.frequency);
-    setTplItems(t.items.length > 0 ? t.items.map((i) => i.text) : ['']);
+    setTplItems(
+      t.items.length > 0
+        ? t.items.map((i) => ({
+            id: i.id,
+            text: i.text,
+            ...answerDraftFrom(i),
+          }))
+        : [emptyChecklistItem()],
+    );
     setTplActive(t.active);
     setTplIsGlobal(t.is_global ?? false);
     setModalOpen(true);
@@ -181,10 +231,15 @@ export function ChecklistsPage() {
       toast.error('Informe o nome do checklist.');
       return;
     }
+    // Preserva o id de cada item: regenerá-los quebrava o vínculo do
+    // histórico de execuções com a pergunta que foi respondida.
     const items: ChecklistItem[] = tplItems
-      .map((t) => t.trim())
-      .filter(Boolean)
-      .map((text) => ({ id: crypto.randomUUID(), text }));
+      .filter((i) => i.text.trim())
+      .map((i) => ({
+        id: i.id,
+        text: i.text.trim(),
+        ...answerSpecFromDraft(i),
+      }));
     if (items.length === 0) {
       toast.error('Adicione ao menos um item.');
       return;
@@ -261,9 +316,19 @@ export function ChecklistsPage() {
     void load();
   }
 
+  function patchRunAnswer(
+    itemId: string,
+    patch: { checked?: boolean; value?: number; text?: string },
+  ) {
+    setRunChecks((prev) => ({
+      ...prev,
+      [itemId]: { ...prev[itemId], ...patch },
+    }));
+  }
+
   function openRun(t: ChecklistTemplate) {
     setRunTemplate(t);
-    setRunChecks(Object.fromEntries(t.items.map((i) => [i.id, false])));
+    setRunChecks(Object.fromEntries(t.items.map((i) => [i.id, {}])));
     setRunNotes('');
     setRunPhotoId(null);
     setRunOpen(true);
@@ -272,19 +337,55 @@ export function ChecklistsPage() {
   async function handleRunSave() {
     if (!runTemplate) return;
     setRunSaving(true);
-    const items: ChecklistRunItem[] = runTemplate.items.map((i) => ({
-      id: i.id,
-      checked: runChecks[i.id] ?? false,
-    }));
-    const { error } = await supabase.from('checklist_runs').insert({
+    // `checked` é derivado do tipo de resposta: num item de temperatura,
+    // quem decide se está ok é o número medido, não um clique.
+    const items: ChecklistRunItem[] = runTemplate.items.map((i) => {
+      const answer = runChecks[i.id] ?? {};
+      return {
+        id: i.id,
+        checked: checklistItemChecked(i, answer),
+        ...(answer.value == null ? {} : { value: answer.value }),
+        ...(answer.text?.trim() ? { text: answer.text.trim() } : {}),
+      };
+    });
+    const payload = {
       template_id: runTemplate.id,
       ran_by: profile?.id ?? null,
       items,
       notes: runNotes.trim() || null,
       photo_id: runPhotoId,
-    });
+    };
+
+    // A rotina é preenchida no chão da cozinha, que é justamente onde o
+    // sinal cai. Sem conexão, guarda no aparelho e sobe sozinho depois
+    // (mesma fila da vistoria — ver lib/offlineSync).
+    const queueIt = async () => {
+      await queueWrite({
+        table: 'checklist_runs',
+        op: 'insert',
+        match: {},
+        payload,
+        label: `Checklist: ${runTemplate.name}`,
+      });
+      setRunSaving(false);
+      toast.success(
+        'Sem conexão: registrado neste aparelho. Envia sozinho quando o sinal voltar.',
+      );
+      setRunOpen(false);
+    };
+
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      await queueIt();
+      return;
+    }
+
+    const { error } = await supabase.from('checklist_runs').insert(payload);
     setRunSaving(false);
     if (error) {
+      if (isNetworkError(error)) {
+        await queueIt();
+        return;
+      }
       toast.error('Erro ao registrar: ' + error.message);
       return;
     }
@@ -345,7 +446,7 @@ export function ChecklistsPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
@@ -357,39 +458,39 @@ export function ChecklistsPage() {
         <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
           <Card>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              <h2 className="text-sm font-semibold text-neutral-700">
                 Templates
               </h2>
               {templates.length === 0 ? (
                 <button
                   onClick={seedDefaults}
-                  className="text-xs text-neutral-700 dark:text-neutral-200 hover:underline"
+                  className="text-xs text-neutral-700 hover:underline"
                 >
                   Adicionar padrões
                 </button>
               ) : null}
             </div>
             {templates.length === 0 ? (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="text-sm text-neutral-500">
                 Nenhum template ainda. Crie um do zero ou use os padrões.
               </p>
             ) : (
-              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+              <ul className="divide-y divide-neutral-100">
                 {templates.map((t) => (
                   <li
                     key={t.id}
                     className="flex items-center justify-between gap-2 py-2"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                      <p className="truncate text-sm font-medium text-neutral-800">
                         {t.name}
                         {t.is_global ? (
-                          <span className="ml-2 inline-block rounded-full bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
+                          <span className="ml-2 inline-block rounded-full bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-700">
                             Modelo oficial
                           </span>
                         ) : null}
                       </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      <p className="text-xs text-neutral-500">
                         {CHECKLIST_FREQUENCY_LABELS[t.frequency]} ·{' '}
                         {t.items.length} itens
                         {!t.active ? ' · inativo' : ''}
@@ -400,7 +501,7 @@ export function ChecklistsPage() {
                         <button
                           onClick={() => openRun(t)}
                           aria-label="Executar"
-                          className="rounded-lg p-2.5 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/60"
+                          className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50"
                         >
                           <Play size={16} />
                         </button>
@@ -408,7 +509,7 @@ export function ChecklistsPage() {
                       <button
                         onClick={() => openEdit(t)}
                         aria-label="Editar"
-                        className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
                       >
                         <Pencil size={16} />
                       </button>
@@ -427,31 +528,68 @@ export function ChecklistsPage() {
           </Card>
 
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
               Últimas execuções
             </h2>
             {recentRuns.length === 0 ? (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="text-sm text-neutral-500">
                 Nenhuma execução ainda.
               </p>
             ) : (
-              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+              <ul className="divide-y divide-neutral-100">
                 {recentRuns.map((r) => {
                   const done = r.items.filter((i) => i.checked).length;
+                  // Valores medidos vão para o histórico: é o que a RT quer
+                  // ver sem abrir nada ("que temperatura deu a câmara ontem").
+                  // Isto só funciona porque o id do item é preservado ao
+                  // editar o modelo — ver o comentário em handleSave.
+                  const tpl = templates.find((t) => t.id === r.template_id);
+                  const measures = (tpl?.items ?? []).flatMap((item) => {
+                    if (answerTypeOf(item) !== 'measure') return [];
+                    const answer = r.items.find((ri) => ri.id === item.id);
+                    if (answer?.value == null) return [];
+                    const outOfRange =
+                      resultForMeasure(item, answer.value) === 'NC';
+                    return [
+                      {
+                        key: item.id,
+                        label: `${item.text}: ${answer.value}${
+                          item.unit ? ` ${item.unit}` : ''
+                        }`,
+                        outOfRange,
+                      },
+                    ];
+                  });
                   return (
                     <li key={r.id} className="flex items-center gap-3 py-2">
-                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-50 text-neutral-600">
                         <ClipboardCheck size={16} />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                        <p className="truncate text-sm font-medium text-neutral-800">
                           {r.checklist_templates?.name ?? 'Template removido'}
                         </p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                        <p className="text-xs text-neutral-500">
                           {formatDateTime(r.ran_at)} · {done}/{r.items.length}{' '}
                           itens
                           {r.notes ? ` · ${r.notes}` : ''}
                         </p>
+                        {measures.length > 0 ? (
+                          <p className="mt-0.5 flex flex-wrap gap-x-2 gap-y-1 text-xs">
+                            {measures.map((m) => (
+                              <span
+                                key={m.key}
+                                className={
+                                  m.outOfRange
+                                    ? 'rounded bg-red-50 px-1.5 py-0.5 font-medium text-red-700'
+                                    : 'text-neutral-500'
+                                }
+                              >
+                                {m.label}
+                              </span>
+                            ))}
+                          </p>
+                        ) : null}
                       </div>
                     </li>
                   );
@@ -502,69 +640,158 @@ export function ChecklistsPage() {
           </Select>
 
           <div>
-            <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
-              Itens
-            </p>
+            <p className="mb-2 text-sm font-medium text-neutral-700">Itens</p>
             <div className="flex flex-col gap-2">
               {tplItems.map((it, i) => (
-                <div key={i} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={it}
-                    onChange={(e) =>
-                      setTplItems((prev) =>
-                        prev.map((p, idx) => (idx === i ? e.target.value : p)),
-                      )
-                    }
-                    placeholder="Ex.: Bancada higienizada"
-                    className="flex-1 rounded-lg border border-neutral-300 dark:border-neutral-700 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
-                  />
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setTplItems((prev) => moveInArray(prev, i, i - 1))
-                    }
-                    disabled={i === 0}
-                    className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800"
-                    aria-label="Mover item para cima"
-                  >
-                    <ChevronUp size={16} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setTplItems((prev) => moveInArray(prev, i, i + 1))
-                    }
-                    disabled={i === tplItems.length - 1}
-                    className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800"
-                    aria-label="Mover item para baixo"
-                  >
-                    <ChevronDown size={16} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setTplItems((prev) => prev.filter((_, idx) => idx !== i))
-                    }
-                    disabled={tplItems.length === 1}
-                    className="rounded-lg p-2 text-red-500 hover:bg-red-50 disabled:opacity-30"
-                    aria-label="Remover item"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                <div
+                  key={it.id}
+                  className="flex flex-col gap-2 rounded-lg border border-neutral-100 p-2"
+                >
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={it.text}
+                      onChange={(e) =>
+                        patchTplItem(i, { text: e.target.value })
+                      }
+                      placeholder="Ex.: Bancada higienizada"
+                      className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setTplItems((prev) => moveInArray(prev, i, i - 1))
+                      }
+                      disabled={i === 0}
+                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30"
+                      aria-label="Mover item para cima"
+                    >
+                      <ChevronUp size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setTplItems((prev) => moveInArray(prev, i, i + 1))
+                      }
+                      disabled={i === tplItems.length - 1}
+                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30"
+                      aria-label="Mover item para baixo"
+                    >
+                      <ChevronDown size={16} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setTplItems((prev) =>
+                          prev.filter((_, idx) => idx !== i),
+                        )
+                      }
+                      disabled={tplItems.length === 1}
+                      className="rounded-lg p-2 text-red-500 hover:bg-red-50 disabled:opacity-30"
+                      aria-label="Remover item"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+
+                  {/* Mesmo tipo de resposta da vistoria (lib/auditAnswers):
+                      é a mesma pergunta em outro contexto, então não vira
+                      uma segunda implementação. O que a cozinha mais usa é
+                      "valor medido" — temperatura de câmara com faixa. */}
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <select
+                      value={it.answerType}
+                      onChange={(e) =>
+                        patchTplItem(i, {
+                          answerType: e.target.value as AuditAnswerType,
+                        })
+                      }
+                      aria-label="Tipo de resposta"
+                      className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
+                    >
+                      {ANSWER_TYPES.map((t) => (
+                        <option key={t} value={t}>
+                          Resposta: {ANSWER_TYPE_LABEL[t]}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="self-center text-xs text-neutral-500">
+                      {ANSWER_TYPE_HINT[it.answerType]}
+                    </p>
+                  </div>
+
+                  {it.answerType === 'scale' ? (
+                    <input
+                      type="number"
+                      min={1}
+                      value={it.scaleMax}
+                      onChange={(e) =>
+                        patchTplItem(i, { scaleMax: e.target.value })
+                      }
+                      placeholder="Nota máxima (ex.: 5)"
+                      aria-label="Nota máxima da escala"
+                      className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
+                    />
+                  ) : null}
+
+                  {it.answerType === 'measure' ? (
+                    <div className="grid gap-2 sm:grid-cols-3">
+                      <input
+                        type="text"
+                        value={it.unit}
+                        onChange={(e) =>
+                          patchTplItem(i, { unit: e.target.value })
+                        }
+                        placeholder="Unidade (ex.: °C)"
+                        aria-label="Unidade da medida"
+                        className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
+                      />
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={it.min}
+                        onChange={(e) =>
+                          patchTplItem(i, { min: e.target.value })
+                        }
+                        placeholder="Mínimo aceitável"
+                        aria-label="Valor mínimo aceitável"
+                        className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
+                      />
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={it.max}
+                        onChange={(e) =>
+                          patchTplItem(i, { max: e.target.value })
+                        }
+                        placeholder="Máximo aceitável"
+                        aria-label="Valor máximo aceitável"
+                        className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
+                      />
+                    </div>
+                  ) : null}
+
+                  {it.answerType === 'measure' && !hasDraftRange(it) ? (
+                    <p className="text-xs text-amber-600">
+                      Sem faixa definida, o valor fica só registrado: não marca
+                      o item como fora do padrão.
+                    </p>
+                  ) : null}
                 </div>
               ))}
               <button
                 type="button"
-                onClick={() => setTplItems((prev) => [...prev, ''])}
-                className="self-start rounded-lg bg-neutral-100 dark:bg-neutral-800 px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200"
+                onClick={() =>
+                  setTplItems((prev) => [...prev, emptyChecklistItem()])
+                }
+                className="self-start rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200"
               >
                 + Adicionar item
               </button>
             </div>
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-200">
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"
               checked={tplActive}
@@ -575,7 +802,7 @@ export function ChecklistsPage() {
           </label>
 
           {isPlatformAdmin ? (
-            <label className="flex items-start gap-2 rounded-lg border border-neutral-200 bg-neutral-50 p-2 text-sm dark:border-neutral-900 dark:bg-neutral-950">
+            <label className="flex items-start gap-2 rounded-lg border border-neutral-200 bg-neutral-50 p-2 text-sm">
               <input
                 type="checkbox"
                 checked={tplIsGlobal}
@@ -583,10 +810,10 @@ export function ChecklistsPage() {
                 className="mt-0.5 h-5 w-5 accent-neutral-600"
               />
               <span>
-                <span className="font-medium text-neutral-700 dark:text-neutral-300">
+                <span className="font-medium text-neutral-700">
                   Publicar como modelo oficial
                 </span>
-                <span className="block text-xs text-neutral-600 dark:text-neutral-400">
+                <span className="block text-xs text-neutral-600">
                   Visível para todas as orgs como leitura. Elas podem clonar.
                 </span>
               </span>
@@ -619,20 +846,112 @@ export function ChecklistsPage() {
             <ul className="space-y-2">
               {runTemplate.items.map((i) => (
                 <li key={i.id}>
-                  <label className="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-200">
-                    <input
-                      type="checkbox"
-                      checked={runChecks[i.id] ?? false}
-                      onChange={(e) =>
-                        setRunChecks((prev) => ({
-                          ...prev,
-                          [i.id]: e.target.checked,
-                        }))
-                      }
-                      className="mt-0.5 h-5 w-5 accent-neutral-600"
-                    />
-                    {i.text}
-                  </label>
+                  {answerTypeOf(i) === 'conformity' ? (
+                    <label className="flex items-start gap-2 text-sm text-neutral-700">
+                      <input
+                        type="checkbox"
+                        checked={runChecks[i.id]?.checked ?? false}
+                        onChange={(e) =>
+                          patchRunAnswer(i.id, { checked: e.target.checked })
+                        }
+                        className="mt-0.5 h-5 w-5 accent-neutral-600"
+                      />
+                      {i.text}
+                    </label>
+                  ) : (
+                    <div className="flex flex-col gap-1.5">
+                      <p className="text-sm text-neutral-700">{i.text}</p>
+
+                      {answerTypeOf(i) === 'text' ? (
+                        <textarea
+                          value={runChecks[i.id]?.text ?? ''}
+                          onChange={(e) =>
+                            patchRunAnswer(i.id, { text: e.target.value })
+                          }
+                          rows={2}
+                          aria-label={`Resposta: ${i.text}`}
+                          placeholder="Resposta..."
+                          className="w-full rounded-lg border border-neutral-300 px-2 py-1.5 text-sm outline-none focus:border-neutral-800"
+                        />
+                      ) : null}
+
+                      {answerTypeOf(i) === 'scale' ? (
+                        <div className="flex flex-wrap gap-1">
+                          {Array.from(
+                            { length: scaleMaxOf(i) + 1 },
+                            (_, n) => n,
+                          ).map((n) => (
+                            <button
+                              key={n}
+                              type="button"
+                              onClick={() => patchRunAnswer(i.id, { value: n })}
+                              aria-pressed={runChecks[i.id]?.value === n}
+                              className={`h-11 w-11 rounded-lg border text-sm font-semibold transition ${
+                                runChecks[i.id]?.value === n
+                                  ? 'border-neutral-800 bg-neutral-800 text-white'
+                                  : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50'
+                              }`}
+                            >
+                              {n}
+                            </button>
+                          ))}
+                        </div>
+                      ) : null}
+
+                      {answerTypeOf(i) === 'measure' ? (
+                        <div className="flex flex-wrap items-center gap-2">
+                          <input
+                            type="text"
+                            inputMode="decimal"
+                            value={
+                              runChecks[i.id]?.value == null
+                                ? ''
+                                : String(runChecks[i.id]?.value)
+                            }
+                            onChange={(e) => {
+                              const parsed = Number(
+                                e.target.value.replace(',', '.'),
+                              );
+                              patchRunAnswer(i.id, {
+                                value:
+                                  e.target.value.trim() &&
+                                  Number.isFinite(parsed)
+                                    ? parsed
+                                    : undefined,
+                              });
+                            }}
+                            aria-label={`Valor medido: ${i.text}`}
+                            placeholder="Valor"
+                            className="h-11 w-28 rounded-lg border border-neutral-300 px-2 text-sm outline-none focus:border-neutral-800"
+                          />
+                          {i.unit ? (
+                            <span className="text-sm text-neutral-500">
+                              {i.unit}
+                            </span>
+                          ) : null}
+                          {rangeLabel(i) ? (
+                            <span className="text-xs text-neutral-500">
+                              Aceitável: {rangeLabel(i)}
+                            </span>
+                          ) : null}
+                          {/* Fora da faixa a cozinha vê na hora, e o item
+                              não conta como cumprido — o número manda. */}
+                          {resultForMeasure(i, runChecks[i.id]?.value) ===
+                          'NC' ? (
+                            <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
+                              Fora do padrão
+                            </span>
+                          ) : null}
+                          {resultForMeasure(i, runChecks[i.id]?.value) ===
+                          'C' ? (
+                            <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
+                              Dentro do padrão
+                            </span>
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>

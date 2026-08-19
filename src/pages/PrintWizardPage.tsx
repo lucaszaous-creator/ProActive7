@@ -90,10 +90,9 @@ const STEP_META: Record<Step, { titleKey: string; icon: typeof HardHat }> = {
 };
 
 const CONDITION_PILL: Record<StorageCondition, string> = {
-  ambiente: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-  refrigerado: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300',
-  congelado:
-    'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',
+  ambiente: 'bg-amber-50 text-amber-700',
+  refrigerado: 'bg-sky-50 text-sky-700',
+  congelado: 'bg-indigo-50 text-indigo-700',
 };
 
 const PILL_ORDER: StorageCondition[] = ['ambiente', 'refrigerado', 'congelado'];
@@ -104,7 +103,7 @@ function ShelfPills({ product }: { product: ProductWithShelfLives }) {
   const rules = product.product_shelf_lives ?? [];
   if (rules.length === 0) {
     return (
-      <span className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400">
+      <span className="inline-flex items-center gap-1 text-xs text-amber-600">
         <AlertTriangle size={11} /> Sem validade
       </span>
     );
@@ -539,7 +538,7 @@ export function PrintWizardPage() {
                       ? 'opacity-0'
                       : isDone || isActive
                         ? 'bg-neutral-500'
-                        : 'bg-neutral-200 dark:bg-neutral-700'
+                        : 'bg-neutral-200'
                   }`}
                 />
                 <button
@@ -551,8 +550,8 @@ export function PrintWizardPage() {
                     isActive
                       ? 'border-neutral-500 bg-neutral-500 text-white'
                       : isDone
-                        ? 'border-neutral-500 bg-white text-neutral-600 hover:bg-neutral-50 dark:bg-neutral-900'
-                        : 'border-neutral-200 bg-white text-neutral-400 dark:border-neutral-700 dark:bg-neutral-900'
+                        ? 'border-neutral-500 bg-white text-neutral-600 hover:bg-neutral-50'
+                        : 'border-neutral-200 bg-white text-neutral-400'
                   } ${canGoBack ? 'cursor-pointer' : 'cursor-default'}`}
                 >
                   {isDone ? <Check size={16} /> : <Icon size={16} />}
@@ -564,14 +563,14 @@ export function PrintWizardPage() {
                       ? 'opacity-0'
                       : isDone
                         ? 'bg-neutral-500'
-                        : 'bg-neutral-200 dark:bg-neutral-700'
+                        : 'bg-neutral-200'
                   }`}
                 />
               </div>
               <span
                 className={`mt-1.5 hidden text-xs sm:inline ${
                   isActive
-                    ? 'font-medium text-neutral-700 dark:text-neutral-400'
+                    ? 'font-medium text-neutral-700'
                     : isDone
                       ? 'text-neutral-600'
                       : 'text-neutral-400'
@@ -874,13 +873,13 @@ function Step1({
 }) {
   return (
     <Card>
-      <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+      <h2 className="mb-3 text-sm font-semibold text-neutral-700">
         Quem está manipulando?
       </h2>
       {manipulators.length === 0 ? (
-        <div className="flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200">
+        <div className="flex flex-col gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           <p className="font-medium">Nenhum funcionário cadastrado.</p>
-          <p className="text-amber-800 dark:text-amber-300">
+          <p className="text-amber-800">
             Para imprimir uma etiqueta, cadastre os manipuladores em Cadastros →
             Funcionários. O nome do responsável é registrado automaticamente ao
             escolher na lista — nada digitado à mão.
@@ -902,21 +901,21 @@ function Step1({
                 onClick={() => setResponsible(m.full_name)}
                 className={`flex items-center gap-3 rounded-xl border p-3 text-left transition ${
                   isSelected
-                    ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800/60'
-                    : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
+                    ? 'border-neutral-500 bg-neutral-50'
+                    : 'border-neutral-200 bg-white hover:border-neutral-300'
                 }`}
               >
                 <span
                   className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${
                     isSelected
                       ? 'bg-neutral-900 text-white'
-                      : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300'
+                      : 'bg-neutral-100 text-neutral-600'
                   }`}
                 >
                   {initials(m.full_name)}
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                  <p className="truncate text-sm font-medium text-neutral-800">
                     {m.full_name}
                   </p>
                   {m.role && (
@@ -952,7 +951,7 @@ function Step2({
 }) {
   return (
     <Card>
-      <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+      <h2 className="mb-3 text-sm font-semibold text-neutral-700">
         Qual grupo de produto?
       </h2>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -960,16 +959,14 @@ function Step2({
           onClick={() => setGroupId('all')}
           className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition ${
             groupId === 'all'
-              ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800/60'
-              : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
+              ? 'border-neutral-500 bg-neutral-50'
+              : 'border-neutral-200 bg-white hover:border-neutral-300'
           }`}
         >
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-200 text-neutral-700 dark:bg-neutral-700 dark:text-neutral-200">
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-neutral-200 text-neutral-700">
             <Layers size={18} />
           </span>
-          <span className="text-sm font-medium text-neutral-800 dark:text-neutral-100">
-            Todos
-          </span>
+          <span className="text-sm font-medium text-neutral-800">Todos</span>
           <span className="text-xs text-neutral-400">
             {totalProducts} produtos
           </span>
@@ -983,8 +980,8 @@ function Step2({
               onClick={() => setGroupId(g.id)}
               className={`flex flex-col items-center gap-2 rounded-xl border p-4 transition ${
                 isSelected
-                  ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800/60'
-                  : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
+                  ? 'border-neutral-500 bg-neutral-50'
+                  : 'border-neutral-200 bg-white hover:border-neutral-300'
               }`}
             >
               <span
@@ -993,7 +990,7 @@ function Step2({
               >
                 <Tag size={18} />
               </span>
-              <span className="text-center text-sm font-medium text-neutral-800 dark:text-neutral-100">
+              <span className="text-center text-sm font-medium text-neutral-800">
                 {g.name}
               </span>
               <span className="text-xs text-neutral-400">
@@ -1004,7 +1001,7 @@ function Step2({
         })}
       </div>
       {groups.length === 0 && (
-        <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+        <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
           Nenhum grupo cadastrado. Vá em Cadastros → Grupos para organizar os
           produtos.
         </p>
@@ -1035,16 +1032,14 @@ function Step3({
   return (
     <Card>
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
-          Produto
-        </h2>
-        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300">
+        <h2 className="text-sm font-semibold text-neutral-700">Produto</h2>
+        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500">
           {groupName}
         </span>
       </div>
       <button
         onClick={onSwitchToBatch}
-        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 bg-neutral-50 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300 dark:hover:bg-neutral-900"
+        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 bg-neutral-50 px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100"
       >
         <Layers size={16} />
         Imprimir vários produtos
@@ -1059,11 +1054,11 @@ function Step3({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar produto"
-          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 sm:text-sm dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
+          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 sm:text-sm"
         />
       </div>
       {products.length === 0 ? (
-        <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+        <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
           Nenhum produto encontrado neste grupo.
         </p>
       ) : (
@@ -1077,22 +1072,22 @@ function Step3({
                   onClick={() => setProductId(p.id)}
                   className={`flex w-full items-center gap-3 rounded-xl border p-3 text-left transition ${
                     isSelected
-                      ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800/60'
-                      : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
+                      ? 'border-neutral-500 bg-neutral-50'
+                      : 'border-neutral-200 bg-white hover:border-neutral-300'
                   }`}
                 >
                   <span
                     className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                       isSelected
                         ? 'bg-neutral-900 text-white'
-                        : 'bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300'
+                        : 'bg-neutral-100 text-neutral-500'
                     }`}
                   >
                     <Package size={16} />
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                      <p className="truncate text-sm font-medium text-neutral-800">
                         {p.name}
                       </p>
                       {group && (
@@ -1157,16 +1152,16 @@ function Step4({
 }) {
   return (
     <Card>
-      <div className="mb-3 flex items-center gap-3 rounded-xl bg-neutral-50 p-3 dark:bg-neutral-800">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300">
+      <div className="mb-3 flex items-center gap-3 rounded-xl bg-neutral-50 p-3">
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-700">
           <Package size={18} />
         </span>
         <div className="min-w-0">
-          <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+          <p className="truncate text-sm font-medium text-neutral-800">
             {product.name}
           </p>
           {expiry && (
-            <p className="text-xs font-medium text-neutral-600 dark:text-neutral-400">
+            <p className="text-xs font-medium text-neutral-600">
               Vence {formatDateTime(expiry)}
             </p>
           )}
@@ -1189,7 +1184,7 @@ function Step4({
           ))}
         </Select>
         {!rule && (
-          <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+          <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
             Este produto não tem regra de validade cadastrada. Vá em Cadastros →
             Produtos.
           </p>
@@ -1204,7 +1199,7 @@ function Step4({
             readOnly
             disabled
           />
-          <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="mt-1 text-xs text-neutral-500">
             Bloqueado — usa o exato momento em que a etiqueta for impressa
             (atualiza automaticamente).
           </p>
@@ -1229,7 +1224,7 @@ function Step4({
           placeholder='Ex.: "500 g"'
         />
 
-        <details className="rounded-lg border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-800 dark:bg-neutral-800">
+        <details className="rounded-lg border border-neutral-200 bg-neutral-50 p-3">
           <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-neutral-500">
             Lote / fornecedor (opcional)
           </summary>
@@ -1279,11 +1274,11 @@ function Step5({
   return (
     <Card>
       <div className="flex flex-col items-center gap-3">
-        <div className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
+        <div className="flex items-center gap-2 text-sm font-medium text-neutral-700">
           <Check size={16} className="text-neutral-600" />
           Confira a etiqueta
         </div>
-        <div className="w-full max-w-full overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-800 dark:bg-neutral-800">
+        <div className="w-full max-w-full overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-100 p-4">
           <div className="mx-auto w-fit rounded-md bg-white shadow-sm ring-1 ring-neutral-200">
             <LabelPreview data={labelData} widthMm={size.w} heightMm={size.h} />
           </div>
@@ -1472,12 +1467,9 @@ function DirectPrintBlock({
 
   if (agents.length === 0) {
     return (
-      <div className="w-full rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-3 text-xs text-neutral-600 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+      <div className="w-full rounded-lg border border-dashed border-neutral-300 bg-neutral-50 p-3 text-xs text-neutral-600">
         Nenhuma impressora térmica cadastrada. Vá em{' '}
-        <Link
-          to="/admin/impressoras"
-          className="font-medium text-neutral-700 dark:text-neutral-400"
-        >
+        <Link to="/admin/impressoras" className="font-medium text-neutral-700">
           Cadastros → Impressoras
         </Link>{' '}
         para configurar a impressão direta.
@@ -1486,16 +1478,16 @@ function DirectPrintBlock({
   }
 
   return (
-    <div className="w-full space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-800/60">
+    <div className="w-full space-y-2 rounded-lg border border-neutral-200 bg-neutral-50 p-3">
       <div className="flex items-center justify-between gap-2 text-xs">
-        <span className="font-semibold uppercase text-neutral-800 dark:text-neutral-300">
+        <span className="font-semibold uppercase text-neutral-800">
           Impressão direta
         </span>
         <span
           className={
             relayOnline
-              ? 'inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 font-medium text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200'
-              : 'inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2 py-0.5 font-medium text-neutral-600 dark:bg-neutral-700 dark:text-neutral-300'
+              ? 'inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 font-medium text-neutral-700'
+              : 'inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2 py-0.5 font-medium text-neutral-600'
           }
         >
           {relayOnline ? 'Relay online' : 'Relay offline'}
@@ -1524,21 +1516,19 @@ function DirectPrintBlock({
           : `Imprimir direto ${copies > 1 ? `(${copies})` : ''}`}
       </Button>
       {!relayOnline && (
-        <p className="text-xs text-amber-700 dark:text-amber-400">
+        <p className="text-xs text-amber-700">
           O relay desta impressora está offline. Verifique se o PC da cozinha
           está ligado com o relay instalado. (A impressão vai sair assim que ele
           voltar.)
         </p>
       )}
       {noPrinter && (
-        <p className="text-xs text-amber-700 dark:text-amber-400">
+        <p className="text-xs text-amber-700">
           Impressora sem nome do Windows. Vá em Cadastros → Impressoras e
           cadastre.
         </p>
       )}
-      {errorMsg && (
-        <p className="text-xs text-red-700 dark:text-red-400">{errorMsg}</p>
-      )}
+      {errorMsg && <p className="text-xs text-red-700">{errorMsg}</p>}
     </div>
   );
 }
@@ -1594,23 +1584,23 @@ function Step3Batch({
   return (
     <Card>
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+        <h2 className="text-sm font-semibold text-neutral-700">
           Produtos do lote
         </h2>
-        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300">
+        <span className="rounded bg-neutral-100 px-2 py-0.5 text-xs text-neutral-500">
           {groupName}
         </span>
       </div>
       <button
         onClick={onSwitchToSingle}
-        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
+        className="mb-3 flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-neutral-300 px-3 py-2 text-sm font-medium text-neutral-600 hover:bg-neutral-50"
       >
         <X size={16} />
         Voltar para um produto só
       </button>
 
       {batchItems.length > 0 && (
-        <div className="mb-3 rounded-lg bg-neutral-50 px-3 py-2 text-xs font-medium text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300">
+        <div className="mb-3 rounded-lg bg-neutral-50 px-3 py-2 text-xs font-medium text-neutral-700">
           {batchItems.length}{' '}
           {batchItems.length === 1
             ? 'produto selecionado'
@@ -1628,12 +1618,12 @@ function Step3Batch({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar produto"
-          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 sm:text-sm dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
+          className="min-h-[44px] w-full rounded-lg border border-neutral-300 bg-white pl-9 pr-3 text-base outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 sm:text-sm"
         />
       </div>
 
       {products.length === 0 ? (
-        <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+        <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
           Nenhum produto encontrado neste grupo.
         </p>
       ) : (
@@ -1647,9 +1637,7 @@ function Step3Batch({
               <li key={p.id} className="py-1">
                 <label
                   className={`flex cursor-pointer items-center gap-3 rounded-lg px-2 py-2 ${
-                    isSelected
-                      ? 'bg-neutral-50 dark:bg-neutral-800/60'
-                      : 'hover:bg-neutral-50 dark:hover:bg-neutral-800'
+                    isSelected ? 'bg-neutral-50' : 'hover:bg-neutral-50'
                   }`}
                 >
                   <input
@@ -1660,11 +1648,11 @@ function Step3Batch({
                     className="h-5 w-5 shrink-0 accent-neutral-600 disabled:opacity-50"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                    <p className="truncate text-sm font-medium text-neutral-800">
                       {p.name}
                     </p>
                     {hasNoRule ? (
-                      <p className="truncate text-xs text-red-500 dark:text-red-400">
+                      <p className="truncate text-xs text-red-500">
                         Sem regra de validade — cadastre em Produtos
                       </p>
                     ) : (
@@ -1737,7 +1725,7 @@ function Step4Batch({
 }) {
   return (
     <Card>
-      <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+      <h2 className="mb-3 text-sm font-semibold text-neutral-700">
         Informações compartilhadas
       </h2>
       <p className="mb-3 text-xs text-neutral-500">
@@ -1753,7 +1741,7 @@ function Step4Batch({
           readOnly
           disabled
         />
-        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+        <p className="mt-1 text-xs text-neutral-500">
           Bloqueado — usa o exato momento em que a etiqueta for impressa.
         </p>
       </div>
@@ -1764,7 +1752,7 @@ function Step4Batch({
           {batchItems.length === 1 ? 'produto' : 'produtos'} ·{' '}
           {batchItems.reduce((s, it) => s + it.quantity, 0)} etiquetas)
         </h3>
-        <ul className="divide-y divide-neutral-100 rounded-lg border border-neutral-200 dark:divide-neutral-800 dark:border-neutral-800">
+        <ul className="divide-y divide-neutral-100 rounded-lg border border-neutral-200">
           {batchItems.map((it) => {
             const prod = products.find((p) => p.id === it.product_id);
             if (!prod || !manipDate) return null;
@@ -1782,7 +1770,7 @@ function Step4Batch({
                 className="flex items-center justify-between gap-2 px-3 py-2 text-sm"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="truncate font-medium text-neutral-800 dark:text-neutral-100">
+                  <p className="truncate font-medium text-neutral-800">
                     {prod.name}
                   </p>
                   <p className="text-xs text-neutral-500">
@@ -1848,11 +1836,11 @@ function Step5Batch({
   return (
     <Card>
       <div className="flex flex-col items-center gap-3">
-        <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+        <p className="text-sm font-medium text-neutral-700">
           Prévia da primeira etiqueta
         </p>
         {firstProd && firstRule && firstExpiry && manipDate && first && (
-          <div className="w-full max-w-full overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-800 dark:bg-neutral-800">
+          <div className="w-full max-w-full overflow-x-auto rounded-xl border border-neutral-200 bg-neutral-100 p-4">
             <div className="mx-auto w-fit rounded-md bg-white shadow-sm ring-1 ring-neutral-200">
               <LabelPreview
                 data={{
@@ -1884,7 +1872,7 @@ function Step5Batch({
             </div>
           </div>
         )}
-        <div className="text-center text-sm text-neutral-600 dark:text-neutral-300">
+        <div className="text-center text-sm text-neutral-600">
           Vai imprimir <strong>{totalLabels}</strong>{' '}
           {totalLabels === 1 ? 'etiqueta' : 'etiquetas'} de{' '}
           <strong>{batchItems.length}</strong>{' '}

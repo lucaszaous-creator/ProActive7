@@ -271,7 +271,7 @@ export function ValidadesPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada.
           </p>
         </Card>
@@ -316,7 +316,7 @@ export function ValidadesPage() {
 
           <div className="grid gap-4 lg:grid-cols-2">
             <Card>
-              <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              <h2 className="mb-3 text-sm font-semibold text-neutral-700">
                 Vencimentos nos próximos 14 dias
               </h2>
               <ColumnChart
@@ -328,7 +328,7 @@ export function ValidadesPage() {
             </Card>
             {byCondition.length > 0 && (
               <Card>
-                <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+                <h2 className="mb-3 text-sm font-semibold text-neutral-700">
                   Por condição de armazenamento
                 </h2>
                 <DonutChart items={byCondition} centerLabel="etiquetas" />
@@ -340,10 +340,10 @@ export function ValidadesPage() {
             if (items.length === 0) return null;
             return (
               <section key={bucket}>
-                <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+                <h2 className="mb-2 flex items-center gap-2 text-sm font-semibold text-neutral-700">
                   <CalendarClock size={16} className="text-neutral-400" />
                   {BUCKET_LABELS[bucket]}
-                  <span className="rounded bg-neutral-100 dark:bg-neutral-800 px-1.5 py-0.5 text-xs font-normal text-neutral-500 dark:text-neutral-400">
+                  <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-xs font-normal text-neutral-500">
                     {items.length}
                   </span>
                 </h2>
@@ -354,19 +354,17 @@ export function ValidadesPage() {
                     return (
                       <div
                         key={l.id}
-                        className={`rounded-lg border bg-white p-3 dark:bg-neutral-900 ${
-                          isToday
-                            ? 'border-amber-300 dark:border-amber-900'
-                            : 'border-neutral-200 dark:border-neutral-800'
+                        className={`rounded-lg border bg-white p-3 ${
+                          isToday ? 'border-amber-300' : 'border-neutral-200'
                         }`}
                       >
                         <div className="mb-2 flex items-start justify-between gap-2">
                           <div className="min-w-0">
-                            <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                            <p className="truncate text-sm font-medium text-neutral-800">
                               {l.product_name_snapshot}
                             </p>
                             {l.supplier && (
-                              <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                              <p className="truncate text-xs text-neutral-500">
                                 {l.supplier}
                               </p>
                             )}
@@ -374,14 +372,14 @@ export function ValidadesPage() {
                           <span
                             className={`shrink-0 rounded px-2 py-0.5 text-xs font-semibold ${
                               isToday
-                                ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-200'
-                                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300'
+                                ? 'bg-amber-100 text-amber-800'
+                                : 'bg-neutral-100 text-neutral-600'
                             }`}
                           >
                             {countdownLabel(exp, now)}
                           </span>
                         </div>
-                        <p className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
+                        <p className="flex items-center gap-1 text-xs text-neutral-500">
                           {l.storage_condition === 'congelado' ? (
                             <Snowflake size={12} />
                           ) : l.storage_condition === 'refrigerado' ? (

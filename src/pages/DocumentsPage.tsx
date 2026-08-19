@@ -49,7 +49,7 @@ export function DocumentsPage() {
         <CompanyFilesSection companyId={companyId} />
       ) : (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="text-sm text-neutral-600">
             {isMaster && companies.length === 0
               ? 'Nenhuma empresa cadastrada. Crie uma empresa para começar.'
               : 'Selecione uma empresa para gerenciar seus documentos.'}

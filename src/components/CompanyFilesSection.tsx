@@ -254,7 +254,7 @@ export function CompanyFilesSection({ companyId }: Props) {
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <FileText size={13} className="shrink-0 text-neutral-400" />
           <div className="min-w-0">
-            <p className="truncate text-xs font-medium text-neutral-700 dark:text-neutral-300">
+            <p className="truncate text-xs font-medium text-neutral-700">
               {f.title}
             </p>
             <p className="text-[10px] text-neutral-400">
@@ -267,7 +267,7 @@ export function CompanyFilesSection({ companyId }: Props) {
             onClick={() => void openFile(f)}
             aria-label="Abrir"
             title="Abrir"
-            className="rounded-lg p-2 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-950"
+            className="rounded-lg p-2 text-neutral-600 hover:bg-neutral-50"
           >
             <Download size={14} />
           </button>
@@ -275,7 +275,7 @@ export function CompanyFilesSection({ companyId }: Props) {
             onClick={() => openEdit(f)}
             aria-label="Editar"
             title="Renomear / mudar categoria"
-            className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100"
           >
             <Pencil size={14} />
           </button>
@@ -283,7 +283,7 @@ export function CompanyFilesSection({ companyId }: Props) {
             onClick={() => setDeleting(f)}
             aria-label="Excluir"
             title="Excluir"
-            className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+            className="rounded-lg p-2 text-red-500 hover:bg-red-50"
           >
             <Trash2 size={14} />
           </button>
@@ -304,39 +304,33 @@ export function CompanyFilesSection({ companyId }: Props) {
     const items = byCategory.get(catKey) ?? [];
     const has = items.length > 0;
     return (
-      <div className="rounded-xl border border-neutral-200 p-3 dark:border-neutral-800">
+      <div className="rounded-xl border border-neutral-200 p-3">
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 items-start gap-2">
             <span
               className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
                 has
-                  ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-300'
-                  : 'bg-neutral-100 text-neutral-400 dark:bg-neutral-800'
+                  ? 'bg-neutral-100 text-neutral-700'
+                  : 'bg-neutral-100 text-neutral-400'
               }`}
             >
               {has ? <Check size={12} /> : <CircleDashed size={12} />}
             </span>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
-                {label}
-              </p>
-              {hint ? (
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  {hint}
-                </p>
-              ) : null}
+              <p className="text-sm font-medium text-neutral-800">{label}</p>
+              {hint ? <p className="text-xs text-neutral-500">{hint}</p> : null}
             </div>
           </div>
           <button
             onClick={() => openUpload(catKey)}
-            className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-neutral-50 px-2.5 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100 dark:bg-neutral-950 dark:text-neutral-400 dark:hover:bg-neutral-900"
+            className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-neutral-50 px-2.5 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100"
           >
             <Plus size={12} />
             {has ? 'Adicionar' : 'Carregar'}
           </button>
         </div>
         {has ? (
-          <ul className="mt-2 divide-y divide-neutral-100 border-t border-neutral-100 pt-1 dark:divide-neutral-800 dark:border-neutral-800">
+          <ul className="mt-2 divide-y divide-neutral-100 border-t border-neutral-100 pt-1">
             {items.map((f) => (
               <FileRow key={f.id} f={f} />
             ))}
@@ -352,17 +346,15 @@ export function CompanyFilesSection({ companyId }: Props) {
       <Card className="mb-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+            <p className="text-xs text-neutral-500">
               Carregue cada documento do estabelecimento na gaveta certa. PDF ou
               imagem, até 20 MB.
             </p>
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                Entregues
-              </p>
-              <p className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+              <p className="text-xs text-neutral-500">Entregues</p>
+              <p className="text-lg font-semibold text-neutral-800">
                 {progress.done}
                 <span className="text-sm font-normal text-neutral-400">
                   {' '}
@@ -380,7 +372,7 @@ export function CompanyFilesSection({ companyId }: Props) {
             </Button>
           </div>
         </div>
-        <div className="mt-3 h-2 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+        <div className="mt-3 h-2 overflow-hidden rounded-full bg-neutral-100">
           <div
             className="h-full rounded-full bg-neutral-500 transition-all"
             style={{
@@ -401,13 +393,11 @@ export function CompanyFilesSection({ companyId }: Props) {
           {COMPANY_FILE_GROUPS.map((g) => (
             <Card key={g.group}>
               <div className="mb-3">
-                <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                <h3 className="text-sm font-semibold text-neutral-800">
                   {g.group}
                 </h3>
                 {g.note ? (
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    {g.note}
-                  </p>
+                  <p className="text-xs text-neutral-500">{g.note}</p>
                 ) : null}
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
@@ -425,7 +415,7 @@ export function CompanyFilesSection({ companyId }: Props) {
               {g.group === 'Outros' && unknownKeys.length > 0
                 ? unknownKeys.map((k) => (
                     <div key={k} className="mt-2">
-                      <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+                      <ul className="divide-y divide-neutral-100">
                         {(byCategory.get(k) ?? []).map((f) => (
                           <FileRow key={f.id} f={f} />
                         ))}
@@ -480,10 +470,10 @@ export function CompanyFilesSection({ companyId }: Props) {
             ))}
           </Select>
           <div>
-            <p className="mb-1 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            <p className="mb-1 text-sm font-medium text-neutral-700">
               Arquivo (PDF, imagem ou documento — até 20 MB)
             </p>
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200">
               <Upload size={14} />
               {pickedFile ? pickedFile.name : 'Selecionar arquivo'}
               <input
@@ -494,7 +484,7 @@ export function CompanyFilesSection({ companyId }: Props) {
               />
             </label>
             {pickedFile ? (
-              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="mt-1 text-xs text-neutral-500">
                 {humanBytes(pickedFile.size)}
               </p>
             ) : null}

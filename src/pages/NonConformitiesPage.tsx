@@ -33,20 +33,17 @@ import type {
 import { NC_SEVERITY_LABELS, NC_STATUS_LABELS } from '@/lib/types';
 
 const SEVERITY_COLOR: Record<NcSeverity, string> = {
-  low: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200',
-  medium: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200',
-  high: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200',
-  critical: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200',
+  low: 'bg-blue-100 text-blue-700',
+  medium: 'bg-amber-100 text-amber-700',
+  high: 'bg-orange-100 text-orange-700',
+  critical: 'bg-red-100 text-red-700',
 };
 
 const STATUS_COLOR: Record<NcStatus, string> = {
-  open: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200',
-  in_progress:
-    'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200',
-  closed:
-    'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200',
-  cancelled:
-    'bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400',
+  open: 'bg-red-100 text-red-700',
+  in_progress: 'bg-amber-100 text-amber-700',
+  closed: 'bg-neutral-100 text-neutral-700',
+  cancelled: 'bg-neutral-200 text-neutral-600',
 };
 
 type Row = NonConformity & { company: { name: string } | null };
@@ -353,13 +350,13 @@ export function NonConformitiesPage() {
       {isMaster && byCompany.length > 1 ? (
         <div className="mb-4">
           <div className="mb-2 flex items-center justify-between gap-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
               Por cliente
             </p>
             {companyFilter !== 'all' ? (
               <button
                 onClick={() => setCompanyFilter('all')}
-                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-neutral-500 hover:bg-neutral-100"
               >
                 <XCircle size={12} />
                 Limpar filtro
@@ -377,31 +374,31 @@ export function NonConformitiesPage() {
                   }
                   className={`flex flex-col items-start gap-1 rounded-xl border p-3 text-left transition ${
                     active
-                      ? 'border-neutral-500 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-950'
-                      : 'border-neutral-200 bg-white hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
+                      ? 'border-neutral-500 bg-neutral-50'
+                      : 'border-neutral-200 bg-white hover:border-neutral-300'
                   }`}
                   title={`Clique para ver só as NCs de ${c.company_name}`}
                 >
-                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-600 dark:text-neutral-300">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-medium text-neutral-600">
                     <Building2 size={12} />
                     <span className="truncate">{c.company_name}</span>
                   </span>
                   <div className="flex w-full items-baseline gap-2">
-                    <span className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100">
+                    <span className="text-2xl font-semibold text-neutral-800">
                       {c.open}
                     </span>
-                    <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                    <span className="text-xs text-neutral-500">
                       em aberto · {c.total} total
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-1">
                     {c.critical > 0 && (
-                      <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700 dark:bg-red-900 dark:text-red-200">
+                      <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-medium text-red-700">
                         {c.critical} crítica{c.critical === 1 ? '' : 's'}
                       </span>
                     )}
                     {c.overdue > 0 && (
-                      <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-900 dark:text-amber-200">
+                      <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-700">
                         {c.overdue} vencida{c.overdue === 1 ? '' : 's'}
                       </span>
                     )}
@@ -445,7 +442,7 @@ export function NonConformitiesPage() {
               </option>
             ))}
           </Select>
-          <label className="flex items-center gap-2 self-end pb-1 text-sm text-neutral-700 dark:text-neutral-300">
+          <label className="flex items-center gap-2 self-end pb-1 text-sm text-neutral-700">
             <input
               type="checkbox"
               checked={showOverdueOnly}
@@ -464,11 +461,8 @@ export function NonConformitiesPage() {
       ) : filtered.length === 0 ? (
         <Card>
           <div className="flex flex-col items-center gap-3 py-8 text-center">
-            <AlertTriangle
-              size={32}
-              className="text-neutral-300 dark:text-neutral-600"
-            />
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            <AlertTriangle size={32} className="text-neutral-300" />
+            <p className="text-sm text-neutral-600">
               Nenhuma nao-conformidade encontrada.
             </p>
           </div>
@@ -496,24 +490,24 @@ export function NonConformitiesPage() {
                         {NC_STATUS_LABELS[nc.status]}
                       </span>
                       {isMaster ? (
-                        <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                        <span className="text-xs text-neutral-500">
                           {nc.company?.name}
                         </span>
                       ) : null}
                       {nc.category ? (
-                        <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                        <span className="text-xs text-neutral-500">
                           {nc.category}
                         </span>
                       ) : null}
                     </div>
-                    <p className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                    <p className="text-sm font-medium text-neutral-800">
                       {nc.description}
                     </p>
                     <p
                       className={`mt-1 text-xs ${
                         isOverdue
-                          ? 'font-semibold text-red-600 dark:text-red-400'
-                          : 'text-neutral-500 dark:text-neutral-400'
+                          ? 'font-semibold text-red-600'
+                          : 'text-neutral-500'
                       }`}
                     >
                       Prazo:{' '}
@@ -525,7 +519,7 @@ export function NonConformitiesPage() {
                     <button
                       onClick={() => openEdit(nc)}
                       aria-label="Editar"
-                      className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
                     >
                       <Pencil size={16} />
                     </button>
@@ -533,7 +527,7 @@ export function NonConformitiesPage() {
                       <button
                         onClick={() => void handleQuickClose(nc)}
                         aria-label="Fechar NC"
-                        className="rounded-lg p-2.5 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-950"
+                        className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50"
                       >
                         <CheckCircle2 size={16} />
                       </button>
@@ -596,7 +590,7 @@ export function NonConformitiesPage() {
                   </option>
                 ))}
               </Select>
-              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="mt-1 text-xs text-neutral-500">
                 Preenche o plano de ação e o prazo. Você ainda pode ajustar tudo
                 antes de salvar.
               </p>
@@ -638,7 +632,7 @@ export function NonConformitiesPage() {
             </Select>
           </div>
 
-          <p className="mt-2 border-t border-neutral-200 pt-3 text-sm font-semibold text-neutral-700 dark:border-neutral-700 dark:text-neutral-300">
+          <p className="mt-2 border-t border-neutral-200 pt-3 text-sm font-semibold text-neutral-700">
             Plano de acao 5W2H
           </p>
           <Input

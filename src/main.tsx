@@ -5,7 +5,6 @@ import { Toaster } from 'sonner';
 import { registerSW } from 'virtual:pwa-register';
 import App from './App';
 import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext';
 import { RootErrorBoundary } from './components/RootErrorBoundary';
 import { setErrorReporter } from './lib/errorReporter';
 import { startOfflineSync } from './lib/offlineSync';
@@ -46,19 +45,17 @@ if (sentryDsn && import.meta.env.PROD) {
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <RootErrorBoundary>
-      <ThemeProvider>
-        <BrowserRouter>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
-          <Toaster
-            richColors
-            closeButton
-            position="top-right"
-            toastOptions={{ duration: 4000 }}
-          />
-        </BrowserRouter>
-      </ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <App />
+        </AuthProvider>
+        <Toaster
+          richColors
+          closeButton
+          position="top-right"
+          toastOptions={{ duration: 4000 }}
+        />
+      </BrowserRouter>
     </RootErrorBoundary>
   </React.StrictMode>,
 );

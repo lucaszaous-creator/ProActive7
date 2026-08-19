@@ -148,7 +148,7 @@ export function LibraryBrowser({
       }
     >
       <div className="space-y-2">
-        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+        <p className="text-xs text-neutral-500">
           <Globe size={11} className="mr-1 inline" />
           Modelos publicados pela plataforma. Clique em "Usar como modelo" para
           criar uma cópia editável{' '}
@@ -162,11 +162,11 @@ export function LibraryBrowser({
             tela em branco, e a cópia nasce editável. Dizer isso na tela
             evita que o número da plataforma passe por aval da nutri. */}
         {kind === 'product' ? (
-          <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
-            Os prazos vêm das referências públicas (RDC 216 e tabela CVS-5)
-            como ponto de partida conservador e assumem refrigerado a até
-            5&nbsp;°C / congelado a −18&nbsp;°C. Revise e assuma cada prazo
-            antes de usar: quem responde por ele é a RT.
+          <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+            Os prazos vêm das referências públicas (RDC 216 e tabela CVS-5) como
+            ponto de partida conservador e assumem refrigerado a até 5&nbsp;°C /
+            congelado a −18&nbsp;°C. Revise e assuma cada prazo antes de usar:
+            quem responde por ele é a RT.
           </p>
         ) : null}
         {loading ? (
@@ -174,7 +174,7 @@ export function LibraryBrowser({
             <Spinner />
           </div>
         ) : rows.length === 0 ? (
-          <p className="py-4 text-center text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="py-4 text-center text-sm text-neutral-500">
             Nenhum modelo oficial publicado nesta categoria ainda.
           </p>
         ) : (
@@ -182,12 +182,12 @@ export function LibraryBrowser({
             {rows.map((r) => (
               <div
                 key={r.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-neutral-200 px-3 py-2 dark:border-neutral-700"
+                className="flex items-center justify-between gap-3 rounded-lg border border-neutral-200 px-3 py-2"
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium">{r.name}</p>
                   {r.details ? (
-                    <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                    <p className="truncate text-xs text-neutral-500">
                       {r.details}
                     </p>
                   ) : null}
@@ -195,7 +195,7 @@ export function LibraryBrowser({
                 <button
                   onClick={() => void handleClone(r)}
                   disabled={cloning === r.id || (needsCompany && !companyId)}
-                  className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-neutral-900 px-2 py-1 text-xs text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white disabled:opacity-50"
+                  className="inline-flex shrink-0 items-center gap-1 rounded-lg bg-neutral-900 px-2 py-1 text-xs text-white hover:bg-neutral-800 disabled:opacity-50"
                 >
                   <Copy size={11} />
                   {cloning === r.id ? '...' : 'Usar como modelo'}
@@ -205,7 +205,7 @@ export function LibraryBrowser({
           </div>
         )}
         {needsCompany && !companyId ? (
-          <p className="text-xs text-amber-600 dark:text-amber-300">
+          <p className="text-xs text-amber-600">
             Selecione uma empresa antes de clonar.
           </p>
         ) : null}

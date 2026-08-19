@@ -12,12 +12,10 @@ export const ASO_STATUS_LABELS: Record<AsoStatus, string> = {
 };
 
 export const ASO_STATUS_COLOR: Record<AsoStatus, string> = {
-  valid:
-    'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200',
-  expiring: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200',
-  expired: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200',
-  missing:
-    'bg-neutral-200 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
+  valid: 'bg-neutral-100 text-neutral-700',
+  expiring: 'bg-amber-100 text-amber-700',
+  expired: 'bg-red-100 text-red-700',
+  missing: 'bg-neutral-200 text-neutral-700',
 };
 
 /**

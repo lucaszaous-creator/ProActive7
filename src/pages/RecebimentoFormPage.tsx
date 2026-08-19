@@ -340,7 +340,7 @@ export function RecebimentoFormPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
@@ -351,7 +351,7 @@ export function RecebimentoFormPage() {
       ) : (
         <div className="flex flex-col gap-4">
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
               Cabeçalho
             </h2>
             <div className="grid gap-3 sm:grid-cols-2">
@@ -410,10 +410,10 @@ export function RecebimentoFormPage() {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
               />
-              <label className="flex flex-col gap-1.5 text-sm font-medium text-neutral-700 dark:text-neutral-200">
+              <label className="flex flex-col gap-1.5 text-sm font-medium text-neutral-700">
                 Foto da NF / mercadoria (opcional)
                 <span className="flex items-center gap-2">
-                  <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white px-3 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800/60">
+                  <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50">
                     <ImagePlus size={14} />
                     {photoFile ? 'Trocar' : 'Anexar'}
                     <input
@@ -427,7 +427,7 @@ export function RecebimentoFormPage() {
                     />
                   </label>
                   {photoFile && (
-                    <span className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                    <span className="truncate text-xs text-neutral-500">
                       {photoFile.name}
                     </span>
                   )}
@@ -438,9 +438,7 @@ export function RecebimentoFormPage() {
 
           <Card>
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
-                Itens
-              </h2>
+              <h2 className="text-sm font-semibold text-neutral-700">Itens</h2>
               <Button
                 size="sm"
                 variant="secondary"
@@ -452,7 +450,7 @@ export function RecebimentoFormPage() {
             </div>
 
             {products.length === 0 && (
-              <p className="mb-3 rounded-lg bg-amber-50 dark:bg-amber-950/40 px-3 py-2 text-xs text-amber-700 dark:text-amber-200">
+              <p className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">
                 Esta empresa não tem produtos cadastrados. Cadastre em Produtos
                 antes de registrar o recebimento.
               </p>
@@ -467,10 +465,10 @@ export function RecebimentoFormPage() {
                 return (
                   <div
                     key={it.key}
-                    className="rounded-lg border border-neutral-200 dark:border-neutral-800 p-3"
+                    className="rounded-lg border border-neutral-200 p-3"
                   >
                     <div className="mb-2 flex items-center justify-between">
-                      <span className="text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                      <span className="text-xs font-medium uppercase tracking-wide text-neutral-500">
                         Item {idx + 1}
                       </span>
                       {items.length > 1 && (
@@ -592,7 +590,7 @@ export function RecebimentoFormPage() {
                         }
                       />
                     </div>
-                    <label className="mt-3 flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-200">
+                    <label className="mt-3 flex items-center gap-2 text-sm text-neutral-700">
                       <input
                         type="checkbox"
                         checked={it.rejected}

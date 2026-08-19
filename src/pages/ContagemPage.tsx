@@ -206,7 +206,7 @@ export function ContagemPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada.
           </p>
         </Card>
@@ -258,10 +258,10 @@ export function ContagemPage() {
 
           <Card>
             <div className="mb-3 flex items-center justify-between gap-2">
-              <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              <h2 className="text-sm font-semibold text-neutral-700">
                 Volume por dia
               </h2>
-              <span className="text-xs text-neutral-400 dark:text-neutral-500">
+              <span className="text-xs text-neutral-400">
                 vs. período anterior: {prevTotal.toLocaleString('pt-BR')}{' '}
                 etiquetas
               </span>
@@ -271,13 +271,13 @@ export function ContagemPage() {
 
           <div className="grid gap-4 lg:grid-cols-2">
             <Card>
-              <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              <h2 className="mb-3 text-sm font-semibold text-neutral-700">
                 Top 10 produtos
               </h2>
               <RankedBars items={topProducts.slice(0, 10)} />
             </Card>
             <Card>
-              <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              <h2 className="mb-3 text-sm font-semibold text-neutral-700">
                 Participação por produto
               </h2>
               <DonutChart
@@ -290,16 +290,16 @@ export function ContagemPage() {
 
           <Card>
             <div className="mb-3 flex items-center justify-between gap-2">
-              <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              <h2 className="text-sm font-semibold text-neutral-700">
                 Ritmo da cozinha
               </h2>
-              <span className="flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
+              <span className="flex items-center gap-1 text-xs text-neutral-400">
                 <CalendarDays size={12} />
                 dia da semana × hora
               </span>
             </div>
             <Heatmap rows={heat} xLabels={HOUR_LABELS} yLabels={WEEKDAYS} />
-            <p className="mt-2 text-xs text-neutral-500 dark:text-neutral-400">
+            <p className="mt-2 text-xs text-neutral-500">
               Quanto mais forte o teal, mais etiquetas naquele horário — mostra
               o horário real de produção da cozinha.
             </p>

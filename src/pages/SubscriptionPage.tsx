@@ -34,7 +34,7 @@ export function SubscriptionPage() {
     return (
       <div className="mx-auto max-w-3xl">
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Não foi possível carregar os dados da assinatura. Recarregue a
             página ou fale com o suporte.
           </p>
@@ -59,17 +59,17 @@ export function SubscriptionPage() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
             <CreditCard size={14} /> Plano
           </div>
-          <p className="mt-1 text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+          <p className="mt-1 text-lg font-semibold text-neutral-800">
             {sub.plan_name ?? 'Sem plano'}
           </p>
           <span
             className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
               sub.status === 'active'
-                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300'
-                : 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300'
+                ? 'bg-neutral-50 text-neutral-700'
+                : 'bg-amber-50 text-amber-700'
             }`}
           >
             {sub.status === 'active' ? 'Ativa' : 'Suspensa'}
@@ -77,10 +77,10 @@ export function SubscriptionPage() {
         </Card>
 
         <Card>
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
             <Building2 size={14} /> Empresas
           </div>
-          <p className="mt-1 text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+          <p className="mt-1 text-lg font-semibold text-neutral-800">
             {sub.company_count}
             {limit !== null ? (
               <span className="text-sm font-normal text-neutral-400">
@@ -95,17 +95,17 @@ export function SubscriptionPage() {
             )}
           </p>
           {overLimit && (
-            <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+            <p className="mt-1 text-xs text-amber-600">
               Acima do limite do plano.
             </p>
           )}
         </Card>
 
         <Card>
-          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+          <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
             Vigência
           </div>
-          <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-200">
+          <p className="mt-1 text-sm text-neutral-700">
             {trial
               ? `Trial até ${trial}`
               : renews
@@ -116,7 +116,7 @@ export function SubscriptionPage() {
       </div>
 
       <Card className="mt-4">
-        <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+        <h2 className="mb-3 text-sm font-semibold text-neutral-700">
           Recursos do plano
         </h2>
         <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -127,34 +127,30 @@ export function SubscriptionPage() {
                 key={m.key}
                 className={`flex items-start gap-3 rounded-lg border p-3 ${
                   on
-                    ? 'border-neutral-200 bg-neutral-50 dark:border-neutral-900 dark:bg-neutral-800/60'
-                    : 'border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-800'
+                    ? 'border-neutral-200 bg-neutral-50'
+                    : 'border-neutral-200 bg-neutral-50'
                 }`}
               >
                 <span
-                  className={`mt-0.5 shrink-0 ${on ? 'text-neutral-600 dark:text-neutral-300' : 'text-neutral-400'}`}
+                  className={`mt-0.5 shrink-0 ${on ? 'text-neutral-600' : 'text-neutral-400'}`}
                 >
                   {on ? <Check size={16} /> : <Lock size={16} />}
                 </span>
                 <div className="min-w-0">
                   <p
                     className={`text-sm font-medium ${
-                      on
-                        ? 'text-neutral-800 dark:text-neutral-100'
-                        : 'text-neutral-500 dark:text-neutral-400'
+                      on ? 'text-neutral-800' : 'text-neutral-500'
                     }`}
                   >
                     {m.label}
                   </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    {m.description}
-                  </p>
+                  <p className="text-xs text-neutral-500">{m.description}</p>
                 </div>
               </li>
             );
           })}
         </ul>
-        <p className="mt-4 rounded-lg bg-neutral-50 px-3 py-2 text-xs text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400">
+        <p className="mt-4 rounded-lg bg-neutral-50 px-3 py-2 text-xs text-neutral-500">
           Para fazer upgrade do plano ou liberar mais empresas, fale com o
           suporte do ProActive7.
         </p>
@@ -207,14 +203,14 @@ function SupportAccessCard({ orgId }: { orgId: string }) {
   return (
     <Card className="mt-4">
       <div className="flex items-start gap-3">
-        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-300">
+        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-neutral-100 text-neutral-500">
           <ShieldCheck size={18} />
         </span>
         <div className="min-w-0 flex-1">
-          <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+          <h2 className="text-sm font-semibold text-neutral-700">
             Acesso de suporte (entrar como)
           </h2>
-          <p className="mt-1 text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="mt-1 text-sm text-neutral-600">
             Quando autorizado, a equipe ProActive7 pode entrar na sua conta para
             diagnosticar problemas. Fica <strong>desligado por padrão</strong> e
             você pode revogar a qualquer momento. Cada acesso é registrado.
@@ -226,7 +222,7 @@ function SupportAccessCard({ orgId }: { orgId: string }) {
               disabled={allow === null || saving}
               aria-pressed={allow === true}
               className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition disabled:opacity-50 ${
-                allow ? 'bg-neutral-900' : 'bg-neutral-300 dark:bg-neutral-700'
+                allow ? 'bg-neutral-900' : 'bg-neutral-300'
               }`}
             >
               <span
@@ -235,7 +231,7 @@ function SupportAccessCard({ orgId }: { orgId: string }) {
                 }`}
               />
             </button>
-            <span className="text-sm text-neutral-700 dark:text-neutral-200">
+            <span className="text-sm text-neutral-700">
               {allow === null
                 ? 'Carregando…'
                 : allow

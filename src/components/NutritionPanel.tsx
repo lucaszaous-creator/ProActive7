@@ -176,12 +176,12 @@ export function NutritionPanel({ recipe }: { recipe: RecipeWithItems }) {
   }
 
   return (
-    <div className="mt-4 border-t border-neutral-100 pt-3 dark:border-neutral-800">
+    <div className="mt-4 border-t border-neutral-100 pt-3">
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+        <h3 className="text-sm font-semibold text-neutral-700">
           Tabela nutricional
         </h3>
-        <span className="text-xs text-neutral-500 dark:text-neutral-400">
+        <span className="text-xs text-neutral-500">
           {label.portionGrams
             ? `Porção de ${label.portionGrams} g`
             : 'Informe o peso da porção na ficha para declarar a coluna por porção'}
@@ -191,7 +191,7 @@ export function NutritionPanel({ recipe }: { recipe: RecipeWithItems }) {
       {/* O que falta vem ANTES da tabela: sem isso a pessoa lê os números
           como se estivessem completos. */}
       {label.missing.length > 0 ? (
-        <div className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:bg-amber-950/40 dark:text-amber-300">
+        <div className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
           <p className="mb-1 flex items-center gap-1 font-medium">
             <TriangleAlert size={13} />
             Cálculo incompleto — {label.missing.length} ingrediente(s) fora da
@@ -232,7 +232,7 @@ export function NutritionPanel({ recipe }: { recipe: RecipeWithItems }) {
           <div className="w-full overflow-x-auto">
             <table className="w-full min-w-[440px] text-xs">
               <thead>
-                <tr className="text-left text-neutral-500 dark:text-neutral-400">
+                <tr className="text-left text-neutral-500">
                   <th className="py-1 pr-2">Nutriente</th>
                   <th className="py-1 pr-2 text-right">100 g</th>
                   <th className="py-1 pr-2 text-right">Porção</th>
@@ -252,20 +252,19 @@ export function NutritionPanel({ recipe }: { recipe: RecipeWithItems }) {
                   // declarada a coluna fica vazia em vez de usar 100 g.
                   const vd = dailyValuePercent(key, perPortion ?? null);
                   return (
-                    <tr
-                      key={key}
-                      className="border-t border-neutral-100 dark:border-neutral-800"
-                    >
-                      <td className="py-1.5 pr-2 text-neutral-800 dark:text-neutral-200">
+                    <tr key={key} className="border-t border-neutral-100">
+                      <td className="py-1.5 pr-2 text-neutral-800">
                         {NUTRIENT_LABEL[key]}
                       </td>
-                      <td className="py-1.5 pr-2 text-right text-neutral-600 dark:text-neutral-300">
+                      <td className="py-1.5 pr-2 text-right text-neutral-600">
                         {formatNutrient(key, per100)}
                       </td>
-                      <td className="py-1.5 pr-2 text-right text-neutral-600 dark:text-neutral-300">
-                        {label.perPortion ? formatNutrient(key, perPortion) : '—'}
+                      <td className="py-1.5 pr-2 text-right text-neutral-600">
+                        {label.perPortion
+                          ? formatNutrient(key, perPortion)
+                          : '—'}
                       </td>
-                      <td className="py-1.5 pr-2 text-right text-neutral-600 dark:text-neutral-300">
+                      <td className="py-1.5 pr-2 text-right text-neutral-600">
                         {formatPercent(vd)}
                       </td>
                     </tr>
@@ -274,18 +273,19 @@ export function NutritionPanel({ recipe }: { recipe: RecipeWithItems }) {
               </tbody>
             </table>
           </div>
-          <p className="mt-2 text-[11px] leading-relaxed text-neutral-500 dark:text-neutral-400">
+          <p className="mt-2 text-[11px] leading-relaxed text-neutral-500">
             *Percentual de valores diários com base em uma dieta de 2.000 kcal.
             Seus valores diários podem ser maiores ou menores dependendo de suas
-            necessidades energéticas. Cálculo sobre {Math.round(label.gramsCounted)} g
-            de ingredientes com composição informada
+            necessidades energéticas. Cálculo sobre{' '}
+            {Math.round(label.gramsCounted)} g de ingredientes com composição
+            informada
             {sources.length > 0 ? ` · Fonte: ${sources.join(', ')}` : ''}.
             Valores calculados não substituem análise laboratorial — a
             responsabilidade técnica pela declaração é da RT.
           </p>
         </>
       ) : (
-        <p className="py-3 text-center text-xs text-neutral-500 dark:text-neutral-400">
+        <p className="py-3 text-center text-xs text-neutral-500">
           Nenhum ingrediente tem composição informada ainda.
         </p>
       )}
@@ -301,8 +301,8 @@ export function NutritionPanel({ recipe }: { recipe: RecipeWithItems }) {
               onClick={() => openEditor(i.productId, i.productName)}
               className={`rounded-full border px-2 py-0.5 text-[11px] ${
                 has
-                  ? 'border-neutral-200 text-neutral-600 dark:border-neutral-700 dark:text-neutral-300'
-                  : 'border-amber-300 text-amber-700 dark:border-amber-800 dark:text-amber-400'
+                  ? 'border-neutral-200 text-neutral-600'
+                  : 'border-amber-300 text-amber-700'
               }`}
             >
               {i.productName}
@@ -328,7 +328,7 @@ export function NutritionPanel({ recipe }: { recipe: RecipeWithItems }) {
         }
       >
         <div className="flex flex-col gap-3">
-          <p className="rounded-lg bg-neutral-50 px-3 py-2 text-xs text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+          <p className="rounded-lg bg-neutral-50 px-3 py-2 text-xs text-neutral-600">
             Valores por <strong>100 g de parte comestível</strong> — o mesmo
             denominador da TACO e do rótulo do fornecedor, então dá para copiar
             sem converter. Campo em branco significa{' '}

@@ -57,10 +57,9 @@ import { BookOpen } from 'lucide-react';
 const CONDITIONS: StorageCondition[] = ['ambiente', 'refrigerado', 'congelado'];
 
 const CONDITION_PILL: Record<StorageCondition, string> = {
-  ambiente: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-  refrigerado: 'bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300',
-  congelado:
-    'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300',
+  ambiente: 'bg-amber-50 text-amber-700',
+  refrigerado: 'bg-sky-50 text-sky-700',
+  congelado: 'bg-indigo-50 text-indigo-700',
 };
 
 interface GroupOption {
@@ -95,16 +94,14 @@ function QuickFilterChip({
       onClick={onClick}
       className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
         active
-          ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
-          : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+          ? 'bg-neutral-900 text-white'
+          : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
       }`}
     >
       {label}{' '}
       <span
         className={`tabular-nums text-xs ${
-          active
-            ? 'text-neutral-300 dark:text-neutral-600'
-            : 'text-neutral-400 dark:text-neutral-500'
+          active ? 'text-neutral-300' : 'text-neutral-400'
         }`}
       >
         {count}
@@ -159,8 +156,8 @@ function GroupChip({
       onClick={onClick}
       className={`flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition ${
         active
-          ? 'border-neutral-500 bg-neutral-50 font-medium text-neutral-700 dark:border-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-300'
-          : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800'
+          ? 'border-neutral-500 bg-neutral-50 font-medium text-neutral-700'
+          : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50'
       }`}
     >
       {icon ?? (
@@ -171,7 +168,7 @@ function GroupChip({
       )}
       <span>{label}</span>
       <span
-        className={`text-xs ${active ? 'text-neutral-600 dark:text-neutral-400' : 'text-neutral-400'}`}
+        className={`text-xs ${active ? 'text-neutral-600' : 'text-neutral-400'}`}
       >
         {count}
       </span>
@@ -193,14 +190,14 @@ function ProductCard({
   const rules = product.product_shelf_lives ?? [];
   const allergenCount = product.allergens?.length ?? 0;
   return (
-    <div className="flex flex-col gap-2.5 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700">
+    <div className="flex flex-col gap-2.5 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300">
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
-          <h3 className="truncate font-medium text-neutral-800 dark:text-neutral-100">
+          <h3 className="truncate font-medium text-neutral-800">
             {product.name}
           </h3>
           {product.category ? (
-            <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+            <p className="truncate text-xs text-neutral-500">
               {product.category}
             </p>
           ) : null}
@@ -210,7 +207,7 @@ function ProductCard({
             onClick={onEdit}
             aria-label="Editar"
             title="Editar"
-            className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+            className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100"
           >
             <Pencil size={16} />
           </button>
@@ -218,7 +215,7 @@ function ProductCard({
             onClick={onDelete}
             aria-label="Excluir"
             title="Excluir"
-            className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+            className="rounded-lg p-2 text-red-500 hover:bg-red-50"
           >
             <Trash2 size={16} />
           </button>
@@ -227,7 +224,7 @@ function ProductCard({
 
       <div className="flex flex-wrap items-center gap-1.5">
         {group ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-2 py-0.5 text-xs text-neutral-600">
             <span
               className="h-2 w-2 rounded-full"
               style={{ backgroundColor: group.color ?? '#a3a3a3' }}
@@ -236,17 +233,17 @@ function ProductCard({
           </span>
         ) : null}
         {product.is_seed ? (
-          <span className="rounded-full bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300">
+          <span className="rounded-full bg-neutral-50 px-2 py-0.5 text-[10px] font-medium text-neutral-700">
             Seed
           </span>
         ) : null}
         {product.is_controlled ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
             <ShieldAlert size={11} /> Controlado
           </span>
         ) : null}
         {!product.active ? (
-          <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-500 dark:text-neutral-400 dark:bg-neutral-800">
+          <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-500">
             Inativo
           </span>
         ) : null}
@@ -276,7 +273,7 @@ function ProductCard({
       </div>
 
       {allergenCount > 0 ? (
-        <p className="flex items-center gap-1 text-xs text-neutral-500 dark:text-neutral-400">
+        <p className="flex items-center gap-1 text-xs text-neutral-500">
           <AlertTriangle size={12} className="text-amber-500" />
           Contém {allergenCount} alérgeno{allergenCount > 1 ? 's' : ''}
         </p>
@@ -653,7 +650,7 @@ export function ProductsPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada. Crie uma empresa em Empresas para
             começar.
           </p>
@@ -733,10 +730,10 @@ export function ProductsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar por nome ou categoria"
-                className="w-full rounded-lg border border-neutral-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
+                className="w-full rounded-lg border border-neutral-300 py-2 pl-9 pr-3 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
               />
             </div>
-            <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+            <label className="flex items-center gap-2 text-sm text-neutral-700">
               <input
                 type="checkbox"
                 checked={showInactive}
@@ -808,7 +805,7 @@ export function ProductsPage() {
             <Card>
               <div className="flex flex-col items-center gap-2 py-8 text-center">
                 <PackageSearch size={28} className="text-neutral-400" />
-                <p className="text-sm text-neutral-600 dark:text-neutral-300">
+                <p className="text-sm text-neutral-600">
                   Nenhum produto corresponde ao filtro.
                 </p>
               </div>
@@ -876,7 +873,7 @@ export function ProductsPage() {
               </option>
             ))}
           </Select>
-          <label className="flex items-start gap-2 rounded-lg border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 p-3 text-sm text-amber-900 dark:text-amber-200">
+          <label className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
             <input
               type="checkbox"
               checked={isControlled}
@@ -919,14 +916,14 @@ export function ProductsPage() {
                 </option>
               ))}
             </Select>
-            <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+            <p className="mt-1 text-xs text-neutral-500">
               Aplicado automaticamente no wizard de impressão — o cozinheiro não
               escolhe.
             </p>
           </div>
 
           <div>
-            <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
+            <p className="mb-2 text-sm font-medium text-neutral-700">
               Validade após manipulação / abertura
             </p>
             <div className="flex flex-col gap-2">
@@ -935,7 +932,7 @@ export function ProductsPage() {
                   key={c}
                   className="grid grid-cols-[1fr_auto_auto] items-center gap-2"
                 >
-                  <span className="text-sm text-neutral-600 dark:text-neutral-300">
+                  <span className="text-sm text-neutral-600">
                     {STORAGE_CONDITION_LABELS[c]}
                   </span>
                   <input
@@ -950,7 +947,7 @@ export function ProductsPage() {
                         [c]: { ...prev[c], value: e.target.value },
                       }))
                     }
-                    className="w-20 rounded-lg border border-neutral-300 dark:border-neutral-700 px-2 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
+                    className="w-20 rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
                   />
                   <select
                     value={shelf[c].unit}
@@ -963,7 +960,7 @@ export function ProductsPage() {
                         },
                       }))
                     }
-                    className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white px-2 py-2 text-sm outline-none focus:border-neutral-800"
+                    className="rounded-lg border border-neutral-300 bg-white px-2 py-2 text-sm outline-none focus:border-neutral-800"
                   >
                     <option value="days">dias</option>
                     <option value="hours">horas</option>
@@ -977,7 +974,7 @@ export function ProductsPage() {
           </div>
 
           <div>
-            <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
+            <p className="mb-2 text-sm font-medium text-neutral-700">
               Alergênicos (RDC 26/2015)
             </p>
             <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-3">
@@ -986,7 +983,7 @@ export function ProductsPage() {
                 return (
                   <label
                     key={a.key}
-                    className="flex items-start gap-1.5 text-xs text-neutral-700 dark:text-neutral-200"
+                    className="flex items-start gap-1.5 text-xs text-neutral-700"
                   >
                     <input
                       type="checkbox"
@@ -1011,7 +1008,7 @@ export function ProductsPage() {
             </p>
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-200">
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"
               checked={active}
@@ -1022,7 +1019,7 @@ export function ProductsPage() {
           </label>
 
           {isPlatformAdmin ? (
-            <label className="flex items-start gap-2 rounded-lg border border-neutral-200 bg-neutral-50 p-2 text-sm dark:border-neutral-900 dark:bg-neutral-800/60">
+            <label className="flex items-start gap-2 rounded-lg border border-neutral-200 bg-neutral-50 p-2 text-sm">
               <input
                 type="checkbox"
                 checked={isSeed}
@@ -1030,10 +1027,10 @@ export function ProductsPage() {
                 className="mt-0.5 h-5 w-5 accent-neutral-600"
               />
               <span>
-                <span className="font-medium text-neutral-700 dark:text-neutral-300">
+                <span className="font-medium text-neutral-700">
                   Publicar no catálogo seed
                 </span>
-                <span className="block text-xs text-neutral-600 dark:text-neutral-400">
+                <span className="block text-xs text-neutral-600">
                   Visível para todas as orgs. Elas podem clonar com os prazos.
                 </span>
               </span>

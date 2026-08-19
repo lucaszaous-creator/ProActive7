@@ -228,7 +228,7 @@ export const CHECKLIST_FREQUENCY_LABELS: Record<ChecklistFrequency, string> = {
   monthly: 'Mensal',
 };
 
-export interface ChecklistItem {
+export interface ChecklistItem extends AnswerSpec {
   id: string;
   text: string;
 }
@@ -247,8 +247,17 @@ export interface ChecklistTemplate {
 
 export interface ChecklistRunItem {
   id: string;
+  /**
+   * "Item ok". Continua sendo a marca do contador de execução. Para
+   * `measure` com faixa ele é DERIVADO do valor (dentro da faixa = ok);
+   * para `scale`/`text` significa apenas "respondido".
+   */
   checked: boolean;
   note?: string;
+  /** 'scale' e 'measure': valor registrado. */
+  value?: number;
+  /** 'text': a resposta escrita. */
+  text?: string;
 }
 
 export interface Recipe {
@@ -530,12 +539,13 @@ export type AuditResult = 'C' | 'NC' | 'NA';
  */
 export type AuditAnswerType = 'conformity' | 'text' | 'scale' | 'measure';
 
-export interface AuditItem {
-  id: string;
-  category: string;
-  text: string;
-  weight: number;
-  legal_ref?: string;
+/**
+ * Configuracao do tipo de resposta. Vive no JSONB tanto do item de VISTORIA
+ * (audit_templates.items) quanto do item de ROTINA (checklist_templates.items)
+ * — e a mesma pergunta feita em contextos diferentes, entao e o mesmo tipo,
+ * lido pelas mesmas funcoes em lib/auditAnswers.
+ */
+export interface AnswerSpec {
   answer_type?: AuditAnswerType;
   /** 'scale': nota maxima da escala (padrao 5). */
   scale_max?: number;
@@ -544,6 +554,14 @@ export interface AuditItem {
   /** 'measure': faixa aceitavel definida pela RT. Fora dela = NC automatica. */
   min?: number;
   max?: number;
+}
+
+export interface AuditItem extends AnswerSpec {
+  id: string;
+  category: string;
+  text: string;
+  weight: number;
+  legal_ref?: string;
   /**
    * Plano de acao padrao (migration 0103). Quando o item e reprovado na
    * visita, a NC nasce preenchida a partir deste modelo em vez de virar

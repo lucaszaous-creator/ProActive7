@@ -282,7 +282,7 @@ export function GruposPage() {
 
           {donutItems.length > 0 && (
             <Card>
-              <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              <h2 className="mb-3 text-sm font-semibold text-neutral-700">
                 Distribuição de produtos por grupo
               </h2>
               <DonutChart
@@ -297,7 +297,7 @@ export function GruposPage() {
             <div className="relative max-w-xs">
               <Search
                 size={15}
-                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400 dark:text-neutral-500"
+                className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400"
               />
               <input
                 type="search"
@@ -305,14 +305,14 @@ export function GruposPage() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar grupo…"
                 aria-label="Buscar grupo"
-                className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-9 pr-3 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-neutral-400 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-500"
+                className="w-full rounded-lg border border-neutral-200 bg-white py-2 pl-9 pr-3 text-sm text-neutral-800 placeholder:text-neutral-400 focus:border-neutral-400 focus:outline-none"
               />
             </div>
           )}
 
           {filteredGroups.length === 0 ? (
             <Card>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="text-sm text-neutral-500">
                 Nenhum grupo encontrado para "{search.trim()}".
               </p>
             </Card>
@@ -323,7 +323,7 @@ export function GruposPage() {
                 return (
                   <div
                     key={g.id}
-                    className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700"
+                    className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300"
                   >
                     <span
                       className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white"
@@ -332,20 +332,20 @@ export function GruposPage() {
                       <Tag size={18} />
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="flex items-center gap-2 truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                      <p className="flex items-center gap-2 truncate text-sm font-medium text-neutral-800">
                         {g.name}
                         {!g.active && (
-                          <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-normal text-neutral-500 dark:text-neutral-400 dark:bg-neutral-800">
+                          <span className="rounded bg-neutral-100 px-1.5 py-0.5 text-[10px] font-normal text-neutral-500">
                             inativo
                           </span>
                         )}
                       </p>
-                      <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+                      <p className="mt-0.5 flex items-center gap-1.5 text-xs text-neutral-500">
                         <span
                           className={`inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold tabular-nums ${
                             count > 0
-                              ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200'
-                              : 'bg-neutral-50 text-neutral-400 dark:bg-neutral-800/60 dark:text-neutral-500'
+                              ? 'bg-neutral-100 text-neutral-700'
+                              : 'bg-neutral-50 text-neutral-400'
                           }`}
                         >
                           <Package size={11} />
@@ -360,7 +360,7 @@ export function GruposPage() {
                           onClick={() => openEdit(g)}
                           aria-label="Editar"
                           title="Editar"
-                          className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                          className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100"
                         >
                           <Pencil size={16} />
                         </button>
@@ -368,7 +368,7 @@ export function GruposPage() {
                           onClick={() => setDeleting(g)}
                           aria-label="Excluir"
                           title="Excluir"
-                          className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                          className="rounded-lg p-2 text-red-500 hover:bg-red-50"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -410,9 +410,7 @@ export function GruposPage() {
             placeholder="Ex.: Carnes"
           />
           <div>
-            <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-              Cor
-            </p>
+            <p className="mb-2 text-sm font-medium text-neutral-700">Cor</p>
             <div className="flex flex-wrap gap-2">
               {DEFAULT_COLORS.map((c) => (
                 <button
@@ -420,7 +418,7 @@ export function GruposPage() {
                   onClick={() => setColor(c)}
                   className={`h-9 w-9 rounded-lg ring-2 transition ${
                     color === c
-                      ? 'ring-neutral-900 dark:ring-neutral-100'
+                      ? 'ring-neutral-900'
                       : 'ring-transparent hover:ring-neutral-300'
                   }`}
                   style={{ backgroundColor: c }}
@@ -436,7 +434,7 @@ export function GruposPage() {
             value={sortOrder}
             onChange={(e) => setSortOrder(e.target.value)}
           />
-          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"
               checked={active}

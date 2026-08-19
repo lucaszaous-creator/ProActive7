@@ -42,10 +42,10 @@ export function DeltaBadge({
   const flat = pct === 0;
   const good = flat ? null : invert ? !up : up;
   const tone = flat
-    ? 'bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400'
+    ? 'bg-neutral-100 text-neutral-500'
     : good
-      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/60 dark:text-emerald-300'
-      : 'bg-red-100 text-red-700 dark:bg-red-900/60 dark:text-red-300';
+      ? 'bg-emerald-100 text-emerald-700'
+      : 'bg-red-100 text-red-700';
   const Icon = flat ? Minus : up ? TrendingUp : TrendingDown;
   return (
     <span
@@ -78,18 +78,15 @@ export function StatCard({
   tone?: 'neutral' | 'teal' | 'blue' | 'amber' | 'red' | 'emerald';
 }) {
   const tones: Record<string, string> = {
-    neutral:
-      'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
-    teal: 'bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300',
-    blue: 'bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300',
-    amber:
-      'bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300',
-    red: 'bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-300',
-    emerald:
-      'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300',
+    neutral: 'bg-neutral-100 text-neutral-600',
+    teal: 'bg-teal-50 text-teal-700',
+    blue: 'bg-blue-50 text-blue-700',
+    amber: 'bg-amber-50 text-amber-700',
+    red: 'bg-red-50 text-red-700',
+    emerald: 'bg-emerald-50 text-emerald-700',
   };
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] dark:border-white/10 dark:bg-neutral-900 dark:shadow-none">
+    <div className="rounded-xl border border-neutral-200 bg-white p-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
       <div className="flex items-start justify-between gap-2">
         <span
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${tones[tone]}`}
@@ -98,17 +95,12 @@ export function StatCard({
         </span>
         {delta}
       </div>
-      <p className="mt-3 text-2xl font-semibold tabular-nums tracking-tight text-neutral-900 dark:text-neutral-50">
+      <p className="mt-3 text-2xl font-semibold tabular-nums tracking-tight text-neutral-900">
         {value}
       </p>
-      <p className="mt-0.5 truncate text-xs text-neutral-500 dark:text-neutral-400">
+      <p className="mt-0.5 truncate text-xs text-neutral-500">
         {label}
-        {hint ? (
-          <span className="text-neutral-400 dark:text-neutral-500">
-            {' '}
-            · {hint}
-          </span>
-        ) : null}
+        {hint ? <span className="text-neutral-400"> · {hint}</span> : null}
       </p>
     </div>
   );
@@ -138,24 +130,24 @@ export function RankedBars({
           <li key={item.label + i}>
             <div className="mb-1 flex items-baseline justify-between gap-2 text-xs">
               <span className="flex min-w-0 items-baseline gap-1.5">
-                <span className="w-4 shrink-0 text-right font-semibold tabular-nums text-neutral-400 dark:text-neutral-500">
+                <span className="w-4 shrink-0 text-right font-semibold tabular-nums text-neutral-400">
                   {i + 1}
                 </span>
-                <span className="truncate font-medium text-neutral-700 dark:text-neutral-200">
+                <span className="truncate font-medium text-neutral-700">
                   {item.label}
                 </span>
               </span>
-              <span className="shrink-0 tabular-nums text-neutral-500 dark:text-neutral-400">
-                <b className="font-semibold text-neutral-900 dark:text-neutral-100">
+              <span className="shrink-0 tabular-nums text-neutral-500">
+                <b className="font-semibold text-neutral-900">
                   {formatValue(item.value)}
                 </b>{' '}
                 · {share}%
               </span>
             </div>
-            <div className="ml-[22px] h-2 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+            <div className="ml-[22px] h-2 overflow-hidden rounded-full bg-neutral-100">
               <div
                 className={`h-full rounded-full transition-[width] duration-700 ease-out ${
-                  colored ? '' : 'bg-neutral-900 dark:bg-neutral-200'
+                  colored ? '' : 'bg-neutral-900'
                 }`}
                 style={{
                   width: `${pct}%`,
@@ -201,10 +193,10 @@ export function ColumnChart({
       >
         {showAvg && avg > 0 ? (
           <div
-            className="pointer-events-none absolute inset-x-0 z-10 border-t border-dashed border-neutral-400/70 dark:border-neutral-500/70"
+            className="pointer-events-none absolute inset-x-0 z-10 border-t border-dashed border-neutral-400/70"
             style={{ bottom: `${(avg / max) * 100}%` }}
           >
-            <span className="absolute -top-2 right-0 rounded bg-white/80 px-1 text-[9px] font-medium text-neutral-500 backdrop-blur dark:bg-neutral-900/80 dark:text-neutral-400">
+            <span className="absolute -top-2 right-0 rounded bg-white/80 px-1 text-[9px] font-medium text-neutral-500 backdrop-blur">
               média {Math.round(avg).toLocaleString('pt-BR')}
             </span>
           </div>
@@ -219,7 +211,7 @@ export function ColumnChart({
               onMouseEnter={() => setActive(i)}
             >
               {isActive ? (
-                <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-lg bg-neutral-900 px-2 py-1 text-[10px] font-medium text-white shadow-lg dark:bg-neutral-100 dark:text-neutral-900">
+                <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-lg bg-neutral-900 px-2 py-1 text-[10px] font-medium text-white shadow-lg">
                   {d.hint ?? d.label}:{' '}
                   <b className="tabular-nums">
                     {d.value.toLocaleString('pt-BR')}
@@ -242,7 +234,7 @@ export function ColumnChart({
         {data.map((d, i) => (
           <span
             key={d.label + i}
-            className="flex-1 truncate text-center text-[9px] text-neutral-400 dark:text-neutral-500"
+            className="flex-1 truncate text-center text-[9px] text-neutral-400"
           >
             {i % labelEvery === 0 ? d.label : ''}
           </span>
@@ -304,7 +296,7 @@ export function DonutChart({
             r={r}
             fill="none"
             strokeWidth={stroke}
-            className="stroke-neutral-100 dark:stroke-neutral-800"
+            className="stroke-neutral-100"
           />
           {slices.map((s, i) => {
             const frac = s.value / total;
@@ -328,11 +320,11 @@ export function DonutChart({
           })}
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-xl font-semibold tabular-nums text-neutral-900 dark:text-neutral-50">
+          <span className="text-xl font-semibold tabular-nums text-neutral-900">
             {total.toLocaleString('pt-BR')}
           </span>
           {centerLabel ? (
-            <span className="max-w-[70%] truncate text-[10px] text-neutral-500 dark:text-neutral-400">
+            <span className="max-w-[70%] truncate text-[10px] text-neutral-500">
               {centerLabel}
             </span>
           ) : null}
@@ -351,12 +343,10 @@ export function DonutChart({
                   className="h-2.5 w-2.5 shrink-0 rounded-full"
                   style={{ backgroundColor: chartColor(i) }}
                 />
-                <span className="truncate text-neutral-700 dark:text-neutral-200">
-                  {s.label}
-                </span>
+                <span className="truncate text-neutral-700">{s.label}</span>
               </span>
-              <span className="shrink-0 tabular-nums text-neutral-500 dark:text-neutral-400">
-                <b className="font-semibold text-neutral-900 dark:text-neutral-100">
+              <span className="shrink-0 tabular-nums text-neutral-500">
+                <b className="font-semibold text-neutral-900">
                   {s.value.toLocaleString('pt-BR')}
                 </b>{' '}
                 · {pct}%
@@ -418,7 +408,7 @@ export function TrendArea({
       <div className="relative" onMouseLeave={() => setActive(null)}>
         {active !== null ? (
           <div
-            className="pointer-events-none absolute -top-1 z-20 -translate-x-1/2 whitespace-nowrap rounded-lg bg-neutral-900 px-2 py-1 text-[10px] font-medium text-white shadow-lg dark:bg-neutral-100 dark:text-neutral-900"
+            className="pointer-events-none absolute -top-1 z-20 -translate-x-1/2 whitespace-nowrap rounded-lg bg-neutral-900 px-2 py-1 text-[10px] font-medium text-white shadow-lg"
             style={{ left: `${(x(active) / W) * 100}%` }}
           >
             {points[active].label}:{' '}
@@ -470,7 +460,7 @@ export function TrendArea({
             cy={y(points[active ?? n - 1].value)}
             r={4}
             fill={color}
-            className="stroke-white dark:stroke-neutral-900"
+            className="stroke-white"
             strokeWidth={2}
           />
         </svg>
@@ -479,16 +469,16 @@ export function TrendArea({
         {points.map((p, i) => (
           <span
             key={p.label + i}
-            className="flex-1 truncate text-center text-[9px] text-neutral-400 dark:text-neutral-500"
+            className="flex-1 truncate text-center text-[9px] text-neutral-400"
           >
             {i % labelEvery === 0 || i === n - 1 ? p.label : ''}
           </span>
         ))}
       </div>
       {last ? (
-        <p className="mt-1 text-right text-xs text-neutral-500 dark:text-neutral-400">
+        <p className="mt-1 text-right text-xs text-neutral-500">
           último:{' '}
-          <b className="tabular-nums text-neutral-900 dark:text-neutral-100">
+          <b className="tabular-nums text-neutral-900">
             {formatValue(last.value)}
           </b>
         </p>
@@ -522,7 +512,7 @@ export function Heatmap({
         <tbody>
           {rows.map((row, y) => (
             <tr key={y}>
-              <td className="pr-2 text-right text-[10px] text-neutral-500 dark:text-neutral-400">
+              <td className="pr-2 text-right text-[10px] text-neutral-500">
                 {yLabels[y]}
               </td>
               {row.map((v, x) => {
@@ -530,7 +520,7 @@ export function Heatmap({
                 return (
                   <td key={x}>
                     <div
-                      className="h-5 w-5 rounded-[5px] bg-neutral-100 transition-colors sm:h-6 sm:w-6 dark:bg-neutral-800"
+                      className="h-5 w-5 rounded-[5px] bg-neutral-100 transition-colors sm:h-6 sm:w-6"
                       style={
                         v > 0
                           ? { backgroundColor: `rgba(${color}, ${alpha})` }
@@ -548,7 +538,7 @@ export function Heatmap({
             {xLabels.map((l, x) => (
               <td
                 key={x}
-                className="pt-0.5 text-center text-[9px] text-neutral-400 dark:text-neutral-500"
+                className="pt-0.5 text-center text-[9px] text-neutral-400"
               >
                 {l}
               </td>

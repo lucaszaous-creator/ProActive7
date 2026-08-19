@@ -1,4 +1,8 @@
-import { DEFAULT_SCALE_MAX, answerTypeOf, scaleMaxOf } from './auditAnswers';
+import {
+  DEFAULT_SCALE_MAX,
+  answerDraftFrom,
+  answerSpecFromDraft,
+} from './auditAnswers';
 import type { AuditAnswerType, AuditItem } from './types';
 
 /**
@@ -76,53 +80,11 @@ export function itemsToSections(items: AuditItem[]): DraftSection[] {
       weight: it.weight ?? 1,
       legal_ref: it.legal_ref ?? '',
       ncTemplateId: it.nc_template_id ?? '',
-      answerType: answerTypeOf(it),
-      scaleMax: String(scaleMaxOf(it)),
-      unit: it.unit ?? '',
-      min: it.min == null ? '' : String(it.min),
-      max: it.max == null ? '' : String(it.max),
+      ...answerDraftFrom(it),
     });
   }
   const sections = Array.from(map.values());
   return sections.length > 0 ? sections : [emptySection()];
-}
-
-/** Número do formulário; string vazia (ou lixo) vira "não definido". */
-function num(value: string): number | undefined {
-  const trimmed = value.trim();
-  if (!trimmed) return undefined;
-  const parsed = Number(trimmed.replace(',', '.'));
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
-
-/**
- * Só persiste os campos que o tipo escolhido usa — trocar de "valor medido"
- * para "conforme/não conforme" não pode deixar uma faixa órfã no JSONB
- * julgando a resposta por trás.
- */
-function answerTypeFields(i: DraftItem): Partial<AuditItem> {
-  switch (i.answerType) {
-    case 'text':
-      return { answer_type: 'text' };
-    case 'scale':
-      return {
-        answer_type: 'scale',
-        scale_max: num(i.scaleMax) ?? DEFAULT_SCALE_MAX,
-      };
-    case 'measure': {
-      const min = num(i.min);
-      const max = num(i.max);
-      return {
-        answer_type: 'measure',
-        ...(i.unit.trim() ? { unit: i.unit.trim() } : {}),
-        ...(min == null ? {} : { min }),
-        ...(max == null ? {} : { max }),
-      };
-    }
-    default:
-      // conformidade é o padrão: não grava nada e o modelo fica limpo.
-      return {};
-  }
 }
 
 /**
@@ -140,7 +102,7 @@ export function sectionsToItems(sections: DraftSection[]): AuditItem[] {
         weight: i.weight,
         ...(i.legal_ref.trim() ? { legal_ref: i.legal_ref.trim() } : {}),
         ...(i.ncTemplateId ? { nc_template_id: i.ncTemplateId } : {}),
-        ...answerTypeFields(i),
+        ...answerSpecFromDraft(i),
       })),
   );
 }

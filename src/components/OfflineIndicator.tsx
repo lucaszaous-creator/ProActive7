@@ -20,16 +20,18 @@ export function OfflineIndicator() {
 
   if (online && pending === 0) return null;
 
-  const tone = stuck > 0
-    ? 'border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300'
-    : online
-      ? 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-900/50 dark:bg-blue-950/40 dark:text-blue-300'
-      : 'border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300';
+  const tone =
+    stuck > 0
+      ? 'border-red-200 bg-red-50 text-red-800'
+      : online
+        ? 'border-blue-200 bg-blue-50 text-blue-800'
+        : 'border-amber-200 bg-amber-50 text-amber-900';
 
   async function handleSync() {
     const result = await syncNow();
     if (result.sent > 0) toast.success('Trabalho sincronizado.');
-    else if (result.remaining > 0) toast.error('Ainda não foi possível enviar.');
+    else if (result.remaining > 0)
+      toast.error('Ainda não foi possível enviar.');
   }
 
   async function handleRetry() {

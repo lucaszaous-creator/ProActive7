@@ -14,11 +14,10 @@ interface HeroGreetingProps {
 }
 
 const ACCENT: Record<'emerald' | 'teal' | 'amber' | 'red', string> = {
-  emerald:
-    'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
-  teal: 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
-  amber: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-  red: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300',
+  emerald: 'bg-neutral-50 text-neutral-700',
+  teal: 'bg-neutral-50 text-neutral-700',
+  amber: 'bg-amber-50 text-amber-700',
+  red: 'bg-red-50 text-red-700',
 };
 
 export function HeroGreeting({
@@ -39,21 +38,19 @@ export function HeroGreeting({
   if (companyName) {
     return (
       <header className="mb-4 flex flex-col gap-3 sm:mb-5">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 sm:text-xs">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-neutral-500 sm:text-xs">
           {greeting}, {name || 'bem-vindo'} ·{' '}
-          <span className="text-neutral-400 dark:text-neutral-500">
-            painel da empresa
-          </span>
+          <span className="text-neutral-400">painel da empresa</span>
         </p>
         <div className="flex items-center gap-3">
           {companyLogoUrl ? (
             <img
               src={companyLogoUrl}
               alt={`Logo ${companyName}`}
-              className="h-12 w-12 shrink-0 rounded-lg border border-neutral-200 object-contain p-1 dark:border-neutral-800"
+              className="h-12 w-12 shrink-0 rounded-lg border border-neutral-200 object-contain p-1"
             />
           ) : (
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-neutral-50 text-base font-semibold text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-neutral-50 text-base font-semibold text-neutral-700">
               {companyName
                 .split(/\s+/)
                 .filter(Boolean)
@@ -64,7 +61,7 @@ export function HeroGreeting({
             </div>
           )}
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
+            <h1 className="truncate text-xl font-semibold text-neutral-800 sm:text-2xl">
               {companyName}
             </h1>
             {summary ? (
@@ -83,10 +80,10 @@ export function HeroGreeting({
   return (
     <header className="mb-4 flex flex-col gap-2 sm:mb-5 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 sm:text-xs">
+        <p className="text-[11px] font-medium uppercase tracking-wide text-neutral-500 sm:text-xs">
           {greeting}
         </p>
-        <h1 className="truncate text-lg font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
+        <h1 className="truncate text-lg font-semibold text-neutral-800 sm:text-2xl">
           {name || 'Bem-vindo'}
         </h1>
       </div>

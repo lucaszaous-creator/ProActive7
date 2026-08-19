@@ -1,5 +1,12 @@
 @import 'tailwindcss';
 
+/* Dark mode foi REMOVIDO do produto (decisão do Lucas): nada mais adiciona
+   a classe `.dark` no <html>, então este seletor nunca casa e todo utilitário
+   `dark:` que ainda existe no código fica inerte.
+
+   Esta linha PRECISA continuar aqui. Sem ela o Tailwind 4 volta ao `dark:`
+   nativo, que é baseado em `prefers-color-scheme` — e o modo escuro
+   reapareceria sozinho para quem usa o sistema no escuro. */
 @variant dark (&:is(.dark *));
 
 html,
@@ -26,8 +33,10 @@ body {
 body {
   margin: 0;
   background-color: #f8fafc;
-  /* Controles nativos (date picker, select dropdown, scrollbar) seguem o
-     tema — sem isso eles renderizam claros no meio do dark mode. */
+  /* Controles nativos (date picker, select, scrollbar) sempre claros: o
+     app não tem mais tema escuro, e sem isto o navegador de quem usa o
+     sistema no escuro renderizaria o date picker preto no meio da tela
+     branca. */
   color-scheme: light;
   /* Refinamento tipográfico global do design system Mono: suavização de
      fonte e ligaduras/kerning ativos. Mantém a system stack (custo zero). */
@@ -36,20 +45,30 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-.dark body {
-  /* Dark v2: preto neutro profundo (sem o azulado do slate). Cards em
-     neutral-900 ganham contraste real sobre este fundo. */
-  background-color: #0a0a0a;
-  color-scheme: dark;
-}
-
 ::selection {
   background: rgba(23, 23, 23, 0.9);
   color: #fff;
 }
-.dark ::selection {
-  background: rgba(255, 255, 255, 0.9);
-  color: #171717;
+
+/* iOS dá zoom na página inteira quando o campo focado tem fonte menor que
+   16px, e não volta sozinho — a pessoa fica com a tela deslocada no meio
+   do preenchimento. Os componentes do design system já usam `text-base` no
+   mobile, mas os <textarea>/<select> escritos direto nas páginas (a
+   observação de item da vistoria, por exemplo) usam text-xs.
+   Piso de 16px no telefone resolve os dois casos de uma vez. */
+@media (max-width: 640px) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* Realce cinza do toque no Android/iOS: com botões arredondados ele pinta
+   um retângulo torto por cima. Os estados de :active/:hover do design
+   system já dão o retorno visual. */
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Números tabulares para colunas de valores (tabelas, KPIs, contadores):
@@ -435,9 +454,6 @@ table {
   overflow: hidden;
   background-color: rgb(229 229 229);
 }
-.dark .fx-skeleton {
-  background-color: rgb(38 38 38);
-}
 .fx-skeleton::after {
   content: '';
   position: absolute;
@@ -450,14 +466,6 @@ table {
     transparent
   );
   animation: skeletonSweep 1.4s ease-in-out infinite;
-}
-.dark .fx-skeleton::after {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.08),
-    transparent
-  );
 }
 @keyframes skeletonSweep {
   100% {

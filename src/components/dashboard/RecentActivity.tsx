@@ -17,9 +17,9 @@ const ICON: Record<ActivityKind, LucideIcon> = {
 };
 
 const ICON_COLOR: Record<ActivityKind, string> = {
-  nc_opened: 'text-red-600 dark:text-red-400',
-  audit_completed: 'text-neutral-600 dark:text-neutral-400',
-  doc_published: 'text-blue-600 dark:text-blue-400',
+  nc_opened: 'text-red-600',
+  audit_completed: 'text-neutral-600',
+  doc_published: 'text-blue-600',
 };
 
 function relativeTime(iso: string): string {
@@ -36,11 +36,8 @@ function relativeTime(iso: string): string {
 export function RecentActivity({ loading, items }: RecentActivityProps) {
   return (
     <Card>
-      <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
-        <Activity
-          size={16}
-          className="text-neutral-600 dark:text-neutral-400"
-        />
+      <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold text-neutral-700">
+        <Activity size={16} className="text-neutral-600" />
         Atividade recente
       </h2>
       {loading ? (
@@ -50,28 +47,26 @@ export function RecentActivity({ loading, items }: RecentActivityProps) {
           <Skeleton className="h-10" />
         </div>
       ) : items.length === 0 ? (
-        <p className="py-4 text-center text-sm text-neutral-500 dark:text-neutral-400">
+        <p className="py-4 text-center text-sm text-neutral-500">
           Nenhuma atividade nos últimos 14 dias.
         </p>
       ) : (
-        <ul className="flex flex-col divide-y divide-neutral-100 dark:divide-neutral-800">
+        <ul className="flex flex-col divide-y divide-neutral-100">
           {items.map((it) => {
             const Icon = ICON[it.kind];
             return (
               <li key={`${it.kind}-${it.id}`}>
                 <Link
                   to={it.href}
-                  className="flex items-start gap-3 py-2 text-sm hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                  className="flex items-start gap-3 py-2 text-sm hover:bg-neutral-50"
                 >
                   <Icon
                     size={16}
                     className={`mt-0.5 shrink-0 ${ICON_COLOR[it.kind]}`}
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-neutral-800 dark:text-neutral-200">
-                      {it.summary}
-                    </p>
-                    <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                    <p className="truncate text-neutral-800">{it.summary}</p>
+                    <p className="truncate text-xs text-neutral-500">
                       {it.companyName ? `${it.companyName} · ` : ''}
                       {relativeTime(it.at)}
                     </p>

@@ -91,16 +91,14 @@ function Kpi({
   tone?: 'neutral' | 'teal' | 'amber' | 'red' | 'green';
 }) {
   const accent = {
-    neutral:
-      'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
-    teal: 'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300',
-    amber: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-    red: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300',
-    green:
-      'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300',
+    neutral: 'bg-neutral-100 text-neutral-600',
+    teal: 'bg-neutral-50 text-neutral-700',
+    amber: 'bg-amber-50 text-amber-700',
+    red: 'bg-red-50 text-red-700',
+    green: 'bg-neutral-50 text-neutral-700',
   }[tone];
   return (
-    <div className="rounded-xl border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
+    <div className="rounded-xl border border-neutral-200 bg-white p-4">
       <div className="flex items-center gap-3">
         <span
           className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${accent}`}
@@ -108,16 +106,14 @@ function Kpi({
           <Icon size={20} />
         </span>
         <div className="min-w-0">
-          <p className="truncate text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+          <p className="truncate text-xs font-medium uppercase tracking-wide text-neutral-500">
             {label}
           </p>
-          <p className="truncate text-2xl font-semibold leading-tight text-neutral-800 dark:text-neutral-100">
+          <p className="truncate text-2xl font-semibold leading-tight text-neutral-800">
             {value}
           </p>
           {hint ? (
-            <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
-              {hint}
-            </p>
+            <p className="truncate text-xs text-neutral-500">{hint}</p>
           ) : null}
         </div>
       </div>
@@ -139,9 +135,7 @@ function TabButton({
       onClick={onClick}
       data-active={active ? '1' : '0'}
       className={`fx-underline fx-press rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-        active
-          ? 'text-neutral-900 dark:text-neutral-100'
-          : 'text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100'
+        active ? 'text-neutral-900' : 'text-neutral-500 hover:text-neutral-900'
       }`}
     >
       {children}
@@ -266,18 +260,18 @@ export function PlatformDashboardPage() {
           </section>
 
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
               Top 10 orgs por etiquetas impressas (30 dias)
             </h2>
             {topByLabels.length === 0 ? (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="text-sm text-neutral-500">
                 Nenhuma etiqueta impressa nos últimos 30 dias.
               </p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:border-neutral-700">
+                    <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500">
                       <th className="py-2">Organização</th>
                       <th className="py-2 text-right">Empresas</th>
                       <th className="py-2 text-right">Etiquetas</th>
@@ -289,12 +283,12 @@ export function PlatformDashboardPage() {
                     {topByLabels.map((o) => (
                       <tr
                         key={o.organization_id}
-                        className="border-b border-neutral-100 dark:border-neutral-800"
+                        className="border-b border-neutral-100"
                       >
                         <td className="py-2">
                           <Link
                             to={`/platform/organizacoes/${o.organization_id}`}
-                            className="text-neutral-700 hover:underline dark:text-neutral-400"
+                            className="text-neutral-700 hover:underline"
                           >
                             {o.organization_name}
                           </Link>
@@ -302,7 +296,7 @@ export function PlatformDashboardPage() {
                         <td className="py-2 text-right">{o.company_count}</td>
                         <td className="py-2 text-right">{o.labels_30d}</td>
                         <td className="py-2 text-right">{o.audits_30d}</td>
-                        <td className="py-2 text-right text-neutral-500 dark:text-neutral-400">
+                        <td className="py-2 text-right text-neutral-500">
                           {formatRelative(o.last_login_at)}
                         </td>
                       </tr>
@@ -353,13 +347,13 @@ export function PlatformDashboardPage() {
           </section>
 
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
               Saúde por organização (ordem: mais críticas primeiro)
             </h2>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:border-neutral-700">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500">
                     <th className="py-2">Organização</th>
                     <th className="py-2 text-right">NCs abertas</th>
                     <th className="py-2 text-right">NCs +30d</th>
@@ -373,19 +367,19 @@ export function PlatformDashboardPage() {
                     return (
                       <tr
                         key={o.organization_id}
-                        className="border-b border-neutral-100 dark:border-neutral-800"
+                        className="border-b border-neutral-100"
                       >
                         <td className="py-2">
                           <Link
                             to={`/platform/organizacoes/${o.organization_id}`}
-                            className="text-neutral-700 hover:underline dark:text-neutral-400"
+                            className="text-neutral-700 hover:underline"
                           >
                             {o.organization_name}
                           </Link>
                         </td>
                         <td className="py-2 text-right">{o.nc_open}</td>
                         <td
-                          className={`py-2 text-right ${critical ? 'font-semibold text-red-600 dark:text-red-300' : ''}`}
+                          className={`py-2 text-right ${critical ? 'font-semibold text-red-600' : ''}`}
                         >
                           {o.nc_overdue_30d}
                         </td>
@@ -407,11 +401,11 @@ export function PlatformDashboardPage() {
 
       {tab === 'usage' ? (
         <Card>
-          <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+          <h2 className="mb-3 text-sm font-semibold text-neutral-700">
             Uso de features (últimos 30 dias)
           </h2>
           {usage.length === 0 ? (
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            <p className="text-sm text-neutral-500">
               Nenhum evento registrado ainda. Os eventos são gravados quando
               usuários executam ações no app (imprimir etiqueta, salvar
               auditoria, etc.).
@@ -420,7 +414,7 @@ export function PlatformDashboardPage() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:border-neutral-700">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500">
                     <th className="py-2">Feature</th>
                     <th className="py-2 text-right">Usos</th>
                     <th className="py-2 text-right">Usuários únicos</th>
@@ -431,7 +425,7 @@ export function PlatformDashboardPage() {
                   {usage.map((u) => (
                     <tr
                       key={u.feature_key}
-                      className="border-b border-neutral-100 dark:border-neutral-800"
+                      className="border-b border-neutral-100"
                     >
                       <td className="py-2 font-mono text-xs">
                         {u.feature_key}
@@ -445,10 +439,10 @@ export function PlatformDashboardPage() {
               </table>
             </div>
           )}
-          <p className="mt-3 text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="mt-3 text-xs text-neutral-500">
             <Printer size={12} className="mr-1 inline" />
             Para registrar eventos novos, chame{' '}
-            <code className="rounded bg-neutral-100 px-1 dark:bg-neutral-800">
+            <code className="rounded bg-neutral-100 px-1">
               logFeatureEvent('chave')
             </code>{' '}
             de <code>src/lib/platformMetrics.ts</code>.
@@ -458,22 +452,22 @@ export function PlatformDashboardPage() {
 
       {tab === 'churn' ? (
         <Card>
-          <h2 className="mb-1 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+          <h2 className="mb-1 text-sm font-semibold text-neutral-700">
             Risco de churn
           </h2>
-          <p className="mb-3 text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="mb-3 text-xs text-neutral-500">
             Organizações sem login há mais de 14 dias ou sem nenhuma etiqueta
             nos últimos 30 dias. As mais críticas aparecem primeiro.
           </p>
           {churnRows.length === 0 ? (
-            <p className="rounded-lg bg-neutral-50 px-3 py-2 text-sm text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300">
+            <p className="rounded-lg bg-neutral-50 px-3 py-2 text-sm text-neutral-700">
               Nenhuma organização em risco no momento.
             </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:border-neutral-700">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500">
                     <th className="py-2">Organização</th>
                     <th className="py-2">Sinais de risco</th>
                     <th className="py-2 text-right">Etiquetas 30d</th>
@@ -485,9 +479,9 @@ export function PlatformDashboardPage() {
                   {churnRows.map(({ org, reasons }) => (
                     <tr
                       key={org.organization_id}
-                      className="border-b border-neutral-100 dark:border-neutral-800"
+                      className="border-b border-neutral-100"
                     >
-                      <td className="py-2 font-medium text-neutral-800 dark:text-neutral-100">
+                      <td className="py-2 font-medium text-neutral-800">
                         {org.organization_name}
                       </td>
                       <td className="py-2">
@@ -495,7 +489,7 @@ export function PlatformDashboardPage() {
                           {reasons.map((rsn) => (
                             <span
                               key={rsn}
-                              className="rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-700 dark:bg-amber-950 dark:text-amber-300"
+                              className="rounded-full bg-amber-50 px-2 py-0.5 text-xs text-amber-700"
                             >
                               {rsn}
                             </span>
@@ -503,13 +497,13 @@ export function PlatformDashboardPage() {
                         </div>
                       </td>
                       <td className="py-2 text-right">{org.labels_30d}</td>
-                      <td className="py-2 text-right text-neutral-500 dark:text-neutral-400">
+                      <td className="py-2 text-right text-neutral-500">
                         {formatRelative(org.last_login_at)}
                       </td>
                       <td className="py-2 text-right">
                         <Link
                           to={`/platform/organizacoes/${org.organization_id}`}
-                          className="text-xs font-medium text-neutral-700 hover:underline dark:text-neutral-400"
+                          className="text-xs font-medium text-neutral-700 hover:underline"
                         >
                           Abrir
                         </Link>

@@ -165,28 +165,28 @@ export function HelpPage() {
     <div className="mx-auto max-w-5xl">
       {/* Cabeçalho */}
       <div className="mb-5 flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-50 text-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-400">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-neutral-50 text-neutral-600">
           <LifeBuoy size={22} />
         </span>
         <div>
-          <h1 className="text-xl font-semibold text-neutral-800 dark:text-neutral-100 sm:text-2xl">
+          <h1 className="text-xl font-semibold text-neutral-800 sm:text-2xl">
             Ajuda
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm text-neutral-500">
             O que cada função do sistema faz e como usar no dia a dia.
           </p>
         </div>
       </div>
 
       {/* Busca */}
-      <div className="mb-5 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="mb-5 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
         <Search size={16} className="shrink-0 text-neutral-400" />
         <input
           type="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar função (ex.: etiqueta, ASO, temperatura)..."
-          className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400 dark:text-neutral-100"
+          className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400"
         />
       </div>
 
@@ -197,12 +197,10 @@ export function HelpPage() {
           <section key={role.key} className="mb-8">
             {visibleRoles.length > 1 ? (
               <div className="mb-3 border-l-4 border-neutral-500 pl-3">
-                <h2 className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
+                <h2 className="text-base font-semibold text-neutral-800">
                   {role.title}
                 </h2>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  {role.subtitle}
-                </p>
+                <p className="text-xs text-neutral-500">{role.subtitle}</p>
               </div>
             ) : null}
 
@@ -220,8 +218,8 @@ export function HelpPage() {
                       }
                       className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition ${
                         activeId === id
-                          ? 'border-neutral-500 bg-neutral-50 text-neutral-700 dark:border-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-300'
-                          : 'border-neutral-200 text-neutral-600 hover:border-neutral-300 dark:border-neutral-800 dark:text-neutral-300'
+                          ? 'border-neutral-500 bg-neutral-50 text-neutral-700'
+                          : 'border-neutral-200 text-neutral-600 hover:border-neutral-300'
                       }`}
                     >
                       <Icon size={13} />
@@ -240,22 +238,22 @@ export function HelpPage() {
                 return (
                   <Card key={id}>
                     <div className="flex items-start gap-3">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-50 text-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-400">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-neutral-50 text-neutral-600">
                         <Icon size={18} />
                       </span>
                       <div className="min-w-0 flex-1">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="min-w-0">
-                            <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
+                            <h3 className="text-sm font-semibold text-neutral-800">
                               {f.title}
                             </h3>
-                            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                            <p className="text-xs text-neutral-500">
                               {f.subtitle}
                             </p>
                           </div>
                           <Link
                             to={f.route}
-                            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 dark:border-neutral-800 dark:bg-neutral-800/60 dark:text-neutral-300"
+                            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-neutral-200 bg-neutral-50 px-2.5 py-1 text-xs font-medium text-neutral-700 hover:bg-neutral-100"
                           >
                             Abrir
                             <ArrowRight size={12} />
@@ -264,23 +262,23 @@ export function HelpPage() {
 
                         {open ? (
                           <div className="mt-3 space-y-3">
-                            <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+                            <p className="text-sm leading-relaxed text-neutral-700">
                               {f.what}
                             </p>
 
                             <div>
-                              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700 dark:text-neutral-400">
+                              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700">
                                 Como usar
                               </p>
                               <ul className="space-y-1.5">
                                 {f.how.map((step, i) => (
                                   <li
                                     key={i}
-                                    className="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-300"
+                                    className="flex items-start gap-2 text-sm text-neutral-700"
                                   >
                                     <CheckCircle2
                                       size={14}
-                                      className="mt-0.5 shrink-0 text-neutral-500 dark:text-neutral-400"
+                                      className="mt-0.5 shrink-0 text-neutral-500"
                                     />
                                     <span>{step}</span>
                                   </li>
@@ -288,12 +286,12 @@ export function HelpPage() {
                               </ul>
                             </div>
 
-                            <div className="flex items-start gap-2 rounded-lg border-l-4 border-neutral-500 bg-neutral-50 p-3 dark:bg-neutral-800/60/50">
+                            <div className="flex items-start gap-2 rounded-lg border-l-4 border-neutral-500 bg-neutral-50 p-3">
                               <Lightbulb
                                 size={15}
-                                className="mt-0.5 shrink-0 text-neutral-600 dark:text-neutral-400"
+                                className="mt-0.5 shrink-0 text-neutral-600"
                               />
-                              <p className="text-xs italic leading-relaxed text-neutral-700 dark:text-neutral-300">
+                              <p className="text-xs italic leading-relaxed text-neutral-700">
                                 {f.tip}
                               </p>
                             </div>
@@ -312,7 +310,7 @@ export function HelpPage() {
       {q &&
       visibleRoles.every((r) => r.features.filter(matches).length === 0) ? (
         <Card>
-          <p className="py-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="py-6 text-center text-sm text-neutral-500">
             Nenhuma função encontrada para "{search}".
           </p>
         </Card>
@@ -332,7 +330,7 @@ function MethodologySection({ meth }: { meth: Methodology }) {
   const [open, setOpen] = useState<string | null>(null);
   return (
     <section className="mt-10">
-      <div className="mb-4 rounded-2xl bg-neutral-800 p-5 text-white dark:bg-neutral-900">
+      <div className="mb-4 rounded-2xl bg-neutral-800 p-5 text-white">
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-neutral-100">
           <BarChart3 size={14} />
           Parte especial
@@ -353,12 +351,10 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                 className="flex w-full items-start justify-between gap-3 text-left"
               >
                 <div className="min-w-0">
-                  <h3 className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
+                  <h3 className="text-sm font-semibold text-neutral-800">
                     {m.title}
                   </h3>
-                  <p className="text-xs italic text-neutral-700 dark:text-neutral-400">
-                    {m.tagline}
-                  </p>
+                  <p className="text-xs italic text-neutral-700">{m.tagline}</p>
                   <p className="mt-0.5 text-[11px] text-neutral-400">
                     Onde aparece: {m.where}
                   </p>
@@ -373,24 +369,24 @@ function MethodologySection({ meth }: { meth: Methodology }) {
 
               {isOpen ? (
                 <div className="mt-3 space-y-3">
-                  <p className="text-sm leading-relaxed text-neutral-700 dark:text-neutral-300">
+                  <p className="text-sm leading-relaxed text-neutral-700">
                     {m.plain}
                   </p>
 
                   {m.calc?.length ? (
                     <div>
-                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700 dark:text-neutral-400">
+                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700">
                         Como é calculado
                       </p>
                       <ul className="space-y-1.5">
                         {m.calc.map((c, i) => (
                           <li
                             key={i}
-                            className="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-300"
+                            className="flex items-start gap-2 text-sm text-neutral-700"
                           >
                             <CheckCircle2
                               size={14}
-                              className="mt-0.5 shrink-0 text-neutral-500 dark:text-neutral-400"
+                              className="mt-0.5 shrink-0 text-neutral-500"
                             />
                             <span>{c}</span>
                           </li>
@@ -416,7 +412,7 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                             : 'Distribuição';
                         return (
                           <div>
-                            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700 dark:text-neutral-400">
+                            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700">
                               {m.breakdownTitle ?? defaultTitle}
                             </p>
                             <div className="space-y-1.5">
@@ -425,10 +421,10 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                                   key={p.label}
                                   className="flex items-center gap-2"
                                 >
-                                  <span className="w-28 shrink-0 text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                                  <span className="w-28 shrink-0 text-xs font-medium text-neutral-700">
                                     {p.label}
                                   </span>
-                                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100 dark:bg-neutral-800">
+                                  <div className="h-2 flex-1 overflow-hidden rounded-full bg-neutral-100">
                                     <div
                                       className="h-full rounded-full bg-neutral-500"
                                       style={{
@@ -436,7 +432,7 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                                       }}
                                     />
                                   </div>
-                                  <span className="w-16 shrink-0 text-right text-xs font-semibold text-neutral-700 dark:text-neutral-400">
+                                  <span className="w-16 shrink-0 text-right text-xs font-semibold text-neutral-700">
                                     {p.points} {unit}
                                   </span>
                                 </div>
@@ -446,9 +442,9 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                               {m.breakdown.map((p) => (
                                 <li
                                   key={`d-${p.label}`}
-                                  className="text-[11px] leading-snug text-neutral-500 dark:text-neutral-400"
+                                  className="text-[11px] leading-snug text-neutral-500"
                                 >
-                                  <span className="font-medium text-neutral-700 dark:text-neutral-300">
+                                  <span className="font-medium text-neutral-700">
                                     {p.label}:
                                   </span>{' '}
                                   {p.desc}
@@ -461,15 +457,15 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                     : null}
 
                   {m.example ? (
-                    <div className="rounded-lg border-l-4 border-amber-400 bg-amber-50 p-3 dark:bg-amber-950/40">
-                      <p className="text-xs font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+                    <div className="rounded-lg border-l-4 border-amber-400 bg-amber-50 p-3">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">
                         Exemplo prático
                       </p>
-                      <p className="mt-1 text-sm text-neutral-700 dark:text-neutral-300">
+                      <p className="mt-1 text-sm text-neutral-700">
                         <span className="font-medium">Cenário:</span>{' '}
                         {m.example.scenario}
                       </p>
-                      <p className="mt-1 text-sm font-semibold text-amber-800 dark:text-amber-300">
+                      <p className="mt-1 text-sm font-semibold text-amber-800">
                         Resultado: {m.example.result}
                       </p>
                     </div>
@@ -477,14 +473,14 @@ function MethodologySection({ meth }: { meth: Methodology }) {
 
                   {m.howToRead?.length ? (
                     <div>
-                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700 dark:text-neutral-400">
+                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-neutral-700">
                         Como ler o resultado
                       </p>
                       <ul className="space-y-1">
                         {m.howToRead.map((t, i) => (
                           <li
                             key={i}
-                            className="flex items-start gap-2 text-sm text-neutral-700 dark:text-neutral-300"
+                            className="flex items-start gap-2 text-sm text-neutral-700"
                           >
                             <span
                               className={`mt-1 h-3 w-3 shrink-0 rounded-sm ${
@@ -503,12 +499,12 @@ function MethodologySection({ meth }: { meth: Methodology }) {
                   ) : null}
 
                   {m.whyMatters ? (
-                    <div className="flex items-start gap-2 rounded-lg border-l-4 border-neutral-500 bg-neutral-50 p-3 dark:bg-neutral-800/60/50">
+                    <div className="flex items-start gap-2 rounded-lg border-l-4 border-neutral-500 bg-neutral-50 p-3">
                       <Lightbulb
                         size={15}
-                        className="mt-0.5 shrink-0 text-neutral-600 dark:text-neutral-400"
+                        className="mt-0.5 shrink-0 text-neutral-600"
                       />
-                      <p className="text-xs italic leading-relaxed text-neutral-700 dark:text-neutral-300">
+                      <p className="text-xs italic leading-relaxed text-neutral-700">
                         <span className="font-semibold not-italic">
                           Por que isso importa:{' '}
                         </span>

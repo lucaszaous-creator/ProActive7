@@ -375,9 +375,7 @@ export function PestControlPage() {
         <Card className="mb-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                Status geral
-              </p>
+              <p className="text-xs text-neutral-500">Status geral</p>
               <span
                 className={`mt-1 inline-block rounded-full px-3 py-1 text-sm font-medium ${PEST_STATUS_COLOR[overallStatus.status]}`}
               >
@@ -389,26 +387,20 @@ export function PestControlPage() {
             </div>
             <div className="grid grid-cols-3 gap-3 text-center sm:text-right">
               <div>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Serviços
-                </p>
-                <p className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+                <p className="text-xs text-neutral-500">Serviços</p>
+                <p className="text-lg font-semibold text-neutral-800">
                   {services.length}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Fornecedores
-                </p>
-                <p className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+                <p className="text-xs text-neutral-500">Fornecedores</p>
+                <p className="text-lg font-semibold text-neutral-800">
                   {providers.filter((p) => p.active).length}
                 </p>
               </div>
               <div>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                  Último serviço
-                </p>
-                <p className="truncate text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+                <p className="text-xs text-neutral-500">Último serviço</p>
+                <p className="truncate text-lg font-semibold text-neutral-800">
                   {overallStatus.latest
                     ? formatDate(overallStatus.latest.performed_at)
                     : '—'}
@@ -421,13 +413,13 @@ export function PestControlPage() {
 
       {/* Tabs */}
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-800 dark:bg-neutral-900">
+        <div className="inline-flex rounded-lg border border-neutral-200 bg-white p-1">
           <button
             onClick={() => setTab('services')}
             className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
               tab === 'services'
-                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-400'
-                : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
+                ? 'bg-neutral-50 text-neutral-700'
+                : 'text-neutral-600 hover:bg-neutral-100'
             }`}
           >
             Serviços
@@ -436,8 +428,8 @@ export function PestControlPage() {
             onClick={() => setTab('providers')}
             className={`rounded-md px-3 py-1.5 text-sm font-medium transition ${
               tab === 'providers'
-                ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-400'
-                : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
+                ? 'bg-neutral-50 text-neutral-700'
+                : 'text-neutral-600 hover:bg-neutral-100'
             }`}
           >
             Fornecedores
@@ -461,11 +453,11 @@ export function PestControlPage() {
 
       {isMaster && companies.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada. Crie uma empresa em{' '}
             <a
               href="/admin/empresas"
-              className="font-medium text-neutral-700 hover:underline dark:text-neutral-400"
+              className="font-medium text-neutral-700 hover:underline"
             >
               Empresas
             </a>{' '}
@@ -478,11 +470,8 @@ export function PestControlPage() {
         services.length === 0 ? (
           <Card>
             <div className="flex flex-col items-center gap-3 py-8 text-center">
-              <Bug
-                size={32}
-                className="text-neutral-300 dark:text-neutral-600"
-              />
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
+              <Bug size={32} className="text-neutral-300" />
+              <p className="text-sm text-neutral-600">
                 {providers.length === 0
                   ? 'Cadastre um fornecedor antes de registrar um serviço.'
                   : 'Nenhum serviço registrado.'}
@@ -500,17 +489,17 @@ export function PestControlPage() {
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0 flex-1">
                       <div className="mb-1 flex flex-wrap items-center gap-2">
-                        <h2 className="min-w-0 max-w-full truncate text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                        <h2 className="min-w-0 max-w-full truncate text-sm font-semibold text-neutral-800">
                           {PEST_SERVICE_TYPE_LABELS[s.service_type]}
                         </h2>
                         {provider ? (
-                          <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs text-neutral-500 dark:text-neutral-400">
+                          <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs text-neutral-500">
                             <Building2 size={12} />
                             <span className="truncate">{provider.name}</span>
                           </span>
                         ) : null}
                       </div>
-                      <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400">
+                      <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-600">
                         <span className="inline-flex items-center gap-1 whitespace-nowrap">
                           <Calendar size={12} />
                           Realizado {formatDate(s.performed_at)}
@@ -527,7 +516,7 @@ export function PestControlPage() {
                         ) : null}
                       </p>
                       {s.products_used ? (
-                        <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+                        <p className="mt-1 text-xs text-neutral-500">
                           Produtos: {s.products_used}
                         </p>
                       ) : null}
@@ -537,7 +526,7 @@ export function PestControlPage() {
                           onClick={() =>
                             void openSignedFile(s.certificate_path!)
                           }
-                          className="mt-2 inline-flex items-center gap-1 text-xs text-neutral-700 hover:underline dark:text-neutral-400"
+                          className="mt-2 inline-flex items-center gap-1 text-xs text-neutral-700 hover:underline"
                         >
                           <FileTextIcon size={12} />
                           Abrir documento da empresa
@@ -548,14 +537,14 @@ export function PestControlPage() {
                       <button
                         onClick={() => openEditService(s)}
                         aria-label="Editar"
-                        className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
                       >
                         <Pencil size={16} />
                       </button>
                       <button
                         onClick={() => setDeletingSvc(s)}
                         aria-label="Excluir"
-                        className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                        className="rounded-lg p-2.5 text-red-500 hover:bg-red-50"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -569,11 +558,8 @@ export function PestControlPage() {
       ) : providers.length === 0 ? (
         <Card>
           <div className="flex flex-col items-center gap-3 py-8 text-center">
-            <Building2
-              size={32}
-              className="text-neutral-300 dark:text-neutral-600"
-            />
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            <Building2 size={32} className="text-neutral-300" />
+            <p className="text-sm text-neutral-600">
               Nenhum fornecedor cadastrado.
             </p>
           </div>
@@ -585,16 +571,16 @@ export function PestControlPage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 flex-1">
                   <div className="mb-1 flex flex-wrap items-center gap-2">
-                    <h2 className="min-w-0 max-w-full truncate text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                    <h2 className="min-w-0 max-w-full truncate text-sm font-semibold text-neutral-800">
                       {p.name}
                     </h2>
                     {!p.active ? (
-                      <span className="rounded-full bg-neutral-200 px-2 py-0.5 text-xs text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+                      <span className="rounded-full bg-neutral-200 px-2 py-0.5 text-xs text-neutral-600">
                         Inativo
                       </span>
                     ) : null}
                   </div>
-                  <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-600 dark:text-neutral-400">
+                  <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-neutral-600">
                     {p.cnpj ? (
                       <span className="whitespace-nowrap">CNPJ {p.cnpj}</span>
                     ) : null}
@@ -615,14 +601,14 @@ export function PestControlPage() {
                   <button
                     onClick={() => openEditProvider(p)}
                     aria-label="Editar"
-                    className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                    className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
                   >
                     <Pencil size={16} />
                   </button>
                   <button
                     onClick={() => setDeletingProv(p)}
                     aria-label="Excluir"
-                    className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                    className="rounded-lg p-2.5 text-red-500 hover:bg-red-50"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -705,7 +691,7 @@ export function PestControlPage() {
               setProvForm({ ...provForm, notes: e.target.value })
             }
           />
-          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"
               checked={provForm.active}
@@ -818,15 +804,15 @@ export function PestControlPage() {
             onChange={(e) => setSvcForm({ ...svcForm, notes: e.target.value })}
           />
           <div>
-            <p className="mb-1 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            <p className="mb-1 text-sm font-medium text-neutral-700">
               Documento entregue pela empresa contratada{' '}
               {editingSvc ? '(substituir)' : ''}
             </p>
-            <p className="mb-2 text-xs text-neutral-500 dark:text-neutral-400">
+            <p className="mb-2 text-xs text-neutral-500">
               PDF ou foto do certificado/laudo/comprovante de aplicação que a
               empresa de controle de pragas deve entregar após cada serviço.
             </p>
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200">
               <Upload size={14} />
               {svcFile ? svcFile.name : 'Selecionar arquivo'}
               <input

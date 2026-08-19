@@ -12,7 +12,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 const fieldCls =
-  'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100';
+  'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20';
 
 export function SiteClientsPage() {
   usePageTitle('Clientes do site');
@@ -210,9 +210,9 @@ export function SiteClientsPage() {
               <button
                 key={c.id}
                 onClick={() => openEdit(c)}
-                className="fx-lift fx-press flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-3 text-left hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700"
+                className="fx-lift fx-press flex items-center gap-3 rounded-xl border border-neutral-200 bg-white p-3 text-left hover:border-neutral-300"
               >
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-white p-1 dark:border-neutral-700">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-white p-1">
                   {logo ? (
                     <img
                       src={logo}
@@ -225,16 +225,16 @@ export function SiteClientsPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="truncate font-medium text-neutral-800 dark:text-neutral-100">
+                    <p className="truncate font-medium text-neutral-800">
                       {c.name}
                     </p>
                     {!c.active && (
-                      <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                      <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
                         inativo
                       </span>
                     )}
                   </div>
-                  <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                  <p className="truncate text-xs text-neutral-500">
                     {[
                       c.segment,
                       c.city,
@@ -283,7 +283,7 @@ export function SiteClientsPage() {
       >
         <div className="flex flex-col gap-4">
           <div className="flex items-center gap-3">
-            <span className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-white p-1.5 dark:border-neutral-700">
+            <span className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-white p-1.5">
               {siteAssetUrl(logoPath) ? (
                 <img
                   src={siteAssetUrl(logoPath)!}
@@ -295,7 +295,7 @@ export function SiteClientsPage() {
               )}
             </span>
             <div className="flex flex-col gap-1.5">
-              <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/60 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200">
+              <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
                 <ImageIcon size={16} />
                 {uploading ? 'Enviando…' : 'Logo do cliente'}
                 <input
@@ -310,7 +310,7 @@ export function SiteClientsPage() {
                 <button
                   type="button"
                   onClick={() => setLogoPath(null)}
-                  className="w-fit text-xs text-neutral-500 dark:text-neutral-400 hover:text-red-600"
+                  className="w-fit text-xs text-neutral-500 hover:text-red-600"
                 >
                   Remover logo
                 </button>
@@ -349,7 +349,7 @@ export function SiteClientsPage() {
             placeholder="ex.: Riviera, Cavaleiros, Centro"
           />
           <div>
-            <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            <label className="mb-1 block text-sm font-medium text-neutral-700">
               Depoimento (opcional)
             </label>
             <textarea
@@ -375,7 +375,7 @@ export function SiteClientsPage() {
               onChange={(e) => setSortOrder(e.target.value)}
             />
           </div>
-          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"
               checked={active}

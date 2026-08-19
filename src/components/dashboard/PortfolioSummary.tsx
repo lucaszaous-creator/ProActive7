@@ -24,16 +24,15 @@ import { Card } from '@/components/ui/Card';
 import { SkeletonCard } from './Skeleton';
 
 const TIER_BG: Record<ScoreTier, string> = {
-  green:
-    'border-neutral-300 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-950',
-  amber: 'border-amber-300 bg-amber-50 dark:border-amber-700 dark:bg-amber-950',
-  red: 'border-red-300 bg-red-50 dark:border-red-700 dark:bg-red-950',
+  green: 'border-neutral-300 bg-neutral-50',
+  amber: 'border-amber-300 bg-amber-50',
+  red: 'border-red-300 bg-red-50',
 };
 
 const TIER_TEXT: Record<ScoreTier, string> = {
-  green: 'text-neutral-700 dark:text-neutral-200',
-  amber: 'text-amber-700 dark:text-amber-200',
-  red: 'text-red-700 dark:text-red-200',
+  green: 'text-neutral-700',
+  amber: 'text-amber-700',
+  red: 'text-red-700',
 };
 
 interface PortfolioSummaryProps {
@@ -64,9 +63,7 @@ export function PortfolioSummary({
     return (
       <section className="mb-5">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
-            Carteira
-          </h2>
+          <h2 className="text-base font-semibold text-neutral-800">Carteira</h2>
         </div>
         <div className="flex flex-col gap-3">
           <SkeletonCard />
@@ -81,9 +78,9 @@ export function PortfolioSummary({
   return (
     <section className="mb-5">
       <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="text-base font-semibold text-neutral-800 dark:text-neutral-100">
+        <h2 className="text-base font-semibold text-neutral-800">
           Carteira ·{' '}
-          <span className="text-neutral-500 dark:text-neutral-400">
+          <span className="text-neutral-500">
             {showAll
               ? `${companies.length} empresas`
               : `${critical.length} crítica${critical.length === 1 ? '' : 's'}`}
@@ -93,7 +90,7 @@ export function PortfolioSummary({
           <button
             type="button"
             onClick={() => setShowAll((v) => !v)}
-            className="self-start rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:text-neutral-300 dark:hover:border-neutral-700 sm:self-auto"
+            className="self-start rounded-lg border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-300 sm:self-auto"
           >
             {showAll
               ? 'Mostrar só críticas'
@@ -103,17 +100,14 @@ export function PortfolioSummary({
       </div>
 
       {showAll ? (
-        <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2 dark:border-neutral-800 dark:bg-neutral-900">
-          <Search
-            size={16}
-            className="shrink-0 text-neutral-400 dark:text-neutral-500"
-          />
+        <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
+          <Search size={16} className="shrink-0 text-neutral-400" />
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar empresa..."
-            className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400 dark:text-neutral-100"
+            className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400"
           />
         </div>
       ) : null}
@@ -121,29 +115,26 @@ export function PortfolioSummary({
       {companies.length === 0 ? (
         <Card>
           <div className="flex flex-col items-center gap-3 py-8 text-center">
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            <p className="text-sm text-neutral-600">
               Nenhuma empresa na carteira.
             </p>
             <Link
               to="/admin/empresas"
-              className="text-xs font-medium text-neutral-700 hover:underline dark:text-neutral-400"
+              className="text-xs font-medium text-neutral-700 hover:underline"
             >
               Cadastrar primeira empresa →
             </Link>
           </div>
         </Card>
       ) : allGreen && !showAll ? (
-        <Card className="border-neutral-200 bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-950">
+        <Card className="border-neutral-200 bg-neutral-50">
           <div className="flex items-center gap-3">
-            <CheckCircle2
-              size={28}
-              className="shrink-0 text-neutral-600 dark:text-neutral-400"
-            />
+            <CheckCircle2 size={28} className="shrink-0 text-neutral-600" />
             <div className="min-w-0">
-              <p className="font-medium text-neutral-800 dark:text-neutral-200">
+              <p className="font-medium text-neutral-800">
                 Todas as {companies.length} empresas em conformidade
               </p>
-              <p className="text-xs text-neutral-700 dark:text-neutral-300">
+              <p className="text-xs text-neutral-700">
                 Nenhuma situação crítica no momento.
               </p>
             </div>
@@ -151,7 +142,7 @@ export function PortfolioSummary({
         </Card>
       ) : visible.length === 0 ? (
         <Card>
-          <p className="py-6 text-center text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="py-6 text-center text-sm text-neutral-500">
             Nenhuma empresa encontrada.
           </p>
         </Card>
@@ -170,12 +161,8 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
   const { profile } = useAuth();
   const [generating, setGenerating] = useState(false);
   const tier = r.tier;
-  const bgClass = tier
-    ? TIER_BG[tier]
-    : 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900';
-  const textClass = tier
-    ? TIER_TEXT[tier]
-    : 'text-neutral-500 dark:text-neutral-400';
+  const bgClass = tier ? TIER_BG[tier] : 'border-neutral-200 bg-white';
+  const textClass = tier ? TIER_TEXT[tier] : 'text-neutral-500';
 
   async function handleReport() {
     setGenerating(true);
@@ -197,7 +184,7 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
     <div className={`rounded-xl border p-3 sm:p-5 ${bgClass}`}>
       {/* Linha 1 mobile: titulo + score na mesma linha. Desktop volta a layout horizontal. */}
       <div className="flex items-start justify-between gap-3 sm:items-center">
-        <h3 className="min-w-0 flex-1 truncate text-sm font-semibold text-neutral-800 dark:text-neutral-100 sm:text-base">
+        <h3 className="min-w-0 flex-1 truncate text-sm font-semibold text-neutral-800 sm:text-base">
           {r.company_name}
         </h3>
         <div className="flex shrink-0 items-center gap-2">
@@ -207,9 +194,7 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
             >
               {r.score != null ? <CountUp value={r.score} suffix="%" /> : '—'}
             </p>
-            <p className="text-[10px] text-neutral-500 dark:text-neutral-400 sm:text-xs">
-              score
-            </p>
+            <p className="text-[10px] text-neutral-500 sm:text-xs">score</p>
           </div>
           <button
             type="button"
@@ -217,7 +202,7 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
             disabled={generating}
             aria-label="Baixar relatório de conformidade (PDF)"
             title="Relatório de conformidade (PDF) para assinatura da RT"
-            className="rounded-lg p-1.5 text-neutral-600 hover:bg-white/60 disabled:opacity-50 dark:text-neutral-300 dark:hover:bg-black/30 sm:p-2"
+            className="rounded-lg p-1.5 text-neutral-600 hover:bg-white/60 disabled:opacity-50 sm:p-2"
           >
             <FileDown size={16} className="sm:hidden" />
             <FileDown size={18} className="hidden sm:inline" />
@@ -225,7 +210,7 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
           <Link
             to={`/visitas?company=${r.company_id}`}
             aria-label="Ver detalhes"
-            className="rounded-lg p-1.5 text-neutral-600 hover:bg-white/60 dark:text-neutral-300 dark:hover:bg-black/30 sm:p-2"
+            className="rounded-lg p-1.5 text-neutral-600 hover:bg-white/60 sm:p-2"
           >
             <TrendingUp size={16} className="sm:hidden" />
             <TrendingUp size={18} className="hidden sm:inline" />
@@ -234,12 +219,12 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
       </div>
       <div className="mt-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-neutral-600 dark:text-neutral-400 sm:text-xs">
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-neutral-600 sm:text-xs">
             <span className="inline-flex items-center gap-1 whitespace-nowrap">
               <AlertOctagon size={12} />
               {r.nc_open_now} NC aberta{r.nc_open_now === 1 ? '' : 's'}
               {r.nc_overdue_30d > 0 ? (
-                <span className="font-semibold text-red-600 dark:text-red-300">
+                <span className="font-semibold text-red-600">
                   {' '}
                   ({r.nc_overdue_30d} vencida
                   {r.nc_overdue_30d === 1 ? '' : 's'})
@@ -266,17 +251,11 @@ function CompanyCard({ r }: { r: EnrichedCompany }) {
               <Bug size={12} />
               CIP{' '}
               {r.has_pest_service_active ? (
-                <span className="text-neutral-700 dark:text-neutral-300">
-                  em dia
-                </span>
+                <span className="text-neutral-700">em dia</span>
               ) : r.has_pest_service_registered ? (
-                <span className="font-semibold text-red-600 dark:text-red-300">
-                  vencido
-                </span>
+                <span className="font-semibold text-red-600">vencido</span>
               ) : (
-                <span className="text-neutral-500 dark:text-neutral-400">
-                  não contratado
-                </span>
+                <span className="text-neutral-500">não contratado</span>
               )}
             </span>
             {r.last_audit_at ? (

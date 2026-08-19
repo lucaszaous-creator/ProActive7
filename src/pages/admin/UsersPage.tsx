@@ -313,21 +313,21 @@ export function UsersPage() {
         />
       ) : (
         <>
-          <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white px-3 py-2">
+          <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
             <Search size={16} className="shrink-0 text-neutral-400" />
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por nome, e-mail, empresa ou organização..."
-              className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 dark:text-neutral-100 outline-none placeholder:text-neutral-400"
+              className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400"
             />
             {search ? (
               <button
                 type="button"
                 onClick={() => setSearch('')}
                 aria-label="Limpar busca"
-                className="rounded p-1 text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                className="rounded p-1 text-neutral-400 hover:bg-neutral-100"
               >
                 <X size={14} />
               </button>
@@ -337,7 +337,7 @@ export function UsersPage() {
             <div className="w-full overflow-x-auto">
               <table className="w-full min-w-[680px] text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 dark:border-neutral-800 text-left text-xs uppercase text-neutral-500 dark:text-neutral-400">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase text-neutral-500">
                     <th className="px-4 py-3">Nome</th>
                     <th className="px-4 py-3">E-mail</th>
                     <th className="px-4 py-3">Perfil</th>
@@ -351,7 +351,7 @@ export function UsersPage() {
                     <tr>
                       <td
                         colSpan={6}
-                        className="px-4 py-8 text-center text-sm text-neutral-500 dark:text-neutral-400"
+                        className="px-4 py-8 text-center text-sm text-neutral-500"
                       >
                         Nenhum usuário encontrado para "{search}".
                       </td>
@@ -360,26 +360,26 @@ export function UsersPage() {
                   {filteredUsers.map((u) => (
                     <tr
                       key={u.id}
-                      className="border-b border-neutral-100 dark:border-neutral-800 last:border-0"
+                      className="border-b border-neutral-100 last:border-0"
                     >
-                      <td className="px-4 py-3 font-medium text-neutral-800 dark:text-neutral-100">
+                      <td className="px-4 py-3 font-medium text-neutral-800">
                         {u.full_name ?? '—'}
                       </td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-4 py-3 text-neutral-600">
                         {u.email ?? '—'}
                       </td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-4 py-3 text-neutral-600">
                         {ROLE_LABELS[u.role]}
                       </td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-4 py-3 text-neutral-600">
                         <UserLink user={u} />
                       </td>
                       <td className="px-4 py-3">
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs ${
                             u.active
-                              ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200'
-                              : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
+                              ? 'bg-neutral-50 text-neutral-700'
+                              : 'bg-neutral-100 text-neutral-500'
                           }`}
                         >
                           {u.active ? 'Ativo' : 'Inativo'}
@@ -393,7 +393,7 @@ export function UsersPage() {
                             <button
                               onClick={() => openEdit(u)}
                               aria-label="Editar"
-                              className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                              className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
                             >
                               <Pencil size={16} />
                             </button>
@@ -513,7 +513,7 @@ export function UsersPage() {
             </Select>
           )}
           {editing && (
-            <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-200">
+            <label className="flex items-center gap-2 text-sm text-neutral-700">
               <input
                 type="checkbox"
                 checked={active}
@@ -560,15 +560,11 @@ function UserLink({ user }: { user: ProfileRow }) {
       user.companies?.organizations?.name ?? user.organizations?.name ?? null;
     return (
       <div className="leading-tight">
-        <div className="font-medium text-neutral-800 dark:text-neutral-100">
-          {empresa}
-        </div>
+        <div className="font-medium text-neutral-800">{empresa}</div>
         {org ? (
-          <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-            Org · {org}
-          </div>
+          <div className="mt-0.5 text-xs text-neutral-500">Org · {org}</div>
         ) : (
-          <div className="mt-0.5 text-xs text-amber-600 dark:text-amber-300">
+          <div className="mt-0.5 text-xs text-amber-600">
             Sem organização vinculada
           </div>
         )}
@@ -579,10 +575,8 @@ function UserLink({ user }: { user: ProfileRow }) {
     const org = user.organizations?.name ?? '—';
     return (
       <div className="leading-tight">
-        <div className="font-medium text-neutral-800 dark:text-neutral-100">
-          {org}
-        </div>
-        <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+        <div className="font-medium text-neutral-800">{org}</div>
+        <div className="mt-0.5 text-xs text-neutral-500">
           Nutricionista responsável
         </div>
       </div>
@@ -591,11 +585,9 @@ function UserLink({ user }: { user: ProfileRow }) {
   // platform_admin / master
   return (
     <div className="leading-tight">
-      <div className="font-medium text-neutral-800 dark:text-neutral-100">
-        Plataforma
-      </div>
+      <div className="font-medium text-neutral-800">Plataforma</div>
       {user.organizations?.name ? (
-        <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+        <div className="mt-0.5 text-xs text-neutral-500">
           {user.organizations.name}
         </div>
       ) : null}

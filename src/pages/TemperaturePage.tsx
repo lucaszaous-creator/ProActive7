@@ -276,7 +276,7 @@ export function TemperaturePage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
@@ -287,25 +287,25 @@ export function TemperaturePage() {
       ) : (
         <div className="grid gap-4 lg:grid-cols-[1fr_1fr]">
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
               Equipamentos
             </h2>
             {equipment.length === 0 ? (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="text-sm text-neutral-500">
                 Cadastre um equipamento para começar a registrar leituras.
               </p>
             ) : (
-              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+              <ul className="divide-y divide-neutral-100">
                 {equipment.map((e) => (
                   <li
                     key={e.id}
                     className="flex items-center justify-between py-2"
                   >
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                      <p className="truncate text-sm font-medium text-neutral-800">
                         {e.name}
                       </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      <p className="text-xs text-neutral-500">
                         {EQUIPMENT_TYPE_LABELS[e.type]} · {e.temp_min}°C a{' '}
                         {e.temp_max}°C
                         {!e.active ? ' · inativo' : ''}
@@ -314,7 +314,7 @@ export function TemperaturePage() {
                     <button
                       onClick={() => openEdit(e)}
                       aria-label="Editar"
-                      className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
                     >
                       <Pencil size={16} />
                     </button>
@@ -325,11 +325,11 @@ export function TemperaturePage() {
           </Card>
 
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
               Registrar leitura
             </h2>
             {activeEquipment.length === 0 ? (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="text-sm text-neutral-500">
                 Cadastre um equipamento ativo primeiro.
               </p>
             ) : (
@@ -377,15 +377,15 @@ export function TemperaturePage() {
           </Card>
 
           <Card className="lg:col-span-2">
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
               Últimas 20 leituras
             </h2>
             {logs.length === 0 ? (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="text-sm text-neutral-500">
                 Nenhuma leitura registrada ainda.
               </p>
             ) : (
-              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+              <ul className="divide-y divide-neutral-100">
                 {logs.map((l) => {
                   const outOfRange =
                     l.equipment &&
@@ -399,8 +399,8 @@ export function TemperaturePage() {
                       <span
                         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                           outOfRange
-                            ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300'
-                            : 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300'
+                            ? 'bg-red-50 text-red-600'
+                            : 'bg-neutral-50 text-neutral-600'
                         }`}
                       >
                         {outOfRange ? (
@@ -410,11 +410,11 @@ export function TemperaturePage() {
                         )}
                       </span>
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                        <p className="truncate text-sm font-medium text-neutral-800">
                           {l.equipment?.name ?? 'Equipamento removido'} —{' '}
                           {l.temperature}°C
                         </p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                        <p className="text-xs text-neutral-500">
                           {formatDateTime(l.recorded_at)}
                           {l.notes ? ` · ${l.notes}` : ''}
                         </p>
@@ -424,7 +424,7 @@ export function TemperaturePage() {
                           type="button"
                           onClick={() => setViewingPhotoUrl(photoUrl)}
                           title="Ver foto"
-                          className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800 transition hover:border-neutral-400"
+                          className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-neutral-200 transition hover:border-neutral-400"
                         >
                           <img
                             src={photoUrl}
@@ -433,7 +433,7 @@ export function TemperaturePage() {
                           />
                         </button>
                       ) : l.photo_id ? (
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-dashed border-neutral-200 dark:border-neutral-800 text-neutral-300">
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-dashed border-neutral-200 text-neutral-300">
                           <ImageIcon size={14} />
                         </span>
                       ) : null}
@@ -503,7 +503,7 @@ export function TemperaturePage() {
               onChange={(e) => setTempMax(e.target.value)}
             />
           </div>
-          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-200">
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"
               checked={equipActive}

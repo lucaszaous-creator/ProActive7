@@ -94,7 +94,7 @@ export function PrintersPage() {
   if (!companyId) {
     return (
       <Card>
-        <p className="text-sm text-neutral-600 dark:text-neutral-300">
+        <p className="text-sm text-neutral-600">
           Selecione uma empresa primeiro.
         </p>
       </Card>
@@ -139,7 +139,7 @@ export function PrintersPage() {
               </option>
             ))}
           </Select>
-          <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="mt-1 text-xs text-neutral-500">
             Cada estabelecimento tem suas próprias impressoras.
           </p>
         </Card>
@@ -200,7 +200,7 @@ export function PrintersPage() {
         </div>
       ) : agents.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Nenhuma impressora cadastrada. Clique em “Nova impressora” para
             começar.
           </p>
@@ -296,24 +296,21 @@ function AgentCard({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <Printer
-              size={18}
-              className="text-neutral-500 dark:text-neutral-400"
-            />
-            <h2 className="truncate font-semibold text-neutral-800 dark:text-neutral-100">
+            <Printer size={18} className="text-neutral-500" />
+            <h2 className="truncate font-semibold text-neutral-800">
               {agent.name}
             </h2>
             {relayOnline ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-neutral-50 dark:bg-neutral-800/60 px-2 py-0.5 text-xs font-medium text-neutral-700 dark:text-neutral-200">
+              <span className="inline-flex items-center gap-1 rounded-full bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700">
                 <CheckCircle2 size={12} /> Relay online
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium text-neutral-500">
                 <XCircle size={12} /> Relay offline
               </span>
             )}
           </div>
-          <dl className="mt-2 grid grid-cols-1 gap-x-4 gap-y-1 text-xs text-neutral-600 dark:text-neutral-300 sm:grid-cols-2">
+          <dl className="mt-2 grid grid-cols-1 gap-x-4 gap-y-1 text-xs text-neutral-600 sm:grid-cols-2">
             <div>
               <dt className="inline font-medium">Impressora (Windows): </dt>
               <dd className="inline">{agent.printer_name ?? '—'}</dd>
@@ -339,7 +336,7 @@ function AgentCard({
             </div>
           </dl>
           {virtual && (
-            <p className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 p-2 text-xs text-amber-800 dark:text-amber-200">
+            <p className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 p-2 text-xs text-amber-800">
               <AlertTriangle size={14} className="mt-0.5 shrink-0" />
               Esta parece uma impressora <b>virtual</b> (PDF/XPS). ZPL não
               funciona aqui — a etiqueta sai em branco. Use uma térmica real
@@ -425,7 +422,7 @@ function AgentForm({
   return (
     <Card>
       <form onSubmit={handleSubmit} className="space-y-3">
-        <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+        <h2 className="text-sm font-semibold text-neutral-700">
           Nova impressora
         </h2>
         <Input
@@ -451,7 +448,7 @@ function AgentForm({
               ))}
             </datalist>
           )}
-          <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="mt-1 text-xs text-neutral-500">
             Copie o nome igual aparece em{' '}
             <b>
               Configurações → Bluetooth e dispositivos → Impressoras e scanners
@@ -490,7 +487,7 @@ function AgentForm({
             <option value="zpl">ZPL — Zebra / Elgin L42 (etiqueta)</option>
             <option value="escpos">ESC/POS — térmica 58/80 mm</option>
           </Select>
-          <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="mt-1 text-xs text-neutral-500">
             Escolha conforme o modelo. ZPL é o padrão das impressoras de
             etiqueta; ESC/POS são as térmicas de cupom 58/80 mm. ESC/POS exige o
             relay atualizado (v3+).
@@ -531,25 +528,22 @@ function TokenReveal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg space-y-3 rounded-2xl bg-amber-50 dark:bg-amber-950/40 p-5 shadow-xl"
+        className="w-full max-w-lg space-y-3 rounded-2xl bg-amber-50 p-5 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start gap-2">
-          <AlertTriangle
-            size={20}
-            className="mt-0.5 text-amber-600 dark:text-amber-300"
-          />
+          <AlertTriangle size={20} className="mt-0.5 text-amber-600" />
           <div>
-            <h2 className="text-base font-semibold text-amber-900 dark:text-amber-200">
+            <h2 className="text-base font-semibold text-amber-900">
               Token da impressora — guarde AGORA
             </h2>
-            <p className="text-xs text-amber-800 dark:text-amber-200">
+            <p className="text-xs text-amber-800">
               Este token só aparece uma vez. O instalador do relay pede ele pra
               autenticar. Se perder, exclua a impressora e cadastre de novo.
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2 rounded-lg border border-amber-300 dark:border-amber-900 bg-white p-2">
+        <div className="flex items-center gap-2 rounded-lg border border-amber-300 bg-white p-2">
           <code className="flex-1 overflow-x-auto break-all text-xs">
             {token}
           </code>
@@ -615,7 +609,7 @@ function RelayLogList({ agentId }: { agentId: string }) {
 
   if (logs.length === 0) {
     return (
-      <p className="mt-2 rounded-lg bg-neutral-50 dark:bg-neutral-800/60 p-2 text-xs text-neutral-500 dark:text-neutral-400">
+      <p className="mt-2 rounded-lg bg-neutral-50 p-2 text-xs text-neutral-500">
         Nenhum log ainda. O relay registra erros e eventos aqui assim que rodar.
       </p>
     );
@@ -623,20 +617,20 @@ function RelayLogList({ agentId }: { agentId: string }) {
 
   const color = (lvl: string) =>
     lvl === 'error'
-      ? 'text-red-700 dark:text-red-200'
+      ? 'text-red-700'
       : lvl === 'warn'
-        ? 'text-amber-700 dark:text-amber-200'
-        : 'text-neutral-600 dark:text-neutral-300';
+        ? 'text-amber-700'
+        : 'text-neutral-600';
 
   return (
-    <div className="mt-2 max-h-56 space-y-1 overflow-y-auto rounded-lg bg-neutral-50 dark:bg-neutral-800/60 p-2">
+    <div className="mt-2 max-h-56 space-y-1 overflow-y-auto rounded-lg bg-neutral-50 p-2">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+        <span className="text-xs font-medium text-neutral-500">
           Últimos {logs.length} eventos
         </span>
         <button
           onClick={() => void load()}
-          className="text-xs text-neutral-700 dark:text-neutral-200 hover:underline"
+          className="text-xs text-neutral-700 hover:underline"
         >
           Atualizar
         </button>
@@ -649,9 +643,7 @@ function RelayLogList({ agentId }: { agentId: string }) {
           <span className={`font-medium uppercase ${color(l.level)}`}>
             [{l.level}]
           </span>{' '}
-          <span className="text-neutral-700 dark:text-neutral-200">
-            {l.message}
-          </span>
+          <span className="text-neutral-700">{l.message}</span>
         </div>
       ))}
     </div>

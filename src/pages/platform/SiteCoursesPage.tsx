@@ -12,7 +12,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { PageHeader } from '@/components/ui/PageHeader';
 
 const fieldCls =
-  'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100';
+  'w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none transition focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20';
 
 export function SiteCoursesPage() {
   usePageTitle('Cursos do site');
@@ -208,9 +208,9 @@ export function SiteCoursesPage() {
               <button
                 key={c.id}
                 onClick={() => openEdit(c)}
-                className="fx-lift fx-press flex gap-3 rounded-xl border border-neutral-200 bg-white p-3 text-left hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700"
+                className="fx-lift fx-press flex gap-3 rounded-xl border border-neutral-200 bg-white p-3 text-left hover:border-neutral-300"
               >
-                <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800">
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-neutral-100">
                   {img ? (
                     <img
                       src={img}
@@ -223,28 +223,28 @@ export function SiteCoursesPage() {
                 </span>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="truncate font-medium text-neutral-800 dark:text-neutral-100">
+                    <p className="truncate font-medium text-neutral-800">
                       {c.title}
                     </p>
                     {!c.active && (
-                      <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950 dark:text-amber-300">
+                      <span className="shrink-0 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
                         inativo
                       </span>
                     )}
                   </div>
                   {c.summary ? (
-                    <p className="mt-0.5 line-clamp-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    <p className="mt-0.5 line-clamp-2 text-xs text-neutral-500">
                       {c.summary}
                     </p>
                   ) : null}
-                  <div className="mt-1 flex flex-wrap gap-1 text-[10px] text-neutral-500 dark:text-neutral-400">
+                  <div className="mt-1 flex flex-wrap gap-1 text-[10px] text-neutral-500">
                     {c.duration ? (
-                      <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
+                      <span className="rounded-full bg-neutral-100 px-1.5 py-0.5">
                         {c.duration}
                       </span>
                     ) : null}
                     {c.price_label ? (
-                      <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 dark:bg-neutral-800">
+                      <span className="rounded-full bg-neutral-100 px-1.5 py-0.5">
                         {c.price_label}
                       </span>
                     ) : null}
@@ -290,7 +290,7 @@ export function SiteCoursesPage() {
         <div className="flex flex-col gap-4">
           {/* Imagem */}
           <div className="flex items-center gap-3">
-            <span className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 dark:border-neutral-700 dark:bg-neutral-800">
+            <span className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50">
               {siteAssetUrl(imagePath) ? (
                 <img
                   src={siteAssetUrl(imagePath)!}
@@ -302,7 +302,7 @@ export function SiteCoursesPage() {
               )}
             </span>
             <div className="flex flex-col gap-1.5">
-              <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800/60 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-200">
+              <label className="inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
                 <ImageIcon size={16} />
                 {uploading ? 'Enviando…' : 'Imagem do curso'}
                 <input
@@ -317,7 +317,7 @@ export function SiteCoursesPage() {
                 <button
                   type="button"
                   onClick={() => setImagePath(null)}
-                  className="w-fit text-xs text-neutral-500 dark:text-neutral-400 hover:text-red-600"
+                  className="w-fit text-xs text-neutral-500 hover:text-red-600"
                 >
                   Remover imagem
                 </button>
@@ -333,7 +333,7 @@ export function SiteCoursesPage() {
             placeholder="ex.: Boas Práticas de Manipulação"
           />
           <div>
-            <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            <label className="mb-1 block text-sm font-medium text-neutral-700">
               Resumo (1 linha no card)
             </label>
             <input
@@ -344,7 +344,7 @@ export function SiteCoursesPage() {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            <label className="mb-1 block text-sm font-medium text-neutral-700">
               Descrição completa
             </label>
             <textarea
@@ -393,7 +393,7 @@ export function SiteCoursesPage() {
             onChange={(e) => setCtaUrl(e.target.value)}
             placeholder="https:// ou wa.me/…"
           />
-          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"
               checked={active}
