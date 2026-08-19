@@ -10,6 +10,7 @@ import {
   X as XIcon,
   MinusCircle,
   Download,
+  MapPin,
   PenLine,
   Eraser,
   Save,
@@ -29,6 +30,7 @@ import { Spinner } from '@/components/ui/Spinner';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { PhotoAttacher } from '@/components/PhotoAttacher';
 import type {
   Audit,
   AuditItem,
@@ -95,6 +97,18 @@ export function AuditDetailPage() {
   const [template, setTemplate] = useState<AuditTemplate | null>(null);
   const [responses, setResponses] = useState<AuditResponse[]>([]);
   const [notes, setNotes] = useState('');
+  /** Observação por seção do checklist (0106): { [categoria]: texto }. */
+  const [sectionNotes, setSectionNotes] = useState<Record<string, string>>({});
+  const [geo, setGeo] = useState<{
+    latitude: number;
+    longitude: number;
+    accuracy: number | null;
+    capturedAt: string;
+  } | null>(null);
+  const [locating, setLocating] = useState(false);
+  /** Assinatura de ciência de quem recebeu a visita pela empresa. */
+  const [clientName, setClientName] = useState('');
+  const [clientRole, setClientRole] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [signOpen, setSignOpen] = useState(false);
@@ -109,6 +123,7 @@ export function AuditDetailPage() {
   const [auditorName, setAuditorName] = useState<string | null>(null);
 
   const sigRef = useRef<SignatureCanvas | null>(null);
+  const clientSigRef = useRef<SignatureCanvas | null>(null);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -134,6 +149,20 @@ export function AuditDetailPage() {
     setAudit(a);
     setResponses(a.responses ?? []);
     setNotes(a.notes ?? '');
+    setSectionNotes(a.section_notes ?? {});
+    setClientName(a.client_signer_name ?? '');
+    setClientRole(a.client_signer_role ?? '');
+    setGeo(
+      a.latitude != null && a.longitude != null
+        ? {
+            latitude: Number(a.latitude),
+            longitude: Number(a.longitude),
+            accuracy:
+              a.geo_accuracy_m != null ? Number(a.geo_accuracy_m) : null,
+            capturedAt: a.geo_captured_at ?? a.created_at,
+          }
+        : null,
+    );
     setCompanyId(a.company_id);
     if (a.template_id) {
       const { data: tpl } = await supabase
@@ -185,11 +214,81 @@ export function AuditDetailPage() {
     setResponses((prev) => {
       const existing = prev.find((r) => r.itemId === itemId);
       if (!existing) {
-        return [...prev, { itemId, result: 'NC', note }];
+        // Observação antes de marcar o resultado não deve inventar um
+        // veredito: fica pendente até a RT escolher C/NC/NA.
+        return [...prev, { itemId, result: 'NA', note }];
       }
       return prev.map((r) => (r.itemId === itemId ? { ...r, note } : r));
     });
   }
+
+  /** Foto de evidência por item — usa o mesmo bucket/retenção da galeria. */
+  function setItemPhoto(itemId: string, photoId: string | null) {
+    setResponses((prev) => {
+      const existing = prev.find((r) => r.itemId === itemId);
+      if (!existing) {
+        return [
+          ...prev,
+          { itemId, result: 'NA', photo_id: photoId ?? undefined },
+        ];
+      }
+      return prev.map((r) =>
+        r.itemId === itemId ? { ...r, photo_id: photoId ?? undefined } : r,
+      );
+    });
+  }
+
+  /**
+   * Check-in do local. Roda só quando a RT clica — o navegador pede
+   * permissão e nada é capturado em background (ver LGPD na 0106).
+   */
+  function handleCheckIn() {
+    if (!navigator.geolocation) {
+      toast.error('Este navegador não informa localização.');
+      return;
+    }
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocating(false);
+        setGeo({
+          latitude: Number(pos.coords.latitude.toFixed(6)),
+          longitude: Number(pos.coords.longitude.toFixed(6)),
+          accuracy:
+            pos.coords.accuracy != null
+              ? Number(pos.coords.accuracy.toFixed(1))
+              : null,
+          capturedAt: new Date().toISOString(),
+        });
+        toast.success('Local registrado. Salve o rascunho para gravar.');
+      },
+      (err) => {
+        setLocating(false);
+        toast.error(
+          err.code === err.PERMISSION_DENIED
+            ? 'Permissão de localização negada pelo navegador.'
+            : 'Não foi possível obter a localização.',
+        );
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 },
+    );
+  }
+
+  /** Campos de campo (0106) enviados junto em rascunho e finalização. */
+  const fieldWorkPayload = useMemo(
+    () => ({
+      section_notes: sectionNotes,
+      ...(geo
+        ? {
+            latitude: geo.latitude,
+            longitude: geo.longitude,
+            geo_accuracy_m: geo.accuracy,
+            geo_captured_at: geo.capturedAt,
+          }
+        : {}),
+    }),
+    [sectionNotes, geo],
+  );
 
   function openSchedule() {
     if (!audit) return;
@@ -254,6 +353,7 @@ export function AuditDetailPage() {
       .update({
         responses,
         notes,
+        ...fieldWorkPayload,
         status: audit.status === 'scheduled' ? 'in_progress' : audit.status,
         started_at: audit.started_at ?? new Date().toISOString(),
         score,
@@ -283,7 +383,18 @@ export function AuditDetailPage() {
       toast.error('Assine antes de finalizar.');
       return;
     }
+    // Assinatura do cliente é opcional (nem sempre há responsável no
+    // local), mas se assinaram exigimos o nome de quem assinou — uma
+    // assinatura anônima não serve como ciência.
+    const clientSig = clientSigRef.current;
+    const hasClientSig = !!clientSig && !clientSig.isEmpty();
+    if (hasClientSig && !clientName.trim()) {
+      toast.error('Informe o nome de quem assinou pela empresa.');
+      return;
+    }
+
     setFinalizing(true);
+    const uploaded: string[] = [];
     const dataUrl = sig.toDataURL('image/png');
     const blob = await (await fetch(dataUrl)).blob();
     const path = `${audit.company_id}/${audit.id}.png`;
@@ -295,12 +406,41 @@ export function AuditDetailPage() {
       toast.error('Erro ao salvar assinatura: ' + upErr.message);
       return;
     }
+    uploaded.push(path);
+
+    let clientPath: string | null = null;
+    if (hasClientSig && clientSig) {
+      const cBlob = await (
+        await fetch(clientSig.toDataURL('image/png'))
+      ).blob();
+      const cPath = `${audit.company_id}/${audit.id}-cliente.png`;
+      const { error: cErr } = await supabase.storage
+        .from('signatures')
+        .upload(cPath, cBlob, { contentType: 'image/png', upsert: true });
+      if (cErr) {
+        setFinalizing(false);
+        const { error: rmErr } = await supabase.storage
+          .from('signatures')
+          .remove(uploaded);
+        if (rmErr)
+          console.warn('Falha ao remover assinatura órfã:', rmErr.message);
+        toast.error('Erro ao salvar assinatura da empresa: ' + cErr.message);
+        return;
+      }
+      clientPath = cPath;
+      uploaded.push(cPath);
+    }
+
     const { error } = await supabase
       .from('audits')
       .update({
         responses,
         notes,
+        ...fieldWorkPayload,
         signature_path: path,
+        client_signature_path: clientPath,
+        client_signer_name: clientPath ? clientName.trim() : null,
+        client_signer_role: clientPath ? clientRole.trim() || null : null,
         status: 'completed',
         completed_at: new Date().toISOString(),
         score,
@@ -310,10 +450,10 @@ export function AuditDetailPage() {
       .eq('id', audit.id);
     setFinalizing(false);
     if (error) {
-      // Remove a assinatura orfa do bucket.
+      // Remove as assinaturas orfas do bucket.
       const { error: rmErr } = await supabase.storage
         .from('signatures')
-        .remove([path]);
+        .remove(uploaded);
       if (rmErr)
         console.warn('Falha ao remover assinatura órfã:', rmErr.message);
       toast.error('Erro ao finalizar: ' + error.message);
@@ -452,6 +592,9 @@ export function AuditDetailPage() {
     const sigDataUrl = audit.signature_path
       ? await storageObjectToDataUrl('signatures', audit.signature_path)
       : null;
+    const clientSigDataUrl = audit.client_signature_path
+      ? await storageObjectToDataUrl('signatures', audit.client_signature_path)
+      : null;
 
     const pdf = new jsPDF({ unit: 'mm', format: 'a4' });
     let y = drawPdfHeader(pdf, {
@@ -491,6 +634,29 @@ export function AuditDetailPage() {
     pdf.text(metaLine, 14, y);
     pdf.setTextColor(...PRINT_RGB.ink);
     y += 8;
+
+    // Check-in geolocalizado: comprova que a vistoria foi feita no local.
+    if (audit.latitude != null && audit.longitude != null) {
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(8.5);
+      pdf.setTextColor(...PRINT_RGB.muted);
+      const acc =
+        audit.geo_accuracy_m != null
+          ? ` (±${Math.round(Number(audit.geo_accuracy_m))} m)`
+          : '';
+      const when = audit.geo_captured_at
+        ? ` em ${formatDateTime(audit.geo_captured_at)}`
+        : '';
+      pdf.text(
+        `Check-in no local: ${Number(audit.latitude).toFixed(5)}, ${Number(
+          audit.longitude,
+        ).toFixed(5)}${acc}${when}`,
+        14,
+        y,
+      );
+      pdf.setTextColor(...PRINT_RGB.ink);
+      y += 6;
+    }
 
     // KPIs de conformidade
     const responseMap = new Map(responses.map((r) => [r.itemId, r]));
@@ -572,6 +738,45 @@ export function AuditDetailPage() {
       (pdf as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable
         ?.finalY ?? y;
 
+    // Observações por seção — o comentário da RT sobre cada bloco do
+    // checklist, na ordem em que as seções aparecem no modelo.
+    const sectionNoteRows = groupedByCategory
+      .map(([category]) => [category, (audit.section_notes ?? {})[category]])
+      .filter((row): row is [string, string] => Boolean(row[1]?.trim()));
+    if (sectionNoteRows.length > 0) {
+      currentY += 8;
+      if (currentY > pageHeight - 40) {
+        pdf.addPage();
+        currentY = 16;
+      }
+      currentY = drawSectionTitle(pdf, 'Observações por seção', currentY);
+      autoTable(pdf, {
+        startY: currentY,
+        head: [['Seção', 'Observação']],
+        body: sectionNoteRows,
+        theme: 'grid',
+        headStyles: {
+          fillColor: [...PRINT_RGB.brandDeep],
+          textColor: [255, 255, 255],
+          fontSize: 8,
+          fontStyle: 'bold',
+          cellPadding: 2,
+        },
+        styles: {
+          fontSize: 8,
+          cellPadding: 1.8,
+          textColor: [...PRINT_RGB.body],
+          lineColor: [...PRINT_RGB.hair],
+          lineWidth: 0.2,
+        },
+        columnStyles: { 0: { cellWidth: 45, fontStyle: 'bold' } },
+        margin: { left: 14, right: 14 },
+      });
+      currentY =
+        (pdf as unknown as { lastAutoTable?: { finalY: number } }).lastAutoTable
+          ?.finalY ?? currentY;
+    }
+
     if (notes) {
       currentY += 8;
       if (currentY > pageHeight - 30) {
@@ -588,7 +793,8 @@ export function AuditDetailPage() {
       currentY += split.length * 4.4;
     }
 
-    // Assinatura — bloco com filete e nome/CRN/data.
+    // Assinaturas — RT à esquerda e, quando houve responsável no local,
+    // a ciência da empresa à direita.
     if (sigDataUrl && profile) {
       const SIG_BLOCK_HEIGHT = 50;
       const FOOTER_MARGIN = 14;
@@ -600,34 +806,63 @@ export function AuditDetailPage() {
       }
       currentY = drawSectionTitle(
         pdf,
-        'Assinatura do Responsável Técnico',
+        clientSigDataUrl ? 'Assinaturas' : 'Assinatura do Responsável Técnico',
         currentY,
       );
-      try {
-        pdf.addImage(sigDataUrl, 'PNG', 14, currentY, 58, 22);
-      } catch {
-        /* ignore */
-      }
-      // Linha de assinatura
-      pdf.setDrawColor(...PRINT_RGB.faint);
-      pdf.setLineWidth(0.3);
-      pdf.line(14, currentY + 24, 86, currentY + 24);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(9);
-      pdf.setTextColor(...PRINT_RGB.ink);
-      const who = profile.full_name ?? profile.email ?? '';
-      pdf.text(who, 14, currentY + 28);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(8);
-      pdf.setTextColor(...PRINT_RGB.muted);
+
       const dataStr = audit.completed_at
         ? formatDateTime(audit.completed_at)
         : formatDateTime(new Date().toISOString());
-      const sub = [profile.crn ? `CRN ${profile.crn}` : '', dataStr]
-        .filter(Boolean)
-        .join('  ·  ');
-      pdf.text(sub, 14, currentY + 32);
-      pdf.setTextColor(...PRINT_RGB.ink);
+
+      /** Desenha um bloco de assinatura numa coluna (x em mm). */
+      const drawSignature = (
+        x: number,
+        image: string,
+        who: string,
+        sub: string,
+        caption: string,
+      ) => {
+        try {
+          pdf.addImage(image, 'PNG', x, currentY, 58, 22);
+        } catch {
+          /* imagem inválida não impede o resto do laudo */
+        }
+        pdf.setDrawColor(...PRINT_RGB.faint);
+        pdf.setLineWidth(0.3);
+        pdf.line(x, currentY + 24, x + 72, currentY + 24);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(9);
+        pdf.setTextColor(...PRINT_RGB.ink);
+        pdf.text(who, x, currentY + 28);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(8);
+        pdf.setTextColor(...PRINT_RGB.muted);
+        if (sub) pdf.text(sub, x, currentY + 32);
+        pdf.text(caption, x, currentY + 36);
+        pdf.setTextColor(...PRINT_RGB.ink);
+      };
+
+      drawSignature(
+        14,
+        sigDataUrl,
+        profile.full_name ?? profile.email ?? '',
+        [profile.crn ? `CRN ${profile.crn}` : '', dataStr]
+          .filter(Boolean)
+          .join('  ·  '),
+        'Responsável Técnico',
+      );
+
+      if (clientSigDataUrl) {
+        drawSignature(
+          110,
+          clientSigDataUrl,
+          audit.client_signer_name ?? '',
+          [audit.client_signer_role ?? '', dataStr]
+            .filter(Boolean)
+            .join('  ·  '),
+          'Ciência da empresa',
+        );
+      }
     }
 
     drawPdfFooter(pdf);
@@ -724,6 +959,20 @@ export function AuditDetailPage() {
                   <Button
                     variant="secondary"
                     size="sm"
+                    onClick={handleCheckIn}
+                    loading={locating}
+                    title={
+                      geo
+                        ? 'Local já registrado — clique para atualizar'
+                        : 'Registrar que a vistoria aconteceu no local'
+                    }
+                  >
+                    <MapPin size={14} />
+                    {geo ? 'Local registrado' : 'Registrar local'}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={handleSaveDraft}
                     loading={saving}
                   >
@@ -784,6 +1033,24 @@ export function AuditDetailPage() {
             </span>
           </p>
         </Card>
+      ) : null}
+
+      {geo ? (
+        <p className="mb-3 flex flex-wrap items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+          <MapPin size={13} className="shrink-0" />
+          Check-in em {geo.latitude.toFixed(5)}, {geo.longitude.toFixed(5)}
+          {geo.accuracy != null
+            ? ` (±${Math.round(geo.accuracy)} m)`
+            : ''} · {formatDateTime(geo.capturedAt)}
+          <a
+            href={`https://www.google.com/maps?q=${geo.latitude},${geo.longitude}`}
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-neutral-600 underline hover:text-neutral-900 dark:text-neutral-300"
+          >
+            ver no mapa
+          </a>
+        </p>
       ) : null}
 
       {categories.length > 0 ? (
@@ -853,20 +1120,67 @@ export function AuditDetailPage() {
                         })}
                       </div>
                     </div>
-                    {r?.result === 'NC' || r?.note ? (
+                    {/* Observação disponível em qualquer resultado — a RT
+                        também registra elogio/ressalva em item conforme. */}
+                    {!locked || r?.note ? (
                       <textarea
                         value={r?.note ?? ''}
                         disabled={locked}
                         onChange={(e) => setNote(it.id, e.target.value)}
-                        placeholder="Observacao / plano de acao..."
+                        placeholder={
+                          r?.result === 'NC'
+                            ? 'O que foi encontrado / plano de ação...'
+                            : 'Observação (opcional)...'
+                        }
                         rows={2}
                         className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
                       />
+                    ) : null}
+                    {/* Evidência fotográfica do item (campo photo_id da
+                        AuditResponse, que existia sem UI até a 0106). */}
+                    {!locked || r?.photo_id ? (
+                      <div className="mt-2">
+                        <PhotoAttacher
+                          companyId={audit.company_id}
+                          photoId={r?.photo_id ?? null}
+                          onChange={(pid) => setItemPhoto(it.id, pid)}
+                          disabled={locked}
+                          label="Evidência"
+                          description="Foto deste item (opcional)"
+                        />
+                      </div>
                     ) : null}
                   </div>
                 );
               })}
             </div>
+
+            {/* Observação da seção inteira — o que a RT comenta sobre o
+                bloco, não sobre um item isolado. */}
+            {!locked || sectionNotes[category] ? (
+              <div className="mt-3 border-t border-neutral-100 pt-3 dark:border-neutral-800">
+                <label
+                  htmlFor={`section-note-${category}`}
+                  className="mb-1 block text-xs font-medium text-neutral-500 dark:text-neutral-400"
+                >
+                  Observação desta seção
+                </label>
+                <textarea
+                  id={`section-note-${category}`}
+                  value={sectionNotes[category] ?? ''}
+                  disabled={locked}
+                  onChange={(e) =>
+                    setSectionNotes((prev) => ({
+                      ...prev,
+                      [category]: e.target.value,
+                    }))
+                  }
+                  rows={2}
+                  placeholder={`Comentário geral sobre ${category.toLowerCase()}...`}
+                  className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-1.5 text-xs text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
+                />
+              </div>
+            ) : null}
           </Card>
         ))}
 
@@ -942,6 +1256,56 @@ export function AuditDetailPage() {
             />
             Li e revisei todas as respostas e observacoes.
           </label>
+
+          {/* Ciência da empresa — opcional: nem sempre há responsável no
+              local, mas quando há, o laudo deixa de ser unilateral. */}
+          <div className="mt-2 border-t border-neutral-200 pt-3 dark:border-neutral-700">
+            <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+              Ciência da empresa{' '}
+              <span className="font-normal text-neutral-400">(opcional)</span>
+            </p>
+            <p className="mb-2 mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+              Quem recebeu a visita pode assinar aqui declarando ciência do
+              resultado. Deixe em branco se não houver responsável no local.
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Input
+                id="client-name"
+                label="Nome de quem recebeu"
+                value={clientName}
+                onChange={(e) => setClientName(e.target.value)}
+                placeholder="Ex.: Maria Souza"
+              />
+              <Input
+                id="client-role"
+                label="Cargo"
+                value={clientRole}
+                onChange={(e) => setClientRole(e.target.value)}
+                placeholder="Ex.: Gerente da unidade"
+              />
+            </div>
+            <div className="mt-2 overflow-hidden rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-800">
+              <SignatureCanvas
+                ref={clientSigRef}
+                penColor="black"
+                backgroundColor="white"
+                canvasProps={{
+                  width: 320,
+                  height: 120,
+                  className: 'block rounded-lg max-w-full',
+                }}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => clientSigRef.current?.clear()}
+              disabled={finalizing}
+              className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-neutral-800 disabled:opacity-50 dark:text-neutral-400 dark:hover:text-neutral-100"
+            >
+              <Eraser size={12} />
+              Limpar assinatura da empresa
+            </button>
+          </div>
         </div>
       </Modal>
 
