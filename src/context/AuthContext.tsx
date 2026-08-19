@@ -9,7 +9,58 @@ import {
 import { toast } from 'sonner';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { isNetworkError } from '@/lib/offlineSync';
 import type { OrgSubscription, Profile } from '@/lib/types';
+
+/**
+ * Cópia local do perfil, para o app ABRIR sem sinal.
+ *
+ * Sem isto, entrar no app offline caía na tela "Conta sem perfil": a
+ * sessão é lida do armazenamento local e funciona, mas o SELECT em
+ * `profiles` falha na rede e o perfil virava null — o app dizia que a
+ * conta estava quebrada quando o problema era o sinal da cozinha.
+ *
+ * localStorage e não IndexedDB de propósito: é leitura síncrona, disponível
+ * antes do primeiro render, e o perfil é minúsculo. Ele NÃO concede acesso
+ * a nada: toda leitura e escrita continua passando pela RLS com o JWT. Isto
+ * decide apenas o que a interface desenha enquanto não há rede.
+ */
+const PROFILE_CACHE_KEY = 'pa7.profileCache';
+
+interface ProfileCache {
+  userId: string;
+  profile: Profile;
+  subscription: OrgSubscription | null;
+}
+
+function readProfileCache(userId: string): ProfileCache | null {
+  try {
+    const raw = localStorage.getItem(PROFILE_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as ProfileCache;
+    // Cópia de OUTRA conta nunca serve: trocar de usuário no mesmo
+    // aparelho não pode ressuscitar o perfil de quem saiu.
+    return parsed?.profile && parsed.userId === userId ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeProfileCache(cache: ProfileCache) {
+  try {
+    localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(cache));
+  } catch {
+    /* cota cheia / modo privado: seguir sem cache é melhor que quebrar */
+  }
+}
+
+function clearProfileCache() {
+  try {
+    localStorage.removeItem(PROFILE_CACHE_KEY);
+  } catch {
+    /* noop */
+  }
+}
 
 interface AuthState {
   session: Session | null;
@@ -58,8 +109,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     null,
   );
 
+  /**
+   * Devolve a assinatura carregada. `undefined` significa "não deu para
+   * saber" (erro de rede) — diferente de `null`, que é "não tem plano".
+   * Quem grava o cache precisa dessa diferença para não apagar uma
+   * assinatura boa por causa de uma consulta que falhou.
+   */
   const loadSubscription = useCallback(
-    async (loadedProfile: Profile | null) => {
+    async (
+      loadedProfile: Profile | null,
+    ): Promise<OrgSubscription | null | undefined> => {
       // platform_admin não pertence a uma org-cliente — nunca é gateado.
       if (
         !loadedProfile ||
@@ -68,17 +127,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         !loadedProfile.organization_id
       ) {
         setSubscription(null);
-        return;
+        return null;
       }
       const { data, error } = await supabase.rpc('my_subscription');
       if (error) {
         // Fail-open: erro de rede não pode trancar a cozinha fora do sistema.
         console.error('Erro ao carregar assinatura:', error.message);
         setSubscription(null);
-        return;
+        return undefined;
       }
       const row = (data as OrgSubscription[] | null)?.[0] ?? null;
       setSubscription(row);
+      return row;
     },
     [],
   );
@@ -94,6 +154,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setProfileLoading(false);
       if (error) {
         console.error('Erro ao carregar perfil:', error.message);
+        // Queda de rede não é conta inválida. Sem sinal, o app segue com a
+        // última cópia conhecida em vez de acusar "conta sem perfil".
+        const offline = typeof navigator !== 'undefined' && !navigator.onLine;
+        const cached =
+          offline || isNetworkError(error) ? readProfileCache(userId) : null;
+        if (cached) {
+          setProfile(cached.profile);
+          setSubscription(cached.subscription);
+          return;
+        }
         setProfile(null);
         setSubscription(null);
         return;
@@ -105,12 +175,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (loaded && loaded.active === false) {
         setProfile(null);
         setSubscription(null);
+        clearProfileCache();
         await supabase.auth.signOut();
         toast.error('Sua conta está desativada. Fale com o administrador.');
         return;
       }
       setProfile(loaded);
-      await loadSubscription(loaded);
+      const sub = await loadSubscription(loaded);
+      if (loaded) {
+        writeProfileCache({
+          userId,
+          profile: loaded,
+          // Consulta de assinatura que falhou não apaga a que já estava
+          // guardada — só uma resposta do servidor muda o plano.
+          subscription:
+            sub === undefined
+              ? (readProfileCache(userId)?.subscription ?? null)
+              : sub,
+        });
+      } else {
+        // Servidor respondeu que não existe perfil: é verdade, não falta de
+        // sinal. A cópia local tem de morrer junto.
+        clearProfileCache();
+      }
     },
     [loadSubscription],
   );
@@ -195,6 +282,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await loadSubscription(profile);
     },
     signOut: async () => {
+      // Sair apaga a cópia local do perfil: o próximo a usar o aparelho
+      // não pode abrir offline com a identidade de quem saiu.
+      clearProfileCache();
       await supabase.auth.signOut();
     },
   };

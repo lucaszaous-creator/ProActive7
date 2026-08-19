@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+export { isNetworkError } from './offlineQueue';
 import {
   flushQueue,
   hasIndexedDb,
@@ -21,7 +22,9 @@ import {
 
 // Navegador antigo/privado sem IndexedDB não pode derrubar o app: a fila
 // vira memória (some ao fechar a aba, mas a sessão em curso funciona).
-const storage: QueueStorage = hasIndexedDb() ? indexedDbStorage : memoryStorage();
+const storage: QueueStorage = hasIndexedDb()
+  ? indexedDbStorage
+  : memoryStorage();
 
 export interface OfflineState {
   online: boolean;
@@ -136,20 +139,4 @@ export function startOfflineSync() {
   void refreshCounts().then(() => {
     if (navigator.onLine) void syncNow();
   });
-}
-
-/**
- * `navigator.onLine` mente: diz "online" em Wi-Fi de cozinha que não chega
- * a lugar nenhum. Por isso quem grava trata falha de rede como offline.
- */
-export function isNetworkError(error: { message?: string } | null): boolean {
-  if (!error?.message) return false;
-  const m = error.message.toLowerCase();
-  return (
-    m.includes('failed to fetch') ||
-    m.includes('networkerror') ||
-    m.includes('network request failed') ||
-    m.includes('load failed') ||
-    m.includes('timeout')
-  );
 }

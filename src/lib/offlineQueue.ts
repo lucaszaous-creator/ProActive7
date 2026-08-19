@@ -30,6 +30,26 @@ export interface QueuedWrite {
   lastError?: string;
 }
 
+/**
+ * `navigator.onLine` mente: diz "online" em Wi-Fi de cozinha que não chega
+ * a lugar nenhum. Por isso quem grava trata falha de rede como offline.
+ *
+ * Vive aqui, e não no offlineSync, porque é predicado puro — o offlineSync
+ * carrega o cliente do Supabase junto, e quem só quer classificar um erro
+ * não deveria arrastar isso.
+ */
+export function isNetworkError(error: { message?: string } | null): boolean {
+  if (!error?.message) return false;
+  const m = error.message.toLowerCase();
+  return (
+    m.includes('failed to fetch') ||
+    m.includes('networkerror') ||
+    m.includes('network request failed') ||
+    m.includes('load failed') ||
+    m.includes('timeout')
+  );
+}
+
 /** Depois disso a fila para de tentar sozinha e pede ação da pessoa. */
 export const MAX_AUTO_ATTEMPTS = 5;
 
@@ -203,7 +223,8 @@ export const indexedDbStorage: QueueStorage = {
     }
     await tx(QUEUE_STORE, 'readwrite', (s) => s.put(entry));
   },
-  remove: (id) => tx(QUEUE_STORE, 'readwrite', (s) => s.delete(id)).then(() => {}),
+  remove: (id) =>
+    tx(QUEUE_STORE, 'readwrite', (s) => s.delete(id)).then(() => {}),
 };
 
 /** Rascunho local da tela aberta (some quando a escrita sobe). */

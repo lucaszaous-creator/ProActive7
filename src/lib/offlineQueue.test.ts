@@ -7,8 +7,8 @@ import {
   stuckEntries,
   MAX_AUTO_ATTEMPTS,
   type QueuedWrite,
+  isNetworkError,
 } from './offlineQueue';
-import { isNetworkError } from './offlineSync';
 
 function write(over: Partial<QueuedWrite> = {}): QueuedWrite {
   return {
@@ -127,7 +127,9 @@ describe('collapse', () => {
 describe('isNetworkError', () => {
   it('reconhece as falhas de rede dos navegadores', () => {
     expect(isNetworkError({ message: 'Failed to fetch' })).toBe(true);
-    expect(isNetworkError({ message: 'NetworkError when attempting' })).toBe(true);
+    expect(isNetworkError({ message: 'NetworkError when attempting' })).toBe(
+      true,
+    );
     expect(isNetworkError({ message: 'Load failed' })).toBe(true);
     expect(isNetworkError({ message: 'signal timeout' })).toBe(true);
   });

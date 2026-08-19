@@ -22,6 +22,7 @@ import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { cacheNotice, readThrough } from '@/lib/offlineCache';
 import type { Audit, AuditStatus, AuditTemplate, Company } from '@/lib/types';
 
 const STATUS_LABELS: Record<AuditStatus, string> = {
@@ -61,6 +62,8 @@ export function AuditsPage() {
   >([]);
   const [templates, setTemplates] = useState<AuditTemplate[]>([]);
   const [loading, setLoading] = useState(true);
+  /** Aviso de "isto é uma cópia local" quando a rede não respondeu. */
+  const [offlineNotice, setOfflineNotice] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<AuditStatus | 'all'>('all');
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -82,8 +85,14 @@ export function AuditsPage() {
       .order('scheduled_at', { ascending: false });
     if (!isMaster && companyId) q = q.eq('company_id', companyId);
     if (statusFilter !== 'all') q = q.eq('status', statusFilter);
-    const { data, error } = await q;
+    // Chave inclui os filtros: a lista filtrada guardada é a que volta
+    // quando a rede cai com o mesmo filtro na tela.
+    const { data, error, fromCache, cachedAt } = await readThrough(
+      `audits:${isMaster ? 'all' : companyId}:${statusFilter}`,
+      () => q,
+    );
     setLoading(false);
+    setOfflineNotice(fromCache ? cacheNotice(cachedAt) : null);
     if (error) {
       toast.error('Erro ao carregar visitas: ' + error.message);
       return;
@@ -193,6 +202,12 @@ RDC 275/2002 — Regulamento Técnico de Procedimentos Operacionais Padronizados
           ) : null
         }
       />
+
+      {offlineNotice ? (
+        <p className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          {offlineNotice}
+        </p>
+      ) : null}
 
       <div className="mb-4">
         <Select
