@@ -1,12 +1,17 @@
-import { useState, type FormEvent } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
+import { Link, Navigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
-  Leaf,
-  ShieldCheck,
-  Tag,
+  Boxes,
+  CalendarRange,
   ClipboardCheck,
+  Leaf,
+  LucideIcon,
+  Printer,
+  ShieldCheck,
+  Stethoscope,
+  Tag,
 } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { usePageTitle } from '@/lib/usePageTitle';
@@ -14,13 +19,108 @@ import { useAuth } from '@/context/AuthContext';
 import { FullPageSpinner } from '@/components/ui/Spinner';
 import { Spotlight } from '@/components/public/Spotlight';
 
+type PortalKey = 'cliente' | 'nutricionista';
+
+type PortalTheme = {
+  badge: string;
+  badgeIcon: LucideIcon;
+  title: string;
+  subtitle: string;
+  features: { icon: LucideIcon; label: string }[];
+  mobileTitle: string;
+  mobileSubtitle: string;
+};
+
+/**
+ * Temas da tela de login por portal (split pedido pela Ariane):
+ * a empresa entra no programa de etiquetas, a nutricionista no sistema
+ * de checklists/rotinas. O tema é só apresentação — o que libera cada
+ * menu/rota continua sendo o role do perfil (RLS + ProtectedRoute).
+ */
+const PORTAL_THEMES: Record<PortalKey, PortalTheme> = {
+  cliente: {
+    badge: 'Portal da empresa',
+    badgeIcon: Tag,
+    title: 'A rotina de etiquetas, em ordem.',
+    subtitle:
+      'Acesse o programa de etiquetas da sua empresa: impressão, validades, produção, estoque e a rotina diária da cozinha.',
+    features: [
+      { icon: Printer, label: 'Etiquetas de validade em segundos' },
+      { icon: Boxes, label: 'Validades, produção e estoque' },
+      { icon: ClipboardCheck, label: 'Rotina diária da cozinha' },
+    ],
+    mobileTitle: 'Portal da empresa',
+    mobileSubtitle: 'Acesse o programa de etiquetas',
+  },
+  nutricionista: {
+    badge: 'Portal da nutricionista',
+    badgeIcon: Stethoscope,
+    title: 'Sua consultoria, no controle.',
+    subtitle:
+      'Acesse o sistema da responsável técnica: checklists, rotinas, auditorias e o acompanhamento das suas empresas.',
+    features: [
+      { icon: ClipboardCheck, label: 'Checklists e rotinas técnicas' },
+      { icon: ShieldCheck, label: 'Auditorias com plano de ação' },
+      { icon: CalendarRange, label: 'Agenda e carteira de empresas' },
+    ],
+    mobileTitle: 'Portal da nutricionista',
+    mobileSubtitle: 'Acesse suas rotinas e auditorias',
+  },
+};
+
+const GENERIC_THEME: PortalTheme = {
+  badge: 'Bem-vinda de volta',
+  badgeIcon: Leaf,
+  title: 'Sua consultoria, no controle.',
+  subtitle:
+    'Acesse o ProActive7 para acompanhar suas unidades, etiquetas, auditorias e tudo que mantém sua rotina em conformidade.',
+  features: [
+    { icon: Tag, label: 'Etiquetas RDC 216 em segundos' },
+    { icon: ClipboardCheck, label: 'Auditorias com plano de ação automático' },
+    { icon: ShieldCheck, label: 'Histórico completo por unidade' },
+  ],
+  mobileTitle: 'Bem-vinda de volta',
+  mobileSubtitle: 'Acesse o ProActive7',
+};
+
 export function LoginPage() {
-  usePageTitle('Entrar');
-  const { session, loading, profile, isNutritionist } = useAuth();
+  const params = useParams<{ portal?: string }>();
+  const portal: PortalKey | null =
+    params.portal === 'cliente' || params.portal === 'nutricionista'
+      ? params.portal
+      : null;
+  const theme = portal ? PORTAL_THEMES[portal] : GENERIC_THEME;
+
+  usePageTitle(
+    portal === 'cliente'
+      ? 'Entrar — Portal da empresa'
+      : portal === 'nutricionista'
+        ? 'Entrar — Portal da nutricionista'
+        : 'Entrar',
+  );
+  const { session, loading, profile, isNutritionist, isPlatformAdmin } =
+    useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [sendingReset, setSendingReset] = useState(false);
+  const mismatchWarnedRef = useRef(false);
+
+  // Se a pessoa entrou pelo portal "errado", avisa que o sistema certo
+  // abre mesmo assim — quem decide o acesso é o role, não o card clicado.
+  useEffect(() => {
+    if (!portal || loading || !session || !profile) return;
+    if (mismatchWarnedRef.current || isPlatformAdmin) return;
+    if (portal === 'cliente' && isNutritionist) {
+      mismatchWarnedRef.current = true;
+      toast.info(
+        'Seu acesso é de nutricionista — abrindo o sistema da nutricionista.',
+      );
+    } else if (portal === 'nutricionista' && !isNutritionist) {
+      mismatchWarnedRef.current = true;
+      toast.info('Seu acesso é da empresa — abrindo o programa de etiquetas.');
+    }
+  }, [portal, loading, session, profile, isNutritionist, isPlatformAdmin]);
 
   if (loading) return <FullPageSpinner />;
   if (session) {
@@ -65,6 +165,8 @@ export function LoginPage() {
     toast.success('Enviamos um e-mail com o link para redefinir a senha.');
   }
 
+  const BadgeIcon = theme.badgeIcon;
+
   return (
     <div className="min-h-screen bg-[#fafafa] text-[#171717]">
       {/* Header minimal — "voltar ao site" */}
@@ -96,27 +198,19 @@ export function LoginPage() {
           <div aria-hidden className="fx-grid absolute inset-0 -z-10" />
           <div className="relative z-[2]">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-medium text-white/80 backdrop-blur">
-              <Leaf className="h-3.5 w-3.5" />
-              Bem-vinda de volta
+              <BadgeIcon className="h-3.5 w-3.5" />
+              {theme.badge}
             </span>
             <h1 className="fx-shimmer mt-5 text-4xl font-semibold leading-[1.1] tracking-tight">
-              Sua consultoria, no controle.
+              {theme.title}
             </h1>
             <p className="mt-4 max-w-md text-base leading-relaxed text-white/70">
-              Acesse o ProActive7 para acompanhar suas unidades, etiquetas,
-              auditorias e tudo que mantém sua rotina em conformidade.
+              {theme.subtitle}
             </p>
           </div>
 
           <ul className="relative z-[2] mt-10 space-y-3.5">
-            {[
-              { icon: Tag, label: 'Etiquetas RDC 216 em segundos' },
-              {
-                icon: ClipboardCheck,
-                label: 'Auditorias com plano de ação automático',
-              },
-              { icon: ShieldCheck, label: 'Histórico completo por unidade' },
-            ].map(({ icon: Icon, label }) => (
+            {theme.features.map(({ icon: Icon, label }) => (
               <li
                 key={label}
                 className="flex items-center gap-3 text-sm text-white/80"
@@ -135,10 +229,10 @@ export function LoginPage() {
           <div className="w-full max-w-sm">
             <div className="md:hidden mb-6 text-center">
               <h1 className="text-2xl font-semibold tracking-tight text-[#171717]">
-                Bem-vinda de volta
+                {theme.mobileTitle}
               </h1>
               <p className="mt-1 text-sm text-[#171717]/60">
-                Acesse o ProActive7
+                {theme.mobileSubtitle}
               </p>
             </div>
 
@@ -196,6 +290,17 @@ export function LoginPage() {
             <p className="mt-6 text-center text-xs text-[#171717]/45">
               Acesso fornecido pelo administrador da sua organização.
             </p>
+            {portal && (
+              <p className="mt-2 text-center text-xs text-[#171717]/45">
+                Não é o seu perfil?{' '}
+                <Link
+                  to="/acessar"
+                  className="font-medium text-[#262626]/85 hover:text-[#262626] hover:underline"
+                >
+                  Trocar de portal
+                </Link>
+              </p>
+            )}
           </div>
         </section>
       </main>
