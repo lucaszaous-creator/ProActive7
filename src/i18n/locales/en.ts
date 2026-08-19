@@ -68,10 +68,6 @@ const en = {
     openMenu: 'Open menu',
     installApp: 'Install app',
     notifications: 'Notifications',
-    theme: {
-      light: 'Light mode',
-      dark: 'Dark mode',
-    },
     language: 'Language',
   },
   common: {

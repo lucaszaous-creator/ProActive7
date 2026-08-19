@@ -24,13 +24,11 @@ export function PageHeader({
       className={`mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between ${className}`}
     >
       <div className="min-w-0">
-        <h1 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-100 sm:text-2xl">
+        <h1 className="text-xl font-semibold tracking-tight text-neutral-900 sm:text-2xl">
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-            {subtitle}
-          </p>
+          <p className="mt-1 text-sm text-neutral-500">{subtitle}</p>
         ) : null}
       </div>
       {actions ? (

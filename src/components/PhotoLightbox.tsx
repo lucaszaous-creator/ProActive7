@@ -56,7 +56,7 @@ export function PhotoLightbox({ url, fileName, onClose }: Props) {
           download={downloadName}
           title="Baixar foto"
           aria-label="Baixar foto"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-neutral-800 dark:text-neutral-100 shadow transition hover:bg-white"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-neutral-800 shadow transition hover:bg-white"
         >
           <Download size={18} />
         </a>
@@ -66,7 +66,7 @@ export function PhotoLightbox({ url, fileName, onClose }: Props) {
           rel="noopener noreferrer"
           title="Abrir em nova aba"
           aria-label="Abrir em nova aba"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-neutral-800 dark:text-neutral-100 shadow transition hover:bg-white"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-neutral-800 shadow transition hover:bg-white"
         >
           <ExternalLink size={18} />
         </a>
@@ -75,7 +75,7 @@ export function PhotoLightbox({ url, fileName, onClose }: Props) {
           onClick={onClose}
           title="Fechar"
           aria-label="Fechar"
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-neutral-800 dark:text-neutral-100 shadow transition hover:bg-white"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/95 text-neutral-800 shadow transition hover:bg-white"
         >
           <X size={20} />
         </button>

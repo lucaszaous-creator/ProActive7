@@ -104,9 +104,7 @@ export function RecebimentoDetailPage() {
         </div>
       ) : !data ? (
         <Card>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Não encontrado.
-          </p>
+          <p className="text-sm text-neutral-500">Não encontrado.</p>
         </Card>
       ) : (
         <div className="flex flex-col gap-4">
@@ -122,14 +120,14 @@ export function RecebimentoDetailPage() {
             </div>
             {photoUrl && (
               <div className="mt-4">
-                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-neutral-500">
                   Foto anexada
                 </p>
                 <a href={photoUrl} target="_blank" rel="noopener noreferrer">
                   <img
                     src={photoUrl}
                     alt="Foto do recebimento"
-                    className="max-h-64 rounded-lg border border-neutral-200 dark:border-neutral-800"
+                    className="max-h-64 rounded-lg border border-neutral-200"
                   />
                 </a>
               </div>
@@ -137,15 +135,13 @@ export function RecebimentoDetailPage() {
           </Card>
 
           <Card>
-            <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+            <h2 className="mb-3 text-sm font-semibold text-neutral-700">
               Itens recebidos
             </h2>
             {data.receiving_items.length === 0 ? (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                Sem itens.
-              </p>
+              <p className="text-sm text-neutral-500">Sem itens.</p>
             ) : (
-              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+              <ul className="divide-y divide-neutral-100">
                 {data.receiving_items.map((it) => (
                   <li
                     key={it.id}
@@ -155,8 +151,8 @@ export function RecebimentoDetailPage() {
                       <span
                         className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                           it.rejected
-                            ? 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-300'
-                            : 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300'
+                            ? 'bg-red-50 text-red-600'
+                            : 'bg-neutral-50 text-neutral-600'
                         }`}
                       >
                         {it.rejected ? (
@@ -166,10 +162,10 @@ export function RecebimentoDetailPage() {
                         )}
                       </span>
                       <div className="min-w-0">
-                        <p className="text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                        <p className="text-sm font-medium text-neutral-800">
                           {it.product?.name ?? '—'} · lote {it.batch}
                         </p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                        <p className="text-xs text-neutral-500">
                           {it.quantity} {it.unit}
                           {it.temp_at_arrival != null
                             ? ` · ${it.temp_at_arrival}°C`
@@ -182,7 +178,7 @@ export function RecebimentoDetailPage() {
                             : ''}
                         </p>
                         {it.rejected && it.rejection_reason && (
-                          <p className="mt-1 text-xs text-red-600 dark:text-red-300">
+                          <p className="mt-1 text-xs text-red-600">
                             Rejeitado: {it.rejection_reason}
                           </p>
                         )}
@@ -211,12 +207,10 @@ export function RecebimentoDetailPage() {
 function Field({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <p className="text-xs font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+      <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
         {label}
       </p>
-      <p className="mt-1 text-sm text-neutral-800 dark:text-neutral-100">
-        {value}
-      </p>
+      <p className="mt-1 text-sm text-neutral-800">{value}</p>
     </div>
   );
 }

@@ -102,8 +102,8 @@ export function PlatformLibraryPage() {
             onClick={() => setTab(t.id)}
             className={`shrink-0 rounded-lg px-3 py-2 text-sm font-medium transition ${
               tab === t.id
-                ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900'
-                : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
+                ? 'bg-neutral-900 text-white'
+                : 'text-neutral-600 hover:bg-neutral-100'
             }`}
           >
             {t.label}
@@ -115,19 +115,19 @@ export function PlatformLibraryPage() {
         <ListSkeleton rows={5} />
       ) : (
         <Card>
-          <p className="mb-3 text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="mb-3 text-xs text-neutral-500">
             {globalCount} de {rows.length} marcados como{' '}
             {tab === 'products' ? 'seed' : 'global'}.
           </p>
           {rows.length === 0 ? (
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            <p className="text-sm text-neutral-500">
               Nenhum item nesta categoria.
             </p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500 dark:text-neutral-400 dark:border-neutral-700">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase tracking-wide text-neutral-500">
                     <th className="py-2">Nome</th>
                     <th className="py-2">Origem</th>
                     <th className="py-2 text-right">Status</th>
@@ -136,24 +136,19 @@ export function PlatformLibraryPage() {
                 </thead>
                 <tbody>
                   {rows.map((r) => (
-                    <tr
-                      key={r.id}
-                      className="border-b border-neutral-100 dark:border-neutral-800"
-                    >
+                    <tr key={r.id} className="border-b border-neutral-100">
                       <td className="py-2 font-medium">{r.name}</td>
-                      <td className="py-2 text-neutral-500 dark:text-neutral-400">
+                      <td className="py-2 text-neutral-500">
                         {r.company_id ? 'Org' : 'Plataforma'}
                       </td>
                       <td className="py-2 text-right">
                         {r.is_flag ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-neutral-50 px-2 py-0.5 text-xs font-medium text-neutral-700">
                             <Globe size={10} />
                             Global
                           </span>
                         ) : (
-                          <span className="text-xs text-neutral-500 dark:text-neutral-400">
-                            —
-                          </span>
+                          <span className="text-xs text-neutral-500">—</span>
                         )}
                       </td>
                       <td className="py-2 text-right">
@@ -162,8 +157,8 @@ export function PlatformLibraryPage() {
                           disabled={toggling === r.id}
                           className={`inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-xs disabled:opacity-50 ${
                             r.is_flag
-                              ? 'border-red-200 text-red-600 dark:text-red-300 hover:bg-red-50 dark:border-red-900'
-                              : 'border-neutral-200 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-800/60 dark:border-neutral-900'
+                              ? 'border-red-200 text-red-600 hover:bg-red-50'
+                              : 'border-neutral-200 text-neutral-700 hover:bg-neutral-50'
                           }`}
                         >
                           {r.is_flag ? (
@@ -188,8 +183,8 @@ export function PlatformLibraryPage() {
         </Card>
       )}
 
-      <Card className="bg-blue-50 dark:bg-blue-950">
-        <p className="text-xs text-blue-800 dark:text-blue-200">
+      <Card className="bg-blue-50">
+        <p className="text-xs text-blue-800">
           <strong>Como funciona:</strong> ao publicar um item como global, ele
           fica visível para todas as organizações como leitura. As nutris vêem
           esses itens com a tag "Modelo oficial" e podem clonar para a empresa

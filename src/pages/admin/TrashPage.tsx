@@ -221,18 +221,13 @@ export function TrashPage() {
       ) : rows.length === 0 ? (
         <Card>
           <div className="flex flex-col items-center gap-3 py-8 text-center">
-            <Trash
-              size={32}
-              className="text-neutral-300 dark:text-neutral-600"
-            />
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
-              Lixeira vazia.
-            </p>
+            <Trash size={32} className="text-neutral-300" />
+            <p className="text-sm text-neutral-600">Lixeira vazia.</p>
           </div>
         </Card>
       ) : (
         <Card className="!p-0">
-          <ul className="flex flex-col divide-y divide-neutral-100 dark:divide-neutral-800">
+          <ul className="flex flex-col divide-y divide-neutral-100">
             {rows.map((r) => {
               const meta = TABLE_META[r.table];
               const Icon = meta.icon;
@@ -246,13 +241,13 @@ export function TrashPage() {
                   <div className="flex min-w-0 flex-1 items-start gap-3">
                     <Icon
                       size={18}
-                      className="mt-0.5 shrink-0 text-neutral-400 dark:text-neutral-500"
+                      className="mt-0.5 shrink-0 text-neutral-400"
                     />
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                      <p className="truncate text-sm font-medium text-neutral-800">
                         {meta.label} · {r.label}
                       </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      <p className="text-xs text-neutral-500">
                         Excluído {formatDateTime(r.deleted_at)}
                         {isOrg ? (
                           <>
@@ -272,7 +267,7 @@ export function TrashPage() {
                     <button
                       onClick={() => void handleRestore(r)}
                       disabled={busy}
-                      className="inline-flex items-center gap-1 rounded-lg border border-neutral-300 px-3 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-950"
+                      className="inline-flex items-center gap-1 rounded-lg border border-neutral-300 px-3 py-2 text-xs font-medium text-neutral-700 hover:bg-neutral-50 disabled:opacity-50"
                     >
                       <RotateCcw size={14} />
                       Restaurar
@@ -287,7 +282,7 @@ export function TrashPage() {
                         }
                       }}
                       disabled={busy}
-                      className="inline-flex items-center gap-1 rounded-lg border border-red-300 px-3 py-2 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-950"
+                      className="inline-flex items-center gap-1 rounded-lg border border-red-300 px-3 py-2 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
                     >
                       <Trash2 size={14} />
                       Excluir definitivo
@@ -335,7 +330,7 @@ export function TrashPage() {
           </>
         }
       >
-        <div className="space-y-3 text-sm text-neutral-600 dark:text-neutral-400">
+        <div className="space-y-3 text-sm text-neutral-600">
           <p>
             Esta ação é <strong>IRREVERSÍVEL</strong> e apaga, de uma vez:
           </p>

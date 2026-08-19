@@ -173,7 +173,7 @@ export function AnnouncementsPage() {
 
       {list.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm text-neutral-500">
             Nenhum comunicado cadastrado.
           </p>
         </Card>
@@ -188,15 +188,10 @@ export function AnnouncementsPage() {
             return (
               <Card key={a.id}>
                 <div className="flex items-start gap-3">
-                  <Icon
-                    size={18}
-                    className="mt-1 shrink-0 text-neutral-500 dark:text-neutral-400"
-                  />
+                  <Icon size={18} className="mt-1 shrink-0 text-neutral-500" />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-neutral-800 dark:text-neutral-200">
-                      {a.message}
-                    </p>
-                    <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                    <p className="text-sm text-neutral-800">{a.message}</p>
+                    <p className="mt-1 text-xs text-neutral-500">
                       {SEVERITY_LABEL[a.severity]} ·{' '}
                       {new Date(a.starts_at).toLocaleString('pt-BR')}
                       {a.ends_at
@@ -206,8 +201,8 @@ export function AnnouncementsPage() {
                       <span
                         className={
                           showing
-                            ? 'font-medium text-neutral-600 dark:text-neutral-300'
-                            : 'text-neutral-500 dark:text-neutral-400'
+                            ? 'font-medium text-neutral-600'
+                            : 'text-neutral-500'
                         }
                       >
                         {showing
@@ -221,14 +216,14 @@ export function AnnouncementsPage() {
                   <div className="flex gap-1">
                     <button
                       onClick={() => openEdit(a)}
-                      className="rounded-lg p-2 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100"
                       aria-label="Editar"
                     >
                       <Pencil size={14} />
                     </button>
                     <button
                       onClick={() => setConfirmDelete(a)}
-                      className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                      className="rounded-lg p-2 text-red-500 hover:bg-red-50"
                       aria-label="Remover"
                     >
                       <Trash2 size={14} />
@@ -258,14 +253,14 @@ export function AnnouncementsPage() {
       >
         <div className="space-y-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-300">
+            <label className="mb-1 block text-xs font-medium text-neutral-600">
               Mensagem
             </label>
             <textarea
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-800 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
+              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-800 focus:outline-none"
             />
           </div>
           <Select

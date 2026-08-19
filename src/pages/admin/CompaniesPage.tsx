@@ -275,8 +275,8 @@ export function CompaniesPage() {
         <div
           className={`mb-4 flex flex-wrap items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm ${
             atLimit
-              ? 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-200'
-              : 'border-neutral-200 bg-neutral-50 text-neutral-600 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-300'
+              ? 'border-amber-200 bg-amber-50 text-amber-800'
+              : 'border-neutral-200 bg-neutral-50 text-neutral-600'
           }`}
         >
           <span>
@@ -302,21 +302,21 @@ export function CompaniesPage() {
         />
       ) : (
         <>
-          <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 dark:border-neutral-800 bg-white px-3 py-2">
+          <div className="mb-3 flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-2">
             <Search size={16} className="shrink-0 text-neutral-400" />
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Buscar por empresa, CNPJ, nutricionista ou organização..."
-              className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 dark:text-neutral-100 outline-none placeholder:text-neutral-400"
+              className="min-w-0 flex-1 bg-transparent text-sm text-neutral-800 outline-none placeholder:text-neutral-400"
             />
             {search ? (
               <button
                 type="button"
                 onClick={() => setSearch('')}
                 aria-label="Limpar busca"
-                className="rounded p-1 text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                className="rounded p-1 text-neutral-400 hover:bg-neutral-100"
               >
                 <X size={14} />
               </button>
@@ -326,7 +326,7 @@ export function CompaniesPage() {
             <div className="w-full overflow-x-auto">
               <table className="w-full min-w-[720px] text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 dark:border-neutral-800 text-left text-xs uppercase text-neutral-500 dark:text-neutral-400">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase text-neutral-500">
                     <th className="px-4 py-3">Empresa</th>
                     <th className="px-4 py-3">Nutricionista / Organização</th>
                     <th className="px-4 py-3">CNPJ</th>
@@ -340,7 +340,7 @@ export function CompaniesPage() {
                     <tr>
                       <td
                         colSpan={6}
-                        className="px-4 py-8 text-center text-sm text-neutral-500 dark:text-neutral-400"
+                        className="px-4 py-8 text-center text-sm text-neutral-500"
                       >
                         Nenhuma empresa encontrada para "{search}".
                       </td>
@@ -349,26 +349,26 @@ export function CompaniesPage() {
                   {filteredCompanies.map((c) => (
                     <tr
                       key={c.id}
-                      className="border-b border-neutral-100 dark:border-neutral-800 last:border-0"
+                      className="border-b border-neutral-100 last:border-0"
                     >
-                      <td className="px-4 py-3 font-medium text-neutral-800 dark:text-neutral-100">
+                      <td className="px-4 py-3 font-medium text-neutral-800">
                         {c.name}
                       </td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-4 py-3 text-neutral-600">
                         <CompanyOrgLink row={c} />
                       </td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-4 py-3 text-neutral-600">
                         {c.cnpj ?? '—'}
                       </td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-4 py-3 text-neutral-600">
                         {c.phone ?? '—'}
                       </td>
                       <td className="px-4 py-3">
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs ${
                             c.active
-                              ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200'
-                              : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
+                              ? 'bg-neutral-50 text-neutral-700'
+                              : 'bg-neutral-100 text-neutral-500'
                           }`}
                         >
                           {c.active ? 'Ativa' : 'Inativa'}
@@ -390,14 +390,14 @@ export function CompaniesPage() {
                             }}
                             aria-label="Copiar link do selo público"
                             title="Copiar link do selo público de conformidade"
-                            className="rounded-lg p-2.5 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/60"
+                            className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50"
                           >
                             <ShieldCheck size={16} />
                           </button>
                           <button
                             onClick={() => openEdit(c)}
                             aria-label="Editar"
-                            className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                            className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
                           >
                             <Pencil size={16} />
                           </button>
@@ -463,7 +463,7 @@ export function CompaniesPage() {
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
           />
-          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-200">
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"
               checked={active}
@@ -474,12 +474,12 @@ export function CompaniesPage() {
           </label>
 
           {editing ? (
-            <div className="border-t border-neutral-200 dark:border-neutral-800 pt-4">
-              <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
+            <div className="border-t border-neutral-200 pt-4">
+              <p className="mb-2 text-sm font-medium text-neutral-700">
                 Logo da empresa
               </p>
               <div className="flex items-center gap-3">
-                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-800/60">
+                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50">
                   {logoPath ? (
                     <img
                       src={
@@ -495,7 +495,7 @@ export function CompaniesPage() {
                 </div>
                 <div className="flex flex-col gap-1">
                   <label
-                    className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-100 dark:bg-neutral-800 px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 hover:bg-neutral-200 ${
+                    className={`inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200 ${
                       uploadingLogo ? 'pointer-events-none opacity-60' : ''
                     }`}
                   >
@@ -517,7 +517,7 @@ export function CompaniesPage() {
                       type="button"
                       onClick={handleLogoRemove}
                       disabled={uploadingLogo}
-                      className="text-xs text-red-600 dark:text-red-300 hover:underline disabled:opacity-50"
+                      className="text-xs text-red-600 hover:underline disabled:opacity-50"
                     >
                       Remover
                     </button>
@@ -529,13 +529,13 @@ export function CompaniesPage() {
               </p>
             </div>
           ) : (
-            <p className="border-t border-neutral-200 dark:border-neutral-800 pt-3 text-xs text-neutral-400">
+            <p className="border-t border-neutral-200 pt-3 text-xs text-neutral-400">
               Salve a empresa para enviar um logo personalizado.
             </p>
           )}
 
-          <div className="border-t border-neutral-200 dark:border-neutral-800 pt-4">
-            <p className="mb-2 text-sm font-medium text-neutral-700 dark:text-neutral-200">
+          <div className="border-t border-neutral-200 pt-4">
+            <p className="mb-2 text-sm font-medium text-neutral-700">
               Cor primária (etiquetas e página pública)
             </p>
             <div className="flex items-center gap-3">
@@ -543,7 +543,7 @@ export function CompaniesPage() {
                 type="color"
                 value={primaryColor || '#262626'}
                 onChange={(e) => setPrimaryColor(e.target.value)}
-                className="h-10 w-12 cursor-pointer rounded border border-neutral-300 dark:border-neutral-700"
+                className="h-10 w-12 cursor-pointer rounded border border-neutral-300"
                 aria-label="Cor primária"
               />
               <input
@@ -551,13 +551,13 @@ export function CompaniesPage() {
                 value={primaryColor}
                 onChange={(e) => setPrimaryColor(e.target.value)}
                 placeholder="#262626"
-                className="flex-1 rounded-lg border border-neutral-300 dark:border-neutral-700 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
+                className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
               />
               {primaryColor ? (
                 <button
                   type="button"
                   onClick={() => setPrimaryColor('')}
-                  className="text-xs text-red-600 dark:text-red-300 hover:underline"
+                  className="text-xs text-red-600 hover:underline"
                 >
                   Limpar
                 </button>
@@ -593,7 +593,7 @@ function CompanyOrgLink({ row }: { row: CompanyRow }) {
   const org = row.organizations;
   if (!org) {
     return (
-      <span className="text-xs font-medium text-amber-600 dark:text-amber-300">
+      <span className="text-xs font-medium text-amber-600">
         Sem organização vinculada
       </span>
     );
@@ -602,13 +602,11 @@ function CompanyOrgLink({ row }: { row: CompanyRow }) {
   const ownerName = owner?.full_name ?? owner?.email ?? null;
   return (
     <div className="leading-tight">
-      <div className="font-medium text-neutral-800 dark:text-neutral-100">
+      <div className="font-medium text-neutral-800">
         {ownerName ?? 'Sem nutricionista titular'}
       </div>
       {org.name ? (
-        <div className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
-          {org.name}
-        </div>
+        <div className="mt-0.5 text-xs text-neutral-500">{org.name}</div>
       ) : null}
     </div>
   );

@@ -683,9 +683,7 @@ export function PrintLabelPage() {
           </Card>
 
           <Card className="flex flex-col items-center gap-3">
-            <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
-              Prévia
-            </p>
+            <p className="text-sm font-medium text-neutral-700">Prévia</p>
             <div className="w-full max-w-full overflow-x-auto">
               <div className="mx-auto w-fit">
                 <LabelPreview

@@ -258,9 +258,7 @@ export function OrganizationDetailPage() {
   if (!org) {
     return (
       <div className="mx-auto max-w-4xl">
-        <p className="text-sm text-neutral-600 dark:text-neutral-300">
-          Organização não encontrada.
-        </p>
+        <p className="text-sm text-neutral-600">Organização não encontrada.</p>
         <Button
           variant="secondary"
           className="mt-4"
@@ -279,7 +277,7 @@ export function OrganizationDetailPage() {
       <div>
         <button
           onClick={() => navigate('/platform/organizacoes')}
-          className="mb-2 flex items-center gap-1.5 text-sm text-neutral-500 dark:text-neutral-400 hover:text-neutral-700"
+          className="mb-2 flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-700"
         >
           <ArrowLeft size={14} />
           Organizações
@@ -291,14 +289,14 @@ export function OrganizationDetailPage() {
               <span
                 className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
                   org.status === 'active'
-                    ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200'
-                    : 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200'
+                    ? 'bg-neutral-50 text-neutral-700'
+                    : 'bg-red-50 text-red-700'
                 }`}
               >
                 {org.status === 'active' ? 'Ativa' : 'Suspensa'}
               </span>
               {org.deleted_at ? (
-                <span className="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-950 dark:text-red-200">
+                <span className="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
                   Na lixeira
                 </span>
               ) : null}
@@ -342,8 +340,8 @@ export function OrganizationDetailPage() {
                   loading={togglingStatus}
                   className={
                     org.status === 'active'
-                      ? 'border-red-200 dark:border-red-900 text-red-600 dark:text-red-300 hover:bg-red-50'
-                      : 'border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800/60'
+                      ? 'border-red-200 text-red-600 hover:bg-red-50'
+                      : 'border-neutral-200 text-neutral-600 hover:bg-neutral-50'
                   }
                 >
                   {org.status === 'active' ? 'Suspender' : 'Reativar'}
@@ -351,7 +349,7 @@ export function OrganizationDetailPage() {
                 <Button
                   variant="secondary"
                   onClick={() => setConfirmDelete(true)}
-                  className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-300 dark:hover:bg-red-950/40"
+                  className="border-red-200 text-red-600 hover:bg-red-50"
                 >
                   <Trash2 size={14} /> Excluir
                 </Button>
@@ -362,7 +360,7 @@ export function OrganizationDetailPage() {
       </div>
 
       {org.deleted_at ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/40 dark:text-red-200">
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
           <p className="font-medium">
             Organização na lixeira desde {formatDateTime(org.deleted_at)}.
           </p>
@@ -384,39 +382,39 @@ export function OrganizationDetailPage() {
 
       {/* Org info */}
       <Card>
-        <h2 className="mb-3 text-base font-semibold text-neutral-800 dark:text-neutral-100">
+        <h2 className="mb-3 text-base font-semibold text-neutral-800">
           Informações
         </h2>
         <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div>
-            <dt className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">
+            <dt className="text-xs font-medium uppercase text-neutral-500">
               Slug
             </dt>
-            <dd className="mt-0.5 text-sm text-neutral-800 dark:text-neutral-100">
+            <dd className="mt-0.5 text-sm text-neutral-800">
               {org.slug ?? '—'}
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">
+            <dt className="text-xs font-medium uppercase text-neutral-500">
               E-mail de contato
             </dt>
-            <dd className="mt-0.5 text-sm text-neutral-800 dark:text-neutral-100">
+            <dd className="mt-0.5 text-sm text-neutral-800">
               {org.contact_email ?? '—'}
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">
+            <dt className="text-xs font-medium uppercase text-neutral-500">
               Telefone de contato
             </dt>
-            <dd className="mt-0.5 text-sm text-neutral-800 dark:text-neutral-100">
+            <dd className="mt-0.5 text-sm text-neutral-800">
               {org.contact_phone ?? '—'}
             </dd>
           </div>
           <div>
-            <dt className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">
+            <dt className="text-xs font-medium uppercase text-neutral-500">
               Criada em
             </dt>
-            <dd className="mt-0.5 text-sm text-neutral-800 dark:text-neutral-100">
+            <dd className="mt-0.5 text-sm text-neutral-800">
               {new Date(org.created_at).toLocaleDateString('pt-BR')}
             </dd>
           </div>
@@ -431,7 +429,7 @@ export function OrganizationDetailPage() {
         const overLimit = limit !== null && activeCompanies > limit;
         return (
           <Card>
-            <h2 className="mb-3 text-base font-semibold text-neutral-800 dark:text-neutral-100">
+            <h2 className="mb-3 text-base font-semibold text-neutral-800">
               Assinatura
             </h2>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -450,20 +448,20 @@ export function OrganizationDetailPage() {
                   ))}
                 </Select>
                 {currentPlan && (
-                  <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                  <p className="mt-1 text-xs text-neutral-500">
                     {currentPlan.allowed_modules.length} módulos liberados.
                   </p>
                 )}
               </div>
-              <div className="flex flex-col justify-center rounded-lg bg-neutral-50 px-3 py-2 dark:bg-neutral-800">
-                <p className="text-xs font-medium uppercase text-neutral-500 dark:text-neutral-400">
+              <div className="flex flex-col justify-center rounded-lg bg-neutral-50 px-3 py-2">
+                <p className="text-xs font-medium uppercase text-neutral-500">
                   Empresas ativas
                 </p>
-                <p className="text-sm text-neutral-800 dark:text-neutral-100">
+                <p className="text-sm text-neutral-800">
                   {activeCompanies}
                   {limit !== null ? ` / ${limit}` : ' / ilimitado'}
                   {overLimit && (
-                    <span className="ml-2 text-xs font-medium text-amber-600 dark:text-amber-400">
+                    <span className="ml-2 text-xs font-medium text-amber-600">
                       acima do limite
                     </span>
                   )}
@@ -471,14 +469,14 @@ export function OrganizationDetailPage() {
               </div>
             </div>
             <div className="mt-3 flex items-center gap-2 text-xs">
-              <span className="font-medium uppercase text-neutral-500 dark:text-neutral-400">
+              <span className="font-medium uppercase text-neutral-500">
                 Acesso de suporte (impersonate):
               </span>
               <span
                 className={`rounded-full px-2 py-0.5 font-medium ${
                   org.allow_impersonation
-                    ? 'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300'
-                    : 'bg-neutral-100 text-neutral-500 dark:text-neutral-400 dark:bg-neutral-800'
+                    ? 'bg-neutral-50 text-neutral-700'
+                    : 'bg-neutral-100 text-neutral-500'
                 }`}
               >
                 {org.allow_impersonation
@@ -492,12 +490,12 @@ export function OrganizationDetailPage() {
 
       {/* Companies */}
       <div>
-        <h2 className="mb-3 text-base font-semibold text-neutral-800 dark:text-neutral-100">
+        <h2 className="mb-3 text-base font-semibold text-neutral-800">
           Empresas ({companies.length})
         </h2>
         {companies.length === 0 ? (
           <Card>
-            <p className="text-sm text-neutral-600 dark:text-neutral-300">
+            <p className="text-sm text-neutral-600">
               Nenhuma empresa nesta organização.
             </p>
           </Card>
@@ -506,7 +504,7 @@ export function OrganizationDetailPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[480px] text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 dark:border-neutral-800 text-left text-xs uppercase text-neutral-500 dark:text-neutral-400">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase text-neutral-500">
                     <th className="px-4 py-3">Empresa</th>
                     <th className="px-4 py-3">CNPJ</th>
                     <th className="px-4 py-3">Telefone</th>
@@ -517,23 +515,23 @@ export function OrganizationDetailPage() {
                   {companies.map((c) => (
                     <tr
                       key={c.id}
-                      className="border-b border-neutral-100 dark:border-neutral-800 last:border-0"
+                      className="border-b border-neutral-100 last:border-0"
                     >
-                      <td className="px-4 py-3 font-medium text-neutral-800 dark:text-neutral-100">
+                      <td className="px-4 py-3 font-medium text-neutral-800">
                         {c.name}
                       </td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-4 py-3 text-neutral-600">
                         {c.cnpj ?? '—'}
                       </td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-4 py-3 text-neutral-600">
                         {c.phone ?? '—'}
                       </td>
                       <td className="px-4 py-3">
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                             c.active
-                              ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200'
-                              : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
+                              ? 'bg-neutral-50 text-neutral-700'
+                              : 'bg-neutral-100 text-neutral-500'
                           }`}
                         >
                           {c.active ? 'Ativa' : 'Inativa'}
@@ -550,12 +548,12 @@ export function OrganizationDetailPage() {
 
       {/* Users */}
       <div>
-        <h2 className="mb-3 text-base font-semibold text-neutral-800 dark:text-neutral-100">
+        <h2 className="mb-3 text-base font-semibold text-neutral-800">
           Usuários ({users.length})
         </h2>
         {users.length === 0 ? (
           <Card>
-            <p className="text-sm text-neutral-600 dark:text-neutral-300">
+            <p className="text-sm text-neutral-600">
               Nenhum usuário nesta organização.
             </p>
           </Card>
@@ -564,7 +562,7 @@ export function OrganizationDetailPage() {
             <div className="overflow-x-auto">
               <table className="w-full min-w-[520px] text-sm">
                 <thead>
-                  <tr className="border-b border-neutral-200 dark:border-neutral-800 text-left text-xs uppercase text-neutral-500 dark:text-neutral-400">
+                  <tr className="border-b border-neutral-200 text-left text-xs uppercase text-neutral-500">
                     <th className="px-4 py-3">Nome</th>
                     <th className="px-4 py-3">E-mail</th>
                     <th className="px-4 py-3">Perfil</th>
@@ -577,30 +575,30 @@ export function OrganizationDetailPage() {
                   {users.map((u) => (
                     <tr
                       key={u.id}
-                      className="border-b border-neutral-100 dark:border-neutral-800 last:border-0"
+                      className="border-b border-neutral-100 last:border-0"
                     >
-                      <td className="px-4 py-3 font-medium text-neutral-800 dark:text-neutral-100">
+                      <td className="px-4 py-3 font-medium text-neutral-800">
                         {u.full_name ?? '—'}
                       </td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-4 py-3 text-neutral-600">
                         {u.email ?? '—'}
                       </td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300 capitalize">
+                      <td className="px-4 py-3 text-neutral-600 capitalize">
                         {u.role === 'nutritionist'
                           ? 'Nutricionista'
                           : u.role === 'property'
                             ? 'Usuário da empresa'
                             : u.role}
                       </td>
-                      <td className="px-4 py-3 text-neutral-600 dark:text-neutral-300">
+                      <td className="px-4 py-3 text-neutral-600">
                         {u.companies?.name ?? '—'}
                       </td>
                       <td className="px-4 py-3">
                         <span
                           className={`rounded-full px-2 py-0.5 text-xs font-medium ${
                             u.active
-                              ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200'
-                              : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400'
+                              ? 'bg-neutral-50 text-neutral-700'
+                              : 'bg-neutral-100 text-neutral-500'
                           }`}
                         >
                           {u.active ? 'Ativo' : 'Inativo'}
@@ -619,7 +617,7 @@ export function OrganizationDetailPage() {
                             !u.active ||
                             !org.allow_impersonation
                           }
-                          className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2 py-1 text-xs text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 disabled:opacity-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+                          className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2 py-1 text-xs text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
                           title={
                             org.allow_impersonation
                               ? 'Abrir sessão como este usuário'
@@ -672,7 +670,7 @@ export function OrganizationDetailPage() {
             maxLength={60}
           />
           <div>
-            <label className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-300">
+            <label className="mb-1 block text-xs font-medium text-neutral-600">
               Mensagem
             </label>
             <textarea
@@ -680,10 +678,10 @@ export function OrganizationDetailPage() {
               onChange={(e) => setPushBody(e.target.value)}
               rows={3}
               maxLength={240}
-              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-800 focus:outline-none dark:border-neutral-700 dark:bg-neutral-800"
+              className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm focus:border-neutral-800 focus:outline-none"
             />
           </div>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="text-xs text-neutral-500">
             Será enviado para todos os dispositivos com push habilitado nos
             usuários desta organização.
           </p>

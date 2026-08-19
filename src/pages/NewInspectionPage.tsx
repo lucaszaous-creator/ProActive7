@@ -101,7 +101,7 @@ export function NewInspectionPage() {
     <div className="mx-auto max-w-4xl">
       <Link
         to="/visitas"
-        className="mb-2 inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400"
+        className="mb-2 inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-700"
       >
         <ArrowLeft size={14} />
         Visitas técnicas
@@ -114,11 +114,11 @@ export function NewInspectionPage() {
 
       {/* Passo 1 — empresa */}
       <Card className="mb-4">
-        <p className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+        <p className="mb-3 text-sm font-semibold text-neutral-700">
           1. Onde você está?
         </p>
         {companies.length === 0 ? (
-          <p className="py-2 text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="py-2 text-sm text-neutral-500">
             Nenhuma empresa cadastrada ainda. Cadastre em Administração →
             Empresas.
           </p>
@@ -133,8 +133,8 @@ export function NewInspectionPage() {
                   onClick={() => setCompanyId(c.id)}
                   className={`flex items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left text-sm transition ${
                     selected
-                      ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900'
-                      : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200'
+                      ? 'border-neutral-900 bg-neutral-900 text-white'
+                      : 'border-neutral-200 bg-white text-neutral-700 hover:border-neutral-400'
                   }`}
                 >
                   {selected ? (
@@ -154,12 +154,12 @@ export function NewInspectionPage() {
       {companyId ? (
         <Card>
           <div className="mb-3 flex items-baseline justify-between gap-2">
-            <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+            <p className="text-sm font-semibold text-neutral-700">
               2. Qual checklist você vai usar?
             </p>
             <Link
               to="/visitas/modelos"
-              className="text-xs font-medium text-neutral-500 hover:text-neutral-800 hover:underline dark:text-neutral-400 dark:hover:text-neutral-100"
+              className="text-xs font-medium text-neutral-500 hover:text-neutral-800 hover:underline"
             >
               Gerenciar modelos
             </Link>
@@ -192,24 +192,24 @@ export function NewInspectionPage() {
                     type="button"
                     onClick={() => void startInspection(t)}
                     disabled={starting !== null}
-                    className="group flex items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-left transition hover:border-neutral-400 hover:shadow-sm disabled:opacity-60 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-neutral-500"
+                    className="group flex items-center justify-between gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3 text-left transition hover:border-neutral-400 hover:shadow-sm disabled:opacity-60"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                      <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-neutral-800">
                         <span className="truncate">{t.name}</span>
                         {t.is_global ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600">
                             <Globe size={10} />
                             Modelo oficial
                           </span>
                         ) : null}
                       </p>
-                      <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+                      <p className="mt-0.5 text-xs text-neutral-500">
                         {(t.items ?? []).length} perguntas · {sections.size}{' '}
                         {sections.size === 1 ? 'seção' : 'seções'}
                       </p>
                     </div>
-                    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white transition group-hover:bg-neutral-700 dark:bg-neutral-100 dark:text-neutral-900">
+                    <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-neutral-900 px-3 py-1.5 text-xs font-medium text-white transition group-hover:bg-neutral-700">
                       {busy ? 'Iniciando…' : 'Começar'}
                       {!busy ? <ArrowRight size={13} /> : null}
                     </span>
@@ -218,7 +218,7 @@ export function NewInspectionPage() {
               })}
               <Link
                 to="/visitas/modelos"
-                className="mt-1 inline-flex items-center gap-1.5 self-start rounded-lg border border-dashed border-neutral-300 px-3 py-2 text-xs font-medium text-neutral-600 hover:border-neutral-500 hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                className="mt-1 inline-flex items-center gap-1.5 self-start rounded-lg border border-dashed border-neutral-300 px-3 py-2 text-xs font-medium text-neutral-600 hover:border-neutral-500 hover:bg-neutral-50"
               >
                 <Plus size={14} />
                 Criar um modelo novo
@@ -227,13 +227,13 @@ export function NewInspectionPage() {
           )}
         </Card>
       ) : (
-        <div className="flex items-center gap-2 rounded-xl border border-dashed border-neutral-300 p-4 text-sm text-neutral-500 dark:border-neutral-700 dark:text-neutral-400">
+        <div className="flex items-center gap-2 rounded-xl border border-dashed border-neutral-300 p-4 text-sm text-neutral-500">
           <ClipboardCheck size={16} />
           Selecione a empresa acima para ver os checklists disponíveis.
         </div>
       )}
 
-      <p className="mt-4 flex items-center gap-1.5 text-xs text-neutral-400 dark:text-neutral-500">
+      <p className="mt-4 flex items-center gap-1.5 text-xs text-neutral-400">
         <CalendarPlus size={13} />
         Precisa marcar uma visita para outro dia? Use "Agendar visita" em
         Visitas técnicas.

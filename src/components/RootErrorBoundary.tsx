@@ -30,15 +30,15 @@ export class RootErrorBoundary extends Component<Props, State> {
     if (!this.state.hasError) return this.props.children;
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 p-6 text-center">
-        <h1 className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
+        <h1 className="text-lg font-semibold text-neutral-800">
           Algo deu errado.
         </h1>
-        <p className="max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
+        <p className="max-w-sm text-sm text-neutral-600">
           Já registramos o erro. Recarregue a página para tentar novamente.
         </p>
         <button
           onClick={() => window.location.reload()}
-          className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white"
+          className="rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white hover:bg-neutral-800"
         >
           Recarregar
         </button>

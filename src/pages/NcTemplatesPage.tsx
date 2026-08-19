@@ -31,10 +31,10 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 const SEVERITIES: NcSeverity[] = ['low', 'medium', 'high', 'critical'];
 
 const SEVERITY_COLOR: Record<NcSeverity, string> = {
-  low: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
-  medium: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200',
-  high: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-200',
-  critical: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200',
+  low: 'bg-neutral-100 text-neutral-700',
+  medium: 'bg-amber-100 text-amber-700',
+  high: 'bg-orange-100 text-orange-700',
+  critical: 'bg-red-100 text-red-700',
 };
 
 interface Form {
@@ -229,7 +229,7 @@ export function NcTemplatesPage() {
     <div className="mx-auto max-w-4xl">
       <Link
         to="/nao-conformidades"
-        className="mb-2 inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400"
+        className="mb-2 inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-700"
       >
         <ArrowLeft size={14} />
         Não-conformidades
@@ -262,7 +262,7 @@ export function NcTemplatesPage() {
         />
       ) : (
         <Card className="!p-0">
-          <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+          <ul className="divide-y divide-neutral-100">
             {rows.map((t) => {
               const busy = busyId === t.id;
               return (
@@ -271,7 +271,7 @@ export function NcTemplatesPage() {
                   className="flex flex-col gap-2 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0 flex-1">
-                    <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                    <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-neutral-800">
                       <span className="truncate">{t.name}</span>
                       <span
                         className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${SEVERITY_COLOR[t.severity]}`}
@@ -279,12 +279,12 @@ export function NcTemplatesPage() {
                         {NC_SEVERITY_LABELS[t.severity]}
                       </span>
                       {!t.active ? (
-                        <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950/40 dark:text-amber-200">
+                        <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
                           Desativado
                         </span>
                       ) : null}
                     </p>
-                    <p className="mt-0.5 truncate text-xs text-neutral-500 dark:text-neutral-400">
+                    <p className="mt-0.5 truncate text-xs text-neutral-500">
                       {t.category ? `${t.category} · ` : ''}prazo{' '}
                       {t.default_due_days} dias
                       {t.what ? ` · ${t.what}` : ''}
@@ -296,7 +296,7 @@ export function NcTemplatesPage() {
                       disabled={busy}
                       aria-label="Duplicar"
                       title="Duplicar"
-                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50"
                     >
                       <Copy size={15} />
                     </button>
@@ -304,7 +304,7 @@ export function NcTemplatesPage() {
                       onClick={() => openEdit(t)}
                       aria-label="Editar"
                       title="Editar"
-                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100"
                     >
                       <Pencil size={15} />
                     </button>
@@ -317,7 +317,7 @@ export function NcTemplatesPage() {
                           ? 'Desativar — some das listas de escolha, histórico preservado'
                           : 'Reativar'
                       }
-                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50"
                     >
                       {t.active ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
@@ -325,7 +325,7 @@ export function NcTemplatesPage() {
                       onClick={() => setDeleting(t)}
                       aria-label="Excluir"
                       title="Excluir"
-                      className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
+                      className="rounded-lg p-2 text-red-500 hover:bg-red-50"
                     >
                       <Trash2 size={15} />
                     </button>
@@ -369,7 +369,7 @@ export function NcTemplatesPage() {
             <div>
               <label
                 htmlFor="nct-category"
-                className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-300"
+                className="mb-1 block text-xs font-medium text-neutral-600"
               >
                 Categoria
               </label>
@@ -379,7 +379,7 @@ export function NcTemplatesPage() {
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
                 placeholder="Ex.: Manipuladores"
-                className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
               />
               <datalist id="nct-categories">
                 {categories.map((c) => (
@@ -406,7 +406,7 @@ export function NcTemplatesPage() {
           <div>
             <label
               htmlFor="nct-description"
-              className="mb-1 block text-xs font-medium text-neutral-600 dark:text-neutral-300"
+              className="mb-1 block text-xs font-medium text-neutral-600"
             >
               Descrição da não-conformidade
             </label>
@@ -418,12 +418,12 @@ export function NcTemplatesPage() {
               }
               rows={2}
               placeholder="O texto que aparece na NC aberta a partir deste modelo."
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
             />
           </div>
 
-          <div className="rounded-lg border border-neutral-200 p-3 dark:border-neutral-700">
-            <p className="mb-3 text-sm font-medium text-neutral-700 dark:text-neutral-200">
+          <div className="rounded-lg border border-neutral-200 p-3">
+            <p className="mb-3 text-sm font-medium text-neutral-700">
               Plano de ação padrão (5W2H)
             </p>
             <div className="flex flex-col gap-3">
@@ -476,7 +476,7 @@ export function NcTemplatesPage() {
                   }
                 />
               </div>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="text-xs text-neutral-500">
                 O prazo é contado a partir do dia em que a NC for aberta. O
                 responsável (&quot;quem&quot;) não entra no modelo — muda a cada
                 empresa e é escolhido na hora.

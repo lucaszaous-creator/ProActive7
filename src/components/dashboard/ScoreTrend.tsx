@@ -44,22 +44,19 @@ export function ScoreTrend() {
   return (
     <Card>
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h2 className="flex items-center gap-2 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
-          <LineChart
-            size={15}
-            className="text-neutral-400 dark:text-neutral-500"
-          />
+        <h2 className="flex items-center gap-2 text-sm font-semibold text-neutral-700">
+          <LineChart size={15} className="text-neutral-400" />
           Evolução do compliance
         </h2>
         {last ? (
-          <span className="text-xs text-neutral-400 dark:text-neutral-500">
+          <span className="text-xs text-neutral-400">
             média de {last.companies}{' '}
             {last.companies === 1 ? 'empresa' : 'empresas'} · 90 dias
           </span>
         ) : null}
       </div>
       {data.length < 2 ? (
-        <p className="rounded-lg bg-neutral-50 px-3 py-2.5 text-sm text-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-300">
+        <p className="rounded-lg bg-neutral-50 px-3 py-2.5 text-sm text-neutral-600">
           A curva se constrói com o uso: cada dia em que o painel é aberto, o
           score do dia fica registrado. Volte amanhã para ver o primeiro traço
           da série.

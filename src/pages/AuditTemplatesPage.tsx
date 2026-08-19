@@ -422,29 +422,29 @@ export function AuditTemplatesPage() {
         className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
       >
         <div className="min-w-0 flex-1">
-          <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-neutral-800 dark:text-neutral-100">
+          <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-neutral-800">
             <span className="truncate">{t.name}</span>
             {kind === 'global' ? (
-              <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+              <span className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600">
                 <Globe size={10} />
                 Modelo oficial
               </span>
             ) : kind === 'organization' ? (
-              <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+              <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600">
                 Toda a organização
               </span>
             ) : (
-              <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+              <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600">
                 Só {companyName(t.company_id)}
               </span>
             )}
             {!t.active ? (
-              <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950/40 dark:text-amber-200">
+              <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
                 Desativado
               </span>
             ) : null}
           </p>
-          <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="mt-0.5 text-xs text-neutral-500">
             {(t.items ?? []).length} perguntas · {categories.size}{' '}
             {categories.size === 1 ? 'seção' : 'seções'}
           </p>
@@ -458,7 +458,7 @@ export function AuditTemplatesPage() {
                 ? 'Criar uma cópia editável na sua organização'
                 : 'Duplicar modelo'
             }
-            className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2.5 py-1.5 text-xs font-medium text-neutral-600 hover:bg-neutral-50 disabled:opacity-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
+            className="inline-flex items-center gap-1 rounded-lg border border-neutral-200 px-2.5 py-1.5 text-xs font-medium text-neutral-600 hover:bg-neutral-50 disabled:opacity-50"
           >
             <Copy size={13} />
             {t.is_global ? 'Usar como modelo' : 'Duplicar'}
@@ -469,7 +469,7 @@ export function AuditTemplatesPage() {
                 onClick={() => openEdit(t)}
                 aria-label="Editar"
                 title="Editar"
-                className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100"
               >
                 <Pencil size={15} />
               </button>
@@ -482,7 +482,7 @@ export function AuditTemplatesPage() {
                     ? 'Desativar — some do seletor ao agendar, histórico preservado'
                     : 'Reativar'
                 }
-                className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50"
               >
                 {t.active ? <EyeOff size={15} /> : <Eye size={15} />}
               </button>
@@ -490,7 +490,7 @@ export function AuditTemplatesPage() {
                 onClick={() => setDeleting(t)}
                 aria-label="Excluir"
                 title="Excluir"
-                className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
+                className="rounded-lg p-2 text-red-500 hover:bg-red-50"
               >
                 <Trash2 size={15} />
               </button>
@@ -505,7 +505,7 @@ export function AuditTemplatesPage() {
     <div className="mx-auto max-w-4xl">
       <Link
         to="/visitas"
-        className="mb-2 inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-700 dark:text-neutral-400"
+        className="mb-2 inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-700"
       >
         <ArrowLeft size={14} />
         Visitas técnicas
@@ -553,16 +553,16 @@ export function AuditTemplatesPage() {
       ) : (
         <div className="flex flex-col gap-4">
           <Card>
-            <h2 className="mb-1 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+            <h2 className="mb-1 text-sm font-semibold text-neutral-700">
               Meus modelos
             </h2>
             {mine.length === 0 ? (
-              <p className="py-2 text-sm text-neutral-500 dark:text-neutral-400">
+              <p className="py-2 text-sm text-neutral-500">
                 Nenhum modelo próprio ainda. Copie um oficial abaixo ou crie do
                 zero.
               </p>
             ) : (
-              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+              <ul className="divide-y divide-neutral-100">
                 {mine.map(renderRow)}
               </ul>
             )}
@@ -570,14 +570,14 @@ export function AuditTemplatesPage() {
 
           {official.length > 0 ? (
             <Card>
-              <h2 className="mb-1 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              <h2 className="mb-1 text-sm font-semibold text-neutral-700">
                 Modelos oficiais da plataforma
               </h2>
-              <p className="mb-1 text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="mb-1 text-xs text-neutral-500">
                 Somente leitura. Use "Usar como modelo" para ter uma cópia
                 editável na sua organização.
               </p>
-              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+              <ul className="divide-y divide-neutral-100">
                 {official.map(renderRow)}
               </ul>
             </Card>
@@ -592,7 +592,7 @@ export function AuditTemplatesPage() {
         wide
         footer={
           <>
-            <span className="mr-auto self-center text-xs text-neutral-500 dark:text-neutral-400">
+            <span className="mr-auto self-center text-xs text-neutral-500">
               {totalQuestions}{' '}
               {totalQuestions === 1 ? 'pergunta válida' : 'perguntas válidas'}{' '}
               em {validSections} {validSections === 1 ? 'seção' : 'seções'}
@@ -657,10 +657,10 @@ export function AuditTemplatesPage() {
 
           <div>
             <div className="mb-2 flex items-baseline justify-between gap-2">
-              <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+              <p className="text-sm font-medium text-neutral-700">
                 Seções do checklist
               </p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="text-xs text-neutral-500">
                 O peso define o score e a gravidade da NC.
               </p>
             </div>
@@ -675,10 +675,10 @@ export function AuditTemplatesPage() {
               {sections.map((section, si) => (
                 <div
                   key={section.key}
-                  className="overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700"
+                  className="overflow-hidden rounded-xl border border-neutral-200"
                 >
                   {/* Cabeçalho da seção: nome + controles do módulo */}
-                  <div className="flex items-center gap-1.5 border-b border-neutral-200 bg-neutral-50 px-2 py-2 dark:border-neutral-700 dark:bg-neutral-800/60">
+                  <div className="flex items-center gap-1.5 border-b border-neutral-200 bg-neutral-50 px-2 py-2">
                     <button
                       type="button"
                       onClick={() =>
@@ -689,7 +689,7 @@ export function AuditTemplatesPage() {
                       aria-label={
                         section.collapsed ? 'Expandir seção' : 'Recolher seção'
                       }
-                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-700"
+                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200"
                     >
                       {section.collapsed ? (
                         <ChevronRight size={15} />
@@ -705,9 +705,9 @@ export function AuditTemplatesPage() {
                         patchSection(section.key, { name: e.target.value })
                       }
                       placeholder={`Seção ${si + 1} (ex.: Manipuladores)`}
-                      className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1.5 text-sm font-medium outline-none focus:border-neutral-400 focus:bg-white dark:focus:bg-neutral-900"
+                      className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1.5 text-sm font-medium outline-none focus:border-neutral-400 focus:bg-white"
                     />
-                    <span className="hidden shrink-0 text-[11px] text-neutral-400 sm:inline dark:text-neutral-500">
+                    <span className="hidden shrink-0 text-[11px] text-neutral-400 sm:inline">
                       {section.items.length}{' '}
                       {section.items.length === 1 ? 'pergunta' : 'perguntas'}
                     </span>
@@ -717,7 +717,7 @@ export function AuditTemplatesPage() {
                       disabled={si === 0}
                       aria-label="Mover seção para cima"
                       title="Mover seção para cima"
-                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-700"
+                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200 disabled:opacity-30"
                     >
                       <ChevronUp size={15} />
                     </button>
@@ -727,7 +727,7 @@ export function AuditTemplatesPage() {
                       disabled={si === sections.length - 1}
                       aria-label="Mover seção para baixo"
                       title="Mover seção para baixo"
-                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-700"
+                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200 disabled:opacity-30"
                     >
                       <ChevronDown size={15} />
                     </button>
@@ -736,7 +736,7 @@ export function AuditTemplatesPage() {
                       onClick={() => duplicateSection(si)}
                       aria-label="Duplicar seção"
                       title="Duplicar seção (perguntas viram cópias novas)"
-                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-700"
+                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200"
                     >
                       <Copy size={14} />
                     </button>
@@ -745,7 +745,7 @@ export function AuditTemplatesPage() {
                       onClick={() => removeSection(section.key)}
                       aria-label="Excluir seção"
                       title="Excluir seção e suas perguntas"
-                      className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
+                      className="rounded-lg p-1.5 text-red-500 hover:bg-red-50"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -756,10 +756,10 @@ export function AuditTemplatesPage() {
                       {section.items.map((it, ii) => (
                         <div
                           key={it.id}
-                          className="rounded-lg border border-neutral-200 p-3 dark:border-neutral-700"
+                          className="rounded-lg border border-neutral-200 p-3"
                         >
                           <div className="mb-2 flex items-center justify-between gap-2">
-                            <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                            <span className="text-xs font-medium text-neutral-500">
                               Pergunta {ii + 1}
                             </span>
                             <div className="flex gap-0.5">
@@ -768,7 +768,7 @@ export function AuditTemplatesPage() {
                                 onClick={() => moveItem(section.key, ii, -1)}
                                 disabled={ii === 0}
                                 aria-label="Mover pergunta para cima"
-                                className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                                className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30"
                               >
                                 <ChevronUp size={14} />
                               </button>
@@ -777,7 +777,7 @@ export function AuditTemplatesPage() {
                                 onClick={() => moveItem(section.key, ii, 1)}
                                 disabled={ii === section.items.length - 1}
                                 aria-label="Mover pergunta para baixo"
-                                className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                                className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30"
                               >
                                 <ChevronDown size={14} />
                               </button>
@@ -786,7 +786,7 @@ export function AuditTemplatesPage() {
                                 onClick={() => removeItem(section.key, it.id)}
                                 disabled={section.items.length === 1}
                                 aria-label="Remover pergunta"
-                                className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 disabled:opacity-30 dark:hover:bg-red-950/40"
+                                className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 disabled:opacity-30"
                               >
                                 <Trash2 size={14} />
                               </button>
@@ -802,7 +802,7 @@ export function AuditTemplatesPage() {
                               }
                               rows={2}
                               placeholder="O que será verificado (ex.: Manipuladores usam uniforme completo e limpo)"
-                              className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-neutral-800"
+                              className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
                             />
                             <div className="grid gap-2 sm:grid-cols-2">
                               <select
@@ -812,7 +812,7 @@ export function AuditTemplatesPage() {
                                     weight: Number(e.target.value),
                                   })
                                 }
-                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
                               >
                                 {WEIGHTS.map((w) => (
                                   <option key={w.value} value={w.value}>
@@ -829,7 +829,7 @@ export function AuditTemplatesPage() {
                                   })
                                 }
                                 placeholder="Base legal (ex.: RDC 216 item 4.6.1)"
-                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
                               />
                             </div>
 
@@ -845,7 +845,7 @@ export function AuditTemplatesPage() {
                                   })
                                 }
                                 aria-label="Tipo de resposta"
-                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
                               >
                                 {ANSWER_TYPES.map((t) => (
                                   <option key={t} value={t}>
@@ -853,7 +853,7 @@ export function AuditTemplatesPage() {
                                   </option>
                                 ))}
                               </select>
-                              <p className="self-center text-xs text-neutral-500 dark:text-neutral-400">
+                              <p className="self-center text-xs text-neutral-500">
                                 {ANSWER_TYPE_HINT[it.answerType]}
                               </p>
                             </div>
@@ -870,7 +870,7 @@ export function AuditTemplatesPage() {
                                 }
                                 placeholder="Nota máxima (ex.: 5)"
                                 aria-label="Nota máxima da escala"
-                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
                               />
                             ) : null}
 
@@ -886,7 +886,7 @@ export function AuditTemplatesPage() {
                                   }
                                   placeholder="Unidade (ex.: °C)"
                                   aria-label="Unidade da medida"
-                                  className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                                  className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
                                 />
                                 <input
                                   type="text"
@@ -899,7 +899,7 @@ export function AuditTemplatesPage() {
                                   }
                                   placeholder="Mínimo aceitável"
                                   aria-label="Valor mínimo aceitável"
-                                  className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                                  className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
                                 />
                                 <input
                                   type="text"
@@ -912,13 +912,14 @@ export function AuditTemplatesPage() {
                                   }
                                   placeholder="Máximo aceitável"
                                   aria-label="Valor máximo aceitável"
-                                  className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                                  className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
                                 />
                               </div>
                             ) : null}
 
-                            {it.answerType === 'measure' && !hasDraftRange(it) ? (
-                              <p className="text-xs text-amber-600 dark:text-amber-500">
+                            {it.answerType === 'measure' &&
+                            !hasDraftRange(it) ? (
+                              <p className="text-xs text-amber-600">
                                 Sem faixa definida, o valor fica só registrado:
                                 não pontua no score nem abre não-conformidade.
                               </p>
@@ -937,7 +938,7 @@ export function AuditTemplatesPage() {
                                     ncTemplateId: e.target.value,
                                   })
                                 }
-                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
                               >
                                 <option value="">
                                   Se reprovado: abrir NC só com o texto da
@@ -957,7 +958,7 @@ export function AuditTemplatesPage() {
                       <button
                         type="button"
                         onClick={() => addItem(section.key)}
-                        className="self-start rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200"
+                        className="self-start rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200"
                       >
                         + Adicionar pergunta
                       </button>
@@ -969,7 +970,7 @@ export function AuditTemplatesPage() {
               <button
                 type="button"
                 onClick={() => setSections((prev) => [...prev, emptySection()])}
-                className="self-start rounded-lg border border-dashed border-neutral-300 px-3 py-2 text-xs font-medium text-neutral-600 hover:border-neutral-500 hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                className="self-start rounded-lg border border-dashed border-neutral-300 px-3 py-2 text-xs font-medium text-neutral-600 hover:border-neutral-500 hover:bg-neutral-50"
               >
                 + Adicionar seção
               </button>

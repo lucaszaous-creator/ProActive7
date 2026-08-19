@@ -22,16 +22,14 @@ function Kpi({
   tone?: 'neutral' | 'teal' | 'amber' | 'red' | 'green';
 }) {
   const accent: Record<typeof tone, string> = {
-    neutral:
-      'bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300',
-    teal: 'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
-    amber: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-    red: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300',
-    green:
-      'bg-neutral-50 text-neutral-700 dark:bg-neutral-950 dark:text-neutral-300',
+    neutral: 'bg-neutral-100 text-neutral-600',
+    teal: 'bg-neutral-50 text-neutral-700',
+    amber: 'bg-amber-50 text-amber-700',
+    red: 'bg-red-50 text-red-700',
+    green: 'bg-neutral-50 text-neutral-700',
   } as Record<string, string>;
   return (
-    <div className="fx-lift rounded-xl border border-neutral-200 bg-white p-3 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700 sm:p-5">
+    <div className="fx-lift rounded-xl border border-neutral-200 bg-white p-3 hover:border-neutral-300 sm:p-5">
       <div className="flex items-center gap-2.5 sm:gap-3">
         <span
           className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg sm:h-10 sm:w-10 ${accent[tone]}`}
@@ -40,14 +38,14 @@ function Kpi({
           <Icon size={20} className="hidden sm:inline" />
         </span>
         <div className="min-w-0">
-          <p className="truncate text-[10px] font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400 sm:text-xs">
+          <p className="truncate text-[10px] font-medium uppercase tracking-wide text-neutral-500 sm:text-xs">
             {label}
           </p>
-          <p className="truncate text-lg font-semibold leading-tight text-neutral-800 dark:text-neutral-100 sm:text-2xl">
+          <p className="truncate text-lg font-semibold leading-tight text-neutral-800 sm:text-2xl">
             {value}
           </p>
           {hint ? (
-            <p className="truncate text-[10px] text-neutral-500 dark:text-neutral-400 sm:text-xs">
+            <p className="truncate text-[10px] text-neutral-500 sm:text-xs">
               {hint}
             </p>
           ) : null}

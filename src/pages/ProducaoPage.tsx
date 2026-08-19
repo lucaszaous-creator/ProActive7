@@ -43,19 +43,17 @@ function expiryInfo(expiryAt: string, now: number) {
     return {
       key: 'expired' as ExpiryKey,
       label: 'Vencido',
-      badge:
-        'border-red-200 bg-red-50 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300',
-      ring: 'border-red-200 dark:border-red-900/60',
-      iconBg: 'bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400',
+      badge: 'border-red-200 bg-red-50 text-red-700',
+      ring: 'border-red-200',
+      iconBg: 'bg-red-50 text-red-600',
       expired: true,
       soon: false,
     };
   const days = Math.ceil(diff / MS_DAY);
   const amber = {
-    badge:
-      'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300',
-    ring: 'border-amber-200 dark:border-amber-900/60',
-    iconBg: 'bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400',
+    badge: 'border-amber-200 bg-amber-50 text-amber-700',
+    ring: 'border-amber-200',
+    iconBg: 'bg-amber-50 text-amber-600',
     expired: false,
     soon: true,
     key: 'soon' as ExpiryKey,
@@ -65,11 +63,9 @@ function expiryInfo(expiryAt: string, now: number) {
   return {
     key: 'ok' as ExpiryKey,
     label: `Vence em ${days}d`,
-    badge:
-      'border-neutral-200 bg-neutral-50 text-neutral-700 dark:border-neutral-900 dark:bg-neutral-800/60 dark:text-neutral-300',
-    ring: 'border-neutral-200 dark:border-neutral-800',
-    iconBg:
-      'bg-neutral-50 text-neutral-600 dark:bg-neutral-800/60 dark:text-neutral-400',
+    badge: 'border-neutral-200 bg-neutral-50 text-neutral-700',
+    ring: 'border-neutral-200',
+    iconBg: 'bg-neutral-50 text-neutral-600',
     expired: false,
     soon: false,
   };
@@ -348,7 +344,7 @@ export function ProducaoPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada.
           </p>
         </Card>
@@ -356,13 +352,13 @@ export function ProducaoPage() {
         <ListSkeleton rows={5} />
       ) : labels.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm text-neutral-500">
             Nenhuma etiqueta ativa. Imprima etiquetas em Etiquetas.
           </p>
         </Card>
       ) : filtered.length === 0 ? (
         <Card className="flex flex-col items-center gap-3 text-center">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm text-neutral-500">
             Nenhum item para este filtro.
           </p>
           <Button
@@ -384,7 +380,7 @@ export function ProducaoPage() {
             return (
               <div
                 key={l.id}
-                className={`flex flex-col rounded-xl border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg dark:bg-neutral-900 ${info.ring}`}
+                className={`flex flex-col rounded-xl border bg-white p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${info.ring}`}
               >
                 <div className="flex items-start justify-between gap-2">
                   <span
@@ -404,42 +400,40 @@ export function ProducaoPage() {
                 </div>
 
                 <p
-                  className="mt-3 truncate text-sm font-semibold text-neutral-800 dark:text-neutral-100"
+                  className="mt-3 truncate text-sm font-semibold text-neutral-800"
                   title={l.product_name_snapshot}
                 >
                   {l.product_name_snapshot}
                 </p>
                 {l.batch && (
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    Lote {l.batch}
-                  </p>
+                  <p className="text-xs text-neutral-500">Lote {l.batch}</p>
                 )}
 
-                <dl className="mt-3 space-y-1 text-xs text-neutral-500 dark:text-neutral-400">
+                <dl className="mt-3 space-y-1 text-xs text-neutral-500">
                   <div className="flex justify-between gap-2">
                     <dt>Manipulação</dt>
-                    <dd className="font-medium text-neutral-700 dark:text-neutral-200">
+                    <dd className="font-medium text-neutral-700">
                       {formatDateTime(l.manipulation_at)}
                     </dd>
                   </div>
                   {l.display_quantity && (
                     <div className="flex justify-between gap-2">
                       <dt>Produzido</dt>
-                      <dd className="font-medium text-neutral-700 dark:text-neutral-200">
+                      <dd className="font-medium text-neutral-700">
                         {l.display_quantity}
                       </dd>
                     </div>
                   )}
                   <div className="flex justify-between gap-2">
                     <dt>Validade</dt>
-                    <dd className="font-medium text-neutral-700 dark:text-neutral-200">
+                    <dd className="font-medium text-neutral-700">
                       {formatDateTime(l.expiry_at)}
                     </dd>
                   </div>
                   {l.responsible_name && (
                     <div className="flex justify-between gap-2">
                       <dt>Responsável</dt>
-                      <dd className="max-w-[60%] truncate font-medium text-neutral-700 dark:text-neutral-200">
+                      <dd className="max-w-[60%] truncate font-medium text-neutral-700">
                         {l.responsible_name}
                       </dd>
                     </div>
@@ -450,8 +444,8 @@ export function ProducaoPage() {
                       <dd
                         className={`font-semibold ${
                           stock.balance <= 0
-                            ? 'text-red-600 dark:text-red-400'
-                            : 'text-neutral-700 dark:text-neutral-400'
+                            ? 'text-red-600'
+                            : 'text-neutral-700'
                         }`}
                       >
                         {stock.balance.toLocaleString('pt-BR', {
@@ -497,13 +491,13 @@ export function ProducaoPage() {
       >
         {target && (
           <div className="flex flex-col gap-3">
-            <div className="rounded-lg bg-neutral-50 p-3 text-sm text-neutral-700 dark:bg-neutral-800 dark:text-neutral-200">
+            <div className="rounded-lg bg-neutral-50 p-3 text-sm text-neutral-700">
               <p className="font-medium">{target.product_name_snapshot}</p>
-              <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="mt-0.5 text-xs text-neutral-500">
                 {target.batch ? `Lote ${target.batch} · ` : ''}
                 Manipulado {formatDateTime(target.manipulation_at)}
               </p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="text-xs text-neutral-500">
                 Vence {formatDateTime(target.expiry_at)}
                 {target.responsible_name
                   ? ` · Resp. ${target.responsible_name}`
@@ -526,7 +520,7 @@ export function ProducaoPage() {
               ))}
             </Select>
             {target.product_id && target.batch && (
-              <label className="flex items-start gap-2 rounded-lg border border-neutral-200 p-3 text-sm text-neutral-700 dark:border-neutral-700 dark:text-neutral-200">
+              <label className="flex items-start gap-2 rounded-lg border border-neutral-200 p-3 text-sm text-neutral-700">
                 <input
                   type="checkbox"
                   checked={alsoStock}
@@ -586,25 +580,22 @@ function StatCard({
   onClick?: () => void;
 }) {
   const tones = {
-    emerald:
-      'bg-neutral-50 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-400',
-    amber: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-400',
-    red: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-400',
+    emerald: 'bg-neutral-50 text-neutral-700',
+    amber: 'bg-amber-50 text-amber-700',
+    red: 'bg-red-50 text-red-700',
   } as const;
   const activeRing = {
-    emerald:
-      'border-neutral-400 ring-1 ring-neutral-300 dark:border-neutral-600 dark:ring-neutral-700',
-    amber:
-      'border-amber-300 ring-1 ring-amber-200 dark:border-amber-800 dark:ring-amber-900',
-    red: 'border-red-300 ring-1 ring-red-200 dark:border-red-800 dark:ring-red-900',
+    emerald: 'border-neutral-400 ring-1 ring-neutral-300',
+    amber: 'border-amber-300 ring-1 ring-amber-200',
+    red: 'border-red-300 ring-1 ring-red-200',
   } as const;
   return (
     <button
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      className={`rounded-xl border bg-white p-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500 dark:bg-neutral-900 ${
-        active ? activeRing[tone] : 'border-neutral-200 dark:border-neutral-800'
+      className={`rounded-xl border bg-white p-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500 ${
+        active ? activeRing[tone] : 'border-neutral-200'
       }`}
     >
       <div
@@ -612,12 +603,8 @@ function StatCard({
       >
         {icon}
       </div>
-      <div className="text-lg font-semibold text-neutral-800 dark:text-neutral-100">
-        {value}
-      </div>
-      <div className="text-[11px] text-neutral-500 dark:text-neutral-400">
-        {label}
-      </div>
+      <div className="text-lg font-semibold text-neutral-800">{value}</div>
+      <div className="text-[11px] text-neutral-500">{label}</div>
     </button>
   );
 }

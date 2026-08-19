@@ -34,19 +34,19 @@ const STATUS_LABELS: Record<AuditStatus, string> = {
 const STATUS_STYLE: Record<AuditStatus, { icon: typeof Clock; bg: string }> = {
   scheduled: {
     icon: CalendarDays,
-    bg: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200',
+    bg: 'bg-blue-100 text-blue-700',
   },
   in_progress: {
     icon: Clock,
-    bg: 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200',
+    bg: 'bg-amber-100 text-amber-700',
   },
   completed: {
     icon: CheckCircle2,
-    bg: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200',
+    bg: 'bg-neutral-100 text-neutral-700',
   },
   cancelled: {
     icon: XCircle,
-    bg: 'bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400',
+    bg: 'bg-neutral-200 text-neutral-600',
   },
 };
 
@@ -217,13 +217,8 @@ RDC 275/2002 — Regulamento Técnico de Procedimentos Operacionais Padronizados
       ) : audits.length === 0 ? (
         <Card>
           <div className="flex flex-col items-center gap-3 py-8 text-center">
-            <ClipboardCheck
-              size={32}
-              className="text-neutral-300 dark:text-neutral-600"
-            />
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
-              Nenhuma visita ainda.
-            </p>
+            <ClipboardCheck size={32} className="text-neutral-300" />
+            <p className="text-sm text-neutral-600">Nenhuma visita ainda.</p>
             {isMaster && selectableTemplates.length === 0 ? (
               <Button
                 variant="secondary"
@@ -244,14 +239,14 @@ RDC 275/2002 — Regulamento Técnico de Procedimentos Operacionais Padronizados
               <Link
                 key={a.id}
                 to={`/visitas/${a.id}`}
-                className="block rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700 sm:p-5"
+                className="block rounded-xl border border-neutral-200 bg-white p-4 transition hover:border-neutral-300 hover:shadow-sm sm:p-5"
               >
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                    <p className="truncate text-sm font-semibold text-neutral-800">
                       {a.company?.name ?? companyMap.get(a.company_id) ?? ''}
                     </p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                    <p className="text-xs text-neutral-500">
                       Agendada{' '}
                       {a.scheduled_at
                         ? formatDateTime(a.scheduled_at)
@@ -263,7 +258,7 @@ RDC 275/2002 — Regulamento Técnico de Procedimentos Operacionais Padronizados
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
                     {a.score != null ? (
-                      <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-sm font-semibold text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
+                      <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-sm font-semibold text-neutral-700">
                         {a.score.toFixed(1)}%
                       </span>
                     ) : null}
@@ -352,7 +347,7 @@ RDC 275/2002 — Regulamento Técnico de Procedimentos Operacionais Padronizados
             <option value="6">Semestralmente</option>
             <option value="12">Anualmente</option>
           </Select>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+          <p className="text-xs text-neutral-500">
             Visitas recorrentes geram automaticamente a proxima ao serem
             finalizadas.
           </p>

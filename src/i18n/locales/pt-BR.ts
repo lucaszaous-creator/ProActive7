@@ -68,10 +68,6 @@ const ptBR = {
     openMenu: 'Abrir menu',
     installApp: 'Instalar app',
     notifications: 'Notificações',
-    theme: {
-      light: 'Modo claro',
-      dark: 'Modo escuro',
-    },
     language: 'Idioma',
   },
   common: {

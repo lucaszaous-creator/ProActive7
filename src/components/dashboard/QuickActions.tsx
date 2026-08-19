@@ -19,13 +19,11 @@ interface ActionProps {
 }
 
 const ACCENT_BG: Record<NonNullable<ActionProps['accent']>, string> = {
-  teal: 'bg-neutral-50 text-neutral-700 group-hover:bg-neutral-100 dark:bg-neutral-950 dark:text-neutral-300 dark:group-hover:bg-neutral-900',
-  emerald:
-    'bg-neutral-50 text-neutral-700 group-hover:bg-neutral-100 dark:bg-neutral-950 dark:text-neutral-300 dark:group-hover:bg-neutral-900',
-  amber:
-    'bg-amber-50 text-amber-700 group-hover:bg-amber-100 dark:bg-amber-950 dark:text-amber-300 dark:group-hover:bg-amber-900',
-  red: 'bg-red-50 text-red-600 group-hover:bg-red-100 dark:bg-red-950 dark:text-red-300 dark:group-hover:bg-red-900',
-  blue: 'bg-blue-50 text-blue-700 group-hover:bg-blue-100 dark:bg-blue-950 dark:text-blue-300 dark:group-hover:bg-blue-900',
+  teal: 'bg-neutral-50 text-neutral-700 group-hover:bg-neutral-100',
+  emerald: 'bg-neutral-50 text-neutral-700 group-hover:bg-neutral-100',
+  amber: 'bg-amber-50 text-amber-700 group-hover:bg-amber-100',
+  red: 'bg-red-50 text-red-600 group-hover:bg-red-100',
+  blue: 'bg-blue-50 text-blue-700 group-hover:bg-blue-100',
 };
 
 function ActionTile({
@@ -38,7 +36,7 @@ function ActionTile({
   return (
     <Link
       to={to}
-      className="fx-lift fx-press group flex flex-col gap-1.5 rounded-xl border border-neutral-200 bg-white p-2.5 hover:border-neutral-300 hover:shadow-sm dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700 sm:min-h-[88px] sm:gap-2 sm:p-4"
+      className="fx-lift fx-press group flex flex-col gap-1.5 rounded-xl border border-neutral-200 bg-white p-2.5 hover:border-neutral-300 hover:shadow-sm sm:min-h-[88px] sm:gap-2 sm:p-4"
     >
       <span
         className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition group-hover:scale-110 sm:h-10 sm:w-10 ${ACCENT_BG[accent]}`}
@@ -47,10 +45,10 @@ function ActionTile({
         <Icon size={20} className="hidden sm:inline" />
       </span>
       <div className="min-w-0">
-        <p className="truncate text-xs font-semibold text-neutral-800 dark:text-neutral-100 sm:text-sm">
+        <p className="truncate text-xs font-semibold text-neutral-800 sm:text-sm">
           {title}
         </p>
-        <p className="truncate text-[10px] text-neutral-500 dark:text-neutral-400 sm:text-xs">
+        <p className="truncate text-[10px] text-neutral-500 sm:text-xs">
           {subtitle}
         </p>
       </div>
@@ -101,7 +99,7 @@ export function QuickActions({ isMaster }: QuickActionsProps) {
         <div className="mt-3 flex justify-end">
           <Link
             to="/visitas"
-            className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:border-neutral-700"
+            className="inline-flex items-center gap-2 rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-neutral-700 hover:border-neutral-300"
           >
             <CalendarPlus size={14} />
             Agendar visita técnica

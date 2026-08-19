@@ -344,8 +344,8 @@ export function ManipulatorsPage() {
       />
 
       {!isMaster ? (
-        <Card className="mb-4 border-amber-200 bg-amber-50 dark:border-amber-800 dark:bg-amber-950">
-          <p className="text-xs text-amber-800 dark:text-amber-200">
+        <Card className="mb-4 border-amber-200 bg-amber-50">
+          <p className="text-xs text-amber-800">
             Somente a nutricionista responsável técnica pode adicionar, editar
             ou remover manipuladores, ASOs e treinamentos.
           </p>
@@ -372,40 +372,32 @@ export function ManipulatorsPage() {
       {list.length > 0 ? (
         <div className="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
           <Card>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              Ativos
-            </p>
-            <p className="text-2xl font-semibold text-neutral-800 dark:text-neutral-100">
+            <p className="text-xs text-neutral-500">Ativos</p>
+            <p className="text-2xl font-semibold text-neutral-800">
               {summary.total}
             </p>
           </Card>
           <Card>
-            <p className="text-xs text-neutral-600 dark:text-neutral-400">
-              ASO em dia
-            </p>
-            <p className="text-2xl font-semibold text-neutral-700 dark:text-neutral-200">
+            <p className="text-xs text-neutral-600">ASO em dia</p>
+            <p className="text-2xl font-semibold text-neutral-700">
               {summary.valid}
             </p>
           </Card>
           <Card>
-            <p className="text-xs text-amber-600 dark:text-amber-400">
-              Vencendo
-            </p>
-            <p className="text-2xl font-semibold text-amber-700 dark:text-amber-200">
+            <p className="text-xs text-amber-600">Vencendo</p>
+            <p className="text-2xl font-semibold text-amber-700">
               {summary.expiring}
             </p>
           </Card>
           <Card>
-            <p className="text-xs text-red-600 dark:text-red-400">Vencidos</p>
-            <p className="text-2xl font-semibold text-red-700 dark:text-red-200">
+            <p className="text-xs text-red-600">Vencidos</p>
+            <p className="text-2xl font-semibold text-red-700">
               {summary.expired}
             </p>
           </Card>
           <Card>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              Sem ASO
-            </p>
-            <p className="text-2xl font-semibold text-neutral-700 dark:text-neutral-300">
+            <p className="text-xs text-neutral-500">Sem ASO</p>
+            <p className="text-2xl font-semibold text-neutral-700">
               {summary.missing}
             </p>
           </Card>
@@ -414,11 +406,11 @@ export function ManipulatorsPage() {
 
       {isMaster && companies.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada. Crie uma empresa em{' '}
             <a
               href="/admin/empresas"
-              className="font-medium text-neutral-700 hover:underline dark:text-neutral-400"
+              className="font-medium text-neutral-700 hover:underline"
             >
               Empresas
             </a>{' '}
@@ -430,11 +422,8 @@ export function ManipulatorsPage() {
       ) : list.length === 0 ? (
         <Card>
           <div className="flex flex-col items-center gap-3 py-8 text-center">
-            <HardHat
-              size={32}
-              className="text-neutral-300 dark:text-neutral-600"
-            />
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            <HardHat size={32} className="text-neutral-300" />
+            <p className="text-sm text-neutral-600">
               Nenhum manipulador cadastrado.
             </p>
           </div>
@@ -448,11 +437,11 @@ export function ManipulatorsPage() {
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div className="min-w-0 flex-1">
                     <div className="mb-1 flex flex-wrap items-center gap-2">
-                      <h2 className="min-w-0 max-w-full truncate text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                      <h2 className="min-w-0 max-w-full truncate text-sm font-semibold text-neutral-800">
                         {m.full_name}
                       </h2>
                       {m.role ? (
-                        <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                        <span className="text-xs text-neutral-500">
                           {m.role}
                         </span>
                       ) : null}
@@ -465,19 +454,19 @@ export function ManipulatorsPage() {
                           : ''}
                       </span>
                       {!m.active ? (
-                        <span className="rounded-full bg-neutral-200 px-2 py-0.5 text-xs text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
+                        <span className="rounded-full bg-neutral-200 px-2 py-0.5 text-xs text-neutral-600">
                           Inativo
                         </span>
                       ) : null}
                     </div>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-500">
+                    <p className="text-xs text-neutral-500">
                       {m.cpf ? `CPF ${m.cpf} - ` : ''}
                       {m.hired_at
                         ? `admitido em ${formatDate(m.hired_at)}`
                         : 'sem data de admissao'}
                     </p>
                     {m.trainings.length > 0 ? (
-                      <p className="mt-2 text-xs text-neutral-600 dark:text-neutral-400">
+                      <p className="mt-2 text-xs text-neutral-600">
                         <GraduationCap size={12} className="mr-1 inline" />
                         {m.trainings.length} treinamento
                         {m.trainings.length === 1 ? '' : 's'}; ultimo:{' '}
@@ -494,7 +483,7 @@ export function ManipulatorsPage() {
                         onClick={() =>
                           void openSignedFile(aso.latest!.file_path!)
                         }
-                        className="mt-2 inline-flex items-center gap-1 text-xs text-neutral-700 hover:underline dark:text-neutral-400"
+                        className="mt-2 inline-flex items-center gap-1 text-xs text-neutral-700 hover:underline"
                       >
                         <FileTextIcon size={12} />
                         Abrir ASO atual
@@ -507,7 +496,7 @@ export function ManipulatorsPage() {
                         onClick={() => openAsoModal(m)}
                         aria-label="Registrar ASO"
                         title="Registrar ASO"
-                        className="rounded-lg p-2.5 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-950"
+                        className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-50"
                       >
                         <FileCheck2 size={16} />
                       </button>
@@ -515,21 +504,21 @@ export function ManipulatorsPage() {
                         onClick={() => openTrainingModal(m)}
                         aria-label="Registrar treinamento"
                         title="Registrar treinamento"
-                        className="rounded-lg p-2.5 text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-950"
+                        className="rounded-lg p-2.5 text-blue-600 hover:bg-blue-50"
                       >
                         <GraduationCap size={16} />
                       </button>
                       <button
                         onClick={() => openEdit(m)}
                         aria-label="Editar"
-                        className="rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                        className="rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100"
                       >
                         <Pencil size={16} />
                       </button>
                       <button
                         onClick={() => setDeleting(m)}
                         aria-label="Excluir"
-                        className="rounded-lg p-2.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                        className="rounded-lg p-2.5 text-red-500 hover:bg-red-50"
                       >
                         <Trash2 size={16} />
                       </button>
@@ -595,7 +584,7 @@ export function ManipulatorsPage() {
             value={form.notes}
             onChange={(e) => setForm({ ...form, notes: e.target.value })}
           />
-          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"
               checked={form.active}
@@ -658,10 +647,10 @@ export function ManipulatorsPage() {
             />
           </div>
           <div>
-            <p className="mb-1 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            <p className="mb-1 text-sm font-medium text-neutral-700">
               Arquivo (PDF ou imagem)
             </p>
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200">
               <Upload size={14} />
               {asoFile ? asoFile.name : 'Selecionar arquivo'}
               <input
@@ -735,10 +724,10 @@ export function ManipulatorsPage() {
             />
           </div>
           <div>
-            <p className="mb-1 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            <p className="mb-1 text-sm font-medium text-neutral-700">
               Certificado (opcional)
             </p>
-            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700">
+            <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200">
               <Upload size={14} />
               {trFile ? trFile.name : 'Selecionar arquivo'}
               <input

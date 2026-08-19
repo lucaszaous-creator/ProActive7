@@ -182,7 +182,10 @@ export function AgendaPage() {
       sortItems([
         ...visits.map(visitToItem),
         ...events.map((e) =>
-          eventToItem(e, e.company_id ? companyNames.get(e.company_id) : undefined),
+          eventToItem(
+            e,
+            e.company_id ? companyNames.get(e.company_id) : undefined,
+          ),
         ),
       ]),
     [visits, events, companyNames],
@@ -294,10 +297,8 @@ export function AgendaPage() {
           type="button"
           onClick={() => void toggleDone(e)}
           aria-label={e.done_at ? 'Reabrir compromisso' : 'Marcar como feito'}
-          className={`rounded-lg p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
-            e.done_at
-              ? 'text-green-600 dark:text-green-500'
-              : 'text-neutral-500 dark:text-neutral-400'
+          className={`rounded-lg p-1.5 hover:bg-neutral-100 ${
+            e.done_at ? 'text-green-600' : 'text-neutral-500'
           }`}
         >
           <Check size={14} />
@@ -306,7 +307,7 @@ export function AgendaPage() {
           type="button"
           onClick={() => setDraft(draftFromEvent(e))}
           aria-label="Editar compromisso"
-          className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+          className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100"
         >
           <Pencil size={14} />
         </button>
@@ -314,7 +315,7 @@ export function AgendaPage() {
           type="button"
           onClick={() => setToDelete(e)}
           aria-label="Excluir compromisso"
-          className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
+          className="rounded-lg p-1.5 text-red-500 hover:bg-red-50"
         >
           <Trash2 size={14} />
         </button>
@@ -331,17 +332,17 @@ export function AgendaPage() {
         />
         <span className="min-w-0 flex-1">
           <span
-            className={`block truncate text-neutral-800 dark:text-neutral-200 ${
+            className={`block truncate text-neutral-800 ${
               item.muted ? 'line-through opacity-60' : ''
             }`}
           >
             {item.title}
           </span>
-          <span className="block truncate text-[11px] text-neutral-500 dark:text-neutral-400">
+          <span className="block truncate text-[11px] text-neutral-500">
             {item.subtitle}
           </span>
         </span>
-        <span className="shrink-0 text-neutral-500 dark:text-neutral-400">
+        <span className="shrink-0 text-neutral-500">
           {item.allDay
             ? 'dia todo'
             : new Date(item.at).toLocaleTimeString('pt-BR', {
@@ -354,12 +355,12 @@ export function AgendaPage() {
     return item.href ? (
       <Link
         to={item.href}
-        className="flex flex-1 items-center gap-2 rounded-lg bg-neutral-50 px-2 py-1.5 text-xs hover:bg-neutral-100 dark:bg-neutral-800 dark:hover:bg-neutral-700"
+        className="flex flex-1 items-center gap-2 rounded-lg bg-neutral-50 px-2 py-1.5 text-xs hover:bg-neutral-100"
       >
         {body}
       </Link>
     ) : (
-      <span className="flex flex-1 items-center gap-2 rounded-lg bg-neutral-50 px-2 py-1.5 text-xs dark:bg-neutral-800">
+      <span className="flex flex-1 items-center gap-2 rounded-lg bg-neutral-50 px-2 py-1.5 text-xs">
         {body}
       </span>
     );
@@ -395,7 +396,7 @@ export function AgendaPage() {
       />
 
       <Card className="mb-4">
-        <h2 className="mb-3 text-base font-semibold text-neutral-700 dark:text-neutral-200">
+        <h2 className="mb-3 text-base font-semibold text-neutral-700">
           {MONTH_NAMES_PT[cursor.getMonth()]} {cursor.getFullYear()}
         </h2>
 
@@ -416,9 +417,9 @@ export function AgendaPage() {
                   return (
                     <div
                       key={d.iso}
-                      className="border-b border-neutral-100 py-2 last:border-0 dark:border-neutral-800"
+                      className="border-b border-neutral-100 py-2 last:border-0"
                     >
-                      <p className="mb-1 text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                      <p className="mb-1 text-xs font-medium text-neutral-500">
                         {WEEKDAY_NAMES_PT_LONG[d.date.getDay()]}, {d.day}
                         {d.isToday ? ' (hoje)' : ''}
                       </p>
@@ -434,14 +435,14 @@ export function AgendaPage() {
                   );
                 })}
               {!monthHasItems ? (
-                <p className="py-8 text-center text-sm text-neutral-500 dark:text-neutral-400">
+                <p className="py-8 text-center text-sm text-neutral-500">
                   Nada agendado neste mês.
                 </p>
               ) : null}
             </div>
 
             <div className="hidden md:block">
-              <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-neutral-500">
                 {WEEKDAY_NAMES_PT.map((w, i) => (
                   <div key={`${w}-${i}`} className="py-1">
                     {w}
@@ -456,9 +457,9 @@ export function AgendaPage() {
                       key={d.iso}
                       className={`group flex min-h-[5.5rem] flex-col gap-1 rounded-lg border p-1 text-xs ${
                         d.inMonth
-                          ? 'border-neutral-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
-                          : 'border-transparent bg-neutral-50 text-neutral-400 dark:bg-neutral-950 dark:text-neutral-600'
-                      } ${d.isToday ? 'ring-2 ring-neutral-900 dark:ring-neutral-100' : ''}`}
+                          ? 'border-neutral-200 bg-white'
+                          : 'border-transparent bg-neutral-50 text-neutral-400'
+                      } ${d.isToday ? 'ring-2 ring-neutral-900' : ''}`}
                     >
                       <div className="flex items-center justify-between">
                         {/* Clicar no dia já abre o compromisso naquela data:
@@ -468,7 +469,7 @@ export function AgendaPage() {
                             type="button"
                             onClick={() => setDraft(emptyDraft(d.iso))}
                             aria-label={`Novo compromisso em ${d.day}`}
-                            className="rounded p-0.5 text-neutral-400 opacity-0 transition group-hover:opacity-100 hover:bg-neutral-100 hover:text-neutral-700 dark:hover:bg-neutral-800"
+                            className="rounded p-0.5 text-neutral-400 opacity-0 transition group-hover:opacity-100 hover:bg-neutral-100 hover:text-neutral-700"
                           >
                             <Plus size={12} />
                           </button>
@@ -485,7 +486,7 @@ export function AgendaPage() {
                             key={it.key}
                             to={it.href}
                             title={`${it.title} — ${it.subtitle}`}
-                            className="flex items-center gap-1 truncate rounded bg-neutral-100 px-1 py-0.5 text-[10px] text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                            className="flex items-center gap-1 truncate rounded bg-neutral-100 px-1 py-0.5 text-[10px] text-neutral-700 hover:bg-neutral-200"
                           >
                             <span
                               className={`h-1.5 w-1.5 shrink-0 rounded-full ${it.dotClass}`}
@@ -505,7 +506,7 @@ export function AgendaPage() {
                               const e = eventById.get(it.key.slice(6));
                               if (e && canEdit) setDraft(draftFromEvent(e));
                             }}
-                            className="flex items-center gap-1 truncate rounded bg-neutral-100 px-1 py-0.5 text-left text-[10px] text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
+                            className="flex items-center gap-1 truncate rounded bg-neutral-100 px-1 py-0.5 text-left text-[10px] text-neutral-700 hover:bg-neutral-200"
                           >
                             <span
                               className={`h-1.5 w-1.5 shrink-0 rounded-full ${it.dotClass}`}
@@ -519,7 +520,7 @@ export function AgendaPage() {
                         ),
                       )}
                       {list.length > 3 ? (
-                        <span className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                        <span className="text-[10px] text-neutral-500">
                           +{list.length - 3} mais
                         </span>
                       ) : null}
@@ -534,11 +535,11 @@ export function AgendaPage() {
 
       {upcoming.length > 0 ? (
         <Card>
-          <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-neutral-700 dark:text-neutral-200">
+          <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-neutral-700">
             <CalendarClock size={18} />
             Próximos {isMaster ? '(carteira completa)' : ''}
           </h2>
-          <ul className="flex flex-col divide-y divide-neutral-100 dark:divide-neutral-800">
+          <ul className="flex flex-col divide-y divide-neutral-100">
             {upcoming.map((it) => {
               const e =
                 it.source === 'event' ? eventById.get(it.key.slice(6)) : null;
@@ -553,16 +554,18 @@ export function AgendaPage() {
                     aria-hidden
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-neutral-800 dark:text-neutral-200">
+                    <p className="truncate font-medium text-neutral-800">
                       {it.title}
                     </p>
-                    <p className="flex flex-wrap items-center gap-x-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    <p className="flex flex-wrap items-center gap-x-2 text-xs text-neutral-500">
                       <span>
                         <CalendarDays size={10} className="mr-1 inline" />
                         {formatDate(it.at)}
                       </span>
                       <span>{it.subtitle}</span>
-                      {visit ? <span>{STATUS_LABEL_SHORT[visit.status]}</span> : null}
+                      {visit ? (
+                        <span>{STATUS_LABEL_SHORT[visit.status]}</span>
+                      ) : null}
                       {e?.remind_days_before != null ? (
                         <span className="inline-flex items-center gap-1">
                           <Bell size={10} />
@@ -576,7 +579,10 @@ export function AgendaPage() {
                 </>
               );
               return (
-                <li key={it.key} className="flex items-center gap-2 py-2 text-sm">
+                <li
+                  key={it.key}
+                  className="flex items-center gap-2 py-2 text-sm"
+                >
                   {it.href ? (
                     <Link
                       to={it.href}
@@ -673,14 +679,14 @@ export function AgendaPage() {
                 onChange={(e) => setDraft({ ...draft, endsAt: e.target.value })}
               />
             </div>
-            <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+            <label className="flex items-center gap-2 text-sm text-neutral-700">
               <input
                 type="checkbox"
                 checked={draft.allDay}
                 onChange={(e) =>
                   setDraft({ ...draft, allDay: e.target.checked })
                 }
-                className="h-4 w-4 rounded border-neutral-300 dark:border-neutral-700"
+                className="h-4 w-4 rounded border-neutral-300"
               />
               Dia inteiro
             </label>
@@ -696,14 +702,14 @@ export function AgendaPage() {
                 </option>
               ))}
             </Select>
-            <p className="-mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+            <p className="-mt-1 text-xs text-neutral-500">
               O aviso chega por notificação no dia do lembrete, junto com o
               resumo diário. Ative as notificações no seu perfil para recebê-lo.
             </p>
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="agenda-desc"
-                className="text-sm font-medium text-neutral-700 dark:text-neutral-300"
+                className="text-sm font-medium text-neutral-700"
               >
                 Anotações (opcional)
               </label>
@@ -714,7 +720,7 @@ export function AgendaPage() {
                   setDraft({ ...draft, description: e.target.value })
                 }
                 rows={3}
-                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800"
               />
             </div>
           </div>

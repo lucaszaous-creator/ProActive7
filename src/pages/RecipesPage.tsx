@@ -390,7 +390,7 @@ export function RecipesPage() {
           subtitle="Padronize o preparo: ingredientes, rendimento, per capita e custo por porção."
         />
         <Card>
-          <p className="mb-3 text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="mb-3 text-sm text-neutral-600">
             Selecione a empresa cuja ficha você quer montar.
           </p>
           <Select
@@ -425,8 +425,8 @@ export function RecipesPage() {
       />
 
       {products.length === 0 && !loading ? (
-        <Card className="mb-4 border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40">
-          <p className="text-sm text-amber-800 dark:text-amber-200">
+        <Card className="mb-4 border-amber-300 bg-amber-50">
+          <p className="text-sm text-amber-800">
             Esta empresa ainda não tem produtos cadastrados. A ficha técnica
             monta os ingredientes a partir do cadastro de produtos — cadastre os
             produtos primeiro.
@@ -469,15 +469,15 @@ export function RecipesPage() {
                     onClick={() => setExpanded(open ? null : r.id)}
                     className="min-w-0 flex-1 text-left"
                   >
-                    <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-neutral-800 dark:text-neutral-100">
+                    <p className="flex flex-wrap items-center gap-2 text-sm font-semibold text-neutral-800">
                       {r.name}
                       {!r.active ? (
-                        <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950/40 dark:text-amber-200">
+                        <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
                           Inativa
                         </span>
                       ) : null}
                     </p>
-                    <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+                    <p className="mt-0.5 text-xs text-neutral-500">
                       {(r.recipe_items ?? []).length} ingrediente
                       {(r.recipe_items ?? []).length === 1 ? '' : 's'}
                       {r.yield_portions
@@ -490,13 +490,13 @@ export function RecipesPage() {
                   </button>
                   <div className="flex shrink-0 flex-wrap items-center gap-1">
                     <div className="mr-2 text-right">
-                      <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-100">
+                      <p className="text-sm font-semibold text-neutral-800">
                         {perPortion != null
                           ? `${formatBRL(perPortion)}/porção`
                           : formatBRL(total)}
                       </p>
                       {incomplete ? (
-                        <p className="text-[10px] text-amber-600 dark:text-amber-300">
+                        <p className="text-[10px] text-amber-600">
                           custo incompleto
                         </p>
                       ) : null}
@@ -504,7 +504,7 @@ export function RecipesPage() {
                     <button
                       onClick={() => setExpanded(open ? null : r.id)}
                       aria-label={open ? 'Recolher' : 'Ver ingredientes'}
-                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100"
                     >
                       {open ? (
                         <ChevronUp size={15} />
@@ -517,14 +517,14 @@ export function RecipesPage() {
                       disabled={busy}
                       aria-label="Duplicar"
                       title="Duplicar ficha"
-                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50"
                     >
                       <Copy size={15} />
                     </button>
                     <button
                       onClick={() => openEdit(r)}
                       aria-label="Editar"
-                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100"
                     >
                       <Pencil size={15} />
                     </button>
@@ -533,14 +533,14 @@ export function RecipesPage() {
                       disabled={busy}
                       aria-label={r.active ? 'Desativar' : 'Reativar'}
                       title={r.active ? 'Desativar ficha' : 'Reativar ficha'}
-                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                      className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-50"
                     >
                       {r.active ? <EyeOff size={15} /> : <Eye size={15} />}
                     </button>
                     <button
                       onClick={() => setDeleting(r)}
                       aria-label="Excluir"
-                      className="rounded-lg p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
+                      className="rounded-lg p-2 text-red-500 hover:bg-red-50"
                     >
                       <Trash2 size={15} />
                     </button>
@@ -548,11 +548,11 @@ export function RecipesPage() {
                 </div>
 
                 {open ? (
-                  <div className="mt-3 border-t border-neutral-100 pt-3 dark:border-neutral-800">
+                  <div className="mt-3 border-t border-neutral-100 pt-3">
                     <div className="w-full overflow-x-auto">
                       <table className="w-full min-w-[520px] text-xs">
                         <thead>
-                          <tr className="text-left text-neutral-500 dark:text-neutral-400">
+                          <tr className="text-left text-neutral-500">
                             <th className="py-1 pr-2">Ingrediente</th>
                             <th className="py-1 pr-2">Líquido</th>
                             <th
@@ -571,32 +571,32 @@ export function RecipesPage() {
                             return (
                               <tr
                                 key={i.id}
-                                className="border-t border-neutral-100 dark:border-neutral-800"
+                                className="border-t border-neutral-100"
                               >
-                                <td className="py-1.5 pr-2 text-neutral-800 dark:text-neutral-200">
+                                <td className="py-1.5 pr-2 text-neutral-800">
                                   {i.product?.name ?? productName(i.product_id)}
                                 </td>
-                                <td className="py-1.5 pr-2 text-neutral-600 dark:text-neutral-300">
+                                <td className="py-1.5 pr-2 text-neutral-600">
                                   {i.quantity} {i.unit}
                                 </td>
-                                <td className="py-1.5 pr-2 text-neutral-600 dark:text-neutral-300">
+                                <td className="py-1.5 pr-2 text-neutral-600">
                                   {grossQuantity(i).toFixed(
                                     Number.isInteger(grossQuantity(i)) ? 0 : 2,
                                   )}{' '}
                                   {i.unit}
                                 </td>
-                                <td className="py-1.5 pr-2 text-neutral-600 dark:text-neutral-300">
+                                <td className="py-1.5 pr-2 text-neutral-600">
                                   {pc != null
                                     ? `${pc.toFixed(pc < 10 ? 1 : 0)} ${i.unit}`
                                     : '—'}
                                 </td>
-                                <td className="py-1.5 pr-2 text-right text-neutral-600 dark:text-neutral-300">
+                                <td className="py-1.5 pr-2 text-right text-neutral-600">
                                   {formatBRL(i.cost_cents)}
                                 </td>
                               </tr>
                             );
                           })}
-                          <tr className="border-t border-neutral-200 font-semibold dark:border-neutral-700">
+                          <tr className="border-t border-neutral-200 font-semibold">
                             <td className="py-1.5 pr-2" colSpan={4}>
                               Total
                             </td>
@@ -609,10 +609,10 @@ export function RecipesPage() {
                     </div>
                     {r.instructions ? (
                       <div className="mt-3">
-                        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
+                        <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-neutral-500">
                           Modo de preparo
                         </p>
-                        <p className="whitespace-pre-wrap text-sm text-neutral-700 dark:text-neutral-300">
+                        <p className="whitespace-pre-wrap text-sm text-neutral-700">
                           {r.instructions}
                         </p>
                       </div>
@@ -636,7 +636,7 @@ export function RecipesPage() {
         wide
         footer={
           <>
-            <span className="mr-auto self-center text-xs text-neutral-500 dark:text-neutral-400">
+            <span className="mr-auto self-center text-xs text-neutral-500">
               Total {formatBRL(draftCost.total)}
               {draftCost.perPortion != null
                 ? ` · ${formatBRL(draftCost.perPortion)}/porção`
@@ -694,10 +694,10 @@ export function RecipesPage() {
 
           <div>
             <div className="mb-2 flex items-baseline justify-between gap-2">
-              <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+              <p className="text-sm font-medium text-neutral-700">
                 Ingredientes
               </p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="text-xs text-neutral-500">
                 FC = peso bruto ÷ líquido. Custo é o desta ficha.
               </p>
             </div>
@@ -705,10 +705,10 @@ export function RecipesPage() {
               {items.map((it, i) => (
                 <div
                   key={it.key}
-                  className="rounded-lg border border-neutral-200 p-2.5 dark:border-neutral-700"
+                  className="rounded-lg border border-neutral-200 p-2.5"
                 >
                   <div className="mb-2 flex items-center justify-between gap-2">
-                    <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                    <span className="text-xs font-medium text-neutral-500">
                       {i + 1}
                     </span>
                     <div className="flex gap-0.5">
@@ -719,7 +719,7 @@ export function RecipesPage() {
                         }
                         disabled={i === 0}
                         aria-label="Mover para cima"
-                        className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                        className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30"
                       >
                         <ChevronUp size={14} />
                       </button>
@@ -730,7 +730,7 @@ export function RecipesPage() {
                         }
                         disabled={i === items.length - 1}
                         aria-label="Mover para baixo"
-                        className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                        className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30"
                       >
                         <ChevronDown size={14} />
                       </button>
@@ -745,7 +745,7 @@ export function RecipesPage() {
                         }
                         disabled={items.length === 1}
                         aria-label="Remover ingrediente"
-                        className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 disabled:opacity-30 dark:hover:bg-red-950/40"
+                        className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 disabled:opacity-30"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -762,7 +762,7 @@ export function RecipesPage() {
                           ),
                         )
                       }
-                      className="rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                      className="rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800"
                     >
                       <option value="">Ingrediente…</option>
                       {products.map((p) => (
@@ -783,7 +783,7 @@ export function RecipesPage() {
                         )
                       }
                       placeholder="Qtd."
-                      className="rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                      className="rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800"
                     />
                     <select
                       value={it.unit}
@@ -794,7 +794,7 @@ export function RecipesPage() {
                           ),
                         )
                       }
-                      className="rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                      className="rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800"
                     >
                       {UNITS.map((u) => (
                         <option key={u} value={u}>
@@ -815,7 +815,7 @@ export function RecipesPage() {
                       }
                       title="Fator de correção: peso bruto ÷ peso líquido"
                       placeholder="FC"
-                      className="rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                      className="rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800"
                     />
                     <input
                       type="text"
@@ -829,7 +829,7 @@ export function RecipesPage() {
                         )
                       }
                       placeholder="Custo R$"
-                      className="rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                      className="rounded-lg border border-neutral-300 px-2 py-2 text-sm outline-none focus:border-neutral-800"
                     />
                   </div>
                 </div>
@@ -837,7 +837,7 @@ export function RecipesPage() {
               <button
                 type="button"
                 onClick={() => setItems((prev) => [...prev, emptyItem()])}
-                className="self-start rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200"
+                className="self-start rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200"
               >
                 + Adicionar ingrediente
               </button>
@@ -847,7 +847,7 @@ export function RecipesPage() {
           <div>
             <label
               htmlFor="ficha-preparo"
-              className="mb-1 block text-sm font-medium text-neutral-700 dark:text-neutral-200"
+              className="mb-1 block text-sm font-medium text-neutral-700"
             >
               Modo de preparo
             </label>
@@ -857,7 +857,7 @@ export function RecipesPage() {
               onChange={(e) => setInstructions(e.target.value)}
               rows={5}
               placeholder="Passo a passo do preparo, temperatura e ponto..."
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-neutral-800"
+              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
             />
           </div>
         </div>

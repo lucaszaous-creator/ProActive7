@@ -32,7 +32,7 @@ export function Th({
 }: ThHTMLAttributes<HTMLTableCellElement>) {
   return (
     <th
-      className={`border-b border-neutral-200 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-neutral-500 first:pl-0 last:pr-0 dark:border-neutral-800 dark:text-neutral-400 ${className}`}
+      className={`border-b border-neutral-200 px-3 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-neutral-500 first:pl-0 last:pr-0 ${className}`}
       {...rest}
     >
       {children}
@@ -47,7 +47,7 @@ export function Tr({
 }: HTMLAttributes<HTMLTableRowElement>) {
   return (
     <tr
-      className={`border-b border-neutral-100 transition-colors last:border-0 hover:bg-neutral-50/70 dark:border-neutral-800/40 dark:hover:bg-neutral-800/30 ${className}`}
+      className={`border-b border-neutral-100 transition-colors last:border-0 hover:bg-neutral-50/70 ${className}`}
       {...rest}
     >
       {children}
@@ -62,7 +62,7 @@ export function Td({
 }: TdHTMLAttributes<HTMLTableCellElement>) {
   return (
     <td
-      className={`px-3 py-2.5 text-neutral-700 first:pl-0 last:pr-0 dark:text-neutral-300 ${className}`}
+      className={`px-3 py-2.5 text-neutral-700 first:pl-0 last:pr-0 ${className}`}
       {...rest}
     >
       {children}

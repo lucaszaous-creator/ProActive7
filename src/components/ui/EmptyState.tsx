@@ -21,21 +21,19 @@ export function EmptyState({
   action,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 bg-white px-6 py-14 text-center dark:border-neutral-700 dark:bg-neutral-900">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-neutral-300 bg-white px-6 py-14 text-center">
       <span className="relative flex h-16 w-16 items-center justify-center">
         {/* anéis concêntricos que pulsam suavemente */}
-        <span className="absolute inset-0 rounded-full bg-neutral-100 dark:bg-neutral-800" />
-        <span className="absolute inset-2 rounded-full bg-neutral-200 dark:bg-neutral-700" />
+        <span className="absolute inset-0 rounded-full bg-neutral-100" />
+        <span className="absolute inset-2 rounded-full bg-neutral-200" />
         <Icon
-          className="fx-float relative h-7 w-7 text-neutral-500 dark:text-neutral-300"
+          className="fx-float relative h-7 w-7 text-neutral-500"
           strokeWidth={1.75}
         />
       </span>
-      <h3 className="mt-5 text-sm font-semibold text-neutral-800 dark:text-neutral-100">
-        {title}
-      </h3>
+      <h3 className="mt-5 text-sm font-semibold text-neutral-800">{title}</h3>
       {description ? (
-        <p className="mt-1.5 max-w-sm text-sm text-neutral-500 dark:text-neutral-400">
+        <p className="mt-1.5 max-w-sm text-sm text-neutral-500">
           {description}
         </p>
       ) : null}

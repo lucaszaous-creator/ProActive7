@@ -246,7 +246,7 @@ export function ReportsPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
@@ -315,25 +315,25 @@ export function ReportsPage() {
 
           <div className="grid gap-4 lg:grid-cols-2">
             <Card>
-              <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              <h2 className="mb-3 text-sm font-semibold text-neutral-700">
                 Por condição de armazenamento
               </h2>
               {data.byCondition.length > 0 ? (
                 <DonutChart items={data.byCondition} centerLabel="etiquetas" />
               ) : (
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                <p className="text-xs text-neutral-500">
                   Sem dados de condição no período.
                 </p>
               )}
             </Card>
             <Card>
-              <h2 className="mb-3 text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              <h2 className="mb-3 text-sm font-semibold text-neutral-700">
                 Por categoria
               </h2>
               {data.byCategory.length > 0 ? (
                 <RankedBars items={data.byCategory} colored />
               ) : (
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                <p className="text-xs text-neutral-500">
                   Sem dados de categoria no período.
                 </p>
               )}
@@ -342,10 +342,10 @@ export function ReportsPage() {
 
           <Card>
             <div className="mb-3 flex items-center justify-between gap-2">
-              <h2 className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">
+              <h2 className="text-sm font-semibold text-neutral-700">
                 Por usuário
               </h2>
-              <span className="flex items-center gap-1 text-xs text-neutral-400 dark:text-neutral-500">
+              <span className="flex items-center gap-1 text-xs text-neutral-400">
                 <FolderOpen size={12} />
                 quem imprimiu no período
               </span>
@@ -353,7 +353,7 @@ export function ReportsPage() {
             {data.byUser.length > 0 ? (
               <RankedBars items={data.byUser} />
             ) : (
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">
+              <p className="text-xs text-neutral-500">
                 Sem dados de usuário no período.
               </p>
             )}

@@ -48,8 +48,8 @@ export function PushToggle() {
       disabled={busy}
       className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
         enabled
-          ? 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-800'
-          : 'text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+          ? 'bg-neutral-50 text-neutral-700 hover:bg-neutral-100'
+          : 'text-neutral-600 hover:bg-neutral-100'
       } disabled:opacity-60`}
     >
       {enabled ? <Bell size={18} /> : <BellOff size={18} />}

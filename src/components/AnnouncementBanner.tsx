@@ -12,15 +12,15 @@ const DISMISSED_KEY = 'p7_announcement_dismissed';
 
 const STYLES = {
   info: {
-    bg: 'bg-blue-50 text-blue-900 dark:bg-blue-950 dark:text-blue-100',
+    bg: 'bg-blue-50 text-blue-900',
     icon: Info,
   },
   warning: {
-    bg: 'bg-amber-50 text-amber-900 dark:bg-amber-950 dark:text-amber-100',
+    bg: 'bg-amber-50 text-amber-900',
     icon: AlertTriangle,
   },
   maintenance: {
-    bg: 'bg-orange-50 text-orange-900 dark:bg-orange-950 dark:text-orange-100',
+    bg: 'bg-orange-50 text-orange-900',
     icon: Wrench,
   },
 } as const;
@@ -56,7 +56,7 @@ export function AnnouncementBanner() {
           localStorage.setItem(DISMISSED_KEY, announcement.id);
           setAnnouncement(null);
         }}
-        className="shrink-0 rounded p-0.5 hover:bg-black/5 dark:hover:bg-white/10"
+        className="shrink-0 rounded p-0.5 hover:bg-black/5"
         aria-label="Dispensar"
       >
         <X size={16} />

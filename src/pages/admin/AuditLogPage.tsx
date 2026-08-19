@@ -50,10 +50,9 @@ const ACTION_LABEL: Record<AuditLogRow['action'], string> = {
 };
 
 const ACTION_COLOR: Record<AuditLogRow['action'], string> = {
-  INSERT:
-    'bg-neutral-100 text-neutral-700 dark:bg-neutral-800/60 dark:text-neutral-300',
-  UPDATE: 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
-  DELETE: 'bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300',
+  INSERT: 'bg-neutral-100 text-neutral-700',
+  UPDATE: 'bg-amber-100 text-amber-700',
+  DELETE: 'bg-red-100 text-red-700',
 };
 
 const ACTION_ICON: Record<AuditLogRow['action'], LucideIcon> = {
@@ -153,18 +152,15 @@ export function AuditLogPage() {
       ) : filtered.length === 0 ? (
         <Card>
           <div className="flex flex-col items-center gap-3 py-8 text-center">
-            <Activity
-              size={32}
-              className="text-neutral-300 dark:text-neutral-600"
-            />
-            <p className="text-sm text-neutral-600 dark:text-neutral-400">
+            <Activity size={32} className="text-neutral-300" />
+            <p className="text-sm text-neutral-600">
               Nenhuma alteração registrada.
             </p>
           </div>
         </Card>
       ) : (
         <Card className="!p-0">
-          <ul className="flex flex-col divide-y divide-neutral-100 dark:divide-neutral-800">
+          <ul className="flex flex-col divide-y divide-neutral-100">
             {filtered.map((r) => {
               const meta = TABLE_LABELS[r.table_name];
               const Icon = meta?.icon ?? Activity;
@@ -173,7 +169,7 @@ export function AuditLogPage() {
                 <li key={r.id} className="flex items-start gap-3 px-4 py-3">
                   <Icon
                     size={18}
-                    className="mt-0.5 shrink-0 text-neutral-400 dark:text-neutral-500"
+                    className="mt-0.5 shrink-0 text-neutral-400"
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -183,14 +179,14 @@ export function AuditLogPage() {
                         <ActionIcon size={10} />
                         {ACTION_LABEL[r.action]}
                       </span>
-                      <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">
+                      <span className="text-sm font-medium text-neutral-800">
                         {meta?.label ?? r.table_name}
                       </span>
-                      <span className="truncate text-sm text-neutral-600 dark:text-neutral-400">
+                      <span className="truncate text-sm text-neutral-600">
                         — {describeChange(r)}
                       </span>
                     </div>
-                    <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+                    <p className="mt-0.5 text-xs text-neutral-500">
                       {formatDateTime(r.created_at)} ·{' '}
                       {r.user_email ?? 'sistema'}
                     </p>

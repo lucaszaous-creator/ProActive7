@@ -614,8 +614,8 @@ function NavItem({ item, onClick }: { item: NavItemDef; onClick: () => void }) {
       className={({ isActive }) =>
         `fx-accent fx-press flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
           isActive
-            ? 'bg-neutral-900 text-white shadow-sm dark:bg-neutral-100 dark:text-neutral-900'
-            : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900 dark:text-neutral-400 dark:hover:bg-neutral-800 dark:hover:text-neutral-100'
+            ? 'bg-neutral-900 text-white shadow-sm'
+            : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
         }`
       }
     >
@@ -663,7 +663,7 @@ function NavGroup({
     <div>
       <button
         onClick={toggle}
-        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+        className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100"
         aria-expanded={open}
       >
         <Icon size={18} />
@@ -674,7 +674,7 @@ function NavGroup({
         />
       </button>
       {open && (
-        <div className="ml-4 mt-1 border-l border-neutral-200 pl-2 dark:border-neutral-800">
+        <div className="ml-4 mt-1 border-l border-neutral-200 pl-2">
           {group.children.map((child) => (
             <NavItem
               key={child.to + child.labelKey}
@@ -756,7 +756,7 @@ export function Layout() {
   }
 
   return (
-    <div className="relative flex min-h-screen w-full overflow-x-hidden bg-slate-50 dark:bg-neutral-950">
+    <div className="relative flex min-h-screen w-full overflow-x-hidden bg-slate-50">
       {mobileOpen && (
         <div
           className="fixed inset-0 z-30 bg-black/40 lg:hidden"
@@ -769,7 +769,7 @@ export function Layout() {
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="group relative flex items-center justify-center border-b border-neutral-200 bg-white px-4 py-4 dark:border-white/10 dark:bg-neutral-950">
+        <div className="group relative flex items-center justify-center border-b border-neutral-200 bg-white px-4 py-4">
           {/* No dark, o logo (colorido) vive numa pílula branca compacta em
               vez de uma faixa branca inteira gritando no tema escuro. */}
           <span className="rounded-xl bg-white px-3 py-1.5 transition-transform duration-300 group-hover:scale-105">
@@ -782,7 +782,7 @@ export function Layout() {
           <button
             onClick={closeMobile}
             aria-label="Fechar menu"
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2.5 text-neutral-500 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 lg:hidden"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2.5 text-neutral-500 hover:bg-neutral-100 lg:hidden"
           >
             <X size={22} />
           </button>
@@ -807,16 +807,16 @@ export function Layout() {
           })}
         </nav>
 
-        <div className="border-t border-neutral-200 p-3 dark:border-neutral-800">
-          <div className="mb-2 flex items-center gap-2.5 rounded-lg bg-neutral-50 px-2.5 py-2 dark:bg-neutral-800/60">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-xs font-semibold uppercase text-white dark:bg-neutral-100 dark:text-neutral-900">
+        <div className="border-t border-neutral-200 p-3">
+          <div className="mb-2 flex items-center gap-2.5 rounded-lg bg-neutral-50 px-2.5 py-2">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-xs font-semibold uppercase text-white">
               {(profile?.full_name ?? profile?.email ?? '?').trim().charAt(0)}
             </span>
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-200">
+              <p className="truncate text-sm font-medium text-neutral-800">
                 {profile?.full_name ?? profile?.email}
               </p>
-              <p className="truncate text-xs text-neutral-500 dark:text-neutral-500">
+              <p className="truncate text-xs text-neutral-500">
                 {isPlatformAdmin
                   ? t('layout.master')
                   : isNutritionist
@@ -833,7 +833,7 @@ export function Layout() {
             <PwaInstallButton />
             <button
               onClick={signOut}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100"
             >
               <LogOut size={18} />
               {t('layout.signOut')}
@@ -847,7 +847,7 @@ export function Layout() {
             no preto chapado, só no tema escuro. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 hidden h-72 bg-[radial-gradient(640px_220px_at_50%_-60px,rgba(255,255,255,0.07),transparent_70%)] dark:block"
+          className="pointer-events-none absolute inset-x-0 top-0 hidden h-72 bg-[radial-gradient(640px_220px_at_50%_-60px,rgba(255,255,255,0.07),transparent_70%)]"
         />
         {/* pt calculado em vez de py-3: no iPhone instalado o cabeçalho
             precisa somar a altura do notch, senão o botão do menu fica
@@ -856,7 +856,7 @@ export function Layout() {
           <button
             onClick={() => setMobileOpen(true)}
             aria-label={t('layout.openMenu')}
-            className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800"
+            className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-100"
           >
             <Menu size={22} />
           </button>

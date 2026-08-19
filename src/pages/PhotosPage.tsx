@@ -159,7 +159,7 @@ export function PhotosPage() {
         }
         actions={
           <label
-            className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-white ${
+            className={`inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg bg-neutral-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-neutral-800 ${
               uploading || !companyId ? 'pointer-events-none opacity-60' : ''
             }`}
           >
@@ -201,7 +201,7 @@ export function PhotosPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
@@ -209,7 +209,7 @@ export function PhotosPage() {
         <ListSkeleton rows={4} />
       ) : photos.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Nenhuma foto enviada ainda.
           </p>
         </Card>
@@ -222,7 +222,7 @@ export function PhotosPage() {
                 onClick={() => p.url && setViewing(p)}
                 disabled={!p.url}
                 title={p.url ? 'Clique para expandir' : ''}
-                className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-t-xl bg-neutral-100 dark:bg-neutral-800 transition hover:opacity-90 disabled:cursor-default"
+                className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-t-xl bg-neutral-100 transition hover:opacity-90 disabled:cursor-default"
               >
                 {p.url ? (
                   <img
@@ -236,7 +236,7 @@ export function PhotosPage() {
               </button>
               <div className="flex items-center justify-between gap-2 p-3">
                 <div className="min-w-0">
-                  <p className="truncate text-xs font-medium text-neutral-700 dark:text-neutral-200">
+                  <p className="truncate text-xs font-medium text-neutral-700">
                     {p.original_name ?? 'foto'}
                   </p>
                   <p className="text-xs text-neutral-400">

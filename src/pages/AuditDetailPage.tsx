@@ -39,11 +39,7 @@ import type {
   AuditTemplate,
 } from '@/lib/types';
 import { calculateAuditScore, scoresByCategory } from '@/lib/auditScore';
-import {
-  isNetworkError,
-  listPending,
-  queueWrite,
-} from '@/lib/offlineSync';
+import { isNetworkError, listPending, queueWrite } from '@/lib/offlineSync';
 import {
   answerTypeOf,
   formatAnswer,
@@ -75,28 +71,22 @@ const RESULT_OPTIONS: {
     value: 'C',
     label: 'C',
     icon: Check,
-    classes:
-      'border-neutral-200 bg-white text-neutral-500 dark:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800',
-    activeClasses:
-      'border-neutral-500 bg-neutral-50 dark:bg-neutral-800/60 text-neutral-700 dark:text-neutral-200',
+    classes: 'border-neutral-200 bg-white text-neutral-500',
+    activeClasses: 'border-neutral-500 bg-neutral-50 text-neutral-700',
   },
   {
     value: 'NC',
     label: 'NC',
     icon: XIcon,
-    classes:
-      'border-neutral-200 bg-white text-neutral-500 dark:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800',
-    activeClasses:
-      'border-red-500 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-200',
+    classes: 'border-neutral-200 bg-white text-neutral-500',
+    activeClasses: 'border-red-500 bg-red-50 text-red-700',
   },
   {
     value: 'NA',
     label: 'NA',
     icon: MinusCircle,
-    classes:
-      'border-neutral-200 bg-white text-neutral-500 dark:text-neutral-400 dark:border-neutral-700 dark:bg-neutral-800',
-    activeClasses:
-      'border-neutral-500 bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200',
+    classes: 'border-neutral-200 bg-white text-neutral-500',
+    activeClasses: 'border-neutral-500 bg-neutral-100 text-neutral-700',
   },
 ];
 
@@ -282,7 +272,11 @@ export function AuditDetailPage() {
           : existing?.result === 'NA'
             ? undefined
             : existing?.result;
-      const next = { ...(existing ?? { itemId: item.id }), value, result: derived };
+      const next = {
+        ...(existing ?? { itemId: item.id }),
+        value,
+        result: derived,
+      };
       return existing
         ? prev.map((r) => (r.itemId === item.id ? next : r))
         : [...prev, next];
@@ -990,9 +984,7 @@ export function AuditDetailPage() {
   if (!audit) {
     return (
       <Card>
-        <p className="text-sm text-neutral-600 dark:text-neutral-300">
-          Visita nao encontrada.
-        </p>
+        <p className="text-sm text-neutral-600">Visita nao encontrada.</p>
       </Card>
     );
   }
@@ -1012,7 +1004,7 @@ export function AuditDetailPage() {
     <div className="mx-auto max-w-4xl">
       <Link
         to="/visitas"
-        className="mb-4 inline-flex items-center gap-1 text-sm text-neutral-600 hover:underline dark:text-neutral-400"
+        className="mb-4 inline-flex items-center gap-1 text-sm text-neutral-600 hover:underline"
       >
         <ArrowLeft size={14} />
         Voltar
@@ -1031,10 +1023,10 @@ export function AuditDetailPage() {
               <span
                 className={`rounded-full px-3 py-1 text-base font-bold ${
                   score >= 85
-                    ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200'
+                    ? 'bg-neutral-100 text-neutral-700'
                     : score >= 70
-                      ? 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-200'
-                      : 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200'
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'bg-red-100 text-red-700'
                 }`}
               >
                 Score: {score.toFixed(1)}%
@@ -1059,7 +1051,7 @@ export function AuditDetailPage() {
                     onClick={() => setCancelOpen(true)}
                     disabled={saving || finalizing}
                     title="Cancelar esta visita"
-                    className="text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950"
+                    className="text-red-600 hover:bg-red-50"
                   >
                     <XCircle size={14} />
                     Cancelar
@@ -1095,7 +1087,7 @@ export function AuditDetailPage() {
               ) : null}
               {isCancelled && isMaster ? (
                 <>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-600 dark:bg-neutral-800 dark:text-neutral-300">
+                  <span className="inline-flex items-center gap-1 rounded-full bg-neutral-200 px-2.5 py-1 text-xs font-medium text-neutral-600">
                     <XCircle size={12} />
                     Visita cancelada
                   </span>
@@ -1113,7 +1105,7 @@ export function AuditDetailPage() {
               {isCompleted ? (
                 <>
                   <span
-                    className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700 dark:bg-neutral-900 dark:text-neutral-200"
+                    className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-700"
                     title="O status de uma visita finalizada não pode ser revertido — assinada pela RT, ela passa a fazer parte da trilha de auditoria."
                   >
                     <Lock size={12} />
@@ -1131,8 +1123,8 @@ export function AuditDetailPage() {
       />
 
       {!canEvaluate ? (
-        <Card className="mb-4 border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950/40">
-          <p className="flex items-start gap-2 text-sm text-amber-800 dark:text-amber-200">
+        <Card className="mb-4 border-amber-300 bg-amber-50">
+          <p className="flex items-start gap-2 text-sm text-amber-800">
             <Lock size={16} className="mt-0.5 shrink-0" />
             <span>
               <b>Acesso de leitura.</b> A avaliação da visita técnica é
@@ -1144,7 +1136,7 @@ export function AuditDetailPage() {
       ) : null}
 
       {geo ? (
-        <p className="mb-3 flex flex-wrap items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+        <p className="mb-3 flex flex-wrap items-center gap-1.5 text-xs text-neutral-500">
           <MapPin size={13} className="shrink-0" />
           Check-in em {geo.latitude.toFixed(5)}, {geo.longitude.toFixed(5)}
           {geo.accuracy != null
@@ -1154,7 +1146,7 @@ export function AuditDetailPage() {
             href={`https://www.google.com/maps?q=${geo.latitude},${geo.longitude}`}
             target="_blank"
             rel="noreferrer"
-            className="font-medium text-neutral-600 underline hover:text-neutral-900 dark:text-neutral-300"
+            className="font-medium text-neutral-600 underline hover:text-neutral-900"
           >
             ver no mapa
           </a>
@@ -1163,19 +1155,19 @@ export function AuditDetailPage() {
 
       {categories.length > 0 ? (
         <Card className="mb-4">
-          <p className="mb-2 text-sm font-semibold text-neutral-700 dark:text-neutral-300">
+          <p className="mb-2 text-sm font-semibold text-neutral-700">
             Score por categoria
           </p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-5">
             {categories.map((c) => (
               <div
                 key={c.category}
-                className="rounded-lg border border-neutral-200 p-2 dark:border-neutral-800"
+                className="rounded-lg border border-neutral-200 p-2"
               >
-                <p className="truncate text-xs text-neutral-500 dark:text-neutral-400">
+                <p className="truncate text-xs text-neutral-500">
                   {c.category}
                 </p>
-                <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+                <p className="text-sm font-semibold text-neutral-800">
                   {c.scorePercent.toFixed(0)}%
                 </p>
               </div>
@@ -1187,7 +1179,7 @@ export function AuditDetailPage() {
       <div className="flex flex-col gap-4">
         {groupedByCategory.map(([category, catItems]) => (
           <Card key={category}>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-600 dark:text-neutral-400">
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-neutral-600">
               {category}
             </h2>
             <div className="flex flex-col gap-3">
@@ -1196,10 +1188,10 @@ export function AuditDetailPage() {
                 return (
                   <div
                     key={it.id}
-                    className="rounded-lg border border-neutral-100 p-3 dark:border-neutral-800"
+                    className="rounded-lg border border-neutral-100 p-3"
                   >
                     <div className="mb-2 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                      <p className="min-w-0 flex-1 text-sm text-neutral-800 dark:text-neutral-200">
+                      <p className="min-w-0 flex-1 text-sm text-neutral-800">
                         {it.text}
                         {it.legal_ref ? (
                           <span className="ml-1 text-xs text-neutral-400">
@@ -1237,8 +1229,8 @@ export function AuditDetailPage() {
                             aria-pressed={r?.result === 'NA'}
                             className={`inline-flex h-11 w-14 items-center justify-center rounded-lg border text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
                               r?.result === 'NA'
-                                ? 'border-neutral-800 bg-neutral-800 text-white dark:border-neutral-200 dark:bg-neutral-200 dark:text-neutral-900'
-                                : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800'
+                                ? 'border-neutral-800 bg-neutral-800 text-white'
+                                : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50'
                             }`}
                           >
                             N/A
@@ -1257,7 +1249,7 @@ export function AuditDetailPage() {
                         placeholder="Resposta..."
                         rows={2}
                         aria-label={`Resposta: ${it.text}`}
-                        className="mb-2 w-full rounded-lg border border-neutral-300 bg-white px-2 py-1 text-sm text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
+                        className="mb-2 w-full rounded-lg border border-neutral-300 bg-white px-2 py-1 text-sm text-neutral-900 outline-none focus:border-neutral-800"
                       />
                     ) : null}
 
@@ -1275,8 +1267,8 @@ export function AuditDetailPage() {
                             aria-pressed={r?.value === n}
                             className={`h-11 w-11 rounded-lg border text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
                               r?.value === n
-                                ? 'border-neutral-800 bg-neutral-800 text-white dark:border-neutral-200 dark:bg-neutral-200 dark:text-neutral-900'
-                                : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800'
+                                ? 'border-neutral-800 bg-neutral-800 text-white'
+                                : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50'
                             }`}
                           >
                             {n}
@@ -1295,26 +1287,26 @@ export function AuditDetailPage() {
                           onChange={(e) => setValue(it, e.target.value)}
                           placeholder="Valor medido"
                           aria-label={`Valor medido: ${it.text}`}
-                          className="h-11 w-32 rounded-lg border border-neutral-300 bg-white px-2 text-sm text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
+                          className="h-11 w-32 rounded-lg border border-neutral-300 bg-white px-2 text-sm text-neutral-900 outline-none focus:border-neutral-800"
                         />
                         {it.unit ? (
-                          <span className="text-sm text-neutral-500 dark:text-neutral-400">
+                          <span className="text-sm text-neutral-500">
                             {it.unit}
                           </span>
                         ) : null}
                         {rangeLabel(it) ? (
-                          <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                          <span className="text-xs text-neutral-500">
                             Aceitável: {rangeLabel(it)}
                           </span>
                         ) : null}
                         {/* Veredito derivado do número, não de um clique. */}
                         {resultForMeasure(it, r?.value) === 'C' ? (
-                          <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700 dark:bg-green-950/50 dark:text-green-400">
+                          <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700">
                             Conforme
                           </span>
                         ) : null}
                         {resultForMeasure(it, r?.value) === 'NC' ? (
-                          <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-950/50 dark:text-red-400">
+                          <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700">
                             Fora da faixa — abre NC
                           </span>
                         ) : null}
@@ -1333,7 +1325,7 @@ export function AuditDetailPage() {
                             : 'Observação (opcional)...'
                         }
                         rows={2}
-                        className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
+                        className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-1 text-xs text-neutral-900 outline-none focus:border-neutral-800"
                       />
                     ) : null}
                     {/* Evidência fotográfica do item (campo photo_id da
@@ -1358,10 +1350,10 @@ export function AuditDetailPage() {
             {/* Observação da seção inteira — o que a RT comenta sobre o
                 bloco, não sobre um item isolado. */}
             {!locked || sectionNotes[category] ? (
-              <div className="mt-3 border-t border-neutral-100 pt-3 dark:border-neutral-800">
+              <div className="mt-3 border-t border-neutral-100 pt-3">
                 <label
                   htmlFor={`section-note-${category}`}
-                  className="mb-1 block text-xs font-medium text-neutral-500 dark:text-neutral-400"
+                  className="mb-1 block text-xs font-medium text-neutral-500"
                 >
                   Observação desta seção
                 </label>
@@ -1377,7 +1369,7 @@ export function AuditDetailPage() {
                   }
                   rows={2}
                   placeholder={`Comentário geral sobre ${category.toLowerCase()}...`}
-                  className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-1.5 text-xs text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
+                  className="w-full rounded-lg border border-neutral-300 bg-white px-2 py-1.5 text-xs text-neutral-900 outline-none focus:border-neutral-800"
                 />
               </div>
             ) : null}
@@ -1387,7 +1379,7 @@ export function AuditDetailPage() {
         <Card>
           <label
             htmlFor="notes"
-            className="mb-2 block text-sm font-semibold text-neutral-700 dark:text-neutral-300"
+            className="mb-2 block text-sm font-semibold text-neutral-700"
           >
             Observacoes gerais
           </label>
@@ -1397,7 +1389,7 @@ export function AuditDetailPage() {
             disabled={locked}
             onChange={(e) => setNotes(e.target.value)}
             rows={4}
-            className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
+            className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 outline-none focus:border-neutral-800"
           />
         </Card>
       </div>
@@ -1430,12 +1422,12 @@ export function AuditDetailPage() {
         }
       >
         <div className="flex flex-col gap-3">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="text-sm text-neutral-600">
             Assine no campo abaixo. A assinatura ficara registrada no PDF junto
             com seus dados profissionais ({profile?.full_name}
             {profile?.crn ? ` - CRN ${profile.crn}` : ''}).
           </p>
-          <div className="overflow-hidden rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-800">
+          <div className="overflow-hidden rounded-lg border border-neutral-300 bg-white">
             <SignatureCanvas
               ref={sigRef}
               penColor="black"
@@ -1447,7 +1439,7 @@ export function AuditDetailPage() {
               }}
             />
           </div>
-          <label className="flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300">
+          <label className="flex items-center gap-2 text-sm text-neutral-700">
             <input
               type="checkbox"
               checked={agreed}
@@ -1459,12 +1451,12 @@ export function AuditDetailPage() {
 
           {/* Ciência da empresa — opcional: nem sempre há responsável no
               local, mas quando há, o laudo deixa de ser unilateral. */}
-          <div className="mt-2 border-t border-neutral-200 pt-3 dark:border-neutral-700">
-            <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
+          <div className="mt-2 border-t border-neutral-200 pt-3">
+            <p className="text-sm font-medium text-neutral-700">
               Ciência da empresa{' '}
               <span className="font-normal text-neutral-400">(opcional)</span>
             </p>
-            <p className="mb-2 mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
+            <p className="mb-2 mt-0.5 text-xs text-neutral-500">
               Quem recebeu a visita pode assinar aqui declarando ciência do
               resultado. Deixe em branco se não houver responsável no local.
             </p>
@@ -1484,7 +1476,7 @@ export function AuditDetailPage() {
                 placeholder="Ex.: Gerente da unidade"
               />
             </div>
-            <div className="mt-2 overflow-hidden rounded-lg border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-800">
+            <div className="mt-2 overflow-hidden rounded-lg border border-neutral-300 bg-white">
               <SignatureCanvas
                 ref={clientSigRef}
                 penColor="black"
@@ -1500,7 +1492,7 @@ export function AuditDetailPage() {
               type="button"
               onClick={() => clientSigRef.current?.clear()}
               disabled={finalizing}
-              className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-neutral-800 disabled:opacity-50 dark:text-neutral-400 dark:hover:text-neutral-100"
+              className="mt-1 inline-flex items-center gap-1 text-xs font-medium text-neutral-500 hover:text-neutral-800 disabled:opacity-50"
             >
               <Eraser size={12} />
               Limpar assinatura da empresa
@@ -1529,7 +1521,7 @@ export function AuditDetailPage() {
         }
       >
         <div className="flex flex-col gap-3">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
+          <p className="text-sm text-neutral-600">
             Altere a data e hora agendada para esta visita. Visitas já
             finalizadas não podem ser reagendadas.
           </p>

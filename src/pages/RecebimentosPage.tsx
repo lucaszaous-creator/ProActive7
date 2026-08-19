@@ -119,7 +119,7 @@ export function RecebimentosPage() {
             </option>
           ))}
         </Select>
-        <label className="flex items-end gap-2 text-sm text-neutral-700 dark:text-neutral-200">
+        <label className="flex items-end gap-2 text-sm text-neutral-700">
           <input
             type="checkbox"
             checked={onlyWithIssues}
@@ -132,7 +132,7 @@ export function RecebimentosPage() {
 
       {noCompany ? (
         <Card>
-          <p className="text-sm text-neutral-600 dark:text-neutral-300">
+          <p className="text-sm text-neutral-600">
             Nenhuma empresa cadastrada. Crie uma empresa para começar.
           </p>
         </Card>
@@ -140,13 +140,13 @@ export function RecebimentosPage() {
         <ListSkeleton rows={5} />
       ) : filtered.length === 0 ? (
         <Card>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          <p className="text-sm text-neutral-500">
             Nenhum recebimento encontrado.
           </p>
         </Card>
       ) : (
         <Card>
-          <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
+          <ul className="divide-y divide-neutral-100">
             {filtered.map((r) => {
               const itemCount = r.receiving_items.length;
               const rejectedCount = r.receiving_items.filter(
@@ -156,13 +156,13 @@ export function RecebimentosPage() {
                 <li key={r.id}>
                   <Link
                     to={`/recebimentos/${r.id}`}
-                    className="flex items-center gap-3 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-800/60"
+                    className="flex items-center gap-3 py-3 hover:bg-neutral-50"
                   >
                     <span
                       className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
                         rejectedCount > 0
-                          ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-300'
-                          : 'bg-neutral-50 dark:bg-neutral-800/60 text-neutral-600 dark:text-neutral-300'
+                          ? 'bg-amber-50 text-amber-600'
+                          : 'bg-neutral-50 text-neutral-600'
                       }`}
                     >
                       {rejectedCount > 0 ? (
@@ -172,11 +172,11 @@ export function RecebimentosPage() {
                       )}
                     </span>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-neutral-800 dark:text-neutral-100">
+                      <p className="truncate text-sm font-medium text-neutral-800">
                         {r.supplier?.name ?? 'Sem fornecedor'}
                         {r.invoice_nf ? ` — NF ${r.invoice_nf}` : ''}
                       </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      <p className="text-xs text-neutral-500">
                         {formatDateTime(r.received_at)} · {itemCount}{' '}
                         {itemCount === 1 ? 'item' : 'itens'}
                         {rejectedCount > 0
