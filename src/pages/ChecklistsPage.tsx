@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import {
+  ChevronDown,
+  ChevronUp,
   Plus,
   Pencil,
   Trash2,
@@ -14,6 +16,7 @@ import { usePageTitle } from '@/lib/usePageTitle';
 import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import { formatDateTime } from '@/lib/dates';
+import { moveInArray } from '@/lib/auditTemplateSections';
 import { logFeatureEvent } from '@/lib/platformMetrics';
 import {
   CHECKLIST_FREQUENCY_LABELS,
@@ -516,6 +519,28 @@ export function ChecklistsPage() {
                     placeholder="Ex.: Bancada higienizada"
                     className="flex-1 rounded-lg border border-neutral-300 dark:border-neutral-700 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20"
                   />
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setTplItems((prev) => moveInArray(prev, i, i - 1))
+                    }
+                    disabled={i === 0}
+                    className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                    aria-label="Mover item para cima"
+                  >
+                    <ChevronUp size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setTplItems((prev) => moveInArray(prev, i, i + 1))
+                    }
+                    disabled={i === tplItems.length - 1}
+                    className="rounded-lg p-2 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                    aria-label="Mover item para baixo"
+                  >
+                    <ChevronDown size={16} />
+                  </button>
                   <button
                     type="button"
                     onClick={() =>
