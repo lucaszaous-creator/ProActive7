@@ -391,23 +391,10 @@ const NAV_PROPERTY: NavNode[] = [
     // de responsabilidade da nutri (RT), que mantém ASO/treinamento.
     children: [ITEM.produtos, ITEM.grupos, ITEM.fornecedores, ITEM.impressoras],
   },
-  {
-    kind: 'group',
-    labelKey: 'nav.conformidade',
-    icon: ShieldCheck,
-    defaultOpen: false,
-    // Sem ITEM.agenda — agenda é da nutri (planejamento de visitas).
-    children: [
-      ITEM.visitas,
-      ITEM.ncs,
-      ITEM.checklists,
-      ITEM.temperatura,
-      ITEM.pragas,
-      ITEM.documentos,
-      ITEM.fotos,
-      ITEM.dossie,
-    ],
-  },
+  // Sem grupo "Conformidade" (decisão da Ariane, split cliente ×
+  // nutricionista): visitas, NCs, checklists, temperatura, pragas,
+  // documentos, fotos e dossiê são o sistema da nutri. As rotas seguem
+  // acessíveis por link direto se a operação precisar.
   ITEM.ajuda,
 ];
 
@@ -455,22 +442,7 @@ const NAV_PROPERTY_MANAGER: NavNode[] = [
       ITEM.impressoras,
     ],
   },
-  {
-    kind: 'group',
-    labelKey: 'nav.conformidade',
-    icon: ShieldCheck,
-    defaultOpen: false,
-    children: [
-      ITEM.visitas,
-      ITEM.ncs,
-      ITEM.checklists,
-      ITEM.temperatura,
-      ITEM.pragas,
-      ITEM.documentos,
-      ITEM.fotos,
-      ITEM.dossie,
-    ],
-  },
+  // Sem grupo "Conformidade" aqui também — ver comentário no NAV_PROPERTY.
   {
     kind: 'group',
     labelKey: 'nav.administracao',
