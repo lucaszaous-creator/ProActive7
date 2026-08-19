@@ -65,7 +65,6 @@ const ptBR = {
     property: 'Usuário da empresa',
     propertyManager: 'Gerente da empresa',
     signOut: 'Sair',
-    openMenu: 'Abrir menu',
     installApp: 'Instalar app',
     notifications: 'Notificações',
     language: 'Idioma',

@@ -12,7 +12,6 @@ import {
   Trash2,
   Users,
   LogOut,
-  Menu,
   X,
   Thermometer,
   ClipboardCheck,
@@ -54,6 +53,7 @@ import { SubscriptionGate } from './SubscriptionGate';
 import { RouteFade } from './RouteFade';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { OfflineIndicator } from './OfflineIndicator';
+import { BottomNav } from './BottomNav';
 import { PwaInstallButton } from './PwaInstallButton';
 import { PushToggle } from './PushToggle';
 import { LangToggle } from './LangToggle';
@@ -852,14 +852,10 @@ export function Layout() {
         {/* pt calculado em vez de py-3: no iPhone instalado o cabeçalho
             precisa somar a altura do notch, senão o botão do menu fica
             embaixo do relógio do sistema. */}
+        {/* Só a marca. O hambúrguer saiu: o menu completo agora abre pelo
+            "Mais" da barra inferior, e ter dois caminhos para a mesma
+            gaveta era exatamente a complicação a menos que queríamos. */}
         <header className="sticky top-0 z-20 flex w-full items-center gap-3 border-b border-neutral-200 bg-white/90 px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] backdrop-blur lg:hidden">
-          <button
-            onClick={() => setMobileOpen(true)}
-            aria-label={t('layout.openMenu')}
-            className="rounded-lg p-2.5 text-neutral-600 hover:bg-neutral-100"
-          >
-            <Menu size={22} />
-          </button>
           <img
             src="/proactive7-wordmark.png"
             alt="ProActive7"
@@ -874,7 +870,9 @@ export function Layout() {
 
         {/* pb somado à barra de gestos do iPhone: sem isso o último botão
             da página fica atrás dela e não dá para clicar. */}
-        <main className="w-full min-w-0 flex-1 overflow-x-hidden px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-6 sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+        {/* pb grande no celular: a barra inferior é fixa e cobriria o
+            último botão da página. No desktop ela não existe. */}
+        <main className="w-full min-w-0 flex-1 overflow-x-hidden px-4 pt-4 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-6 lg:pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
           <div className="mx-auto w-full max-w-7xl">
             <SubscriptionGate>
               <RouteFade>
@@ -884,6 +882,8 @@ export function Layout() {
           </div>
         </main>
       </div>
+
+      <BottomNav onMore={() => setMobileOpen(true)} />
     </div>
   );
 }
