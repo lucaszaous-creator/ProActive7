@@ -113,12 +113,11 @@ export function DashboardPage() {
     };
   }, [showPortfolio]);
 
-  // ----- Property fetch -----
+  // ----- Tarefas da empresa ATIVA -----
+  // Roda para todo mundo, não só para a cozinha: desde que o app passou a
+  // ter uma empresa por vez, a nutricionista também abre o painel "dentro"
+  // de uma empresa e precisa ver as pendências dela.
   useEffect(() => {
-    if (showPortfolio) {
-      setPropertyLoading(false);
-      return;
-    }
     if (!companyId) {
       setPropertyLoading(false);
       return;
@@ -162,18 +161,21 @@ export function DashboardPage() {
         ? `${stats.total} empresa${stats.total === 1 ? '' : 's'} · tudo em conformidade`
         : `${stats.total} empresa${stats.total === 1 ? '' : 's'} · ${stats.critical} crítica${stats.critical === 1 ? '' : 's'}`;
 
-  const propertySummary = propertyLoading
-    ? undefined
-    : (() => {
-        const tasks = pendingChecklists.length + pendingEquipment.length;
-        if (tasks === 0 && expiringLabels.length === 0)
-          return 'Tudo em dia por hoje';
-        return `${tasks} tarefa${tasks === 1 ? '' : 's'} hoje${
-          expiringLabels.length > 0
-            ? ` · ${expiringLabels.length} etiqueta${expiringLabels.length === 1 ? '' : 's'} vencendo`
-            : ''
-        }`;
-      })();
+  // Sem empresa ativa não há o que resumir — dizer "tudo em dia" quando
+  // não existe empresa nenhuma seria mentira tranquilizadora.
+  const propertySummary =
+    propertyLoading || !companyId
+      ? undefined
+      : (() => {
+          const tasks = pendingChecklists.length + pendingEquipment.length;
+          if (tasks === 0 && expiringLabels.length === 0)
+            return 'Tudo em dia por hoje';
+          return `${tasks} tarefa${tasks === 1 ? '' : 's'} hoje${
+            expiringLabels.length > 0
+              ? ` · ${expiringLabels.length} etiqueta${expiringLabels.length === 1 ? '' : 's'} vencendo`
+              : ''
+          }`;
+        })();
 
   return (
     <div className="mx-auto max-w-6xl">
@@ -181,24 +183,22 @@ export function DashboardPage() {
           notificação nem existem para essa pessoa. */}
       <InstallPrompt />
 
+      {/* Uma empresa por vez (decisão do Lucas, olhando o app concorrente).
+          Antes a nutri via a carteira inteira aqui e nenhuma empresa em
+          destaque; agora o painel é DENTRO da empresa ativa, e a carteira
+          fica no bloco recolhível abaixo. Trocar de empresa é o seletor no
+          topo do app. */}
       <HeroGreeting
         fullName={profile?.full_name}
         email={profile?.email}
-        // Property vê o painel de UMA empresa: destaca essa empresa.
-        // Nutri/admin (carteira de clientes): SEM destaque de empresa —
-        // o painel é sobre a saúde da carteira inteira (pedido da cliente).
-        companyName={showPortfolio ? null : companyName}
-        companyLogoUrl={showPortfolio ? null : companyLogoUrl}
-        summary={showPortfolio ? masterSummary : propertySummary}
+        companyName={companyName || null}
+        companyLogoUrl={companyLogoUrl}
+        summary={propertySummary ?? masterSummary}
         summaryAccent={
-          showPortfolio
-            ? stats?.critical && stats.critical > 0
-              ? 'amber'
-              : 'teal'
-            : pendingChecklists.length + pendingEquipment.length === 0 &&
-                expiringLabels.length === 0
-              ? 'teal'
-              : 'amber'
+          pendingChecklists.length + pendingEquipment.length === 0 &&
+          expiringLabels.length === 0
+            ? 'teal'
+            : 'amber'
         }
       />
 
@@ -206,10 +206,19 @@ export function DashboardPage() {
 
       {showPortfolio ? (
         <>
-          {/* O que exige AÇÃO fica na frente: alertas e próximas visitas.
-              Indicadores e histórico são leitura — no celular saem da
-              frente (um toque os traz de volta), no desktop seguem
-              visíveis como antes. */}
+          {/* Ordem: a empresa que está na tela primeiro, depois a
+              carteira. Indicadores e histórico são leitura — no celular
+              saem da frente (um toque os traz de volta), no desktop
+              seguem visíveis como antes. */}
+          {companyId ? (
+            <PropertyTodayTasks
+              loading={propertyLoading}
+              pendingChecklists={pendingChecklists}
+              pendingEquipment={pendingEquipment}
+              expiringLabels={expiringLabels}
+              asoAlertsCount={0}
+            />
+          ) : null}
           {isNutritionist && <NutriAlerts />}
           <UpcomingAudits loading={masterLoading} items={upcomingAudits} />
 

@@ -54,6 +54,7 @@ import { RouteFade } from './RouteFade';
 import { AnnouncementBanner } from './AnnouncementBanner';
 import { OfflineIndicator } from './OfflineIndicator';
 import { BottomNav } from './BottomNav';
+import { CompanySwitcher } from './CompanySwitcher';
 import { PwaInstallButton } from './PwaInstallButton';
 import { PushToggle } from './PushToggle';
 import { LangToggle } from './LangToggle';
@@ -788,6 +789,13 @@ export function Layout() {
           </button>
         </div>
 
+        {/* No desktop o seletor mora no topo do menu; no celular ele já
+            está na barra de cima, então some daqui para não haver dois
+            caminhos para a mesma escolha. */}
+        <div className="hidden lg:block">
+          <CompanySwitcher variant="sidebar" />
+        </div>
+
         <nav className="flex-1 space-y-1 overflow-y-auto p-3">
           {tree.map((node, idx) => {
             if (node.kind === 'item') {
@@ -852,15 +860,18 @@ export function Layout() {
         {/* pt calculado em vez de py-3: no iPhone instalado o cabeçalho
             precisa somar a altura do notch, senão o botão do menu fica
             embaixo do relógio do sistema. */}
-        {/* Só a marca. O hambúrguer saiu: o menu completo agora abre pelo
-            "Mais" da barra inferior, e ter dois caminhos para a mesma
-            gaveta era exatamente a complicação a menos que queríamos. */}
-        <header className="sticky top-0 z-20 flex w-full items-center gap-3 border-b border-neutral-200 bg-white/90 px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] backdrop-blur lg:hidden">
+        {/* Marca + empresa ativa. O hambúrguer saiu: o menu completo abre
+            pelo "Mais" da barra inferior, e ter dois caminhos para a mesma
+            gaveta era exatamente a complicação a menos que queríamos.
+            A empresa fica aqui porque é a pergunta que a pessoa faz em
+            toda tela: "isto que estou vendo é de quem?". */}
+        <header className="sticky top-0 z-20 flex w-full items-center gap-2 border-b border-neutral-200 bg-white/90 px-3 pb-2 pt-[calc(0.5rem+env(safe-area-inset-top))] backdrop-blur lg:hidden">
           <img
             src="/proactive7-wordmark.png"
             alt="ProActive7"
-            className="h-7 w-auto"
+            className="h-6 w-auto shrink-0"
           />
+          <CompanySwitcher variant="bar" />
         </header>
 
         <OfflineIndicator />
