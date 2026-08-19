@@ -53,6 +53,7 @@ import { takeLoginPortal } from '@/lib/portals';
 import { SubscriptionGate } from './SubscriptionGate';
 import { RouteFade } from './RouteFade';
 import { AnnouncementBanner } from './AnnouncementBanner';
+import { OfflineIndicator } from './OfflineIndicator';
 import { PwaInstallButton } from './PwaInstallButton';
 import { PushToggle } from './PushToggle';
 import { ThemeToggle } from './ThemeToggle';
@@ -861,6 +862,7 @@ export function Layout() {
           />
         </header>
 
+        <OfflineIndicator />
         <AnnouncementBanner />
         {/* A impressao agora e' feita pelo relay PowerShell instalado no PC
             (modo invisivel). O navegador so enfileira em print_jobs. */}

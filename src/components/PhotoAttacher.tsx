@@ -82,6 +82,16 @@ export function PhotoAttacher({
       toast.error('Selecione uma empresa antes de anexar foto.');
       return;
     }
+    // Foto não entra na fila offline: é upload de binário para o Storage,
+    // e guardar a imagem no aparelho por tempo indeterminado esbarra na
+    // retenção de 30 dias que vale para toda foto (CLAUDE.md §1). Melhor
+    // dizer a verdade agora do que "salvar" algo que nunca vai subir.
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      toast.error(
+        'Foto precisa de conexão. O resto do preenchimento fica salvo; anexe a foto quando o sinal voltar.',
+      );
+      return;
+    }
     if (!file.type.startsWith('image/')) {
       toast.error('Selecione um arquivo de imagem.');
       return;

@@ -40,6 +40,11 @@ import type {
 } from '@/lib/types';
 import { calculateAuditScore, scoresByCategory } from '@/lib/auditScore';
 import {
+  isNetworkError,
+  listPending,
+  queueWrite,
+} from '@/lib/offlineSync';
+import {
   answerTypeOf,
   formatAnswer,
   isNonConforming,
@@ -172,6 +177,27 @@ export function AuditDetailPage() {
         : null,
     );
     setCompanyId(a.company_id);
+
+    // Preenchimento que ficou na fila offline vence o que veio do servidor:
+    // se a escrita ainda não subiu, o banco tem a versão ANTERIOR ao que a
+    // RT digitou na cozinha sem sinal. Só restaura o que de fato está
+    // pendente para esta visita — nada de rascunho velho ressuscitando.
+    const pending = await listPending();
+    const mine = pending.find(
+      (e) => e.table === 'audits' && e.match.id === a.id,
+    );
+    if (mine) {
+      const p = mine.payload as Partial<Audit>;
+      if (p.responses) setResponses(p.responses);
+      if (typeof p.notes === 'string') setNotes(p.notes);
+      if (p.section_notes) setSectionNotes(p.section_notes);
+      if (typeof p.client_signer_name === 'string')
+        setClientName(p.client_signer_name);
+      if (typeof p.client_signer_role === 'string')
+        setClientRole(p.client_signer_role);
+      toast.info('Recuperamos o preenchimento salvo neste aparelho.');
+    }
+
     if (a.template_id) {
       const { data: tpl } = await supabase
         .from('audit_templates')
@@ -398,23 +424,52 @@ export function AuditDetailPage() {
   async function handleSaveDraft() {
     if (!audit) return;
     setSaving(true);
+    const payload = {
+      responses,
+      notes,
+      ...fieldWorkPayload,
+      status: audit.status === 'scheduled' ? 'in_progress' : audit.status,
+      started_at: audit.started_at ?? new Date().toISOString(),
+      score,
+      // Quem agendou nem sempre e quem vai a campo. A partir do momento
+      // em que alguem comeca a preencher, a visita passa a ser dessa
+      // pessoa — e e o nome dela que sai no laudo.
+      auditor_id: profile?.id ?? audit.auditor_id,
+    };
+
+    // Sem sinal (câmara fria, subsolo, estoque nos fundos): guarda no
+    // aparelho e sobe sozinho quando a conexão voltar. Ver lib/offlineSync.
+    const queueIt = async () => {
+      await queueWrite({
+        table: 'audits',
+        op: 'update',
+        match: { id: audit.id },
+        payload,
+        label: 'Vistoria em andamento',
+      });
+      setSaving(false);
+      toast.success(
+        'Sem conexão: salvo neste aparelho. Envia sozinho quando o sinal voltar.',
+      );
+    };
+
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      await queueIt();
+      return;
+    }
+
     const { error } = await supabase
       .from('audits')
-      .update({
-        responses,
-        notes,
-        ...fieldWorkPayload,
-        status: audit.status === 'scheduled' ? 'in_progress' : audit.status,
-        started_at: audit.started_at ?? new Date().toISOString(),
-        score,
-        // Quem agendou nem sempre e quem vai a campo. A partir do momento
-        // em que alguem comeca a preencher, a visita passa a ser dessa
-        // pessoa — e e o nome dela que sai no laudo.
-        auditor_id: profile?.id ?? audit.auditor_id,
-      })
+      .update(payload)
       .eq('id', audit.id);
     setSaving(false);
     if (error) {
+      // `navigator.onLine` mente em Wi-Fi de cozinha que não sai do prédio:
+      // falha de rede também vai para a fila.
+      if (isNetworkError(error)) {
+        await queueIt();
+        return;
+      }
       toast.error('Erro ao salvar: ' + error.message);
       return;
     }

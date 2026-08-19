@@ -8,12 +8,17 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { RootErrorBoundary } from './components/RootErrorBoundary';
 import { setErrorReporter } from './lib/errorReporter';
+import { startOfflineSync } from './lib/offlineSync';
 import './i18n';
 import './index.css';
 
 // Força o Service Worker antigo a checar atualização toda vez que o
 // app inicia, e aceitar o novo bundle imediatamente — destrava
 // usuários com SW pre-#40 que tinha auto-update preguiçoso.
+// Fila de escrita offline: sobe o que ficou pendente assim que o sinal
+// volta (ver lib/offlineSync).
+startOfflineSync();
+
 const updateSW = registerSW({
   immediate: true,
   onNeedRefresh() {
