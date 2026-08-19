@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import { precacheAndRoute } from 'workbox-precaching';
+import { getCacheKeyForURL, precacheAndRoute } from 'workbox-precaching';
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -19,6 +19,37 @@ self.addEventListener('activate', (event) => {
 // Aceita ativacao manual via postMessage (fallback / compat).
 self.addEventListener('message', (event) => {
   if (event.data?.type === 'SKIP_WAITING') self.skipWaiting();
+});
+
+// Fallback de navegacao: sem isso o app so abre offline na URL exata que
+// ja estava em cache. Como e uma SPA, qualquer rota interna (/visitas/x)
+// pedia rede e caia na tela de dinossauro — o PWA cacheava os arquivos mas
+// nao abria sem sinal, que era o unico momento em que ele importava.
+//
+// Rede primeiro (para nao servir HTML velho depois de um deploy) e o
+// index.html do precache como rede de seguranca.
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  if (request.mode !== 'navigate') return;
+
+  // Paginas estaticas de SEO (/servicos, /clientes...) sao pre-renderizadas
+  // no build e ja estao no precache com URL propria: deixa o workbox servir.
+  event.respondWith(
+    fetch(request).catch(async () => {
+      const exact = getCacheKeyForURL(new URL(request.url).pathname);
+      const cached = exact ? await caches.match(exact) : undefined;
+      if (cached) return cached;
+      const shell = getCacheKeyForURL('/index.html');
+      const fallback = shell ? await caches.match(shell) : undefined;
+      return (
+        fallback ??
+        new Response('Sem conexao e sem copia local desta pagina.', {
+          status: 503,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        })
+      );
+    }),
+  );
 });
 
 interface PushPayload {

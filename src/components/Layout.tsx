@@ -53,6 +53,7 @@ import { takeLoginPortal } from '@/lib/portals';
 import { SubscriptionGate } from './SubscriptionGate';
 import { RouteFade } from './RouteFade';
 import { AnnouncementBanner } from './AnnouncementBanner';
+import { OfflineIndicator } from './OfflineIndicator';
 import { PwaInstallButton } from './PwaInstallButton';
 import { PushToggle } from './PushToggle';
 import { ThemeToggle } from './ThemeToggle';
@@ -164,12 +165,6 @@ const ITEM = {
     kind: 'item',
     to: '/manipuladores',
     labelKey: 'nav.funcionarios',
-    icon: HardHat,
-  } as NavItemDef,
-  manipuladores: {
-    kind: 'item',
-    to: '/manipuladores',
-    labelKey: 'nav.manipulators',
     icon: HardHat,
   } as NavItemDef,
   fornecedores: {
@@ -457,38 +452,46 @@ const NAV_PROPERTY_MANAGER: NavNode[] = [
 
 const NAV_NUTRITIONIST: NavNode[] = [
   ITEM.carteira,
+  // Agenda no topo, fora de grupo: é a primeira tela que a RT abre no dia.
+  // Estava enterrada num grupo fechado junto com temperatura e pragas.
+  ITEM.agenda,
   {
     kind: 'group',
     labelKey: 'nav.avaliacao',
     icon: Stethoscope,
     defaultOpen: true,
-    // "Nova vistoria" primeiro: é o fluxo guiado que a RT usa no local
-    // (empresa → checklist → avaliar). O resto é gestão/histórico.
-    children: [
-      ITEM.novaVistoria,
-      ITEM.visitas,
-      ITEM.modelosVisita,
-      ITEM.ncs,
-      ITEM.modelosNc,
-      ITEM.checklists,
-      ITEM.manipuladores,
-    ],
+    // Só trabalho de campo, na ordem em que acontece: vou avaliar, vejo o
+    // que já avaliei, trato o que reprovou. Os modelos saíram daqui — quem
+    // está na cozinha não configura modelo, e a mistura fazia "Vistoria" e
+    // "Modelos de vistoria" parecerem dois caminhos para a mesma coisa.
+    children: [ITEM.novaVistoria, ITEM.visitas, ITEM.ncs],
   },
   {
     kind: 'group',
     labelKey: 'nav.acompanhamento',
     icon: ClipboardCheck,
     defaultOpen: false,
-    // Fotos foi incluído aqui a pedido da RT — ela precisa ver/baixar
-    // fotos das visitas.
+    // O que a RT acompanha entre uma visita e outra. Funcionários entra
+    // aqui (e não em avaliação) porque o que ela acompanha é ASO e
+    // treinamento vencendo. Fotos a pedido da RT: ela baixa as evidências.
     children: [
+      ITEM.funcionarios,
       ITEM.temperatura,
       ITEM.pragas,
       ITEM.documentos,
       ITEM.fichas,
       ITEM.fotos,
-      ITEM.agenda,
     ],
+  },
+  {
+    kind: 'group',
+    labelKey: 'nav.gModelos',
+    icon: ClipboardList,
+    defaultOpen: false,
+    // Tudo que é "montar antes" num lugar só. Antes os três modelos
+    // estavam espalhados no meio da operação, e não havia resposta óbvia
+    // para "onde eu configuro isso?".
+    children: [ITEM.modelosVisita, ITEM.modelosNc, ITEM.checklists],
   },
   // Sem grupo "Cadastros" (decisão da Ariane, split cliente ×
   // nutricionista): produtos, grupos, fornecedores e identificação de
@@ -578,7 +581,7 @@ const NAV_PLATFORM_ADMIN: NavNode[] = [
     children: [
       ITEM.produtos,
       ITEM.grupos,
-      ITEM.manipuladores,
+      ITEM.funcionarios,
       ITEM.fornecedores,
     ],
   },
@@ -861,6 +864,7 @@ export function Layout() {
           />
         </header>
 
+        <OfflineIndicator />
         <AnnouncementBanner />
         {/* A impressao agora e' feita pelo relay PowerShell instalado no PC
             (modo invisivel). O navegador so enfileira em print_jobs. */}

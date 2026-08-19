@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { AuditItem } from './types';
 import {
+  emptyItem,
   findDuplicateSectionName,
   itemsToSections,
   moveInArray,
@@ -18,11 +19,10 @@ function section(name: string, texts: string[]): DraftSection {
     name,
     collapsed: false,
     items: texts.map((t, i) => ({
+      ...emptyItem(),
       id: `${name}-${i}`,
       text: t,
       weight: 1,
-      legal_ref: '',
-      ncTemplateId: '',
     })),
   };
 }
@@ -128,5 +128,71 @@ describe('moveInArray', () => {
     expect(moveInArray([1, 2, 3], 2, 1)).toEqual([1, 3, 2]);
     expect(moveInArray([1, 2, 3], 0, -1)).toEqual([1, 2, 3]);
     expect(moveInArray([1, 2, 3], 2, 3)).toEqual([1, 2, 3]);
+  });
+});
+
+describe('tipos de resposta no rascunho', () => {
+  it('ida e volta preserva faixa, unidade e escala', () => {
+    const items: AuditItem[] = [
+      {
+        id: '1',
+        category: 'Frio',
+        text: 'Temperatura do freezer',
+        weight: 3,
+        answer_type: 'measure',
+        unit: '°C',
+        min: -18,
+        max: -12,
+      },
+      {
+        id: '2',
+        category: 'Frio',
+        text: 'Organização',
+        weight: 1,
+        answer_type: 'scale',
+        scale_max: 10,
+      },
+    ];
+    expect(sectionsToItems(itemsToSections(items))).toEqual(items);
+  });
+
+  it('conformidade não grava campos de tipo (modelo fica limpo)', () => {
+    const items: AuditItem[] = [
+      { id: '1', category: 'X', text: 'Pergunta', weight: 1 },
+    ];
+    const out = sectionsToItems(itemsToSections(items));
+    expect(out[0]).not.toHaveProperty('answer_type');
+    expect(out[0]).not.toHaveProperty('unit');
+  });
+
+  it('trocar de valor medido para conformidade não deixa faixa órfã', () => {
+    const sections = itemsToSections([
+      {
+        id: '1',
+        category: 'X',
+        text: 'Temperatura',
+        weight: 1,
+        answer_type: 'measure',
+        unit: '°C',
+        min: 0,
+        max: 5,
+      },
+    ]);
+    sections[0].items[0].answerType = 'conformity';
+    const out = sectionsToItems(sections);
+    expect(out[0]).not.toHaveProperty('min');
+    expect(out[0]).not.toHaveProperty('max');
+    expect(out[0]).not.toHaveProperty('answer_type');
+  });
+
+  it('faixa aceita vírgula decimal e ignora campo vazio', () => {
+    const sections = itemsToSections([
+      { id: '1', category: 'X', text: 'pH', weight: 1, answer_type: 'measure' },
+    ]);
+    sections[0].items[0].min = '6,5';
+    sections[0].items[0].max = '';
+    const out = sectionsToItems(sections);
+    expect(out[0].min).toBe(6.5);
+    expect(out[0]).not.toHaveProperty('max');
   });
 });

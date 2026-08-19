@@ -157,6 +157,18 @@ export function LibraryBrowser({
             : 'dentro da sua empresa'}
           .
         </p>
+        {/* Prazo de validade é decisão técnica da RT (CLAUDE.md §2): o
+            catálogo sugere um piso conservador para ela não começar de uma
+            tela em branco, e a cópia nasce editável. Dizer isso na tela
+            evita que o número da plataforma passe por aval da nutri. */}
+        {kind === 'product' ? (
+          <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+            Os prazos vêm das referências públicas (RDC 216 e tabela CVS-5)
+            como ponto de partida conservador e assumem refrigerado a até
+            5&nbsp;°C / congelado a −18&nbsp;°C. Revise e assuma cada prazo
+            antes de usar: quem responde por ele é a RT.
+          </p>
+        ) : null}
         {loading ? (
           <div className="flex justify-center py-6">
             <Spinner />

@@ -22,9 +22,15 @@ import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import {
   auditTemplateScope,
+  type AuditAnswerType,
   type AuditTemplate,
   type NcTemplate,
 } from '@/lib/types';
+import {
+  ANSWER_TYPES,
+  ANSWER_TYPE_HINT,
+  ANSWER_TYPE_LABEL,
+} from '@/lib/auditAnswers';
 import {
   emptyItem,
   emptySection,
@@ -77,6 +83,11 @@ const WEIGHTS = [
 ];
 
 type ScopeChoice = 'organization' | 'company';
+
+/** Faixa definida no rascunho do editor (campos ainda em texto). */
+function hasDraftRange(item: DraftItem): boolean {
+  return Boolean(item.min.trim() || item.max.trim());
+}
 
 export function AuditTemplatesPage() {
   usePageTitle('Modelos de vistoria');
@@ -822,29 +833,124 @@ export function AuditTemplatesPage() {
                               />
                             </div>
 
+                            {/* Como a RT responde esta pergunta na visita.
+                                Vive no JSONB do modelo — ver lib/auditAnswers. */}
+                            <div className="grid gap-2 sm:grid-cols-2">
+                              <select
+                                value={it.answerType}
+                                onChange={(e) =>
+                                  patchItem(section.key, it.id, {
+                                    answerType: e.target
+                                      .value as AuditAnswerType,
+                                  })
+                                }
+                                aria-label="Tipo de resposta"
+                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                              >
+                                {ANSWER_TYPES.map((t) => (
+                                  <option key={t} value={t}>
+                                    Resposta: {ANSWER_TYPE_LABEL[t]}
+                                  </option>
+                                ))}
+                              </select>
+                              <p className="self-center text-xs text-neutral-500 dark:text-neutral-400">
+                                {ANSWER_TYPE_HINT[it.answerType]}
+                              </p>
+                            </div>
+
+                            {it.answerType === 'scale' ? (
+                              <input
+                                type="number"
+                                min={1}
+                                value={it.scaleMax}
+                                onChange={(e) =>
+                                  patchItem(section.key, it.id, {
+                                    scaleMax: e.target.value,
+                                  })
+                                }
+                                placeholder="Nota máxima (ex.: 5)"
+                                aria-label="Nota máxima da escala"
+                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                              />
+                            ) : null}
+
+                            {it.answerType === 'measure' ? (
+                              <div className="grid gap-2 sm:grid-cols-3">
+                                <input
+                                  type="text"
+                                  value={it.unit}
+                                  onChange={(e) =>
+                                    patchItem(section.key, it.id, {
+                                      unit: e.target.value,
+                                    })
+                                  }
+                                  placeholder="Unidade (ex.: °C)"
+                                  aria-label="Unidade da medida"
+                                  className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                                />
+                                <input
+                                  type="text"
+                                  inputMode="decimal"
+                                  value={it.min}
+                                  onChange={(e) =>
+                                    patchItem(section.key, it.id, {
+                                      min: e.target.value,
+                                    })
+                                  }
+                                  placeholder="Mínimo aceitável"
+                                  aria-label="Valor mínimo aceitável"
+                                  className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                                />
+                                <input
+                                  type="text"
+                                  inputMode="decimal"
+                                  value={it.max}
+                                  onChange={(e) =>
+                                    patchItem(section.key, it.id, {
+                                      max: e.target.value,
+                                    })
+                                  }
+                                  placeholder="Máximo aceitável"
+                                  aria-label="Valor máximo aceitável"
+                                  className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                                />
+                              </div>
+                            ) : null}
+
+                            {it.answerType === 'measure' && !hasDraftRange(it) ? (
+                              <p className="text-xs text-amber-600 dark:text-amber-500">
+                                Sem faixa definida, o valor fica só registrado:
+                                não pontua no score nem abre não-conformidade.
+                              </p>
+                            ) : null}
+
                             {/* Plano de ação padrão: quando este item for
                                 reprovado na visita, a NC nasce preenchida com
-                                este modelo em vez de só o texto da pergunta. */}
-                            <select
-                              value={it.ncTemplateId}
-                              onChange={(e) =>
-                                patchItem(section.key, it.id, {
-                                  ncTemplateId: e.target.value,
-                                })
-                              }
-                              className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
-                            >
-                              <option value="">
-                                Se reprovado: abrir NC só com o texto da
-                                pergunta
-                              </option>
-                              {ncTemplates.map((n) => (
-                                <option key={n.id} value={n.id}>
-                                  Se reprovado: {n.name} (prazo{' '}
-                                  {n.default_due_days}d)
+                                este modelo em vez de só o texto da pergunta.
+                                Só faz sentido em pergunta que pode reprovar. */}
+                            {it.answerType === 'conformity' ||
+                            it.answerType === 'measure' ? (
+                              <select
+                                value={it.ncTemplateId}
+                                onChange={(e) =>
+                                  patchItem(section.key, it.id, {
+                                    ncTemplateId: e.target.value,
+                                  })
+                                }
+                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                              >
+                                <option value="">
+                                  Se reprovado: abrir NC só com o texto da
+                                  pergunta
                                 </option>
-                              ))}
-                            </select>
+                                {ncTemplates.map((n) => (
+                                  <option key={n.id} value={n.id}>
+                                    Se reprovado: {n.name} (prazo{' '}
+                                    {n.default_due_days}d)
+                                  </option>
+                                ))}
+                              </select>
+                            ) : null}
                           </div>
                         </div>
                       ))}

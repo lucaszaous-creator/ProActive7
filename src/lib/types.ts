@@ -285,6 +285,32 @@ export interface RecipeWithItems extends Recipe {
   recipe_items: (RecipeItem & { product: { name: string } | null })[];
 }
 
+/**
+ * Composição por 100 g de parte comestível (migration 0110). Preenchida
+ * pela RT; `source` viaja junto porque rótulo de fornecedor e tabela de
+ * referência não têm o mesmo peso legal.
+ */
+export type NutritionSource = 'taco' | 'rotulo' | 'ibge' | 'usda' | 'manual';
+
+export interface ProductNutrition {
+  product_id: string;
+  energy_kcal: number | null;
+  protein_g: number | null;
+  carb_g: number | null;
+  total_sugars_g: number | null;
+  added_sugars_g: number | null;
+  fat_g: number | null;
+  sat_fat_g: number | null;
+  trans_fat_g: number | null;
+  fiber_g: number | null;
+  sodium_mg: number | null;
+  source: NutritionSource;
+  source_note: string | null;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ChecklistRun {
   id: string;
   template_id: string;
@@ -452,6 +478,38 @@ export interface NcTemplate {
   updated_at: string;
 }
 
+/**
+ * Compromisso livre da agenda da consultoria (migration 0108). Visita
+ * tecnica NAO vira agenda_event — continua sendo `audits`; a tela une as
+ * duas fontes na leitura.
+ */
+export type AgendaEventKind =
+  | 'meeting'
+  | 'training'
+  | 'deadline'
+  | 'collection'
+  | 'followup'
+  | 'other';
+
+export interface AgendaEvent {
+  id: string;
+  organization_id: string;
+  company_id: string | null;
+  title: string;
+  description: string | null;
+  kind: AgendaEventKind;
+  starts_at: string;
+  ends_at: string | null;
+  all_day: boolean;
+  /** Dias antes do compromisso para o lembrete. null = sem lembrete. */
+  remind_days_before: number | null;
+  reminded_at: string | null;
+  done_at: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type AuditStatus =
   | 'scheduled'
   | 'in_progress'
@@ -460,12 +518,32 @@ export type AuditStatus =
 
 export type AuditResult = 'C' | 'NC' | 'NA';
 
+/**
+ * Tipo de resposta de uma pergunta do checklist. Vive no JSONB `items`,
+ * entao nao precisa de migration. Ausente = 'conformity' (todo modelo
+ * criado antes desta feature continua valendo).
+ *
+ *  - conformity: C / NC / NA classico
+ *  - text:       resposta escrita (documental, nao pontua)
+ *  - scale:      nota de 0 a `scale_max` (pontua proporcionalmente)
+ *  - measure:    valor medido com unidade; fora da faixa da RT vira NC
+ */
+export type AuditAnswerType = 'conformity' | 'text' | 'scale' | 'measure';
+
 export interface AuditItem {
   id: string;
   category: string;
   text: string;
   weight: number;
   legal_ref?: string;
+  answer_type?: AuditAnswerType;
+  /** 'scale': nota maxima da escala (padrao 5). */
+  scale_max?: number;
+  /** 'measure': unidade exibida ao lado do campo (C, kg, ppm, mg/L...). */
+  unit?: string;
+  /** 'measure': faixa aceitavel definida pela RT. Fora dela = NC automatica. */
+  min?: number;
+  max?: number;
   /**
    * Plano de acao padrao (migration 0103). Quando o item e reprovado na
    * visita, a NC nasce preenchida a partir deste modelo em vez de virar
@@ -476,9 +554,18 @@ export interface AuditItem {
 
 export interface AuditResponse {
   itemId: string;
-  result: AuditResult;
+  /**
+   * Veredito do item. Opcional de proposito: pergunta de texto nao tem
+   * veredito, e item ainda nao respondido nao pode fingir um (marcar 'NA'
+   * o tiraria do denominador do score e inflaria a nota).
+   */
+  result?: AuditResult;
   note?: string;
   photo_id?: string;
+  /** 'scale' e 'measure': valor registrado pela RT. */
+  value?: number;
+  /** 'text': a resposta escrita (diferente de `note`, que e ressalva). */
+  text?: string;
 }
 
 export interface AuditTemplate {
