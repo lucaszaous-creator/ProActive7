@@ -65,7 +65,6 @@ const en = {
     property: 'Company user',
     propertyManager: 'Company manager',
     signOut: 'Sign out',
-    openMenu: 'Open menu',
     installApp: 'Install app',
     notifications: 'Notifications',
     language: 'Language',
