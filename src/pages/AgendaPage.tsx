@@ -104,7 +104,7 @@ function draftFromEvent(e: AgendaEvent): DraftEvent {
 
 export function AgendaPage() {
   usePageTitle('Agenda');
-  const { isMaster } = useAuth();
+  const { isMaster, isNutritionist, isPlatformAdmin } = useAuth();
   const { companies } = useCompanyScope();
   const today = useMemo(() => new Date(), []);
   const [cursor, setCursor] = useState(
@@ -116,6 +116,11 @@ export function AgendaPage() {
   const [draft, setDraft] = useState<DraftEvent | null>(null);
   const [saving, setSaving] = useState(false);
   const [toDelete, setToDelete] = useState<AgendaEvent | null>(null);
+
+  // /agenda fica sob o ProtectedRoute genérico (o padrão do projeto: rota
+  // acessível por link direto). Quem não é RT enxerga a agenda vazia pela
+  // RLS — então nem oferecemos as ações de escrita, que só dariam erro.
+  const canEdit = isNutritionist || isPlatformAdmin;
 
   const companyNames = useMemo(
     () => new Map(companies.map((c) => [c.id, c.name])),
@@ -282,7 +287,7 @@ export function AgendaPage() {
   /** Ações de um item: visita abre a página; compromisso edita aqui. */
   function ItemActions({ item }: { item: CalendarItem }) {
     const e = item.source === 'event' ? eventById.get(item.key.slice(6)) : null;
-    if (!e) return null;
+    if (!e || !canEdit) return null;
     return (
       <div className="flex shrink-0 gap-0.5">
         <button
@@ -371,9 +376,11 @@ export function AgendaPage() {
         subtitle="Visitas técnicas e compromissos da consultoria."
         actions={
           <>
-            <Button size="sm" onClick={() => setDraft(emptyDraft())}>
-              <Plus size={16} /> Novo compromisso
-            </Button>
+            {canEdit ? (
+              <Button size="sm" onClick={() => setDraft(emptyDraft())}>
+                <Plus size={16} /> Novo compromisso
+              </Button>
+            ) : null}
             <Button variant="secondary" size="sm" onClick={prevMonth}>
               <ChevronLeft size={16} />
             </Button>
@@ -456,7 +463,7 @@ export function AgendaPage() {
                       <div className="flex items-center justify-between">
                         {/* Clicar no dia já abre o compromisso naquela data:
                             um clique a menos que abrir o modal e corrigir. */}
-                        {d.inMonth ? (
+                        {d.inMonth && canEdit ? (
                           <button
                             type="button"
                             onClick={() => setDraft(emptyDraft(d.iso))}
@@ -496,7 +503,7 @@ export function AgendaPage() {
                             title={`${it.title} — ${it.subtitle}`}
                             onClick={() => {
                               const e = eventById.get(it.key.slice(6));
-                              if (e) setDraft(draftFromEvent(e));
+                              if (e && canEdit) setDraft(draftFromEvent(e));
                             }}
                             className="flex items-center gap-1 truncate rounded bg-neutral-100 px-1 py-0.5 text-left text-[10px] text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700"
                           >
