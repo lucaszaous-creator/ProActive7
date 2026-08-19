@@ -21,6 +21,8 @@ import {
 } from '@/lib/dashboardQueries';
 import { HeroGreeting } from '@/components/dashboard/HeroGreeting';
 import { QuickActions } from '@/components/dashboard/QuickActions';
+import { MobileCollapsible } from '@/components/dashboard/MobileCollapsible';
+import { InstallPrompt } from '@/components/InstallPrompt';
 import { MasterKPIs } from '@/components/dashboard/MasterKPIs';
 import { PortfolioSummary } from '@/components/dashboard/PortfolioSummary';
 import { UpcomingAudits } from '@/components/dashboard/UpcomingAudits';
@@ -175,6 +177,10 @@ export function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl">
+      {/* Primeiro de tudo no celular: sem o app instalado, offline e
+          notificação nem existem para essa pessoa. */}
+      <InstallPrompt />
+
       <HeroGreeting
         fullName={profile?.full_name}
         email={profile?.email}
@@ -200,17 +206,25 @@ export function DashboardPage() {
 
       {showPortfolio ? (
         <>
-          {stats ? <MasterKPIs stats={stats} /> : null}
-          <ScoreTrend />
+          {/* O que exige AÇÃO fica na frente: alertas e próximas visitas.
+              Indicadores e histórico são leitura — no celular saem da
+              frente (um toque os traz de volta), no desktop seguem
+              visíveis como antes. */}
           {isNutritionist && <NutriAlerts />}
-          <PortfolioSummary
-            loading={masterLoading}
-            companies={portfolio ?? []}
-          />
-          <section className="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <UpcomingAudits loading={masterLoading} items={upcomingAudits} />
+          <UpcomingAudits loading={masterLoading} items={upcomingAudits} />
+
+          <MobileCollapsible
+            title="Indicadores da carteira"
+            subtitle={masterSummary}
+          >
+            {stats ? <MasterKPIs stats={stats} /> : null}
+            <ScoreTrend />
+            <PortfolioSummary
+              loading={masterLoading}
+              companies={portfolio ?? []}
+            />
             <RecentActivity loading={masterLoading} items={activity} />
-          </section>
+          </MobileCollapsible>
         </>
       ) : (
         <PropertyTodayTasks
