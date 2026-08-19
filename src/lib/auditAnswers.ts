@@ -1,4 +1,5 @@
 import type {
+  AnswerSpec,
   AuditAnswerType,
   AuditItem,
   AuditResponse,
@@ -43,7 +44,9 @@ export const ANSWER_TYPE_HINT: Record<AuditAnswerType, string> = {
 
 export const DEFAULT_SCALE_MAX = 5;
 
-export function answerTypeOf(item: Pick<AuditItem, 'answer_type'>): AuditAnswerType {
+export function answerTypeOf(
+  item: Pick<AuditItem, 'answer_type'>,
+): AuditAnswerType {
   return item.answer_type ?? 'conformity';
 }
 
@@ -76,7 +79,9 @@ export function resultForMeasure(
 }
 
 /** Texto da faixa para exibir ao lado do campo ("entre 0 e 5 °C"). */
-export function rangeLabel(item: Pick<AuditItem, 'min' | 'max' | 'unit'>): string {
+export function rangeLabel(
+  item: Pick<AuditItem, 'min' | 'max' | 'unit'>,
+): string {
   const min = Number(item.min);
   const max = Number(item.max);
   const unit = item.unit ? ` ${item.unit}` : '';
@@ -147,7 +152,9 @@ export function formatAnswer(
       if (!Number.isFinite(value)) return '—';
       const unit = item.unit ? ` ${item.unit}` : '';
       const derived = resultForMeasure(item, value);
-      return derived ? `${value}${unit} (${RESULT_TEXT[derived]})` : `${value}${unit}`;
+      return derived
+        ? `${value}${unit} (${RESULT_TEXT[derived]})`
+        : `${value}${unit}`;
     }
     default:
       return response?.result ? RESULT_TEXT[response.result] : '—';
@@ -184,5 +191,119 @@ export function isAnswered(
       return Number.isFinite(Number(response.value));
     default:
       return Boolean(response.result);
+  }
+}
+
+// ---------------------------------------------------------------------
+// Edição do tipo de resposta (formulário)
+// ---------------------------------------------------------------------
+
+/**
+ * Rascunho dos campos do tipo de resposta num editor. Números ficam como
+ * texto porque o campo vazio precisa significar "não definido", e não zero.
+ *
+ * Compartilhado pelo editor de modelo de VISTORIA e pelo de ROTINA: é a
+ * mesma pergunta feita em contextos diferentes, então não pode virar duas
+ * implementações que divergem com o tempo.
+ */
+export interface AnswerDraft {
+  answerType: AuditAnswerType;
+  scaleMax: string;
+  unit: string;
+  min: string;
+  max: string;
+}
+
+export function emptyAnswerDraft(): AnswerDraft {
+  return {
+    answerType: 'conformity',
+    scaleMax: String(DEFAULT_SCALE_MAX),
+    unit: '',
+    min: '',
+    max: '',
+  };
+}
+
+export function answerDraftFrom(spec: AnswerSpec): AnswerDraft {
+  return {
+    answerType: answerTypeOf(spec),
+    scaleMax: String(scaleMaxOf(spec)),
+    unit: spec.unit ?? '',
+    min: spec.min == null ? '' : String(spec.min),
+    max: spec.max == null ? '' : String(spec.max),
+  };
+}
+
+/** Número do formulário; vazio (ou lixo) vira "não definido". */
+export function parseAnswerNumber(value: string): number | undefined {
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  const parsed = Number(trimmed.replace(',', '.'));
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
+/**
+ * Só persiste os campos que o tipo escolhido usa — trocar de "valor medido"
+ * para "conforme/não conforme" não pode deixar uma faixa órfã no JSONB
+ * julgando a resposta por trás.
+ */
+export function answerSpecFromDraft(draft: AnswerDraft): AnswerSpec {
+  switch (draft.answerType) {
+    case 'text':
+      return { answer_type: 'text' };
+    case 'scale':
+      return {
+        answer_type: 'scale',
+        scale_max: parseAnswerNumber(draft.scaleMax) ?? DEFAULT_SCALE_MAX,
+      };
+    case 'measure': {
+      const min = parseAnswerNumber(draft.min);
+      const max = parseAnswerNumber(draft.max);
+      return {
+        answer_type: 'measure',
+        ...(draft.unit.trim() ? { unit: draft.unit.trim() } : {}),
+        ...(min == null ? {} : { min }),
+        ...(max == null ? {} : { max }),
+      };
+    }
+    default:
+      // conformidade é o padrão: não grava nada e o modelo fica limpo.
+      return {};
+  }
+}
+
+/** Faixa definida no rascunho (campos ainda em texto). */
+export function hasDraftRange(
+  draft: Pick<AnswerDraft, 'min' | 'max'>,
+): boolean {
+  return Boolean(draft.min.trim() || draft.max.trim());
+}
+
+/**
+ * "Item ok" numa execução de checklist de ROTINA.
+ *
+ * A rotina não tem veredito C/NC como a vistoria — tem um contador de
+ * itens cumpridos. Cada tipo de resposta alimenta esse contador de um
+ * jeito, e é melhor ter a regra escrita aqui do que espalhada na tela:
+ *
+ *  - conformity: o que a pessoa marcou
+ *  - measure com faixa: DERIVADO do valor (dentro da faixa = ok)
+ *  - measure sem faixa, scale, text: apenas "respondido"
+ */
+export function checklistItemChecked(
+  item: AnswerSpec,
+  answer: { checked?: boolean; value?: number; text?: string } | undefined,
+): boolean {
+  if (!answer) return false;
+  switch (answerTypeOf(item)) {
+    case 'text':
+      return Boolean(answer.text?.trim());
+    case 'scale':
+      return Number.isFinite(Number(answer.value));
+    case 'measure':
+      if (!hasRange(item)) return Number.isFinite(Number(answer.value));
+      return resultForMeasure(item, Number(answer.value)) === 'C';
+    default:
+      return Boolean(answer.checked);
   }
 }

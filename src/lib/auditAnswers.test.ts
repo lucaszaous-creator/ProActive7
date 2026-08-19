@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   answerTypeOf,
+  checklistItemChecked,
   formatAnswer,
   hasRange,
   isAnswered,
@@ -79,7 +80,9 @@ describe('hasRange / rangeLabel', () => {
 describe('scoreWeights', () => {
   it('N-A fica fora do cálculo em qualquer tipo', () => {
     expect(scoreWeights(conformity, { itemId: 'i', result: 'NA' })).toBeNull();
-    expect(scoreWeights(scale, { itemId: 'i', result: 'NA', value: 10 })).toBeNull();
+    expect(
+      scoreWeights(scale, { itemId: 'i', result: 'NA', value: 10 }),
+    ).toBeNull();
   });
 
   it('texto nunca pontua', () => {
@@ -136,13 +139,17 @@ describe('isNonConforming', () => {
     expect(isNonConforming(freezer, { itemId: 'i', value: -15 })).toBe(false);
   });
   it('N-A nunca abre NC', () => {
-    expect(isNonConforming(freezer, { itemId: 'i', result: 'NA', value: 4 })).toBe(
-      false,
-    );
+    expect(
+      isNonConforming(freezer, { itemId: 'i', result: 'NA', value: 4 }),
+    ).toBe(false);
   });
   it('conformidade segue o veredito da RT', () => {
-    expect(isNonConforming(conformity, { itemId: 'i', result: 'NC' })).toBe(true);
-    expect(isNonConforming(conformity, { itemId: 'i', result: 'C' })).toBe(false);
+    expect(isNonConforming(conformity, { itemId: 'i', result: 'NC' })).toBe(
+      true,
+    );
+    expect(isNonConforming(conformity, { itemId: 'i', result: 'C' })).toBe(
+      false,
+    );
   });
 });
 
@@ -156,13 +163,17 @@ describe('isAnswered', () => {
     expect(isAnswered(freezer, { itemId: 'i', value: 0 })).toBe(true);
   });
   it('observação sem veredito não conta como respondido', () => {
-    expect(isAnswered(conformity, { itemId: 'i', note: 'vi isso' })).toBe(false);
+    expect(isAnswered(conformity, { itemId: 'i', note: 'vi isso' })).toBe(
+      false,
+    );
   });
 });
 
 describe('formatAnswer', () => {
   it('conformidade em texto legível', () => {
-    expect(formatAnswer(conformity, { itemId: 'i', result: 'C' })).toBe('Conforme');
+    expect(formatAnswer(conformity, { itemId: 'i', result: 'C' })).toBe(
+      'Conforme',
+    );
     expect(formatAnswer(conformity, undefined)).toBe('—');
   });
   it('escala mostra a nota sobre o máximo', () => {
@@ -181,5 +192,42 @@ describe('formatAnswer', () => {
   });
   it('texto mostra a resposta escrita', () => {
     expect(formatAnswer(text, { itemId: 'i', text: 'relato' })).toBe('relato');
+  });
+});
+
+describe('checklistItemChecked (rotina)', () => {
+  it('conformidade segue a caixa marcada', () => {
+    expect(checklistItemChecked({}, { checked: true })).toBe(true);
+    expect(checklistItemChecked({}, { checked: false })).toBe(false);
+    expect(checklistItemChecked({}, undefined)).toBe(false);
+  });
+
+  it('valor medido com faixa é derivado, não marcado à mão', () => {
+    const camara = { answer_type: 'measure' as const, min: -18, max: -12 };
+    expect(checklistItemChecked(camara, { value: -15 })).toBe(true);
+    // Fora da faixa não conta como ok nem se a pessoa marcar a caixa:
+    // o número é que manda.
+    expect(checklistItemChecked(camara, { value: 2, checked: true })).toBe(
+      false,
+    );
+  });
+
+  it('valor medido sem faixa conta como registrado', () => {
+    const peso = { answer_type: 'measure' as const, unit: 'kg' };
+    expect(checklistItemChecked(peso, { value: 12 })).toBe(true);
+    expect(checklistItemChecked(peso, {})).toBe(false);
+  });
+
+  it('nota e texto contam quando respondidos', () => {
+    expect(checklistItemChecked({ answer_type: 'scale' }, { value: 0 })).toBe(
+      true,
+    );
+    expect(checklistItemChecked({ answer_type: 'scale' }, {})).toBe(false);
+    expect(checklistItemChecked({ answer_type: 'text' }, { text: ' ' })).toBe(
+      false,
+    );
+    expect(checklistItemChecked({ answer_type: 'text' }, { text: 'ok' })).toBe(
+      true,
+    );
   });
 });

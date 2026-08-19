@@ -30,6 +30,7 @@ import {
   ANSWER_TYPES,
   ANSWER_TYPE_HINT,
   ANSWER_TYPE_LABEL,
+  hasDraftRange,
 } from '@/lib/auditAnswers';
 import {
   emptyItem,
@@ -83,11 +84,6 @@ const WEIGHTS = [
 ];
 
 type ScopeChoice = 'organization' | 'company';
-
-/** Faixa definida no rascunho do editor (campos ainda em texto). */
-function hasDraftRange(item: DraftItem): boolean {
-  return Boolean(item.min.trim() || item.max.trim());
-}
 
 export function AuditTemplatesPage() {
   usePageTitle('Modelos de vistoria');
