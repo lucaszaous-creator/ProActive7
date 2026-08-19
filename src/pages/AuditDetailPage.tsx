@@ -39,6 +39,14 @@ import type {
   AuditTemplate,
 } from '@/lib/types';
 import { calculateAuditScore, scoresByCategory } from '@/lib/auditScore';
+import {
+  answerTypeOf,
+  formatAnswer,
+  isNonConforming,
+  rangeLabel,
+  resultForMeasure,
+  scaleMaxOf,
+} from '@/lib/auditAnswers';
 import { logFeatureEvent } from '@/lib/platformMetrics';
 import {
   drawPdfFooter,
@@ -214,11 +222,53 @@ export function AuditDetailPage() {
     setResponses((prev) => {
       const existing = prev.find((r) => r.itemId === itemId);
       if (!existing) {
-        // Observação antes de marcar o resultado não deve inventar um
-        // veredito: fica pendente até a RT escolher C/NC/NA.
-        return [...prev, { itemId, result: 'NA', note }];
+        // Observação antes de marcar o resultado não inventa veredito: sem
+        // `result`, o item fica pendente até a RT escolher. (Antes gravava
+        // 'NA' aqui, o que tirava o item do denominador e inflava o score.)
+        return [...prev, { itemId, note }];
       }
       return prev.map((r) => (r.itemId === itemId ? { ...r, note } : r));
+    });
+  }
+
+  /** Marca/desmarca "não se aplica" nos tipos que não usam os botões C/NC. */
+  function toggleNA(itemId: string) {
+    setResponses((prev) => {
+      const existing = prev.find((r) => r.itemId === itemId);
+      if (!existing) return [...prev, { itemId, result: 'NA' }];
+      return prev.map((r) =>
+        r.itemId === itemId
+          ? { ...r, result: r.result === 'NA' ? undefined : 'NA' }
+          : r,
+      );
+    });
+  }
+
+  /** Nota (escala) ou valor medido. Em `measure` o veredito vem da faixa. */
+  function setValue(item: AuditItem, raw: string) {
+    const parsed = Number(raw.replace(',', '.'));
+    const value = raw.trim() && Number.isFinite(parsed) ? parsed : undefined;
+    setResponses((prev) => {
+      const existing = prev.find((r) => r.itemId === item.id);
+      const derived =
+        answerTypeOf(item) === 'measure'
+          ? resultForMeasure(item, value)
+          : existing?.result === 'NA'
+            ? undefined
+            : existing?.result;
+      const next = { ...(existing ?? { itemId: item.id }), value, result: derived };
+      return existing
+        ? prev.map((r) => (r.itemId === item.id ? next : r))
+        : [...prev, next];
+    });
+  }
+
+  /** Resposta escrita das perguntas de texto aberto. */
+  function setAnswerText(itemId: string, text: string) {
+    setResponses((prev) => {
+      const existing = prev.find((r) => r.itemId === itemId);
+      if (!existing) return [...prev, { itemId, text }];
+      return prev.map((r) => (r.itemId === itemId ? { ...r, text } : r));
     });
   }
 
@@ -470,7 +520,9 @@ export function AuditDetailPage() {
     // no servidor. Item sem vinculo mantem o comportamento antigo: NC com o
     // texto da pergunta, gravidade derivada do peso e 30 dias.
     const rMap = new Map(responses.map((r) => [r.itemId, r]));
-    const ncItems = items.filter((it) => rMap.get(it.id)?.result === 'NC');
+    // `isNonConforming` cobre também o valor medido fora da faixa: a NC
+    // nasce do número, sem a RT precisar marcar NC num segundo clique.
+    const ncItems = items.filter((it) => isNonConforming(it, rMap.get(it.id)));
     if (ncItems.length > 0) {
       const withTemplate = ncItems.filter((it) => it.nc_template_id);
       const withoutTemplate = ncItems.filter((it) => !it.nc_template_id);
@@ -660,19 +712,17 @@ export function AuditDetailPage() {
 
     // KPIs de conformidade
     const responseMap = new Map(responses.map((r) => [r.itemId, r]));
-    const norm = (s: string) => s.toLowerCase();
+    // Contagem pelo enum, não por texto: a versão anterior testava
+    // 'C'.includes('conforme'), que é sempre falso — o relatório saía com
+    // "Conformes: 0" e jogava os conformes na coluna N/A.
     let conforme = 0;
     let naoConforme = 0;
     let na = 0;
     for (const it of items) {
-      const r = responseMap.get(it.id)?.result;
-      if (!r) continue;
-      const rn = norm(r);
-      if (rn.includes('conforme') && !rn.includes('não') && !rn.includes('nao'))
-        conforme++;
-      else if (rn.includes('não') || rn.includes('nao') || rn.includes('nc'))
-        naoConforme++;
-      else na++;
+      const r = responseMap.get(it.id);
+      if (r?.result === 'NA') na++;
+      else if (isNonConforming(it, r)) naoConforme++;
+      else if (r?.result === 'C') conforme++;
     }
     y = drawKpiRow(
       pdf,
@@ -695,7 +745,7 @@ export function AuditDetailPage() {
         return [
           it.category,
           it.text,
-          r?.result ?? '—',
+          formatAnswer(it, r),
           it.legal_ref ?? '',
           r?.note ?? '',
         ];
@@ -718,13 +768,16 @@ export function AuditDetailPage() {
       alternateRowStyles: { fillColor: [248, 250, 252] },
       columnStyles: {
         0: { cellWidth: 24 },
-        2: { cellWidth: 18, halign: 'center', fontStyle: 'bold' },
+        // Mais larga que antes: a coluna agora carrega valor medido com
+        // unidade e nota da escala, não só a sigla C/NC/NA.
+        2: { cellWidth: 30, halign: 'center', fontStyle: 'bold' },
         3: { cellWidth: 24 },
       },
       didParseCell: (data) => {
         if (data.section === 'body' && data.column.index === 2) {
-          const v = norm(String(data.cell.raw ?? ''));
-          if (v.includes('não') || v.includes('nao') || v === 'nc')
+          const v = String(data.cell.raw ?? '').toLowerCase();
+          // "Não conforme" contém "conforme": testar o negativo primeiro.
+          if (v.includes('não conforme'))
             data.cell.styles.textColor = [...PRINT_RGB.red];
           else if (v.includes('conforme'))
             data.cell.styles.textColor = [...PRINT_RGB.green];
@@ -1100,26 +1153,118 @@ export function AuditDetailPage() {
                         ) : null}
                       </p>
                       <div className="flex shrink-0 flex-wrap gap-1">
-                        {RESULT_OPTIONS.map((opt) => {
-                          const Icon = opt.icon;
-                          const active = r?.result === opt.value;
-                          return (
-                            <button
-                              key={opt.value}
-                              type="button"
-                              disabled={locked}
-                              onClick={() => setResult(it.id, opt.value)}
-                              className={`inline-flex h-11 w-14 items-center justify-center gap-1 rounded-lg border text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
-                                active ? opt.activeClasses : opt.classes
-                              }`}
-                            >
-                              <Icon size={14} />
-                              {opt.label}
-                            </button>
-                          );
-                        })}
+                        {answerTypeOf(it) === 'conformity' ? (
+                          RESULT_OPTIONS.map((opt) => {
+                            const Icon = opt.icon;
+                            const active = r?.result === opt.value;
+                            return (
+                              <button
+                                key={opt.value}
+                                type="button"
+                                disabled={locked}
+                                onClick={() => setResult(it.id, opt.value)}
+                                className={`inline-flex h-11 w-14 items-center justify-center gap-1 rounded-lg border text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                                  active ? opt.activeClasses : opt.classes
+                                }`}
+                              >
+                                <Icon size={14} />
+                                {opt.label}
+                              </button>
+                            );
+                          })
+                        ) : (
+                          /* Nos demais tipos a resposta é o campo abaixo; aqui
+                             fica só o "não se aplica", que zera a pergunta. */
+                          <button
+                            type="button"
+                            disabled={locked}
+                            onClick={() => toggleNA(it.id)}
+                            aria-pressed={r?.result === 'NA'}
+                            className={`inline-flex h-11 w-14 items-center justify-center rounded-lg border text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                              r?.result === 'NA'
+                                ? 'border-neutral-800 bg-neutral-800 text-white dark:border-neutral-200 dark:bg-neutral-200 dark:text-neutral-900'
+                                : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800'
+                            }`}
+                          >
+                            N/A
+                          </button>
+                        )}
                       </div>
                     </div>
+
+                    {/* Resposta por tipo (lib/auditAnswers). Some quando a RT
+                        marca N/A: não faz sentido medir o que não se aplica. */}
+                    {r?.result !== 'NA' && answerTypeOf(it) === 'text' ? (
+                      <textarea
+                        value={r?.text ?? ''}
+                        disabled={locked}
+                        onChange={(e) => setAnswerText(it.id, e.target.value)}
+                        placeholder="Resposta..."
+                        rows={2}
+                        aria-label={`Resposta: ${it.text}`}
+                        className="mb-2 w-full rounded-lg border border-neutral-300 bg-white px-2 py-1 text-sm text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
+                      />
+                    ) : null}
+
+                    {r?.result !== 'NA' && answerTypeOf(it) === 'scale' ? (
+                      <div className="mb-2 flex flex-wrap gap-1">
+                        {Array.from(
+                          { length: scaleMaxOf(it) + 1 },
+                          (_, n) => n,
+                        ).map((n) => (
+                          <button
+                            key={n}
+                            type="button"
+                            disabled={locked}
+                            onClick={() => setValue(it, String(n))}
+                            aria-pressed={r?.value === n}
+                            className={`h-11 w-11 rounded-lg border text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                              r?.value === n
+                                ? 'border-neutral-800 bg-neutral-800 text-white dark:border-neutral-200 dark:bg-neutral-200 dark:text-neutral-900'
+                                : 'border-neutral-300 text-neutral-600 hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800'
+                            }`}
+                          >
+                            {n}
+                          </button>
+                        ))}
+                      </div>
+                    ) : null}
+
+                    {r?.result !== 'NA' && answerTypeOf(it) === 'measure' ? (
+                      <div className="mb-2 flex flex-wrap items-center gap-2">
+                        <input
+                          type="text"
+                          inputMode="decimal"
+                          value={r?.value == null ? '' : String(r.value)}
+                          disabled={locked}
+                          onChange={(e) => setValue(it, e.target.value)}
+                          placeholder="Valor medido"
+                          aria-label={`Valor medido: ${it.text}`}
+                          className="h-11 w-32 rounded-lg border border-neutral-300 bg-white px-2 text-sm text-neutral-900 outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100"
+                        />
+                        {it.unit ? (
+                          <span className="text-sm text-neutral-500 dark:text-neutral-400">
+                            {it.unit}
+                          </span>
+                        ) : null}
+                        {rangeLabel(it) ? (
+                          <span className="text-xs text-neutral-500 dark:text-neutral-400">
+                            Aceitável: {rangeLabel(it)}
+                          </span>
+                        ) : null}
+                        {/* Veredito derivado do número, não de um clique. */}
+                        {resultForMeasure(it, r?.value) === 'C' ? (
+                          <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-700 dark:bg-green-950/50 dark:text-green-400">
+                            Conforme
+                          </span>
+                        ) : null}
+                        {resultForMeasure(it, r?.value) === 'NC' ? (
+                          <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-semibold text-red-700 dark:bg-red-950/50 dark:text-red-400">
+                            Fora da faixa — abre NC
+                          </span>
+                        ) : null}
+                      </div>
+                    ) : null}
                     {/* Observação disponível em qualquer resultado — a RT
                         também registra elogio/ressalva em item conforme. */}
                     {!locked || r?.note ? (

@@ -460,12 +460,32 @@ export type AuditStatus =
 
 export type AuditResult = 'C' | 'NC' | 'NA';
 
+/**
+ * Tipo de resposta de uma pergunta do checklist. Vive no JSONB `items`,
+ * entao nao precisa de migration. Ausente = 'conformity' (todo modelo
+ * criado antes desta feature continua valendo).
+ *
+ *  - conformity: C / NC / NA classico
+ *  - text:       resposta escrita (documental, nao pontua)
+ *  - scale:      nota de 0 a `scale_max` (pontua proporcionalmente)
+ *  - measure:    valor medido com unidade; fora da faixa da RT vira NC
+ */
+export type AuditAnswerType = 'conformity' | 'text' | 'scale' | 'measure';
+
 export interface AuditItem {
   id: string;
   category: string;
   text: string;
   weight: number;
   legal_ref?: string;
+  answer_type?: AuditAnswerType;
+  /** 'scale': nota maxima da escala (padrao 5). */
+  scale_max?: number;
+  /** 'measure': unidade exibida ao lado do campo (C, kg, ppm, mg/L...). */
+  unit?: string;
+  /** 'measure': faixa aceitavel definida pela RT. Fora dela = NC automatica. */
+  min?: number;
+  max?: number;
   /**
    * Plano de acao padrao (migration 0103). Quando o item e reprovado na
    * visita, a NC nasce preenchida a partir deste modelo em vez de virar
@@ -476,9 +496,18 @@ export interface AuditItem {
 
 export interface AuditResponse {
   itemId: string;
-  result: AuditResult;
+  /**
+   * Veredito do item. Opcional de proposito: pergunta de texto nao tem
+   * veredito, e item ainda nao respondido nao pode fingir um (marcar 'NA'
+   * o tiraria do denominador do score e inflaria a nota).
+   */
+  result?: AuditResult;
   note?: string;
   photo_id?: string;
+  /** 'scale' e 'measure': valor registrado pela RT. */
+  value?: number;
+  /** 'text': a resposta escrita (diferente de `note`, que e ressalva). */
+  text?: string;
 }
 
 export interface AuditTemplate {
