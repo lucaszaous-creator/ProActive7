@@ -13,7 +13,7 @@ const ptBR = {
     recipes: 'Fichas técnicas',
     documents: 'Documentos',
     audits: 'Visitas técnicas',
-    auditTemplates: 'Modelos de visita',
+    auditTemplates: 'Modelos de vistoria',
     ncTemplates: 'Modelos de NC',
     agenda: 'Agenda',
     nonConformities: 'Não-conformidades',

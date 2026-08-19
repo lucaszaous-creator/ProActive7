@@ -283,7 +283,7 @@ export function SistemaPage() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                to="/login"
+                to="/acessar"
                 className="inline-flex items-center gap-2 rounded-full bg-[#171717] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] transition hover:-translate-y-0.5 hover:bg-[#333333]"
               >
                 Acessar sistema <ArrowRight className="h-4 w-4" />
@@ -636,7 +636,7 @@ export function SistemaPage() {
                     </ul>
 
                     <Link
-                      to="/login"
+                      to="/acessar"
                       className={`mt-7 inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition ${
                         featured
                           ? 'bg-white text-[#262626] hover:bg-[#e5e5e5]'
@@ -700,7 +700,7 @@ export function SistemaPage() {
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
-                to="/login"
+                to="/acessar"
                 className="inline-flex items-center gap-2 rounded-full bg-[#171717] px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] transition hover:-translate-y-0.5 hover:bg-[#333333]"
               >
                 Acessar sistema <ArrowRight className="h-4 w-4" />

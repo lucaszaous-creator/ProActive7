@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { RouteFade } from './RouteFade';
 import {
@@ -8,6 +8,9 @@ import {
   Instagram,
   MessageCircle,
   ArrowRight,
+  ChevronDown,
+  Printer,
+  Stethoscope,
 } from 'lucide-react';
 
 interface NavItem {
@@ -90,13 +93,7 @@ function PublicNav({ onOpenMenu }: { onOpenMenu: () => void }) {
         {/* Right cluster: socials + login CTA */}
         <div className="flex items-center gap-1.5">
           <SocialIcons className="hidden md:flex" />
-          <Link
-            to="/login"
-            className="ml-1 hidden items-center gap-1.5 rounded-full bg-[#262626] px-4 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-[#404040] md:inline-flex"
-          >
-            Acessar sistema
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
+          <AccessSystemMenu />
           <button
             onClick={onOpenMenu}
             aria-label="Abrir menu"
@@ -107,6 +104,85 @@ function PublicNav({ onOpenMenu }: { onOpenMenu: () => void }) {
         </div>
       </div>
     </header>
+  );
+}
+
+/* Dropdown "Acessar sistema" (pedido da Ariane): ao abrir, a pessoa
+ * escolhe o portal — "Sou cliente" (programa de etiquetas) ou "Sou
+ * nutricionista" (checklists/rotinas). Só desktop; no mobile o drawer
+ * mostra as duas opções direto. */
+function AccessSystemMenu() {
+  const [open, setOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Sem role="menu": as opções são links comuns (Tab navega entre eles);
+  // Escape fecha e devolve o foco ao botão.
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === 'Escape' && open) {
+      setOpen(false);
+      buttonRef.current?.focus();
+    }
+  }
+
+  return (
+    <div className="relative ml-1 hidden md:block" onKeyDown={handleKeyDown}>
+      {open && (
+        <div
+          className="fixed inset-0 z-40"
+          aria-hidden
+          onClick={() => setOpen(false)}
+        />
+      )}
+      <button
+        ref={buttonRef}
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="inline-flex items-center gap-1.5 rounded-full bg-[#262626] px-4 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-[#404040]"
+      >
+        Acessar sistema
+        <ChevronDown
+          className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-[#e5e5e5] bg-white p-1.5 shadow-[0_24px_60px_-30px_rgba(0,0,0,0.35)]">
+          <Link
+            to="/login/cliente"
+            onClick={() => setOpen(false)}
+            className="flex items-start gap-3 rounded-xl px-3 py-2.5 transition hover:bg-[#f0f0ee]"
+          >
+            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#f0f0ee] text-[#262626]">
+              <Printer className="h-4 w-4" />
+            </span>
+            <span>
+              <span className="block text-sm font-medium text-[#171717]">
+                Sou cliente
+              </span>
+              <span className="block text-xs text-[#171717]/55">
+                Programa de etiquetas da empresa
+              </span>
+            </span>
+          </Link>
+          <Link
+            to="/login/nutricionista"
+            onClick={() => setOpen(false)}
+            className="flex items-start gap-3 rounded-xl px-3 py-2.5 transition hover:bg-[#f0f0ee]"
+          >
+            <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#262626] text-white">
+              <Stethoscope className="h-4 w-4" />
+            </span>
+            <span>
+              <span className="block text-sm font-medium text-[#171717]">
+                Sou nutricionista
+              </span>
+              <span className="block text-xs text-[#171717]/55">
+                Checklists, rotinas e auditorias
+              </span>
+            </span>
+          </Link>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -164,12 +240,25 @@ function MobileDrawer({
               {it.label}
             </NavLink>
           ))}
-          <Link
-            to="/login"
-            onClick={onClose}
-            className="mt-3 inline-flex items-center justify-center gap-1.5 rounded-full bg-white px-4 py-3 text-sm font-medium text-[#262626] shadow-sm transition hover:bg-[#e5e5e5]"
-          >
+          <p className="mt-4 px-4 text-[11px] uppercase tracking-wider text-white/55">
             Acessar sistema
+          </p>
+          <Link
+            to="/login/cliente"
+            onClick={onClose}
+            className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-full bg-white px-4 py-3 text-sm font-medium text-[#262626] shadow-sm transition hover:bg-[#e5e5e5]"
+          >
+            <Printer className="h-4 w-4" />
+            Sou cliente
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+          <Link
+            to="/login/nutricionista"
+            onClick={onClose}
+            className="mt-2 inline-flex items-center justify-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-white/20"
+          >
+            <Stethoscope className="h-4 w-4" />
+            Sou nutricionista
             <ArrowRight className="h-4 w-4" />
           </Link>
         </nav>
@@ -263,7 +352,7 @@ function PublicFooter() {
               </li>
             ))}
             <li>
-              <Link to="/login" className="hover:text-[#262626]">
+              <Link to="/acessar" className="hover:text-[#262626]">
                 Acesso ao sistema
               </Link>
             </li>

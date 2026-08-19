@@ -6,6 +6,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { FullPageSpinner } from './components/ui/Spinner';
 import { LoginPage } from './pages/LoginPage';
 import { LandingPage } from './pages/LandingPage';
+import { AccessPortalPage } from './pages/AccessPortalPage';
 
 const PerfilPage = lazy(() =>
   import('./pages/public/PerfilPage').then((m) => ({ default: m.PerfilPage })),
@@ -294,7 +295,13 @@ export default function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Route>
 
+        {/* Split de portais (pedido da Ariane): /acessar escolhe entre
+            "Sou cliente" (programa de etiquetas) e "Sou nutricionista"
+            (checklists/rotinas). /login sem portal segue como fallback
+            genérico para bookmarks e para o redirect do ProtectedRoute. */}
+        <Route path="/acessar" element={<AccessPortalPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/login/:portal" element={<LoginPage />} />
         <Route path="/redefinir-senha" element={<ResetPasswordPage />} />
         <Route path="/etiqueta/:id" element={<PublicLabelPage />} />
         <Route path="/selo/:id" element={<PublicSealPage />} />

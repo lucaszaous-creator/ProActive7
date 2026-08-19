@@ -46,8 +46,10 @@ import {
   LucideIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
 import { useAuth } from '@/context/AuthContext';
 import { moduleForPath } from '@/lib/modules';
+import { takeLoginPortal } from '@/lib/portals';
 import { SubscriptionGate } from './SubscriptionGate';
 import { RouteFade } from './RouteFade';
 import { AnnouncementBanner } from './AnnouncementBanner';
@@ -758,6 +760,22 @@ export function Layout() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const tree = useActiveTree();
   const location = useLocation();
+
+  // Aviso de "portal trocado" do login (/login/cliente × /login/nutricionista):
+  // o LoginPage desmonta antes do profile carregar, então quem compara o
+  // portal escolhido com o role real é o Layout — que só monta logado.
+  useEffect(() => {
+    if (!profile) return;
+    const portal = takeLoginPortal();
+    if (!portal || isPlatformAdmin) return;
+    if (portal === 'cliente' && isNutritionist) {
+      toast.info(
+        'Seu acesso é de nutricionista — abrindo o sistema da nutricionista.',
+      );
+    } else if (portal === 'nutricionista' && !isNutritionist) {
+      toast.info('Seu acesso é da empresa — abrindo o programa de etiquetas.');
+    }
+  }, [profile, isNutritionist, isPlatformAdmin]);
 
   function closeMobile() {
     setMobileOpen(false);

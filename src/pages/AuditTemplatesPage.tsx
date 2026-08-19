@@ -4,6 +4,9 @@ import { toast } from 'sonner';
 import {
   ArrowLeft,
   BookOpen,
+  ChevronDown,
+  ChevronRight,
+  ChevronUp,
   Copy,
   EyeOff,
   Eye,
@@ -19,10 +22,19 @@ import { useAuth } from '@/context/AuthContext';
 import { useCompanyScope } from '@/lib/useCompanyScope';
 import {
   auditTemplateScope,
-  type AuditItem,
   type AuditTemplate,
   type NcTemplate,
 } from '@/lib/types';
+import {
+  emptyItem,
+  emptySection,
+  findDuplicateSectionName,
+  itemsToSections,
+  moveInArray,
+  sectionsToItems,
+  type DraftItem,
+  type DraftSection,
+} from '@/lib/auditTemplateSections';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -66,39 +78,8 @@ const WEIGHTS = [
 
 type ScopeChoice = 'organization' | 'company';
 
-interface DraftItem {
-  id: string;
-  category: string;
-  text: string;
-  weight: number;
-  legal_ref: string;
-  ncTemplateId: string;
-}
-
-function toDraft(item: AuditItem): DraftItem {
-  return {
-    id: item.id,
-    category: item.category ?? '',
-    text: item.text ?? '',
-    weight: item.weight ?? 1,
-    legal_ref: item.legal_ref ?? '',
-    ncTemplateId: item.nc_template_id ?? '',
-  };
-}
-
-function emptyDraft(category = ''): DraftItem {
-  return {
-    id: crypto.randomUUID(),
-    category,
-    text: '',
-    weight: 1,
-    legal_ref: '',
-    ncTemplateId: '',
-  };
-}
-
 export function AuditTemplatesPage() {
-  usePageTitle('Modelos de visita');
+  usePageTitle('Modelos de vistoria');
   const { isPlatformAdmin } = useAuth();
   const { companies, companyId } = useCompanyScope();
 
@@ -114,7 +95,7 @@ export function AuditTemplatesPage() {
   const [name, setName] = useState('');
   const [scope, setScope] = useState<ScopeChoice>('organization');
   const [scopeCompanyId, setScopeCompanyId] = useState('');
-  const [items, setItems] = useState<DraftItem[]>([emptyDraft()]);
+  const [sections, setSections] = useState<DraftSection[]>([emptySection()]);
 
   const [deleting, setDeleting] = useState<AuditTemplate | null>(null);
   const [deleteBusy, setDeleteBusy] = useState(false);
@@ -177,7 +158,7 @@ export function AuditTemplatesPage() {
     setName('');
     setScope('organization');
     setScopeCompanyId(companyId || companies[0]?.id || '');
-    setItems([emptyDraft()]);
+    setSections([emptySection()]);
     setModalOpen(true);
   }
 
@@ -186,9 +167,7 @@ export function AuditTemplatesPage() {
     setName(t.name);
     setScope(t.company_id ? 'company' : 'organization');
     setScopeCompanyId(t.company_id ?? companies[0]?.id ?? '');
-    setItems(
-      (t.items ?? []).length > 0 ? t.items.map(toDraft) : [emptyDraft()],
-    );
+    setSections(itemsToSections(t.items ?? []));
     setModalOpen(true);
   }
 
@@ -249,18 +228,18 @@ export function AuditTemplatesPage() {
       toast.error('Dê um nome ao modelo.');
       return;
     }
-    const cleaned: AuditItem[] = items
-      .filter((i) => i.text.trim())
-      .map((i) => ({
-        id: i.id,
-        category: i.category.trim() || 'Geral',
-        text: i.text.trim(),
-        weight: i.weight,
-        ...(i.legal_ref.trim() ? { legal_ref: i.legal_ref.trim() } : {}),
-        ...(i.ncTemplateId ? { nc_template_id: i.ncTemplateId } : {}),
-      }));
+    const cleaned = sectionsToItems(sections);
     if (cleaned.length === 0) {
       toast.error('Adicione ao menos uma pergunta.');
+      return;
+    }
+    // Duas seções com o mesmo nome (ou ambas sem nome → "Geral") viram uma
+    // só ao salvar — bloqueia para não juntar as perguntas em silêncio.
+    const duplicated = findDuplicateSectionName(sections);
+    if (duplicated) {
+      toast.error(
+        `Há mais de uma seção chamada "${duplicated}" — renomeie uma delas para não juntar as perguntas.`,
+      );
       return;
     }
     if (scope === 'company' && !scopeCompanyId) {
@@ -317,6 +296,110 @@ export function AuditTemplatesPage() {
     void load();
   }
 
+  /* ------------------------------------------------------------------
+   * Operações do editor modular (tudo em rascunho — só persiste no Salvar)
+   * ---------------------------------------------------------------- */
+
+  function patchSection(key: string, patch: Partial<DraftSection>) {
+    setSections((prev) =>
+      prev.map((s) => (s.key === key ? { ...s, ...patch } : s)),
+    );
+  }
+
+  function patchItem(
+    sectionKey: string,
+    itemId: string,
+    patch: Partial<DraftItem>,
+  ) {
+    setSections((prev) =>
+      prev.map((s) =>
+        s.key === sectionKey
+          ? {
+              ...s,
+              items: s.items.map((i) =>
+                i.id === itemId ? { ...i, ...patch } : i,
+              ),
+            }
+          : s,
+      ),
+    );
+  }
+
+  function moveSection(index: number, delta: -1 | 1) {
+    setSections((prev) => moveInArray(prev, index, index + delta));
+  }
+
+  function duplicateSection(index: number) {
+    setSections((prev) => {
+      const src = prev[index];
+      // IDs novos: o id do item é a chave da resposta na visita — uma
+      // pergunta duplicada precisa contar como pergunta nova.
+      const copy: DraftSection = {
+        key: crypto.randomUUID(),
+        name: src.name ? `${src.name} (cópia)` : '',
+        collapsed: false,
+        items: src.items.map((i) => ({ ...i, id: crypto.randomUUID() })),
+      };
+      const next = [...prev];
+      next.splice(index + 1, 0, copy);
+      return next;
+    });
+  }
+
+  function removeSection(key: string) {
+    setSections((prev) => {
+      const next = prev.filter((s) => s.key !== key);
+      return next.length > 0 ? next : [emptySection()];
+    });
+  }
+
+  function moveItem(sectionKey: string, index: number, delta: -1 | 1) {
+    setSections((prev) =>
+      prev.map((s) =>
+        s.key === sectionKey
+          ? { ...s, items: moveInArray(s.items, index, index + delta) }
+          : s,
+      ),
+    );
+  }
+
+  function addItem(sectionKey: string) {
+    setSections((prev) =>
+      prev.map((s) =>
+        s.key === sectionKey ? { ...s, items: [...s.items, emptyItem()] } : s,
+      ),
+    );
+  }
+
+  function removeItem(sectionKey: string, itemId: string) {
+    setSections((prev) =>
+      prev.map((s) =>
+        s.key === sectionKey
+          ? {
+              ...s,
+              items:
+                s.items.length > 1
+                  ? s.items.filter((i) => i.id !== itemId)
+                  : s.items,
+            }
+          : s,
+      ),
+    );
+  }
+
+  // Conta só o que vai ser persistido: perguntas com texto e seções que
+  // tenham ao menos uma pergunta válida (as vazias caem no salvar).
+  const { totalQuestions, validSections } = useMemo(() => {
+    let questions = 0;
+    let secs = 0;
+    for (const s of sections) {
+      const valid = s.items.filter((i) => i.text.trim()).length;
+      questions += valid;
+      if (valid > 0) secs += 1;
+    }
+    return { totalQuestions: questions, validSections: secs };
+  }, [sections]);
+
   function renderRow(t: AuditTemplate) {
     const kind = auditTemplateScope(t);
     const busy = busyId === t.id;
@@ -352,7 +435,7 @@ export function AuditTemplatesPage() {
           </p>
           <p className="mt-0.5 text-xs text-neutral-500 dark:text-neutral-400">
             {(t.items ?? []).length} perguntas · {categories.size}{' '}
-            {categories.size === 1 ? 'categoria' : 'categorias'}
+            {categories.size === 1 ? 'seção' : 'seções'}
           </p>
         </div>
         <div className="flex shrink-0 flex-wrap gap-1">
@@ -418,8 +501,8 @@ export function AuditTemplatesPage() {
       </Link>
 
       <PageHeader
-        title="Modelos de visita"
-        subtitle="O roteiro que a equipe segue na inspeção: categorias, perguntas e peso de cada item. Um modelo da organização vale para todas as empresas."
+        title="Modelos de vistoria"
+        subtitle="Monte o checklist da sua vistoria em seções: renomeie, reordene e duplique módulos conforme a sua rotina. Um modelo da organização vale para todas as empresas."
         actions={
           <>
             <Button variant="secondary" onClick={() => setLibraryOpen(true)}>
@@ -447,7 +530,7 @@ export function AuditTemplatesPage() {
       ) : templates.length === 0 ? (
         <EmptyState
           icon={ShieldCheck}
-          title="Nenhum modelo de visita ainda"
+          title="Nenhum modelo de vistoria ainda"
           description="Crie o roteiro da sua inspeção do zero ou comece a partir de um modelo oficial da biblioteca."
           action={
             <Button onClick={openCreate}>
@@ -494,9 +577,15 @@ export function AuditTemplatesPage() {
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editing ? 'Editar modelo' : 'Novo modelo de visita'}
+        title={editing ? 'Editar modelo' : 'Novo modelo de vistoria'}
+        wide
         footer={
           <>
+            <span className="mr-auto self-center text-xs text-neutral-500 dark:text-neutral-400">
+              {totalQuestions}{' '}
+              {totalQuestions === 1 ? 'pergunta válida' : 'perguntas válidas'}{' '}
+              em {validSections} {validSections === 1 ? 'seção' : 'seções'}
+            </span>
             <Button
               variant="secondary"
               onClick={() => setModalOpen(false)}
@@ -516,7 +605,7 @@ export function AuditTemplatesPage() {
             label="Nome do modelo"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Ex.: Visita técnica mensal — RDC 216"
+            placeholder="Ex.: Vistoria mensal — RDC 216"
           />
 
           {/* Modelo oficial da plataforma não tem dono — o escopo dele é
@@ -558,7 +647,7 @@ export function AuditTemplatesPage() {
           <div>
             <div className="mb-2 flex items-baseline justify-between gap-2">
               <p className="text-sm font-medium text-neutral-700 dark:text-neutral-200">
-                Perguntas
+                Seções do checklist
               </p>
               <p className="text-xs text-neutral-500 dark:text-neutral-400">
                 O peso define o score e a gravidade da NC.
@@ -572,133 +661,211 @@ export function AuditTemplatesPage() {
             </datalist>
 
             <div className="flex flex-col gap-3">
-              {items.map((it, i) => (
+              {sections.map((section, si) => (
                 <div
-                  key={it.id}
-                  className="rounded-lg border border-neutral-200 p-3 dark:border-neutral-700"
+                  key={section.key}
+                  className="overflow-hidden rounded-xl border border-neutral-200 dark:border-neutral-700"
                 >
-                  <div className="mb-2 flex items-center justify-between gap-2">
-                    <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
-                      Item {i + 1}
-                    </span>
+                  {/* Cabeçalho da seção: nome + controles do módulo */}
+                  <div className="flex items-center gap-1.5 border-b border-neutral-200 bg-neutral-50 px-2 py-2 dark:border-neutral-700 dark:bg-neutral-800/60">
                     <button
                       type="button"
                       onClick={() =>
-                        setItems((prev) => prev.filter((_, idx) => idx !== i))
+                        patchSection(section.key, {
+                          collapsed: !section.collapsed,
+                        })
                       }
-                      disabled={items.length === 1}
-                      aria-label="Remover pergunta"
-                      className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 disabled:opacity-30 dark:hover:bg-red-950/40"
+                      aria-label={
+                        section.collapsed ? 'Expandir seção' : 'Recolher seção'
+                      }
+                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-700"
                     >
-                      <Trash2 size={15} />
+                      {section.collapsed ? (
+                        <ChevronRight size={15} />
+                      ) : (
+                        <ChevronDown size={15} />
+                      )}
                     </button>
-                  </div>
-                  <div className="flex flex-col gap-2">
                     <input
                       type="text"
                       list="tpl-categories"
-                      value={it.category}
+                      value={section.name}
                       onChange={(e) =>
-                        setItems((prev) =>
-                          prev.map((p, idx) =>
-                            idx === i ? { ...p, category: e.target.value } : p,
-                          ),
-                        )
+                        patchSection(section.key, { name: e.target.value })
                       }
-                      placeholder="Categoria (ex.: Manipuladores)"
-                      className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-neutral-800"
+                      placeholder={`Seção ${si + 1} (ex.: Manipuladores)`}
+                      className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1.5 text-sm font-medium outline-none focus:border-neutral-400 focus:bg-white dark:focus:bg-neutral-900"
                     />
-                    <textarea
-                      value={it.text}
-                      onChange={(e) =>
-                        setItems((prev) =>
-                          prev.map((p, idx) =>
-                            idx === i ? { ...p, text: e.target.value } : p,
-                          ),
-                        )
-                      }
-                      rows={2}
-                      placeholder="O que será verificado (ex.: Manipuladores usam uniforme completo e limpo)"
-                      className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-neutral-800"
-                    />
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      <select
-                        value={it.weight}
-                        onChange={(e) =>
-                          setItems((prev) =>
-                            prev.map((p, idx) =>
-                              idx === i
-                                ? { ...p, weight: Number(e.target.value) }
-                                : p,
-                            ),
-                          )
-                        }
-                        className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
-                      >
-                        {WEIGHTS.map((w) => (
-                          <option key={w.value} value={w.value}>
-                            Peso {w.label}
-                          </option>
-                        ))}
-                      </select>
-                      <input
-                        type="text"
-                        value={it.legal_ref}
-                        onChange={(e) =>
-                          setItems((prev) =>
-                            prev.map((p, idx) =>
-                              idx === i
-                                ? { ...p, legal_ref: e.target.value }
-                                : p,
-                            ),
-                          )
-                        }
-                        placeholder="Base legal (ex.: RDC 216 item 4.6.1)"
-                        className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
-                      />
-                    </div>
-
-                    {/* Plano de ação padrão: quando este item for reprovado
-                        na visita, a NC nasce preenchida com este modelo em
-                        vez de virar só o texto da pergunta. */}
-                    <select
-                      value={it.ncTemplateId}
-                      onChange={(e) =>
-                        setItems((prev) =>
-                          prev.map((p, idx) =>
-                            idx === i
-                              ? { ...p, ncTemplateId: e.target.value }
-                              : p,
-                          ),
-                        )
-                      }
-                      className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                    <span className="hidden shrink-0 text-[11px] text-neutral-400 sm:inline dark:text-neutral-500">
+                      {section.items.length}{' '}
+                      {section.items.length === 1 ? 'pergunta' : 'perguntas'}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => moveSection(si, -1)}
+                      disabled={si === 0}
+                      aria-label="Mover seção para cima"
+                      title="Mover seção para cima"
+                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-700"
                     >
-                      <option value="">
-                        Se reprovado: abrir NC só com o texto da pergunta
-                      </option>
-                      {ncTemplates.map((n) => (
-                        <option key={n.id} value={n.id}>
-                          Se reprovado: {n.name} (prazo {n.default_due_days}d)
-                        </option>
-                      ))}
-                    </select>
+                      <ChevronUp size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveSection(si, 1)}
+                      disabled={si === sections.length - 1}
+                      aria-label="Mover seção para baixo"
+                      title="Mover seção para baixo"
+                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-700"
+                    >
+                      <ChevronDown size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => duplicateSection(si)}
+                      aria-label="Duplicar seção"
+                      title="Duplicar seção (perguntas viram cópias novas)"
+                      className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-200 dark:text-neutral-400 dark:hover:bg-neutral-700"
+                    >
+                      <Copy size={14} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeSection(section.key)}
+                      aria-label="Excluir seção"
+                      title="Excluir seção e suas perguntas"
+                      className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/40"
+                    >
+                      <Trash2 size={14} />
+                    </button>
                   </div>
+
+                  {!section.collapsed ? (
+                    <div className="flex flex-col gap-3 p-3">
+                      {section.items.map((it, ii) => (
+                        <div
+                          key={it.id}
+                          className="rounded-lg border border-neutral-200 p-3 dark:border-neutral-700"
+                        >
+                          <div className="mb-2 flex items-center justify-between gap-2">
+                            <span className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+                              Pergunta {ii + 1}
+                            </span>
+                            <div className="flex gap-0.5">
+                              <button
+                                type="button"
+                                onClick={() => moveItem(section.key, ii, -1)}
+                                disabled={ii === 0}
+                                aria-label="Mover pergunta para cima"
+                                className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                              >
+                                <ChevronUp size={14} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => moveItem(section.key, ii, 1)}
+                                disabled={ii === section.items.length - 1}
+                                aria-label="Mover pergunta para baixo"
+                                className="rounded-lg p-1.5 text-neutral-500 hover:bg-neutral-100 disabled:opacity-30 dark:text-neutral-400 dark:hover:bg-neutral-800"
+                              >
+                                <ChevronDown size={14} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => removeItem(section.key, it.id)}
+                                disabled={section.items.length === 1}
+                                aria-label="Remover pergunta"
+                                className="rounded-lg p-1.5 text-red-500 hover:bg-red-50 disabled:opacity-30 dark:hover:bg-red-950/40"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-2">
+                            <textarea
+                              value={it.text}
+                              onChange={(e) =>
+                                patchItem(section.key, it.id, {
+                                  text: e.target.value,
+                                })
+                              }
+                              rows={2}
+                              placeholder="O que será verificado (ex.: Manipuladores usam uniforme completo e limpo)"
+                              className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 focus:ring-2 focus:ring-neutral-800/20 dark:border-neutral-700 dark:bg-neutral-800"
+                            />
+                            <div className="grid gap-2 sm:grid-cols-2">
+                              <select
+                                value={it.weight}
+                                onChange={(e) =>
+                                  patchItem(section.key, it.id, {
+                                    weight: Number(e.target.value),
+                                  })
+                                }
+                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                              >
+                                {WEIGHTS.map((w) => (
+                                  <option key={w.value} value={w.value}>
+                                    Peso {w.label}
+                                  </option>
+                                ))}
+                              </select>
+                              <input
+                                type="text"
+                                value={it.legal_ref}
+                                onChange={(e) =>
+                                  patchItem(section.key, it.id, {
+                                    legal_ref: e.target.value,
+                                  })
+                                }
+                                placeholder="Base legal (ex.: RDC 216 item 4.6.1)"
+                                className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                              />
+                            </div>
+
+                            {/* Plano de ação padrão: quando este item for
+                                reprovado na visita, a NC nasce preenchida com
+                                este modelo em vez de só o texto da pergunta. */}
+                            <select
+                              value={it.ncTemplateId}
+                              onChange={(e) =>
+                                patchItem(section.key, it.id, {
+                                  ncTemplateId: e.target.value,
+                                })
+                              }
+                              className="rounded-lg border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-800 dark:border-neutral-700 dark:bg-neutral-800"
+                            >
+                              <option value="">
+                                Se reprovado: abrir NC só com o texto da
+                                pergunta
+                              </option>
+                              {ncTemplates.map((n) => (
+                                <option key={n.id} value={n.id}>
+                                  Se reprovado: {n.name} (prazo{' '}
+                                  {n.default_due_days}d)
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => addItem(section.key)}
+                        className="self-start rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200"
+                      >
+                        + Adicionar pergunta
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               ))}
+
               <button
                 type="button"
-                onClick={() =>
-                  setItems((prev) => [
-                    ...prev,
-                    // Herda a categoria do último item: montar uma seção
-                    // inteira sem redigitar o nome dela a cada pergunta.
-                    emptyDraft(prev[prev.length - 1]?.category ?? ''),
-                  ])
-                }
-                className="self-start rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200"
+                onClick={() => setSections((prev) => [...prev, emptySection()])}
+                className="self-start rounded-lg border border-dashed border-neutral-300 px-3 py-2 text-xs font-medium text-neutral-600 hover:border-neutral-500 hover:bg-neutral-50 dark:border-neutral-600 dark:text-neutral-300 dark:hover:bg-neutral-800"
               >
-                + Adicionar pergunta
+                + Adicionar seção
               </button>
             </div>
           </div>
