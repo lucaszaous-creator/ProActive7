@@ -56,7 +56,6 @@ import { AnnouncementBanner } from './AnnouncementBanner';
 import { OfflineIndicator } from './OfflineIndicator';
 import { PwaInstallButton } from './PwaInstallButton';
 import { PushToggle } from './PushToggle';
-import { ThemeToggle } from './ThemeToggle';
 import { LangToggle } from './LangToggle';
 
 type NavItemDef = {
@@ -474,12 +473,14 @@ const NAV_NUTRITIONIST: NavNode[] = [
     // O que a RT acompanha entre uma visita e outra. Funcionários entra
     // aqui (e não em avaliação) porque o que ela acompanha é ASO e
     // treinamento vencendo. Fotos a pedido da RT: ela baixa as evidências.
+    // Fichas técnicas saiu do menu (decisão da Ariane): a rota /fichas
+    // segue acessível por link direto, como produtos e grupos depois do
+    // split de portais. É lá que mora a tabela nutricional.
     children: [
       ITEM.funcionarios,
       ITEM.temperatura,
       ITEM.pragas,
       ITEM.documentos,
-      ITEM.fichas,
       ITEM.fotos,
     ],
   },
@@ -764,7 +765,7 @@ export function Layout() {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-neutral-200 bg-white transition-transform dark:border-white/10 dark:bg-neutral-950 lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col border-r border-neutral-200 bg-white pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] transition-transform lg:static lg:translate-x-0 lg:pt-0 ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -827,7 +828,6 @@ export function Layout() {
             </div>
           </div>
           <div className="space-y-1">
-            <ThemeToggle />
             <LangToggle />
             <PushToggle />
             <PwaInstallButton />
@@ -849,7 +849,10 @@ export function Layout() {
           aria-hidden
           className="pointer-events-none absolute inset-x-0 top-0 hidden h-72 bg-[radial-gradient(640px_220px_at_50%_-60px,rgba(255,255,255,0.07),transparent_70%)] dark:block"
         />
-        <header className="sticky top-0 z-20 flex w-full items-center gap-3 border-b border-neutral-200 bg-white/90 px-4 py-3 backdrop-blur dark:border-white/10 dark:bg-neutral-950/90 lg:hidden">
+        {/* pt calculado em vez de py-3: no iPhone instalado o cabeçalho
+            precisa somar a altura do notch, senão o botão do menu fica
+            embaixo do relógio do sistema. */}
+        <header className="sticky top-0 z-20 flex w-full items-center gap-3 border-b border-neutral-200 bg-white/90 px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] backdrop-blur lg:hidden">
           <button
             onClick={() => setMobileOpen(true)}
             aria-label={t('layout.openMenu')}
@@ -869,7 +872,9 @@ export function Layout() {
         {/* A impressao agora e' feita pelo relay PowerShell instalado no PC
             (modo invisivel). O navegador so enfileira em print_jobs. */}
 
-        <main className="w-full min-w-0 flex-1 overflow-x-hidden p-4 sm:p-6">
+        {/* pb somado à barra de gestos do iPhone: sem isso o último botão
+            da página fica atrás dela e não dá para clicar. */}
+        <main className="w-full min-w-0 flex-1 overflow-x-hidden px-4 pt-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-6 sm:pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
           <div className="mx-auto w-full max-w-7xl">
             <SubscriptionGate>
               <RouteFade>
