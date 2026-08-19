@@ -33,6 +33,7 @@ import {
   type AnswerDraft,
 } from '@/lib/auditAnswers';
 import { isNetworkError, queueWrite } from '@/lib/offlineSync';
+import { cacheNotice, readThrough } from '@/lib/offlineCache';
 import { logFeatureEvent } from '@/lib/platformMetrics';
 import {
   CHECKLIST_FREQUENCY_LABELS,
@@ -119,6 +120,8 @@ export function ChecklistsPage() {
   const [templates, setTemplates] = useState<ChecklistTemplate[]>([]);
   const [recentRuns, setRecentRuns] = useState<RunWithTemplate[]>([]);
   const [loading, setLoading] = useState(true);
+  /** Aviso de "isto é uma cópia local" quando a rede não respondeu. */
+  const [offlineNotice, setOfflineNotice] = useState<string | null>(null);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<ChecklistTemplate | null>(null);
@@ -158,29 +161,40 @@ export function ChecklistsPage() {
     setLoading(true);
     // Admin enxerga também os globais (sem company_id) na lista
     const tplQuery = supabase.from('checklist_templates').select('*');
-    const tplRes = await (isPlatformAdmin
-      ? tplQuery
-          .or(`company_id.eq.${companyId},is_global.eq.true`)
-          .order('name')
-      : tplQuery.eq('company_id', companyId).order('name'));
+    // Sem os modelos em cache a cozinha abriria o app offline e veria
+    // "nenhum checklist" — que é exatamente quando ela precisa deles.
+    const tplRes = await readThrough<ChecklistTemplate[]>(
+      `checklist_templates:${companyId}:${isPlatformAdmin ? 'admin' : 'own'}`,
+      () =>
+        isPlatformAdmin
+          ? tplQuery
+              .or(`company_id.eq.${companyId},is_global.eq.true`)
+              .order('name')
+          : tplQuery.eq('company_id', companyId).order('name'),
+    );
+    setOfflineNotice(tplRes.fromCache ? cacheNotice(tplRes.cachedAt) : null);
     if (tplRes.error) {
       setLoading(false);
       toast.error('Erro ao carregar templates: ' + tplRes.error.message);
       return;
     }
-    const tpls = (tplRes.data as ChecklistTemplate[] | null) ?? [];
+    const tpls = tplRes.data ?? [];
     setTemplates(tpls);
 
     const tplIds = tpls.map((t) => t.id);
     if (tplIds.length > 0) {
-      const runRes = await supabase
-        .from('checklist_runs')
-        .select('*, checklist_templates(name)')
-        .in('template_id', tplIds)
-        .order('ran_at', { ascending: false })
-        .limit(10);
+      const runRes = await readThrough<RunWithTemplate[]>(
+        `checklist_runs:${companyId}`,
+        () =>
+          supabase
+            .from('checklist_runs')
+            .select('*, checklist_templates(name)')
+            .in('template_id', tplIds)
+            .order('ran_at', { ascending: false })
+            .limit(10),
+      );
       if (!runRes.error) {
-        setRecentRuns((runRes.data as RunWithTemplate[] | null) ?? []);
+        setRecentRuns(runRes.data ?? []);
       }
     } else {
       setRecentRuns([]);
@@ -419,6 +433,12 @@ export function ChecklistsPage() {
           </>
         }
       />
+
+      {offlineNotice ? (
+        <p className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          {offlineNotice}
+        </p>
+      ) : null}
 
       <LibraryBrowser
         open={libraryOpen}

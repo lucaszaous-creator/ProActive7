@@ -40,6 +40,7 @@ import type {
 } from '@/lib/types';
 import { calculateAuditScore, scoresByCategory } from '@/lib/auditScore';
 import { isNetworkError, listPending, queueWrite } from '@/lib/offlineSync';
+import { cacheNotice, readThrough } from '@/lib/offlineCache';
 import {
   answerTypeOf,
   formatAnswer,
@@ -124,6 +125,8 @@ export function AuditDetailPage() {
   const [cancelling, setCancelling] = useState(false);
   /** Quem executou a visita — pode não ser quem está lendo agora. */
   const [auditorName, setAuditorName] = useState<string | null>(null);
+  /** Aviso de "isto é uma cópia local" quando a rede não respondeu. */
+  const [offlineNotice, setOfflineNotice] = useState<string | null>(null);
 
   const sigRef = useRef<SignatureCanvas | null>(null);
   const clientSigRef = useRef<SignatureCanvas | null>(null);
@@ -134,13 +137,24 @@ export function AuditDetailPage() {
     // `auditor` é embed explícito pelo nome da FK: `audits` só referencia
     // `profiles` por auditor_id hoje, mas o padrão do projeto é nomear a
     // constraint para não quebrar se outra FK aparecer.
-    const { data, error } = await supabase
-      .from('audits')
-      .select('*, auditor:profiles!audits_auditor_id_fkey(full_name)')
-      .eq('id', id)
-      .single();
+    // Read-through: com rede busca e guarda; sem rede devolve a última
+    // cópia. É o que permite reabrir a vistoria dentro da câmara fria.
+    const { data, error, fromCache, cachedAt } = await readThrough(
+      `audit:${id}`,
+      () =>
+        supabase
+          .from('audits')
+          .select('*, auditor:profiles!audits_auditor_id_fkey(full_name)')
+          .eq('id', id)
+          .single(),
+    );
+    setOfflineNotice(fromCache ? cacheNotice(cachedAt) : null);
     if (error || !data) {
-      toast.error('Visita nao encontrada.');
+      toast.error(
+        error && !navigator.onLine
+          ? 'Sem conexão e sem cópia desta visita neste aparelho.'
+          : 'Visita nao encontrada.',
+      );
       setLoading(false);
       return;
     }
@@ -189,11 +203,15 @@ export function AuditDetailPage() {
     }
 
     if (a.template_id) {
-      const { data: tpl } = await supabase
-        .from('audit_templates')
-        .select('*')
-        .eq('id', a.template_id)
-        .maybeSingle();
+      const { data: tpl } = await readThrough(
+        `audit_template:${a.template_id}`,
+        () =>
+          supabase
+            .from('audit_templates')
+            .select('*')
+            .eq('id', a.template_id)
+            .maybeSingle(),
+      );
       if (tpl) setTemplate(tpl as AuditTemplate);
     }
     setLoading(false);
@@ -1009,6 +1027,14 @@ export function AuditDetailPage() {
         <ArrowLeft size={14} />
         Voltar
       </Link>
+
+      {/* Diz de onde vieram os dados. Sem isso a RT não tem como saber que
+          está olhando uma cópia de horas atrás. */}
+      {offlineNotice ? (
+        <p className="mb-3 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-900">
+          {offlineNotice}
+        </p>
+      ) : null}
 
       <PageHeader
         title={
