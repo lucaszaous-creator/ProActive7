@@ -30,6 +30,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Modal } from '@/components/ui/Modal';
+import { NutritionPanel } from '@/components/NutritionPanel';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ListSkeleton } from '@/components/ui/Skeleton';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -616,6 +617,10 @@ export function RecipesPage() {
                         </p>
                       </div>
                     ) : null}
+                    {/* Rótulo nutricional calculado a partir dos mesmos
+                        ingredientes (migration 0110). Só monta quando a
+                        ficha está aberta: são consultas por ingrediente. */}
+                    <NutritionPanel recipe={r} />
                   </div>
                 ) : null}
               </Card>

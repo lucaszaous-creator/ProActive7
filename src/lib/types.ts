@@ -285,6 +285,32 @@ export interface RecipeWithItems extends Recipe {
   recipe_items: (RecipeItem & { product: { name: string } | null })[];
 }
 
+/**
+ * Composição por 100 g de parte comestível (migration 0110). Preenchida
+ * pela RT; `source` viaja junto porque rótulo de fornecedor e tabela de
+ * referência não têm o mesmo peso legal.
+ */
+export type NutritionSource = 'taco' | 'rotulo' | 'ibge' | 'usda' | 'manual';
+
+export interface ProductNutrition {
+  product_id: string;
+  energy_kcal: number | null;
+  protein_g: number | null;
+  carb_g: number | null;
+  total_sugars_g: number | null;
+  added_sugars_g: number | null;
+  fat_g: number | null;
+  sat_fat_g: number | null;
+  trans_fat_g: number | null;
+  fiber_g: number | null;
+  sodium_mg: number | null;
+  source: NutritionSource;
+  source_note: string | null;
+  updated_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ChecklistRun {
   id: string;
   template_id: string;
