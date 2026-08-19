@@ -452,6 +452,38 @@ export interface NcTemplate {
   updated_at: string;
 }
 
+/**
+ * Compromisso livre da agenda da consultoria (migration 0108). Visita
+ * tecnica NAO vira agenda_event — continua sendo `audits`; a tela une as
+ * duas fontes na leitura.
+ */
+export type AgendaEventKind =
+  | 'meeting'
+  | 'training'
+  | 'deadline'
+  | 'collection'
+  | 'followup'
+  | 'other';
+
+export interface AgendaEvent {
+  id: string;
+  organization_id: string;
+  company_id: string | null;
+  title: string;
+  description: string | null;
+  kind: AgendaEventKind;
+  starts_at: string;
+  ends_at: string | null;
+  all_day: boolean;
+  /** Dias antes do compromisso para o lembrete. null = sem lembrete. */
+  remind_days_before: number | null;
+  reminded_at: string | null;
+  done_at: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export type AuditStatus =
   | 'scheduled'
   | 'in_progress'

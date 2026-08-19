@@ -2,6 +2,10 @@
 // Identifica etiquetas vencendo nas proximas 24h por empresa e envia
 // um push para cada usuario inscrito da empresa correspondente.
 //
+// Desde a 0108 tambem dispara os LEMBRETES DA AGENDA. Esse bloco fala com
+// pessoa, nao com empresa: o aviso vai para quem criou o compromisso, que
+// e quem tem de aparecer. Por isso ele roda antes e independente do resto.
+//
 // Autorizacao: header x-cron-secret eh comparado contra o valor
 // guardado em supabase_vault (entrada 'cron_secret_expiry'). A
 // validacao roda dentro do banco via RPC verify_cron_secret — o
@@ -51,6 +55,99 @@ Deno.serve(async (req) => {
     vapid.vapid_public,
     vapid.vapid_private,
   );
+
+  // ---------- Lembretes da agenda (migration 0108) ----------
+  // Como o cron e diario, a granularidade do lembrete e o DIA: "3 dias
+  // antes" avisa na primeira execucao daquele dia. Para lembrete por hora
+  // basta agendar o cron de hora em hora — o filtro abaixo continua valendo
+  // porque `reminded_at` da a idempotencia.
+  const ymd = (d: Date) =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
+      d.getDate(),
+    ).padStart(2, '0')}`;
+
+  let agendaSent = 0;
+  const agendaReminded: string[] = [];
+  {
+    // Janela curta: lembrete so existe entre 30 dias antes e o proprio dia.
+    const fromIso = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const toIso = new Date(Date.now() + 31 * 24 * 60 * 60 * 1000).toISOString();
+    const { data: agendaRows } = await admin
+      .from('agenda_events')
+      .select('id, title, starts_at, remind_days_before, created_by')
+      .not('remind_days_before', 'is', null)
+      .is('reminded_at', null)
+      .is('done_at', null)
+      .gte('starts_at', fromIso)
+      .lte('starts_at', toIso);
+
+    const todayYmd = ymd(new Date());
+    const due = ((agendaRows ?? []) as Array<{
+      id: string;
+      title: string;
+      starts_at: string;
+      remind_days_before: number;
+      created_by: string | null;
+    }>).filter((r) => {
+      if (!r.created_by) return false;
+      const d = new Date(r.starts_at);
+      d.setDate(d.getDate() - r.remind_days_before);
+      return ymd(d) <= todayYmd;
+    });
+
+    if (due.length > 0) {
+      const byUser = new Map<string, typeof due>();
+      for (const r of due) {
+        const list = byUser.get(r.created_by!) ?? [];
+        list.push(r);
+        byUser.set(r.created_by!, list);
+      }
+
+      const { data: agendaSubs } = await admin
+        .from('push_subscriptions')
+        .select('endpoint, keys, user_id')
+        .in('user_id', [...byUser.keys()]);
+
+      await Promise.all(
+        ((agendaSubs ?? []) as Array<{
+          endpoint: string;
+          keys: { p256dh: string; auth: string };
+          user_id: string;
+        }>).map(async (sub) => {
+          const list = byUser.get(sub.user_id) ?? [];
+          if (list.length === 0) return;
+          const first = list[0];
+          const body =
+            list.length === 1
+              ? `${first.title} — ${new Date(first.starts_at).toLocaleDateString('pt-BR')}`
+              : `${list.length} compromissos chegando. O proximo: ${first.title}.`;
+          try {
+            await webpush.sendNotification(
+              { endpoint: sub.endpoint, keys: sub.keys },
+              JSON.stringify({
+                title: 'Lembrete da agenda',
+                body,
+                url: '/agenda',
+              }),
+            );
+            agendaSent++;
+          } catch (_e) {
+            // Endpoint morto e limpo no bloco geral mais abaixo.
+          }
+        }),
+      );
+
+      // Marca todos os vencidos, inclusive os de quem nao tem inscricao de
+      // push: senao a mesma linha seria reprocessada todo dia para sempre.
+      agendaReminded.push(...due.map((r) => r.id));
+      if (agendaReminded.length > 0) {
+        await admin
+          .from('agenda_events')
+          .update({ reminded_at: new Date().toISOString() })
+          .in('id', agendaReminded);
+      }
+    }
+  }
 
   const nowIso = new Date().toISOString();
   const in24hIso = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
@@ -159,7 +256,15 @@ Deno.serve(async (req) => {
     asoCountsByCompany.size === 0 &&
     pestCountsByCompany.size === 0
   ) {
-    return ok({ ok: true, sent: 0, message: 'Nada a notificar hoje.' });
+    return ok({
+      ok: true,
+      sent: agendaSent,
+      agenda_reminders: agendaReminded.length,
+      message:
+        agendaSent > 0
+          ? 'Somente lembretes de agenda hoje.'
+          : 'Nada a notificar hoje.',
+    });
   }
 
   const companyIds = [
@@ -294,5 +399,11 @@ Deno.serve(async (req) => {
     await admin.from('push_subscriptions').delete().in('endpoint', expired);
   }
 
-  return ok({ ok: true, sent, failed, removed_expired: expired.length });
+  return ok({
+    ok: true,
+    sent: sent + agendaSent,
+    failed,
+    agenda_reminders: agendaReminded.length,
+    removed_expired: expired.length,
+  });
 });
