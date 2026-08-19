@@ -148,16 +148,6 @@ const ITEM = {
     labelKey: 'nav.reports',
     icon: BarChart3,
   } as NavItemDef,
-  // Alias visual: o mesmo /relatorios é exibido como "Identificação de
-  // alimentos" no menu da nutri (sob Cadastros), porque o conteúdo é o
-  // resumo das etiquetas (produto/categoria/condição) — informação que
-  // a RT usa pra checar consistência do cadastro de produtos.
-  identificacao: {
-    kind: 'item',
-    to: '/relatorios',
-    labelKey: 'nav.foodIdentification',
-    icon: Tag,
-  } as NavItemDef,
   produtos: {
     kind: 'item',
     to: '/produtos',
@@ -483,9 +473,8 @@ const NAV_NUTRITIONIST: NavNode[] = [
     labelKey: 'nav.acompanhamento',
     icon: ClipboardCheck,
     defaultOpen: false,
-    // Saiu "Relatórios" daqui — virou "Identificação de alimentos" sob
-    // Cadastros (pedido da cliente). Fotos foi incluído aqui a pedido da
-    // RT — ela precisa ver/baixar fotos das visitas.
+    // Fotos foi incluído aqui a pedido da RT — ela precisa ver/baixar
+    // fotos das visitas.
     children: [
       ITEM.temperatura,
       ITEM.pragas,
@@ -494,18 +483,11 @@ const NAV_NUTRITIONIST: NavNode[] = [
       ITEM.agenda,
     ],
   },
-  {
-    kind: 'group',
-    labelKey: 'nav.cadastros',
-    icon: Package,
-    defaultOpen: true,
-    children: [
-      ITEM.produtos,
-      ITEM.grupos,
-      ITEM.fornecedores,
-      ITEM.identificacao,
-    ],
-  },
+  // Sem grupo "Cadastros" (decisão da Ariane, split cliente ×
+  // nutricionista): produtos, grupos, fornecedores e identificação de
+  // alimentos alimentam a etiqueta — são o sistema da empresa. As rotas
+  // seguem acessíveis por link direto (a RLS ainda permite a RT editar
+  // prazo de validade quando precisar).
   {
     kind: 'group',
     labelKey: 'nav.administracao',
