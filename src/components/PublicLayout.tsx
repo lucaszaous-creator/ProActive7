@@ -66,7 +66,10 @@ function PublicNav({ onOpenMenu }: { onOpenMenu: () => void }) {
     }`;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[#e5e5e5] bg-[#fafafa]/92 backdrop-blur">
+    /* Instalado no iPhone, o site ocupa a tela inteira (viewport-fit=cover):
+       sem somar a altura do notch aqui, a marca e o botão do menu ficavam
+       DEBAIXO do relógio do sistema e não dava para tocar neles. */
+    <header className="sticky top-0 z-30 border-b border-[#e5e5e5] bg-[#fafafa]/92 pt-[env(safe-area-inset-top)] backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3.5">
         <Link to="/" className="flex shrink-0 items-center gap-2.5">
           <img
@@ -201,7 +204,7 @@ function MobileDrawer({
         onClick={onClose}
       />
       <aside
-        className="fixed inset-y-0 right-0 z-50 flex w-[82%] max-w-xs flex-col bg-[#262626] text-white shadow-2xl lg:hidden"
+        className="fixed inset-y-0 right-0 z-50 flex w-[82%] max-w-xs flex-col bg-[#262626] pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] text-white shadow-2xl lg:hidden"
         role="dialog"
         aria-modal="true"
       >
