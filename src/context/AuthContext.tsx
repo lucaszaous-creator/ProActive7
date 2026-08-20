@@ -11,6 +11,7 @@ import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
 import { isNetworkError } from '@/lib/offlineSync';
 import { resetCompanyScope } from '@/lib/companyScopeStore';
+import { clearReadCache } from '@/lib/offlineQueue';
 import type { OrgSubscription, Profile } from '@/lib/types';
 
 /**
@@ -288,6 +289,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // saiu, nem cair na empresa que a pessoa anterior estava vendo.
       clearProfileCache();
       resetCompanyScope();
+      // Cache de leitura é cópia do servidor: apagar não perde nada e
+      // evita que a próxima pessoa no mesmo aparelho veja a visita desta.
+      // A fila de escrita NÃO é apagada — é trabalho que ainda não subiu,
+      // e ela já fica carimbada com o dono (ver lib/offlineQueue).
+      void clearReadCache();
       await supabase.auth.signOut();
     },
   };

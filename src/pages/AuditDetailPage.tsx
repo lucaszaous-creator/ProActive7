@@ -127,6 +127,15 @@ export function AuditDetailPage() {
   const [auditorName, setAuditorName] = useState<string | null>(null);
   /** Aviso de "isto é uma cópia local" quando a rede não respondeu. */
   const [offlineNotice, setOfflineNotice] = useState<string | null>(null);
+  /**
+   * Texto cru do campo de valor medido, por item.
+   *
+   * O campo não pode ser controlado direto pelo número: "-", "12," e "12."
+   * são estados VÁLIDOS no meio da digitação e viram NaN. Controlando pelo
+   * número, a tecla era engolida e não havia como digitar -18 °C nem 4,5 —
+   * exatamente os valores de câmara fria e geladeira.
+   */
+  const [rawMeasure, setRawMeasure] = useState<Record<string, string>>({});
 
   const sigRef = useRef<SignatureCanvas | null>(null);
   const clientSigRef = useRef<SignatureCanvas | null>(null);
@@ -180,6 +189,10 @@ export function AuditDetailPage() {
           }
         : null,
     );
+    // Abrir uma visita passa a empresa dela para o app inteiro. Desde que
+    // existe empresa ativa (uma por vez), isso é o comportamento certo:
+    // entrar na vistoria da Japa Food e o resto do app continuar mostrando
+    // outra empresa seria pior. O seletor no topo reflete a mudança.
     setCompanyId(a.company_id);
 
     // Preenchimento que ficou na fila offline vence o que veio do servidor:
@@ -280,6 +293,7 @@ export function AuditDetailPage() {
 
   /** Nota (escala) ou valor medido. Em `measure` o veredito vem da faixa. */
   function setValue(item: AuditItem, raw: string) {
+    setRawMeasure((prev) => ({ ...prev, [item.id]: raw }));
     const parsed = Number(raw.replace(',', '.'));
     const value = raw.trim() && Number.isFinite(parsed) ? parsed : undefined;
     setResponses((prev) => {
@@ -1308,7 +1322,10 @@ export function AuditDetailPage() {
                         <input
                           type="text"
                           inputMode="decimal"
-                          value={r?.value == null ? '' : String(r.value)}
+                          value={
+                            rawMeasure[it.id] ??
+                            (r?.value == null ? '' : String(r.value))
+                          }
                           disabled={locked}
                           onChange={(e) => setValue(it, e.target.value)}
                           placeholder="Valor medido"

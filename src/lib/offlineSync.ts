@@ -83,7 +83,10 @@ async function execute(entry: QueuedWrite) {
 export async function queueWrite(
   init: Parameters<typeof newWrite>[0],
 ): Promise<QueuedWrite> {
-  const entry = newWrite(init);
+  // Carimba quem está enfileirando: o aparelho da cozinha é compartilhado
+  // e a fila não pode subir assinada por outra pessoa.
+  const { data } = await supabase.auth.getSession();
+  const entry = newWrite({ userId: data.session?.user.id, ...init });
   await storage.put(entry);
   await refreshCounts();
   return entry;
@@ -93,7 +96,10 @@ export async function syncNow(): Promise<{ sent: number; remaining: number }> {
   if (state.syncing) return { sent: 0, remaining: state.pending };
   emit({ syncing: true });
   try {
-    const result = await flushQueue(storage, execute);
+    const { data } = await supabase.auth.getSession();
+    const result = await flushQueue(storage, execute, {
+      userId: data.session?.user.id ?? null,
+    });
     await refreshCounts();
     return { sent: result.sent, remaining: result.remaining };
   } finally {

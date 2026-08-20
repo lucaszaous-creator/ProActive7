@@ -12,6 +12,7 @@ import {
   Building2,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { invalidateCompanies } from '@/lib/companyScopeStore';
 import { softDelete } from '@/lib/supabaseHelpers';
 import { useAuth } from '@/context/AuthContext';
 import type { Company } from '@/lib/types';
@@ -233,6 +234,11 @@ export function CompaniesPage() {
       return;
     }
     toast.success(editing ? 'Empresa atualizada.' : 'Empresa criada.');
+    // A lista de empresas do app é carregada uma vez e compartilhada por
+    // todas as telas (lib/companyScopeStore). Sem invalidar aqui, a
+    // empresa recém-criada não apareceria no seletor até recarregar a
+    // página inteira.
+    invalidateCompanies();
     setModalOpen(false);
     void load();
   }
@@ -247,6 +253,8 @@ export function CompaniesPage() {
       return;
     }
     toast.success('Empresa movida para a lixeira (30 dias para restaurar).');
+    // Some do seletor também: a empresa ativa é revalidada contra a lista.
+    invalidateCompanies();
     setDeleting(null);
     void load();
   }
