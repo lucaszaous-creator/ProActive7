@@ -8,3 +8,7 @@ dist-ssr
 *.log
 .DS_Store
 tsconfig.tsbuildinfo
+
+# Scratch do CLI do Supabase (cache de versão, chaves de branch local).
+# Criado por qualquer `npx supabase ...` e nunca faz parte do projeto.
+supabase/.temp/
