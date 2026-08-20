@@ -26,12 +26,15 @@ export interface CompanyScopeState {
   companies: Company[];
   companyId: string;
   loading: boolean;
+  /** Contador de invalidações — muda para o hook recarregar a lista. */
+  stale: number;
 }
 
 let state: CompanyScopeState = {
   companies: [],
   companyId: readStored(),
   loading: false,
+  stale: 0,
 };
 
 const listeners = new Set<() => void>();
@@ -136,9 +139,15 @@ export function loadCompanies(
   return run;
 }
 
-/** Recarrega na próxima montagem — usado depois de criar/editar empresa. */
+/**
+ * Marca a lista como velha E avisa quem está ouvindo, para o hook
+ * recarregar na hora. Só limpar a trava não bastaria: o `useEffect` do
+ * hook depende do perfil, não do estado da lista, então a tela ficaria
+ * com a lista antiga até uma navegação que remontasse tudo.
+ */
 export function invalidateCompanies() {
   loadedFor = null;
+  emit({ stale: state.stale + 1 });
 }
 
 /** Logout: a próxima conta não herda a empresa ativa de quem saiu. */
@@ -146,5 +155,10 @@ export function resetCompanyScope() {
   loadedFor = null;
   inFlight = null;
   persist('');
-  emit({ companies: [], companyId: '', loading: false });
+  emit({
+    companies: [],
+    companyId: '',
+    loading: false,
+    stale: state.stale + 1,
+  });
 }

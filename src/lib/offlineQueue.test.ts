@@ -144,3 +144,107 @@ describe('isNetworkError', () => {
     expect(isNetworkError({})).toBe(false);
   });
 });
+
+describe('collapse — regressão da retentativa', () => {
+  it('entrada velha reenfileirada NÃO apaga o preenchimento mais novo', async () => {
+    // Cenário real: a RT salva às 10h (falha, vai para a fila), continua
+    // preenchendo e salva às 10h05 (fica na fila também). A rodada de
+    // sincronização tenta a de 10h, falha e a regrava com attempts=1.
+    // Antes desta correção, essa regravação apagava a de 10h05 e a RT
+    // perdia cinco minutos de vistoria sem nenhum aviso.
+    const antiga = write({
+      id: 'antiga',
+      queuedAt: '2026-01-01T10:00:00Z',
+      payload: { notes: 'parcial' },
+    });
+    const nova = write({
+      id: 'nova',
+      queuedAt: '2026-01-01T10:05:00Z',
+      payload: { notes: 'completo' },
+    });
+
+    const storage = memoryStorage([antiga, nova]);
+    await flushQueue(storage, fail('sem rede'));
+
+    const rows = await storage.all();
+    expect(rows).toHaveLength(2);
+    expect(rows.find((r) => r.id === 'nova')?.payload).toEqual({
+      notes: 'completo',
+    });
+    expect(rows.find((r) => r.id === 'antiga')?.attempts).toBe(1);
+  });
+
+  it('update novo continua substituindo o pendente mais antigo', () => {
+    const antiga = write({ id: '1', queuedAt: '2026-01-01T10:00:00Z' });
+    const nova = write({ id: '2', queuedAt: '2026-01-01T10:05:00Z' });
+    expect(collapse([antiga], nova)).toHaveLength(1);
+  });
+});
+
+describe('fila em aparelho compartilhado', () => {
+  it('não sobe a fila de outra conta com a sessão atual', async () => {
+    const daAriane = write({ id: 'a', userId: 'ariane' });
+    const doRafael = write({ id: 'r', match: { id: 'a2' }, userId: 'rafael' });
+    const enviados: string[] = [];
+    const storage = memoryStorage([daAriane, doRafael]);
+
+    const result = await flushQueue(
+      storage,
+      async (e) => {
+        enviados.push(e.id);
+        return { error: null };
+      },
+      { userId: 'rafael' },
+    );
+
+    expect(enviados).toEqual(['r']);
+    expect(result.sent).toBe(1);
+    // A da Ariane fica guardada, não some: ela entra de novo e sobe.
+    expect((await storage.all()).map((e) => e.id)).toEqual(['a']);
+  });
+
+  it('fila sem dono (gravada antes desta versão) continua subindo', async () => {
+    const storage = memoryStorage([write({ id: 'antiga' })]);
+    const result = await flushQueue(storage, ok, { userId: 'rafael' });
+    expect(result.sent).toBe(1);
+  });
+});
+
+describe('entrada travada segura a fila da mesma linha', () => {
+  it('não envia a escrita seguinte da MESMA visita', async () => {
+    // Sem isto: a travada é pulada, a nova sobe, e o "tentar de novo"
+    // regrava a versão VELHA por cima da que já tinha chegado.
+    const travada = write({
+      id: 'travada',
+      queuedAt: '2026-01-01T10:00:00Z',
+      attempts: MAX_AUTO_ATTEMPTS,
+    });
+    const seguinte = write({
+      id: 'seguinte',
+      queuedAt: '2026-01-01T10:05:00Z',
+    });
+    const enviados: string[] = [];
+    const storage = memoryStorage([travada, seguinte]);
+
+    await flushQueue(storage, async (e) => {
+      enviados.push(e.id);
+      return { error: null };
+    });
+
+    expect(enviados).toEqual([]);
+  });
+
+  it('entrada travada não segura OUTRA linha', async () => {
+    const travada = write({ id: 'travada', attempts: MAX_AUTO_ATTEMPTS });
+    const outra = write({ id: 'outra', match: { id: 'outra-visita' } });
+    const enviados: string[] = [];
+    const storage = memoryStorage([travada, outra]);
+
+    await flushQueue(storage, async (e) => {
+      enviados.push(e.id);
+      return { error: null };
+    });
+
+    expect(enviados).toEqual(['outra']);
+  });
+});

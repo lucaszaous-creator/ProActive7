@@ -37,12 +37,23 @@ interface ExpiringLabel {
   expiry_at: string;
 }
 
-async function fetchExpiringLabels(): Promise<ExpiringLabel[]> {
+/**
+ * Etiquetas vencendo DA EMPRESA ATIVA.
+ *
+ * O filtro por empresa é obrigatório desde que este bloco passou a rodar
+ * também para a nutricionista: a RLS dela alcança a organização inteira,
+ * então sem o filtro o painel mostraria etiquetas de outras empresas
+ * dentro do card da empresa que está na tela.
+ */
+async function fetchExpiringLabels(
+  companyId: string,
+): Promise<ExpiringLabel[]> {
   const now = new Date().toISOString();
   const in24h = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
   const { data, error } = await supabase
     .from('label_prints')
     .select('id, product_name_snapshot, expiry_at')
+    .eq('company_id', companyId)
     .gte('expiry_at', now)
     .lt('expiry_at', in24h)
     .order('expiry_at')
@@ -127,7 +138,7 @@ export function DashboardPage() {
     Promise.all([
       fetchPendingChecklistsToday(companyId),
       fetchEquipmentWithoutReadingToday(companyId),
-      fetchExpiringLabels(),
+      fetchExpiringLabels(companyId),
     ])
       .then(([cl, eq, lbl]) => {
         if (cancelled) return;

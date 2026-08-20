@@ -122,6 +122,12 @@ export function ChecklistsPage() {
   const [loading, setLoading] = useState(true);
   /** Aviso de "isto é uma cópia local" quando a rede não respondeu. */
   const [offlineNotice, setOfflineNotice] = useState<string | null>(null);
+  /**
+   * Texto cru do campo de valor medido, por item. Mesmo motivo da tela de
+   * vistoria: "-", "12," e "12." são estados válidos no meio da digitação
+   * e viram NaN. Sem isto, "máx. -12 °C" só podia ser registrado como 12.
+   */
+  const [rawMeasure, setRawMeasure] = useState<Record<string, string>>({});
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<ChecklistTemplate | null>(null);
@@ -343,6 +349,7 @@ export function ChecklistsPage() {
   function openRun(t: ChecklistTemplate) {
     setRunTemplate(t);
     setRunChecks(Object.fromEntries(t.items.map((i) => [i.id, {}])));
+    setRawMeasure({});
     setRunNotes('');
     setRunPhotoId(null);
     setRunOpen(true);
@@ -924,18 +931,21 @@ export function ChecklistsPage() {
                             type="text"
                             inputMode="decimal"
                             value={
-                              runChecks[i.id]?.value == null
+                              rawMeasure[i.id] ??
+                              (runChecks[i.id]?.value == null
                                 ? ''
-                                : String(runChecks[i.id]?.value)
+                                : String(runChecks[i.id]?.value))
                             }
                             onChange={(e) => {
-                              const parsed = Number(
-                                e.target.value.replace(',', '.'),
-                              );
+                              const raw = e.target.value;
+                              setRawMeasure((prev) => ({
+                                ...prev,
+                                [i.id]: raw,
+                              }));
+                              const parsed = Number(raw.replace(',', '.'));
                               patchRunAnswer(i.id, {
                                 value:
-                                  e.target.value.trim() &&
-                                  Number.isFinite(parsed)
+                                  raw.trim() && Number.isFinite(parsed)
                                     ? parsed
                                     : undefined,
                               });

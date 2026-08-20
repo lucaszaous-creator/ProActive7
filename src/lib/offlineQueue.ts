@@ -25,6 +25,12 @@ export interface QueuedWrite {
   payload: Record<string, unknown>;
   /** Texto que a pessoa lê na fila ("Vistoria — Cozinha Central"). */
   label: string;
+  /**
+   * Quem enfileirou. O aparelho é compartilhado na cozinha: sem isto, o
+   * que a pessoa A deixou pendente subiria com a sessão da pessoa B, e o
+   * registro ficaria assinado por quem não fez o trabalho.
+   */
+  userId?: string;
   queuedAt: string;
   attempts: number;
   lastError?: string;
@@ -80,15 +86,35 @@ export interface FlushResult {
 export async function flushQueue(
   storage: QueueStorage,
   execute: WriteExecutor,
+  options?: { userId?: string | null },
 ): Promise<FlushResult> {
   const entries = (await storage.all()).sort((a, b) =>
     a.queuedAt < b.queuedAt ? -1 : a.queuedAt > b.queuedAt ? 1 : 0,
   );
   let sent = 0;
   let failed = 0;
+  /**
+   * Linhas com uma entrada travada na frente. Pular a travada e enviar a
+   * seguinte da MESMA linha inverte o histórico: a nova sobe agora e, no
+   * "tentar de novo", a velha desce por cima e apaga o que já tinha
+   * chegado. Linha diferente segue normalmente.
+   */
+  const blockedRows = new Set<string>();
+  const rowKey = (e: QueuedWrite) =>
+    `${e.op}:${e.table}:${JSON.stringify(e.match)}`;
 
   for (const entry of entries) {
+    // Fila de outra conta fica parada, não some: quem a criou volta a
+    // entrar e ela sobe assinada por quem fez o trabalho.
+    if (entry.userId && options?.userId && entry.userId !== options.userId) {
+      continue;
+    }
     if (entry.attempts >= MAX_AUTO_ATTEMPTS) {
+      blockedRows.add(rowKey(entry));
+      failed += 1;
+      continue;
+    }
+    if (blockedRows.has(rowKey(entry))) {
       failed += 1;
       continue;
     }
@@ -120,18 +146,28 @@ export function stuckEntries(entries: QueuedWrite[]): QueuedWrite[] {
  * Um update novo da MESMA linha substitui o anterior que ainda não subiu.
  * Sem isso, meia hora de vistoria sem sinal viraria dezenas de updates
  * empilhados da mesma visita, todos com o mesmo destino final.
+ *
+ * Só descarta entrada MAIS ANTIGA que a que está chegando. Isso não é
+ * detalhe: quando um envio falha, ele é regravado com `attempts + 1` e
+ * passa por aqui de novo — sem a comparação de data, essa entrada velha
+ * apagaria o preenchimento mais recente da mesma visita e a RT perderia
+ * o trabalho, silenciosamente.
+ *
+ * Entrada que já tentou subir também nunca é descartada: pode ter chegado
+ * ao servidor.
  */
 export function collapse(
   entries: QueuedWrite[],
   incoming: QueuedWrite,
 ): QueuedWrite[] {
   if (incoming.op !== 'update') return [...entries, incoming];
-  const isSameRow = (e: QueuedWrite) =>
+  const supersededBy = (e: QueuedWrite) =>
     e.op === 'update' &&
     e.table === incoming.table &&
     JSON.stringify(e.match) === JSON.stringify(incoming.match) &&
-    e.attempts === 0;
-  return [...entries.filter((e) => !isSameRow(e)), incoming];
+    e.attempts === 0 &&
+    e.queuedAt <= incoming.queuedAt;
+  return [...entries.filter((e) => !supersededBy(e)), incoming];
 }
 
 export function newWrite(
@@ -244,4 +280,25 @@ export async function readDraft<T>(key: string): Promise<T | null> {
 export async function removeDraft(key: string): Promise<void> {
   if (!hasIndexedDb()) return;
   await tx(DRAFT_STORE, 'readwrite', (s) => s.delete(key));
+}
+
+/**
+ * Apaga o cache de LEITURA (chaves `cache:`), preservando a fila.
+ *
+ * Usado no logout. Cache de leitura é cópia de dado do servidor: apagar
+ * não perde nada e evita que a próxima pessoa a usar o aparelho veja a
+ * visita da anterior. A FILA não entra aqui — ela é trabalho que ainda
+ * não subiu, e apagá-la no logout destruiria o preenchimento de quem só
+ * queria sair da conta.
+ */
+export async function clearReadCache(): Promise<void> {
+  if (!hasIndexedDb()) return;
+  const keys = await tx<IDBValidKey[]>(DRAFT_STORE, 'readonly', (s) =>
+    s.getAllKeys(),
+  );
+  for (const key of keys) {
+    if (typeof key === 'string' && key.startsWith('cache:')) {
+      await tx(DRAFT_STORE, 'readwrite', (s) => s.delete(key));
+    }
+  }
 }

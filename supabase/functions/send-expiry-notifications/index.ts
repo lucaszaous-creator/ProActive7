@@ -61,10 +61,12 @@ Deno.serve(async (req) => {
   // antes" avisa na primeira execucao daquele dia. Para lembrete por hora
   // basta agendar o cron de hora em hora — o filtro abaixo continua valendo
   // porque `reminded_at` da a idempotencia.
+  // Dia no fuso de Brasilia, nao em UTC. A Edge roda em UTC: um
+  // compromisso das 18h de Sao Paulo ja e "amanha" em UTC, entao o
+  // lembrete "no dia" sairia DEPOIS do compromisso. 'en-CA' devolve
+  // YYYY-MM-DD, que e o formato que a comparacao abaixo espera.
   const ymd = (d: Date) =>
-    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
-      d.getDate(),
-    ).padStart(2, '0')}`;
+    d.toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' });
 
   let agendaSent = 0;
   const agendaReminded: string[] = [];

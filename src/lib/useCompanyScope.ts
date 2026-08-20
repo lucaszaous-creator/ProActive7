@@ -22,7 +22,7 @@ import {
  */
 export function useCompanyScope() {
   const { profile, isMaster, isPlatformAdmin, isNutritionist } = useAuth();
-  const { companies, companyId, loading } = useSyncExternalStore(
+  const { companies, companyId, loading, stale } = useSyncExternalStore(
     subscribeCompanyScope,
     getCompanyScope,
     getCompanyScope,
@@ -35,7 +35,9 @@ export function useCompanyScope() {
     void loadCompanies(showAllCompanies, profile?.company_id).catch((e) => {
       toast.error('Erro ao carregar empresas: ' + (e as Error).message);
     });
-  }, [showAllCompanies, profile?.company_id]);
+    // `stale` entra na dependência para a lista recarregar quando alguém
+    // cria ou remove empresa (ver invalidateCompanies).
+  }, [showAllCompanies, profile?.company_id, stale]);
 
   const selectedCompany = useMemo(
     () => companies.find((c) => c.id === companyId) ?? null,
