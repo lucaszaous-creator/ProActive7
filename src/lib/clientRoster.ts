@@ -140,6 +140,30 @@ export function rosterLogoUrl(c: RosterClient): string | null {
   return c.hasLogo === false ? null : `/clientes/${c.slug}.webp`;
 }
 
+/** Slugs da semente que têm arquivo em public/clientes. */
+const SLUGS_COM_LOGO = new Set(
+  CLIENT_ROSTER.flatMap((s) => s.clients)
+    .filter((c) => c.hasLogo !== false)
+    .map((c) => c.slug),
+);
+
+/**
+ * Logo estático de um slug da carta, quando existe.
+ *
+ * Serve de rede de segurança para o banco ficar para trás do repositório:
+ * uma arte nova entra no deploy junto com o código, mas a linha em
+ * `site_clients` só aponta para ela depois que alguém roda a migration.
+ * Nesse intervalo o site mostraria monograma. Com isto, o arquivo manda —
+ * e a migration passa a ser arrumação de dado, não pré-requisito para a
+ * página ficar certa.
+ */
+export function staticLogoForSlug(
+  slug: string | null | undefined,
+): string | null {
+  if (!slug || !SLUGS_COM_LOGO.has(slug)) return null;
+  return `/clientes/${slug}.webp`;
+}
+
 /* ===================================================================
  * Forma exibida na tela — a página não sabe se veio do banco ou da
  * semente, só recebe grupos prontos.
@@ -191,6 +215,7 @@ export function groupsFromRows(
     name: string;
     logo_path: string | null;
     segment: string | null;
+    slug?: string | null;
     city?: string | null;
     website_url?: string | null;
     units?: string[] | null;
@@ -208,7 +233,7 @@ export function groupsFromRows(
     byLabel.get(label)!.push({
       key: r.id,
       name: r.name,
-      logo: resolveLogo(r.logo_path),
+      logo: resolveLogo(r.logo_path) ?? staticLogoForSlug(r.slug),
       units: r.units ?? [],
       city: r.city,
       websiteUrl: r.website_url,
