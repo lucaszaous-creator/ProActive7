@@ -26,7 +26,7 @@ import {
 } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
 import seoConfig from '@/lib/seo.config.json';
-import { flattenGroups, ROSTER_TOTALS } from '@/lib/clientRoster';
+import { CLIENT_COUNT, flattenGroups } from '@/lib/clientRoster';
 import { useSiteClients } from '@/lib/useSiteClients';
 import { Carousel } from '@/components/public/Carousel';
 import { Reveal } from '@/components/public/Reveal';
@@ -354,13 +354,12 @@ function Metodo() {
  * NÚMEROS — 12 anos, etc.
  * ===================================================================== */
 function Numeros() {
-  /* Números verificáveis: o total de unidades sai da carta de clientes,
-     não de estimativa — CLAUDE.md §3 "não inventar métrica positiva".
-     Usa a semente (e não o banco) porque esta faixa é renderizada no
-     prerender de SEO, antes de qualquer fetch. */
+  /* O total de estabelecimentos vem de CLIENT_COUNT (número confirmado
+     pela Ariane), não da contagem da carta — a carta lista quem é cliente
+     hoje, não os 12 anos de histórico. */
   const stats = [
     { value: '12+', label: 'anos de operação' },
-    { value: `${ROSTER_TOTALS.units}`, label: 'unidades atendidas' },
+    { value: CLIENT_COUNT, label: 'estabelecimentos atendidos' },
     { value: 'RDC 216', label: 'conformidade ANVISA' },
     { value: 'On & off-shore', label: 'cozinhas atendidas' },
   ];
@@ -394,7 +393,7 @@ function Numeros() {
  * a lista completa por segmento vai para /clientes.
  * ===================================================================== */
 function MuralClientes() {
-  const { groups, totals } = useSiteClients();
+  const { groups } = useSiteClients();
   /* Só entram no mural as marcas com arte — um monograma solto numa faixa
      de logos vira ruído. A lista completa fica em /clientes. */
   const marcas = flattenGroups(groups).filter((c) => c.logo);
@@ -407,12 +406,13 @@ function MuralClientes() {
               Quem confia no nosso trabalho
             </span>
             <h2 className="mx-auto mt-2 max-w-2xl text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
-              {totals.units} unidades já servem com a nossa assinatura técnica.
+              {CLIENT_COUNT} estabelecimentos já passaram pela nossa assinatura
+              técnica.
             </h2>
             <p className="mx-auto mt-3 max-w-2xl text-base text-[#171717]/65">
-              Hotéis, fábricas, escolas, padarias, pizzarias, mercados e buffets
-              de Macaé e região — {totals.brands} marcas em {totals.segments}{' '}
-              segmentos.
+              Hotéis, fábricas, escolas, padarias, pizzarias, mercados e
+              buffets. Presencial em Macaé e região, online para o resto do
+              Brasil e o exterior.
             </p>
           </div>
         </Reveal>
@@ -430,7 +430,7 @@ function MuralClientes() {
                 title={c.name}
                 loading="lazy"
                 decoding="async"
-                className="max-h-12 max-w-full object-contain opacity-80 transition hover:opacity-100"
+                className="max-h-14 max-w-full object-contain opacity-80 transition hover:opacity-100"
               />
             </li>
           ))}
@@ -706,12 +706,14 @@ function Atuacao() {
               Atuação
             </span>
             <h2 className="mt-2 text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
-              Macaé, região dos Lagos e plataformas off-shore.
+              Presencial em Macaé e região. Online para o Brasil e o exterior.
             </h2>
             <p className="mt-5 text-base leading-relaxed text-[#171717]/70">
-              Atendemos estabelecimentos comerciais de variados segmentos —
-              sempre alinhados ao Ministério da Saúde, ANVISA e à legislação
-              municipal de cada operação.
+              Visita técnica presencial em Macaé, região dos Lagos e plataformas
+              off-shore; consultoria, treinamento e documentação à distância
+              para operações fora do estado e fora do país — sempre alinhados ao
+              Ministério da Saúde, à ANVISA e à legislação municipal de cada
+              operação.
             </p>
             <div className="mt-7 flex items-center gap-2 text-sm font-medium text-[#262626]">
               <MapPin className="h-4 w-4" />

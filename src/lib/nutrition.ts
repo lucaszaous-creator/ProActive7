@@ -242,7 +242,9 @@ export function buildLabel(
   return {
     per100g: gramsCounted > 0 ? scaleTo(total, gramsCounted, 100) : null,
     perPortion:
-      gramsCounted > 0 && portion ? scaleTo(total, gramsCounted, portion) : null,
+      gramsCounted > 0 && portion
+        ? scaleTo(total, gramsCounted, portion)
+        : null,
     portionGrams: portion,
     gramsCounted,
     missing,
