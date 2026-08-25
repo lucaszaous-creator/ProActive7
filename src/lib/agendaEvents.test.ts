@@ -32,14 +32,19 @@ describe('reminderDate', () => {
     expect(reminderDate(event)).toBe('2026-03-07');
   });
   it('lembrete no dia é a própria data', () => {
-    expect(reminderDate({ ...event, remind_days_before: 0 })).toBe('2026-03-10');
+    expect(reminderDate({ ...event, remind_days_before: 0 })).toBe(
+      '2026-03-10',
+    );
   });
   it('sem lembrete devolve null', () => {
     expect(reminderDate({ ...event, remind_days_before: null })).toBeNull();
   });
   it('atravessa a virada do mês', () => {
     expect(
-      reminderDate({ starts_at: '2026-03-02T12:00:00.000Z', remind_days_before: 7 }),
+      reminderDate({
+        starts_at: '2026-03-02T12:00:00.000Z',
+        remind_days_before: 7,
+      }),
     ).toBe('2026-02-23');
   });
 });

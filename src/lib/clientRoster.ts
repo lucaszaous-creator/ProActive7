@@ -54,7 +54,7 @@ export const CLIENT_ROSTER: RosterSegment[] = [
     label: 'Creches e escolas',
     clients: [
       { slug: 'adoleta', name: 'Adoleta Creche e Escola' },
-      { slug: 'colegio-angular', name: 'Colégio Angular', hasLogo: false },
+      { slug: 'colegio-angular', name: 'Colégio Angular' },
     ],
   },
   {
@@ -237,3 +237,13 @@ export function flattenGroups(groups: DisplayGroup[]): DisplayClient[] {
 
 /** Totais da semente — usados enquanto o banco não respondeu. */
 export const ROSTER_TOTALS: RosterTotals = totalsOf(groupsFromRoster());
+
+/**
+ * Quantos estabelecimentos a ProActive7 já atendeu.
+ *
+ * NÃO sai da contagem da carta: a carta lista quem é cliente HOJE (37
+ * unidades), e em 12 anos passaram muito mais pela consultoria. O número
+ * abaixo é o que a Ariane, como RT e dona da empresa, confirmou — ela é
+ * quem tem esse histórico. Trocar só com a palavra dela.
+ */
+export const CLIENT_COUNT = '100+';

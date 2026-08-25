@@ -19,7 +19,11 @@ import {
 import { usePageMeta } from '@/lib/usePageMeta';
 import { Reveal } from '@/components/public/Reveal';
 import { Spotlight } from '@/components/public/Spotlight';
-import { CLIENT_ROSTER, type DisplayClient } from '@/lib/clientRoster';
+import {
+  CLIENT_ROSTER,
+  CLIENT_COUNT,
+  type DisplayClient,
+} from '@/lib/clientRoster';
 import { useSiteClients } from '@/lib/useSiteClients';
 import { siteAssetUrl, type SiteClient } from '@/lib/siteCms';
 
@@ -50,11 +54,7 @@ export function ClientesPublicPage() {
   return (
     <div>
       <Hero />
-      <Numeros
-        brands={totals.brands}
-        units={totals.units}
-        segments={totals.segments}
-      />
+      <Numeros segments={totals.segments} />
 
       {groups.map((g, i) => (
         <SegmentBlock
@@ -91,28 +91,21 @@ function Hero() {
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[#171717]/70">
           Hotéis, fábricas, escolas, padarias, pizzarias, mercados e buffets —
-          operações de Macaé e região que contam com a nossa responsabilidade
-          técnica para servir comida com segurança.
+          operações que contam com a nossa responsabilidade técnica para servir
+          comida com segurança. Atendemos presencialmente em Macaé e região, e
+          online para o resto do Brasil e o exterior.
         </p>
       </div>
     </Spotlight>
   );
 }
 
-function Numeros({
-  brands,
-  units,
-  segments,
-}: {
-  brands: number;
-  units: number;
-  segments: number;
-}) {
+function Numeros({ segments }: { segments: number }) {
   const stats = [
-    { value: `${brands}`, label: 'marcas atendidas' },
-    { value: `${units}`, label: 'unidades acompanhadas' },
+    { value: CLIENT_COUNT, label: 'estabelecimentos atendidos' },
     { value: `${segments}`, label: 'segmentos diferentes' },
     { value: '12+', label: 'anos de operação' },
+    { value: 'Brasil e exterior', label: 'presencial e online' },
   ];
   return (
     <section className="border-b border-[#e5e5e5] bg-white">
@@ -124,7 +117,13 @@ function Numeros({
                 aria-hidden
                 className="mx-auto mb-3 block h-1 w-8 rounded-full bg-[#171717]"
               />
-              <p className="text-3xl font-semibold tracking-tight text-[#171717] md:text-4xl">
+              <p
+                className={`font-semibold tracking-tight text-[#171717] ${
+                  /^[\d]/.test(s.value)
+                    ? 'text-3xl md:text-4xl'
+                    : 'text-xl md:text-2xl'
+                }`}
+              >
                 {s.value}
               </p>
               <p className="mt-1.5 text-xs uppercase tracking-wider text-[#737373]">
@@ -139,22 +138,25 @@ function Numeros({
 }
 
 /**
- * LogoCard — cartão de uma marca. O logo é `object-contain` com altura
- * limitada: as artes vieram da apresentação em resoluções bem diferentes
- * (algumas com 80px de altura), então nunca ampliamos além do confortável.
- * Sem logo, cai no monograma da inicial — nada de espaço vazio.
+ * LogoCard — cartão de uma marca.
+ *
+ * `max-h-20 max-w-full` (sem largura percentual) é proposital: as artes da
+ * apresentação vão de 63px a 1200px de altura, e uma largura em % obrigava
+ * as pequenas a esticar até preencher o cartão — era daí que vinha a
+ * sensação de "logo borrado". Assim, arte grande encolhe até caber e arte
+ * pequena aparece no tamanho nativo, nítida.
  */
 function LogoCard({ client }: { client: DisplayClient }) {
   const inner = (
     <div className="fx-lift flex h-full flex-col items-center justify-start gap-3 rounded-2xl border border-[#e5e5e5] bg-white p-5 text-center">
-      <div className="flex h-16 w-full items-center justify-center">
+      <div className="flex h-20 w-full items-center justify-center px-2">
         {client.logo ? (
           <img
             src={client.logo}
             alt={client.name}
             loading="lazy"
             decoding="async"
-            className="max-h-16 max-w-[86%] object-contain"
+            className="max-h-20 max-w-full object-contain"
           />
         ) : (
           <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f0f0ee] text-lg font-semibold text-[#525252]">
@@ -211,9 +213,6 @@ function SegmentBlock({
             <h2 className="text-lg font-semibold tracking-tight text-[#171717] md:text-xl">
               {label}
             </h2>
-            <span className="ml-auto text-xs uppercase tracking-wider text-[#737373]">
-              {clients.length} {clients.length === 1 ? 'marca' : 'marcas'}
-            </span>
           </div>
         </Reveal>
 
