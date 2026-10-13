@@ -1,29 +1,50 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { Toaster } from 'sonner';
-import { registerSW } from 'virtual:pwa-register';
+import { Toaster, toast } from 'sonner';
 import App from './App';
-import { AuthProvider } from './context/AuthContext';
 import { RootErrorBoundary } from './components/RootErrorBoundary';
 import { setErrorReporter } from './lib/errorReporter';
-import { startOfflineSync } from './lib/offlineSync';
-import './i18n';
+import { startLegacyOfflineMigration } from './lib/legacyOfflineMigration';
 import './index.css';
 
-// Força o Service Worker antigo a checar atualização toda vez que o
-// app inicia, e aceitar o novo bundle imediatamente — destrava
-// usuários com SW pre-#40 que tinha auto-update preguiçoso.
-// Fila de escrita offline: sobe o que ficou pendente assim que o sinal
-// volta (ver lib/offlineSync).
-startOfflineSync();
-
-const updateSW = registerSW({
-  immediate: true,
-  onNeedRefresh() {
-    void updateSW(true); // força ativação do novo SW sem prompt
-  },
+startLegacyOfflineMigration((pending) => {
+  const id = 'legacy-offline-records';
+  if (!pending) {
+    toast.dismiss(id);
+    return;
+  }
+  toast.warning(
+    'Há registros locais da versão anterior que precisam de recuperação.',
+    {
+      id,
+      duration: Infinity,
+      description:
+        'Não limpe os dados deste navegador. Fale com a equipe para recuperar as pendências.',
+      action: {
+        label: 'Contato',
+        onClick: () => window.location.assign('/contato'),
+      },
+    },
+  );
 });
+
+// Atualiza instalações antigas para o worker de desativação, sem instalar um novo PWA.
+if ('serviceWorker' in navigator) {
+  void navigator.serviceWorker
+    .getRegistration('/')
+    .then((registration) => {
+      if (
+        registration?.active?.scriptURL ===
+        new URL('/sw.js', location.origin).href
+      ) {
+        return registration.update();
+      }
+    })
+    .catch(() => {
+      /* Sem rede: a atualização será tentada na próxima visita. */
+    });
+}
 
 // Sentry só liga em produção com DSN. Carregado de forma assíncrona para
 // ficar fora do bundle inicial (não é necessário para o primeiro paint) —
@@ -46,9 +67,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <RootErrorBoundary>
       <BrowserRouter>
-        <AuthProvider>
-          <App />
-        </AuthProvider>
+        <App />
         <Toaster
           richColors
           closeButton

@@ -10,7 +10,6 @@ import {
   Tag,
   BookOpen,
   ArrowRight,
-  Laptop2,
   Hotel,
   ShoppingBasket,
   Factory,
@@ -22,9 +21,6 @@ import {
   PartyPopper,
   Leaf,
   Quote,
-  Thermometer,
-  Bug,
-  ShieldCheck,
   Sparkles,
   Search,
   Wrench,
@@ -114,27 +110,12 @@ const SERVICOS: Servico[] = [
   },
 ];
 
-/**
- * Destaque do sistema próprio — sai do grid de serviços e vira banner
- * full-width. Além de dar protagonismo ao diferencial da ProActive7,
- * resolve o número ímpar de serviços (8 cards = grid 2×4 sem órfão).
- */
-const SISTEMA_HIGHLIGHTS: { icon: LucideIcon; label: string }[] = [
-  { icon: Tag, label: 'Etiquetas RDC 216' },
-  { icon: ClipboardCheck, label: 'Auditorias e checklists' },
-  { icon: Thermometer, label: 'Temperaturas de equipamentos' },
-  { icon: Bug, label: 'Controle de pragas' },
-  { icon: ShieldCheck, label: 'ASOs e treinamentos' },
-  { icon: BookOpen, label: 'POPs e documentos' },
-];
-
 export function ServicosPage() {
   usePageMeta('/servicos');
   return (
     <div>
       <Hero />
       <ServiceShowcase />
-      <SistemaBanner />
       <ComoFunciona />
       <Segmentos />
       <Depoimentos />
@@ -335,63 +316,6 @@ function ServiceShowcase() {
 }
 
 /**
- * Banner full-width do sistema próprio. Destaca o diferencial da
- * ProActive7 (tecnologia inclusa na consultoria) e equilibra o grid
- * de serviços, que fica par sem este card.
- */
-function SistemaBanner() {
-  return (
-    <section className="mx-auto max-w-6xl px-5 py-12">
-      <div className="relative overflow-hidden rounded-3xl border border-[#e5e5e5] bg-white p-8 text-[#171717] shadow-[0_30px_60px_-45px_rgba(0,0,0,0.35)] md:p-12">
-        {/* círculos decorativos */}
-        <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-[#f0f0ee]" />
-        <div className="pointer-events-none absolute -bottom-24 -left-12 h-56 w-56 rounded-full bg-[#f4f4f2]" />
-
-        <div className="relative grid gap-10 md:grid-cols-[1.3fr_1fr] md:items-center">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#171717]/15 bg-[#fafafa] px-3 py-1 text-xs font-medium text-[#171717]/75">
-              <Sparkles className="h-3.5 w-3.5" />
-              Exclusivo · incluso na consultoria
-            </span>
-            <h2 className="mt-4 flex items-center gap-3 text-2xl font-semibold tracking-tight md:text-3xl">
-              <Laptop2 className="h-7 w-7 shrink-0 text-[#525252]" />
-              Sistema ProActive7
-            </h2>
-            <p className="mt-4 max-w-xl text-sm leading-relaxed text-[#171717]/70 md:text-base">
-              Plataforma própria que digitaliza toda a operação — nossa equipe
-              entrega gratuitamente junto à consultoria. Registre tudo pelo
-              celular e tenha a documentação pronta para a fiscalização a
-              qualquer momento.
-            </p>
-            <Link
-              to="/sistema"
-              className="fx-sheen mt-7 inline-flex items-center gap-2 rounded-full bg-[#171717] px-5 py-3 text-sm font-medium text-white shadow-[0_12px_30px_-12px_rgba(0,0,0,0.45)] transition hover:bg-[#333333]"
-            >
-              Conhecer a plataforma
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-
-          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-1">
-            {SISTEMA_HIGHLIGHTS.map(({ icon: Icon, label }) => (
-              <li
-                key={label}
-                className="flex items-center gap-3 rounded-2xl border border-[#e5e5e5] bg-[#fafafa] px-4 py-3 text-sm font-medium text-[#171717]/85"
-              >
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#e5e5e5] bg-white text-[#262626]">
-                  <Icon className="h-4 w-4" />
-                </span>
-                {label}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/**
  * Seção "Como trabalhamos" — linha do tempo do processo de consultoria.
  * Enriquece a página explicando o método (não inventa métrica; descreve
  * o fluxo real: diagnóstico → implantação → acompanhamento → pronto).
@@ -419,7 +343,7 @@ function ComoFunciona() {
       icon: CalendarCheck,
       step: '03',
       title: 'Acompanhamento',
-      body: 'Visitas periódicas e o sistema ProActive7 mantêm tudo registrado e atualizado no dia a dia.',
+      body: 'Visitas periódicas, orientação da equipe e revisão da documentação mantêm as boas práticas no dia a dia.',
     },
     {
       icon: BadgeCheck,

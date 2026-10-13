@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.2.0",
   "type": "module",
-  "description": "Sistema ProActive7 — Consultoria nutricional e segurança alimentar para serviços de alimentação (ANVISA RDC 216).",
+  "description": "Site institucional ProActive7 — Consultoria nutricional e segurança alimentar para serviços de alimentação (ANVISA RDC 216).",
   "homepage": "https://pro-active7.vercel.app",
   "keywords": [
     "nutricionista",
@@ -20,8 +20,6 @@
     "dev": "vite",
     "build": "vite build && node scripts/prerender-seo.mjs",
     "og": "node scripts/generate-og.mjs",
-    "manual:pdf": "node scripts/generate-system-manual.mjs",
-    "manual:screenshots": "node scripts/capture-screenshots.mjs",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
@@ -32,30 +30,20 @@
   "dependencies": {
     "@sentry/react": "^10.53.1",
     "@supabase/supabase-js": "^2.104.0",
-    "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
-    "i18next": "^26.2.0",
-    "jspdf": "^4.2.1",
-    "jspdf-autotable": "^5.0.8",
     "lucide-react": "^0.546.0",
-    "papaparse": "^5.5.3",
-    "qrcode.react": "^4.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-i18next": "^17.0.8",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.1.1",
-    "react-signature-canvas": "^1.1.0-alpha.2",
     "sonner": "^2.0.7"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.1.14",
     "@types/node": "^22.10.0",
-    "@types/papaparse": "^5.5.2",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@types/web-bluetooth": "^0.0.21",
     "@vitejs/plugin-react": "^5.0.4",
     "eslint": "^10.4.0",
     "eslint-plugin-react-hooks": "^7.1.1",
@@ -68,9 +56,6 @@
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.59.4",
     "vite": "^6.2.0",
-    "vite-plugin-pwa": "^1.3.0",
-    "vitest": "^4.1.7",
-    "web-push": "^3.6.7",
-    "workbox-precaching": "^7.4.1"
+    "vitest": "^4.1.7"
   }
 }

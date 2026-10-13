@@ -21,7 +21,6 @@ import {
   Lightbulb,
   BadgeCheck,
   Users,
-  Laptop2,
   Plus,
 } from 'lucide-react';
 import { usePageMeta } from '@/lib/usePageMeta';
@@ -36,15 +35,7 @@ import { Spotlight } from '@/components/public/Spotlight';
  *  schema, garantindo que o texto visível seja idêntico ao structured data. */
 const FAQ = (seoConfig.pages['/'].faq ?? []) as { q: string; a: string }[];
 
-/**
- * Página inicial — sobre a EMPRESA ProActive7 (consultoria nutricional
- * e segurança alimentar). NÃO sobre o sistema/plataforma. O sistema é
- * apenas mais um dos serviços oferecidos e tem sua própria página em
- * /sistema (acessível também por dentro de /servicos).
- *
- * Pedido explícito da cliente (Ariane): "página principal como
- * empresa/CNPJ; o sistema fica à parte".
- */
+/** Página institucional da ProActive7: consultoria nutricional e segurança alimentar. */
 export function LandingPage() {
   usePageMeta('/');
   return (
@@ -558,9 +549,9 @@ function Diferenciais() {
       body: 'Nutricionista RT registrada no CRN assina pela sua operação perante a ANVISA — não é só relatório, é responsabilidade assumida.',
     },
     {
-      icon: Laptop2,
-      title: 'Sistema próprio incluso',
-      body: 'A plataforma ProActive7 (etiquetas RDC 216, auditorias, temperaturas, ASOs e POPs) entra junto com a consultoria, sem custo extra.',
+      icon: ClipboardCheck,
+      title: 'Acompanhamento personalizado',
+      body: 'Orientação técnica, visitas periódicas e documentação adaptadas às necessidades de cada estabelecimento.',
     },
     {
       icon: Users,
