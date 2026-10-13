@@ -1,17 +1,6 @@
 User-agent: *
 Allow: /
 
-# Áreas autenticadas / não públicas — sem conteúdo indexável
-Disallow: /login
-Disallow: /redefinir-senha
-Disallow: /painel
-Disallow: /admin/
-Disallow: /platform/
-Disallow: /imprimir
-# Páginas públicas dinâmicas por item (etiqueta/selo) — não indexar
-Disallow: /etiqueta/
-Disallow: /selo/
-
 # Crawlers de IA (GEO) — conteúdo público liberado para indexação e citação
 User-agent: GPTBot
 Allow: /

@@ -65,8 +65,14 @@
           }
         ],
         "areaServed": [
-          { "@type": "City", "name": "Macaé" },
-          { "@type": "State", "name": "Rio de Janeiro" }
+          {
+            "@type": "City",
+            "name": "Macaé"
+          },
+          {
+            "@type": "State",
+            "name": "Rio de Janeiro"
+          }
         ],
         "knowsAbout": [
           "ANVISA RDC 216",
@@ -82,15 +88,21 @@
         "parentOrganization": {
           "@id": "https://www.proactive7.com.br/#organization"
         },
-        "founder": { "@id": "https://www.proactive7.com.br/#ariane" },
-        "provider": { "@id": "https://www.proactive7.com.br/#ariane" }
+        "founder": {
+          "@id": "https://www.proactive7.com.br/#ariane"
+        },
+        "provider": {
+          "@id": "https://www.proactive7.com.br/#ariane"
+        }
       },
       {
         "@type": "Person",
         "@id": "https://www.proactive7.com.br/#ariane",
         "name": "Ariane Madureira",
         "jobTitle": "Nutricionista — Responsável Técnica (RT)",
-        "worksFor": { "@id": "https://www.proactive7.com.br/#organization" }
+        "worksFor": {
+          "@id": "https://www.proactive7.com.br/#organization"
+        }
       },
       {
         "@type": "WebSite",
@@ -98,7 +110,9 @@
         "url": "https://www.proactive7.com.br/",
         "name": "ProActive7",
         "inLanguage": "pt-BR",
-        "publisher": { "@id": "https://www.proactive7.com.br/#organization" }
+        "publisher": {
+          "@id": "https://www.proactive7.com.br/#organization"
+        }
       }
     ]
   },
@@ -118,7 +132,7 @@
       "faq": [
         {
           "q": "O que é a ProActive7?",
-          "a": "A ProActive7 é uma empresa de consultoria nutricional e segurança alimentar sediada em Macaé/RJ. Atua como responsabilidade técnica (RT) para restaurantes, cozinhas industriais e serviços de alimentação, implantando boas práticas conforme a ANVISA RDC 216, além de oferecer um sistema próprio de etiquetas de validade, auditorias e compliance."
+          "a": "A ProActive7 é uma empresa de consultoria nutricional e segurança alimentar sediada em Macaé/RJ. Atua como responsabilidade técnica (RT) para restaurantes, cozinhas industriais e serviços de alimentação, implantando boas práticas conforme a ANVISA RDC 216, com visitas técnicas, treinamentos, auditorias e elaboração de documentação."
         },
         {
           "q": "Onde a ProActive7 atende?",
@@ -127,10 +141,6 @@
         {
           "q": "Quem é a responsável técnica da ProActive7?",
           "a": "A responsável técnica (RT) é a nutricionista Ariane Madureira, que responde tecnicamente pelos estabelecimentos atendidos perante a ANVISA e a Vigilância Sanitária, assinando o Manual de Boas Práticas e os POPs."
-        },
-        {
-          "q": "A ProActive7 tem um sistema próprio?",
-          "a": "Sim. A ProActive7 oferece um sistema web para serviços de alimentação que gera etiquetas de validade automaticamente, registra temperaturas de equipamentos, controla POPs, auditorias RDC 216, manipuladores, pragas e não conformidades — com o conceito de zero digitação na cozinha."
         },
         {
           "q": "Como entrar em contato com a ProActive7?",
@@ -172,10 +182,18 @@
           "@type": "Service",
           "name": "Consultoria em Segurança Alimentar e Boas Práticas (ANVISA RDC 216)",
           "serviceType": "Consultoria nutricional e responsabilidade técnica",
-          "provider": { "@id": "https://www.proactive7.com.br/#service" },
+          "provider": {
+            "@id": "https://www.proactive7.com.br/#service"
+          },
           "areaServed": [
-            { "@type": "City", "name": "Macaé" },
-            { "@type": "State", "name": "Rio de Janeiro" }
+            {
+              "@type": "City",
+              "name": "Macaé"
+            },
+            {
+              "@type": "State",
+              "name": "Rio de Janeiro"
+            }
           ],
           "hasOfferCatalog": {
             "@type": "OfferCatalog",
@@ -243,36 +261,7 @@
         },
         {
           "q": "Como funciona a etiqueta de validade exigida pela ANVISA?",
-          "a": "Todo produto manipulado e armazenado deve ser identificado com etiqueta contendo, no mínimo, a data de manipulação e a validade. Nosso sistema gera essas etiquetas automaticamente, com os prazos definidos pela nutricionista RT, evitando erros de digitação na cozinha."
-        }
-      ]
-    },
-    "/sistema": {
-      "image": "https://www.proactive7.com.br/og/sistema.png",
-      "crumb": "Sistema",
-      "title": "Sistema de Etiquetas de Validade e Compliance ANVISA | ProActive7",
-      "description": "Software para cozinhas: etiquetas de validade térmicas, controle de temperatura, POPs, auditorias RDC 216 e gestão de não conformidades. Zero digitação na cozinha.",
-      "keywords": [
-        "sistema de etiquetas de validade",
-        "software compliance ANVISA",
-        "controle de temperatura cozinha",
-        "gestão de não conformidades"
-      ],
-      "changefreq": "monthly",
-      "priority": "0.9",
-      "extraJsonLd": [
-        {
-          "@context": "https://schema.org",
-          "@type": "SoftwareApplication",
-          "name": "ProActive7",
-          "applicationCategory": "BusinessApplication",
-          "operatingSystem": "Web",
-          "description": "Plataforma para serviços de alimentação: etiquetas de validade, controle de temperatura de equipamentos, POPs, auditorias RDC 216, controle de pragas, manipuladores e não conformidades.",
-          "url": "https://www.proactive7.com.br/sistema",
-          "publisher": {
-            "@id": "https://www.proactive7.com.br/#organization"
-          },
-          "offers": { "@type": "Offer", "price": "0", "priceCurrency": "BRL" }
+          "a": "A ProActive7 orienta a identificação dos alimentos armazenados e a definição dos prazos de validade, de acordo com as características dos produtos, as boas práticas e a avaliação da nutricionista responsável técnica."
         }
       ]
     },
