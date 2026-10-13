@@ -1,11 +1,33 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { Toaster } from 'sonner';
+import { Toaster, toast } from 'sonner';
 import App from './App';
 import { RootErrorBoundary } from './components/RootErrorBoundary';
 import { setErrorReporter } from './lib/errorReporter';
+import { startLegacyOfflineMigration } from './lib/legacyOfflineMigration';
 import './index.css';
+
+startLegacyOfflineMigration((pending) => {
+  const id = 'legacy-offline-records';
+  if (!pending) {
+    toast.dismiss(id);
+    return;
+  }
+  toast.warning(
+    'Há registros locais da versão anterior que precisam de recuperação.',
+    {
+      id,
+      duration: Infinity,
+      description:
+        'Não limpe os dados deste navegador. Fale com a equipe para recuperar as pendências.',
+      action: {
+        label: 'Contato',
+        onClick: () => window.location.assign('/contato'),
+      },
+    },
+  );
+});
 
 // Atualiza instalações antigas para o worker de desativação, sem instalar um novo PWA.
 if ('serviceWorker' in navigator) {

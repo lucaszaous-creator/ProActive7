@@ -11,6 +11,8 @@ sistema ao site.
 - Preservar a identidade visual, contatos e páginas institucionais.
 - Clientes, cursos e artigos publicados: leitura pública do Supabase.
 - Não montar AuthProvider nem persistir/renovar sessões ou processar callbacks de login.
+- Exceção transitória: `legacyOfflineMigration.ts` valida a sessão já existente
+  para recuperar a fila antiga, sem interface de login ou novas operações.
 - Nunca expor credenciais privilegiadas no frontend.
 - Conteúdo SEO centralizado em `src/lib/seo.config.json`.
 
